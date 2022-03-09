@@ -25,12 +25,12 @@ git update-ref -d HEAD
 ## Git创建远程新分支
 git无法直接通过命令方式创建远程新分支，需要间接来创建  
 这里我创建的远程新分支名叫 vedio  
-首先 git checkout --orphan 分支名
+首先 git checkout --orphan 分支名  
 ![avatar](\pic\Git常用命令\Git创建远程分支.png)
 git rm -rf . （这一步很关键）
 
 然后创建一个文件readme.md（其实任何文件都可以），add并commit，然后git push origin 分支名 就可以啦~
-如下图红框圈注的命令
+如下图红框圈注的命令  
 ![avatar](\pic\Git常用命令\pic1.png)
 
 ## git强制提交本地分支覆盖远程分支
