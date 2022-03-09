@@ -4,9 +4,9 @@ You can use the [editor on GitHub](https://github.com/GStarmin/GStarmin.github.i
 
 Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
 
-### OS
+## OS
 
-# 操作系统调度原则
+### 操作系统调度原则
 
 ```markdown
 Syntax highlighted code block
