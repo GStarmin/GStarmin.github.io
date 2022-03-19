@@ -142,3 +142,7 @@ mAP: mean Average Precision, 即各类别AP的平均值
 #### 单阶段和两阶段
 单阶段（YOLO）：直接回归物体的类别概率和位置坐标值（无region proposal）
 两阶段：1.CNN产生候选区域 2.区域分类，位置精修
+
+#### 尝试过程
+1. TensorRT ：有C++的API，需要先转ONNX模型，读的是ONNX模型（AMD显卡不支持）
+2. libtorch：
