@@ -1,1 +1,4 @@
-
+## Regularization和Normalization的区别
+- Regularization：为了使函数曲线更平滑
+  - 为什么要让曲线更平滑？因为比如当你用一个过高次数的函数去拟合你的训练数据，就会过拟合，因为你的曲线过分贴合训练集而泛化能力很弱，这样的函数曲线往往是比较曲曲折折的，不够平滑，所以避免过拟合的一种方法就是Regularization。
+- Normalization：当不同的特征的取值范围不同或不同特征对损失函数的影响大小不同时，直接做gradient desecet可能会出线梯度下降很慢的现象，所以对数据做Normalization使不同特征的取值范围都放缩到0-1或者近似0-1会使gradient descent更快一点。
