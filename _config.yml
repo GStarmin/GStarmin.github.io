@@ -3,9 +3,9 @@
 ## Source: https://github.com/hexojs/hexo/
 
 # Site
-title: Starmin的个人博客
+title: Starmin的个人杂记
 subtitle: ''
-description: ''
+description: 'Starmin的个人杂记'
 keywords:
 author: Starmin
 language: zh-CN
@@ -17,8 +17,8 @@ url: https://GStarmin.github.io/
 permalink: :year/:month/:day/:title/
 permalink_defaults:
 pretty_urls:
-  trailing_index: true # Set to false to remove trailing 'index.html' from permalinks
-  trailing_html: true # Set to false to remove trailing '.html' from permalinks
+  trailing_index: false # Set to false to remove trailing 'index.html' from permalinks
+  trailing_html: false # Set to false to remove trailing '.html' from permalinks
 
 # Directory
 source_dir: source
