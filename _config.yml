@@ -103,5 +103,6 @@ theme: fluid
 ## Docs: https://hexo.io/docs/one-command-deployment
 deploy:
   type: git
-  repo: https://github.com/GStarmin/GStarmin.github.io
+  # repo: https://github.com/GStarmin/GStarmin.github.io
+  repo: git@github.com:GStarmin/GStarmin.github.io.git
   branch: main
