@@ -37,7 +37,7 @@
 <meta property="og:image" content="https://gstarmin.github.io/img/%E6%9C%80%E5%A4%A7%E6%B5%81%E6%9C%80%E5%B0%8F%E5%89%B2/%E6%9C%80%E5%A4%A7%E6%B5%81%E6%9C%80%E5%B0%8F%E5%89%B2%E5%AE%9A%E7%90%86.png">
 <meta property="og:image" content="https://gstarmin.github.io/img/%E6%9C%80%E5%A4%A7%E6%B5%81%E6%9C%80%E5%B0%8F%E5%89%B2/iii%E5%88%B0i.png">
 <meta property="article:published_time" content="2022-12-03T04:40:24.747Z">
-<meta property="article:modified_time" content="2022-12-03T11:46:08.343Z">
+<meta property="article:modified_time" content="2022-12-03T12:27:18.630Z">
 <meta property="article:author" content="Starmin">
 <meta property="article:tag" content="高级算法设计与分析">
 <meta name="twitter:card" content="summary_large_image">
@@ -316,25 +316,25 @@
 <li>当残留图中不存在从s到t的增广路径时，该图已经达到最大流</li>
 </ul>
 <h4 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h4><p>初始时没有反向边,此时残留图等于原图</p>
-<p><img src="/../img/%E6%9C%80%E5%A4%A7%E6%B5%81%E6%9C%80%E5%B0%8F%E5%89%B2/Ford-Fulkerson%E4%BE%8B%E5%AD%901.png" srcset="/img/loading.gif" lazyload alt="pic5"></p>
+<p><img src="/../img/%E6%9C%80%E5%A4%A7%E6%B5%81%E6%9C%80%E5%B0%8F%E5%89%B2/Ford-Fulkerson%E4%BE%8B%E5%AD%901.png" srcset="/img/loading.gif" lazyload></p>
 <p>从中选取一条增广路径,并更新残留图和原图</p>
-<p><img src="/../img/%E6%9C%80%E5%A4%A7%E6%B5%81%E6%9C%80%E5%B0%8F%E5%89%B2/Ford-Fulkerson%E4%BE%8B%E5%AD%902.png" srcset="/img/loading.gif" lazyload alt="pic6"></p>
+<p><img src="/../img/%E6%9C%80%E5%A4%A7%E6%B5%81%E6%9C%80%E5%B0%8F%E5%89%B2/Ford-Fulkerson%E4%BE%8B%E5%AD%902.png" srcset="/img/loading.gif" lazyload></p>
 <p>重复上面的步骤,注意<strong>增广路径一定要从残留图中找</strong>,且可以使用残留图中的反向边.</p>
-<p><img src="/../img/%E6%9C%80%E5%A4%A7%E6%B5%81%E6%9C%80%E5%B0%8F%E5%89%B2/Ford-Fulkerson%E4%BE%8B%E5%AD%903.png" srcset="/img/loading.gif" lazyload alt="pic7"></p>
-<p><img src="/../img/%E6%9C%80%E5%A4%A7%E6%B5%81%E6%9C%80%E5%B0%8F%E5%89%B2/Ford-Fulkerson%E4%BE%8B%E5%AD%904.png" srcset="/img/loading.gif" lazyload alt="pic8"></p>
-<p><img src="/../img/%E6%9C%80%E5%A4%A7%E6%B5%81%E6%9C%80%E5%B0%8F%E5%89%B2/Ford-Fulkerson%E4%BE%8B%E5%AD%905.png" srcset="/img/loading.gif" lazyload alt="pic9"></p>
-<p><img src="/../img/%E6%9C%80%E5%A4%A7%E6%B5%81%E6%9C%80%E5%B0%8F%E5%89%B2/Ford-Fulkerson%E4%BE%8B%E5%AD%906.png" srcset="/img/loading.gif" lazyload alt="pic10"></p>
-<p><img src="/../img/%E6%9C%80%E5%A4%A7%E6%B5%81%E6%9C%80%E5%B0%8F%E5%89%B2/Ford-Fulkerson%E4%BE%8B%E5%AD%907.png" srcset="/img/loading.gif" lazyload alt="pic11"></p>
+<p><img src="/../img/%E6%9C%80%E5%A4%A7%E6%B5%81%E6%9C%80%E5%B0%8F%E5%89%B2/Ford-Fulkerson%E4%BE%8B%E5%AD%903.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/../img/%E6%9C%80%E5%A4%A7%E6%B5%81%E6%9C%80%E5%B0%8F%E5%89%B2/Ford-Fulkerson%E4%BE%8B%E5%AD%904.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/../img/%E6%9C%80%E5%A4%A7%E6%B5%81%E6%9C%80%E5%B0%8F%E5%89%B2/Ford-Fulkerson%E4%BE%8B%E5%AD%905.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/../img/%E6%9C%80%E5%A4%A7%E6%B5%81%E6%9C%80%E5%B0%8F%E5%89%B2/Ford-Fulkerson%E4%BE%8B%E5%AD%906.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/../img/%E6%9C%80%E5%A4%A7%E6%B5%81%E6%9C%80%E5%B0%8F%E5%89%B2/Ford-Fulkerson%E4%BE%8B%E5%AD%907.png" srcset="/img/loading.gif" lazyload></p>
 <p>此时,没有新的增广路径,则最大流的值等于流出源点s的流量减去流进s的流量,即 $flow &#x3D; s_{out} - s_{in}$</p>
 <h2 id="最大流与最小割的关系"><a href="#最大流与最小割的关系" class="headerlink" title="最大流与最小割的关系"></a>最大流与最小割的关系</h2><p><strong>最大流最小割定理：最大流&#x3D;最小割。</strong> 最大流-最小割定理用来证明Ford-Fulkson方法的确达到了最大流.</p>
-<p><img src="/../img/%E6%9C%80%E5%A4%A7%E6%B5%81%E6%9C%80%E5%B0%8F%E5%89%B2/%E6%9C%80%E5%A4%A7%E6%B5%81%E6%9C%80%E5%B0%8F%E5%89%B2%E5%AE%9A%E7%90%86.png" srcset="/img/loading.gif" lazyload alt="pic12"></p>
+<p><img src="/../img/%E6%9C%80%E5%A4%A7%E6%B5%81%E6%9C%80%E5%B0%8F%E5%89%B2/%E6%9C%80%E5%A4%A7%E6%B5%81%E6%9C%80%E5%B0%8F%E5%89%B2%E5%AE%9A%E7%90%86.png" srcset="/img/loading.gif" lazyload alt="最大流最小割定理"></p>
 <p>证明:</p>
 <ul>
 <li>$(i) \Rightarrow (ii)$ :弱对偶性法则的推论</li>
 <li>$(ii) \Rightarrow (iii)$ :反证法<br>若f是一个最大流,且仍存在增广路径,那么可以让f加上增广路径的流量,与f是一个最大流相悖.故$(ii) \Rightarrow (iii)$成立</li>
 <li>$(iii) \Rightarrow (i)$<br>设f是一个流,且没有增广路径,令A等于s的可达顶点集,则</li>
 </ul>
-<p><img src="/../img/%E6%9C%80%E5%A4%A7%E6%B5%81%E6%9C%80%E5%B0%8F%E5%89%B2/iii%E5%88%B0i.png" srcset="/img/loading.gif" lazyload alt="pic13"></p>
+<p><img src="/../img/%E6%9C%80%E5%A4%A7%E6%B5%81%E6%9C%80%E5%B0%8F%E5%89%B2/iii%E5%88%B0i.png" srcset="/img/loading.gif" lazyload></p>
 
                 
               </div>
