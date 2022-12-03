@@ -16,12 +16,12 @@
   <meta name="author" content="Starmin">
   <meta name="keywords" content="">
   
-    <meta name="description" content="正交三角分解(QR分解)满秩矩阵的 QR 分解若 $n$ 阶实矩阵 $A\in \mathbb {C}^{n\times n}$ 满秩，且 $$A &#x3D; [\alpha_1,…,\alpha_n]$$ 其中 $\alpha_1,…,\alpha_n$ 是 $\mathbb {C}^{n\times n}$  中线性无关向量组 正交化 令 $$ \begin{aligned} \beta">
+    <meta name="description" content="正交三角分解(QR分解) 满秩矩阵的 QR 分解 若 \(n\) 阶实矩阵 \(A\in \mathbb {C}^{n\times n}\) 满秩，且 \[A &#x3D; [\alpha_1,...,\alpha_n]\] 其中 \(\alpha_1,...,\alpha_n\) 是 \(\mathbb {C}^{n\times n}\) 中线性无关向量组 正交化 令 \[ \beg">
 <meta property="og:type" content="article">
 <meta property="og:title" content="矩阵分解">
 <meta property="og:url" content="https://gstarmin.github.io/2022/12/03/%E7%9F%A9%E9%98%B5%E5%88%86%E8%A7%A3/">
 <meta property="og:site_name" content="Starmin的个人杂记">
-<meta property="og:description" content="正交三角分解(QR分解)满秩矩阵的 QR 分解若 $n$ 阶实矩阵 $A\in \mathbb {C}^{n\times n}$ 满秩，且 $$A &#x3D; [\alpha_1,…,\alpha_n]$$ 其中 $\alpha_1,…,\alpha_n$ 是 $\mathbb {C}^{n\times n}$  中线性无关向量组 正交化 令 $$ \begin{aligned} \beta">
+<meta property="og:description" content="正交三角分解(QR分解) 满秩矩阵的 QR 分解 若 \(n\) 阶实矩阵 \(A\in \mathbb {C}^{n\times n}\) 满秩，且 \[A &#x3D; [\alpha_1,...,\alpha_n]\] 其中 \(\alpha_1,...,\alpha_n\) 是 \(\mathbb {C}^{n\times n}\) 中线性无关向量组 正交化 令 \[ \beg">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2022-12-03T13:15:58.658Z">
 <meta property="article:modified_time" content="2022-12-03T14:58:17.992Z">
@@ -223,7 +223,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          8.4k 字
+          8.3k 字
         
       </span>
     
@@ -234,7 +234,7 @@
         
         
         
-          71 分钟
+          70 分钟
         
       </span>
     
@@ -278,68 +278,220 @@
               <div class="markdown-body">
                 
                 <!-- <link href="https://lf9-cdn-tos.bytecdntp.com/cdn/expire-1-M/KaTeX/0.10.2/katex.min.css" rel="stylesheet"> -->
-
-<h2 id="正交三角分解-QR分解"><a href="#正交三角分解-QR分解" class="headerlink" title="正交三角分解(QR分解)"></a>正交三角分解(QR分解)</h2><h3 id="满秩矩阵的-QR-分解"><a href="#满秩矩阵的-QR-分解" class="headerlink" title="满秩矩阵的 QR 分解"></a>满秩矩阵的 QR 分解</h3><p>若 $n$ 阶实矩阵 $A\in \mathbb {C}^{n\times n}$ 满秩，且 $$A &#x3D; [\alpha_1,…,\alpha_n]$$</p>
-<p>其中 $\alpha_1,…,\alpha_n$ 是 $\mathbb {C}^{n\times n}$  中线性无关向量组</p>
+<h2 id="正交三角分解qr分解">正交三角分解(QR分解)</h2>
+<h3 id="满秩矩阵的-qr-分解">满秩矩阵的 QR 分解</h3>
+<p>若 <span class="math inline">\(n\)</span> 阶实矩阵 <span
+class="math inline">\(A\in \mathbb {C}^{n\times n}\)</span> 满秩，且
+<span class="math display">\[A = [\alpha_1,...,\alpha_n]\]</span></p>
+<p>其中 <span class="math inline">\(\alpha_1,...,\alpha_n\)</span> 是
+<span class="math inline">\(\mathbb {C}^{n\times n}\)</span>
+中线性无关向量组</p>
 <p><strong>正交化</strong></p>
 <p>令</p>
-<p>$$ \begin{aligned} \beta_1&amp;&#x3D;\alpha_1\ \beta_2&amp;&#x3D;\alpha_2 - \frac{\left&lt;\beta_1,\alpha_1\right&gt;}{\left&lt;\beta_1,\beta_1\right&gt;}\beta_1 \ \vdots \ \beta_n &amp;&#x3D; \alpha_n - \frac{\left&lt;\beta_n,\alpha_1\right&gt;}{\left&lt;\beta_1,\beta_1\right&gt;}\beta_1-\cdots-\frac{\left&lt;\beta_{n-1},\alpha_n\right&gt;}{\left&lt;\beta_{n-1},\alpha_{n-1}\right&gt;}\beta_{n-1} \end{aligned} $$</p>
-<p>变形得 </p>
-<p>$$ \begin{aligned} \alpha_1 &amp;&#x3D; \beta_1\ \alpha_2 &amp;&#x3D; \frac{\left&lt;\beta_1,\alpha_1\right&gt;}{\left&lt;\beta_1,\beta_1\right&gt;}\beta_1 + \beta_2\ \vdots \ \alpha_n &amp;&#x3D; \frac{\left&lt;\beta_n,\alpha_1\right&gt;}{\left&lt;\beta_1,\beta_1\right&gt;}\beta_1-\cdots-\frac{\left&lt;\beta_{n-1},\alpha_n\right&gt;}{\left&lt;\beta_{n-1},\alpha_{n-1}\right&gt;}\beta_{n-1} + \beta_n \end{aligned} $$</p>
+<p><span class="math display">\[ \begin{aligned} \beta_1&amp;=\alpha_1\\
+\beta_2&amp;=\alpha_2 -
+\frac{\left&lt;\beta_1,\alpha_1\right&gt;}{\left&lt;\beta_1,\beta_1\right&gt;}\beta_1
+\\ \vdots \\ \beta_n &amp;= \alpha_n -
+\frac{\left&lt;\beta_n,\alpha_1\right&gt;}{\left&lt;\beta_1,\beta_1\right&gt;}\beta_1-\cdots-\frac{\left&lt;\beta_{n-1},\alpha_n\right&gt;}{\left&lt;\beta_{n-1},\alpha_{n-1}\right&gt;}\beta_{n-1}
+\end{aligned} \]</span></p>
+<p>变形得</p>
+<p><span class="math display">\[ \begin{aligned} \alpha_1 &amp;=
+\beta_1\\ \alpha_2 &amp;=
+\frac{\left&lt;\beta_1,\alpha_1\right&gt;}{\left&lt;\beta_1,\beta_1\right&gt;}\beta_1
++ \beta_2\\ \vdots \\ \alpha_n &amp;=
+\frac{\left&lt;\beta_n,\alpha_1\right&gt;}{\left&lt;\beta_1,\beta_1\right&gt;}\beta_1-\cdots-\frac{\left&lt;\beta_{n-1},\alpha_n\right&gt;}{\left&lt;\beta_{n-1},\alpha_{n-1}\right&gt;}\beta_{n-1}
++ \beta_n \end{aligned} \]</span></p>
 <p>写成矩阵形式</p>
-<p>$$ \begin{aligned} \begin{bmatrix}\alpha_1,\alpha_2,…,\alpha_n\end{bmatrix} &amp;&#x3D; \begin{bmatrix}\beta_1,\beta_2,…,\beta_n\end{bmatrix}\begin{bmatrix}1&amp;\frac{\left&lt;\beta_1,\alpha_1\right&gt;}{\left&lt;\beta_1,\beta_1\right&gt;}&amp;\cdots &amp;\frac{\left&lt;\beta_1,\alpha_n\right&gt;}{\left&lt;\beta_1,\beta_1\right&gt;}\0&amp;1&amp;\cdots&amp;\frac{\left&lt;\beta_2,\alpha_n\right&gt;}{\left&lt;\beta_2,\beta_2\right&gt;}\ &amp;&amp;\ddots\0&amp;&amp;\cdots&amp; 1\end{bmatrix}\ &amp;\triangleq B\begin{bmatrix}1&amp;\frac{\left&lt;\beta_1,\alpha_1\right&gt;}{\left&lt;\beta_1,\beta_1\right&gt;}&amp;\cdots &amp;\frac{\left&lt;\beta_1,\alpha_n\right&gt;}{\left&lt;\beta_1,\beta_1\right&gt;}\0&amp;1&amp;\cdots&amp;\frac{\left&lt;\beta_2,\alpha_n\right&gt;}{\left&lt;\beta_2,\beta_2\right&gt;}\ &amp;&amp;\ddots\0&amp;&amp;\cdots&amp; 1\end{bmatrix} \end{aligned} $$</p>
+<p><span class="math display">\[ \begin{aligned}
+\begin{bmatrix}\alpha_1,\alpha_2,...,\alpha_n\end{bmatrix} &amp;=
+\begin{bmatrix}\beta_1,\beta_2,...,\beta_n\end{bmatrix}\begin{bmatrix}1&amp;\frac{\left&lt;\beta_1,\alpha_1\right&gt;}{\left&lt;\beta_1,\beta_1\right&gt;}&amp;\cdots
+&amp;\frac{\left&lt;\beta_1,\alpha_n\right&gt;}{\left&lt;\beta_1,\beta_1\right&gt;}\\0&amp;1&amp;\cdots&amp;\frac{\left&lt;\beta_2,\alpha_n\right&gt;}{\left&lt;\beta_2,\beta_2\right&gt;}\\
+&amp;&amp;\ddots\\0&amp;&amp;\cdots&amp; 1\end{bmatrix}\\
+&amp;\triangleq
+B\begin{bmatrix}1&amp;\frac{\left&lt;\beta_1,\alpha_1\right&gt;}{\left&lt;\beta_1,\beta_1\right&gt;}&amp;\cdots
+&amp;\frac{\left&lt;\beta_1,\alpha_n\right&gt;}{\left&lt;\beta_1,\beta_1\right&gt;}\\0&amp;1&amp;\cdots&amp;\frac{\left&lt;\beta_2,\alpha_n\right&gt;}{\left&lt;\beta_2,\beta_2\right&gt;}\\
+&amp;&amp;\ddots\\0&amp;&amp;\cdots&amp; 1\end{bmatrix} \end{aligned}
+\]</span></p>
 <p><strong>单位化</strong></p>
-<p>令 </p>
-<p>$$ q_1&#x3D;\frac{\beta_1}{||\beta_1||}\ \vdots \ q_n &#x3D; \frac{\beta_n}{||\beta_n||} $$</p>
-<p>变形得 </p>
-<p>$$ \beta_1 &#x3D; q_1||\beta_1||\ \vdots \ \beta_n &#x3D; q_n ||\beta_n|| $$</p>
-<p>写成矩阵形式 </p>
-<p>$$ \begin{aligned} \begin{bmatrix}\beta_1,\beta_2,…,\beta_n\end{bmatrix} &amp;&#x3D; \begin{bmatrix}q_1,q_2,…,q_n\end{bmatrix}\begin{bmatrix}||\beta_1||&amp;0&amp;\cdots &amp;0\0&amp;||\beta_2||&amp;\cdots&amp;0\ &amp;&amp;\ddots\0&amp;&amp;\cdots&amp; ||\beta_n||\end{bmatrix}\ &amp;\triangleq Q\begin{bmatrix}||\beta_1||&amp;0&amp;\cdots &amp;0\0&amp;||\beta_2||&amp;\cdots&amp;0\ &amp;&amp;\ddots\0&amp;&amp;\cdots&amp; ||\beta_n||\end{bmatrix} \end{aligned} $$</p>
-<p>综上，结合正交化和单位化可得 </p>
-<p>$$ \begin{aligned} A &amp;&#x3D; B\begin{bmatrix}1&amp;\frac{\left&lt;\beta_1,\alpha_1\right&gt;}{\left&lt;\beta_1,\beta_1\right&gt;}&amp;\cdots &amp;\frac{\left&lt;\beta_1,\alpha_n\right&gt;}{\left&lt;\beta_1,\beta_1\right&gt;}\0&amp;1&amp;\cdots&amp;\frac{\left&lt;\beta_2,\alpha_n\right&gt;}{\left&lt;\beta_2,\beta_2\right&gt;}\ &amp;&amp;\ddots\0&amp;&amp;\cdots&amp; 1\end{bmatrix}\ &amp;&#x3D;Q\begin{bmatrix}||\beta_1||&amp;0&amp;\cdots &amp;0\0&amp;||\beta_2||&amp;\cdots&amp;0\ &amp;&amp;\ddots\0&amp;&amp;\cdots&amp; ||\beta_n||\end{bmatrix}\begin{bmatrix}1&amp;\frac{\left&lt;\beta_1,\alpha_1\right&gt;}{\left&lt;\beta_1,\beta_1\right&gt;}&amp;\cdots &amp;\frac{\left&lt;\beta_1,\alpha_n\right&gt;}{\left&lt;\beta_1,\beta_1\right&gt;}\0&amp;1&amp;\cdots&amp;\frac{\left&lt;\beta_2,\alpha_n\right&gt;}{\left&lt;\beta_2,\beta_2\right&gt;}\ &amp;&amp;\ddots\0&amp;&amp;\cdots&amp; 1\end{bmatrix}\ &amp;&#x3D;Q\begin{bmatrix}||\beta_1||&amp;\frac{\left&lt;\beta_1,\alpha_1\right&gt;}{\left&lt;\beta_1,\beta_1\right&gt;}&amp;\cdots &amp;\frac{\left&lt;\beta_1,\alpha_n\right&gt;}{\left&lt;\beta_1,\beta_1\right&gt;}\0&amp;||\beta_2||&amp;\cdots&amp;\frac{\left&lt;\beta_2,\alpha_n\right&gt;}{\left&lt;\beta_2,\beta_2\right&gt;}\ &amp;&amp;\ddots\0&amp;&amp;\cdots&amp; ||\beta_n||\end{bmatrix}\ &amp;\triangleq QR \end{aligned} $$</p>
-<p><strong>QR 分解定理</strong> : $A\in \mathbb {C}^{n\times n}$ ,则存在酉矩阵 $Q$ 和正线上三角阵 $R$ ，使 $$A&#x3D;QR$$</p>
+<p>令</p>
+<p><span class="math display">\[ q_1=\frac{\beta_1}{||\beta_1||}\\
+\vdots \\ q_n = \frac{\beta_n}{||\beta_n||} \]</span></p>
+<p>变形得</p>
+<p><span class="math display">\[ \beta_1 = q_1||\beta_1||\\ \vdots \\
+\beta_n = q_n ||\beta_n|| \]</span></p>
+<p>写成矩阵形式</p>
+<p><span class="math display">\[ \begin{aligned}
+\begin{bmatrix}\beta_1,\beta_2,...,\beta_n\end{bmatrix} &amp;=
+\begin{bmatrix}q_1,q_2,...,q_n\end{bmatrix}\begin{bmatrix}||\beta_1||&amp;0&amp;\cdots
+&amp;0\\0&amp;||\beta_2||&amp;\cdots&amp;0\\
+&amp;&amp;\ddots\\0&amp;&amp;\cdots&amp; ||\beta_n||\end{bmatrix}\\
+&amp;\triangleq Q\begin{bmatrix}||\beta_1||&amp;0&amp;\cdots
+&amp;0\\0&amp;||\beta_2||&amp;\cdots&amp;0\\
+&amp;&amp;\ddots\\0&amp;&amp;\cdots&amp; ||\beta_n||\end{bmatrix}
+\end{aligned} \]</span></p>
+<p>综上，结合正交化和单位化可得</p>
+<p><span class="math display">\[ \begin{aligned} A &amp;=
+B\begin{bmatrix}1&amp;\frac{\left&lt;\beta_1,\alpha_1\right&gt;}{\left&lt;\beta_1,\beta_1\right&gt;}&amp;\cdots
+&amp;\frac{\left&lt;\beta_1,\alpha_n\right&gt;}{\left&lt;\beta_1,\beta_1\right&gt;}\\0&amp;1&amp;\cdots&amp;\frac{\left&lt;\beta_2,\alpha_n\right&gt;}{\left&lt;\beta_2,\beta_2\right&gt;}\\
+&amp;&amp;\ddots\\0&amp;&amp;\cdots&amp; 1\end{bmatrix}\\
+&amp;=Q\begin{bmatrix}||\beta_1||&amp;0&amp;\cdots
+&amp;0\\0&amp;||\beta_2||&amp;\cdots&amp;0\\
+&amp;&amp;\ddots\\0&amp;&amp;\cdots&amp;
+||\beta_n||\end{bmatrix}\begin{bmatrix}1&amp;\frac{\left&lt;\beta_1,\alpha_1\right&gt;}{\left&lt;\beta_1,\beta_1\right&gt;}&amp;\cdots
+&amp;\frac{\left&lt;\beta_1,\alpha_n\right&gt;}{\left&lt;\beta_1,\beta_1\right&gt;}\\0&amp;1&amp;\cdots&amp;\frac{\left&lt;\beta_2,\alpha_n\right&gt;}{\left&lt;\beta_2,\beta_2\right&gt;}\\
+&amp;&amp;\ddots\\0&amp;&amp;\cdots&amp; 1\end{bmatrix}\\
+&amp;=Q\begin{bmatrix}||\beta_1||&amp;\frac{\left&lt;\beta_1,\alpha_1\right&gt;}{\left&lt;\beta_1,\beta_1\right&gt;}&amp;\cdots
+&amp;\frac{\left&lt;\beta_1,\alpha_n\right&gt;}{\left&lt;\beta_1,\beta_1\right&gt;}\\0&amp;||\beta_2||&amp;\cdots&amp;\frac{\left&lt;\beta_2,\alpha_n\right&gt;}{\left&lt;\beta_2,\beta_2\right&gt;}\\
+&amp;&amp;\ddots\\0&amp;&amp;\cdots&amp; ||\beta_n||\end{bmatrix}\\
+&amp;\triangleq QR \end{aligned} \]</span></p>
+<p><strong>QR 分解定理</strong> : <span class="math inline">\(A\in
+\mathbb {C}^{n\times n}\)</span> ,则存在酉矩阵 <span
+class="math inline">\(Q\)</span> 和正线上三角阵 <span
+class="math inline">\(R\)</span> ，使 <span
+class="math display">\[A=QR\]</span></p>
 <p>且分解唯一</p>
-<h3 id="QR-分解的求法"><a href="#QR-分解的求法" class="headerlink" title="QR 分解的求法"></a>QR 分解的求法</h3><ol>
-<li>取矩阵 $A&#x3D;(A_1,A_2,…,A_n)$ 的列向量，进行 <strong>Schmidt 标准正交化</strong>,得 $v_1,v_2,…,v_n$ ，有 $$Q&#x3D;(v_1,v_2,…,v_n)$$</li>
-<li>再由 $R&#x3D;Q^HA$ 得到 $R$ , 于是 $A&#x3D;QR$</li>
+<h3 id="qr-分解的求法">QR 分解的求法</h3>
+<ol type="1">
+<li>取矩阵 <span class="math inline">\(A=(A_1,A_2,...,A_n)\)</span>
+的列向量，进行 <strong>Schmidt 标准正交化</strong>,得 <span
+class="math inline">\(v_1,v_2,...,v_n\)</span> ，有 <span
+class="math display">\[Q=(v_1,v_2,...,v_n)\]</span></li>
+<li>再由 <span class="math inline">\(R=Q^HA\)</span> 得到 <span
+class="math inline">\(R\)</span> , 于是 <span
+class="math inline">\(A=QR\)</span></li>
 </ol>
-<h2 id="矩阵的满秩分解"><a href="#矩阵的满秩分解" class="headerlink" title="矩阵的满秩分解"></a>矩阵的满秩分解</h2><p>设 $A\in \mathbb {C}_r^{m\times n}$，则存在 $B\in \mathbb {C}_r^{m\times r}, C\in \mathbb {C}_r^{r\times n}$，满足<br>$$ A &#x3D; BC $$</p>
-<p>$\mathbb {C}_r$ 表示矩阵的秩为 $r$</p>
+<h2 id="矩阵的满秩分解">矩阵的满秩分解</h2>
+<p>设 <span class="math inline">\(A\in \mathbb {C}_r^{m\times
+n}\)</span>，则存在 <span class="math inline">\(B\in \mathbb
+{C}_r^{m\times r}, C\in \mathbb {C}_r^{r\times n}\)</span>，满足 <span
+class="math display">\[ A = BC \]</span></p>
+<p><span class="math inline">\(\mathbb {C}_r\)</span> 表示矩阵的秩为
+<span class="math inline">\(r\)</span></p>
 <p>实际上上述定理用文字描述就是，一个亏秩的矩阵可以分解成一个列满秩与行满秩矩阵的乘积</p>
-<p>证明：因为 $rank (A)&#x3D;r$，所以一定可以找到与 $A$ 相似的一个矩阵</p>
-<p>$$ A \simeq \begin{bmatrix}E_r&amp;0_{r\times (n-r)}\0_{(m-r)\times r}&amp;0_{(m-r)\times (n-r)}\end{bmatrix}&#x3D;\begin{bmatrix}E_r\0_{(m-r)\times r}\end{bmatrix}\begin{bmatrix}E_r&amp;0_{r\times (n-r)}\end{bmatrix} $$</p>
-<p>因此存在两个可逆矩阵 $P,Q$，使 $PAQ&#x3D;\begin {bmatrix} E_r&amp;0\0&amp;0\end {bmatrix}$，则</p>
-<p>$$ \begin{aligned} A &amp;&#x3D; P^{-1}\begin{bmatrix}E_r\0\end{bmatrix}\begin{bmatrix}E_r&amp;0\end{bmatrix}Q^{-1}\ &amp;\triangleq BC \end{aligned} $$</p>
-<p>因为 $P^{-1}$ 是可逆矩阵，$\begin {bmatrix} E_r\0\end {bmatrix}$ 是一个列满秩矩阵，所以 $B&#x3D;P^{-1}\begin {bmatrix} E_r\0\end {bmatrix}$ 仍是一个列满秩矩阵；同理，$C&#x3D;\begin {bmatrix} E_r&amp;0\end {bmatrix} Q^{-1}$ 是一个行满秩矩阵</p>
-<h3 id="矩阵满秩分解的计算"><a href="#矩阵满秩分解的计算" class="headerlink" title="矩阵满秩分解的计算"></a>矩阵满秩分解的计算</h3><p>如何在给定矩阵 $A$ 的情况下，求出矩阵 $B,C$ 呢？</p>
+<p>证明：因为 <span class="math inline">\(rank
+(A)=r\)</span>，所以一定可以找到与 <span
+class="math inline">\(A\)</span> 相似的一个矩阵</p>
+<p><span class="math display">\[ A \simeq
+\begin{bmatrix}E_r&amp;0_{r\times (n-r)}\\0_{(m-r)\times
+r}&amp;0_{(m-r)\times
+(n-r)}\end{bmatrix}=\begin{bmatrix}E_r\\0_{(m-r)\times
+r}\end{bmatrix}\begin{bmatrix}E_r&amp;0_{r\times (n-r)}\end{bmatrix}
+\]</span></p>
+<p>因此存在两个可逆矩阵 <span class="math inline">\(P,Q\)</span>，使
+<span class="math inline">\(PAQ=\begin {bmatrix} E_r&amp;0\\0&amp;0\end
+{bmatrix}\)</span>，则</p>
+<p><span class="math display">\[ \begin{aligned} A &amp;=
+P^{-1}\begin{bmatrix}E_r\\0\end{bmatrix}\begin{bmatrix}E_r&amp;0\end{bmatrix}Q^{-1}\\
+&amp;\triangleq BC \end{aligned} \]</span></p>
+<p>因为 <span class="math inline">\(P^{-1}\)</span> 是可逆矩阵，<span
+class="math inline">\(\begin {bmatrix} E_r\\0\end {bmatrix}\)</span>
+是一个列满秩矩阵，所以 <span class="math inline">\(B=P^{-1}\begin
+{bmatrix} E_r\\0\end {bmatrix}\)</span> 仍是一个列满秩矩阵；同理，<span
+class="math inline">\(C=\begin {bmatrix} E_r&amp;0\end {bmatrix}
+Q^{-1}\)</span> 是一个行满秩矩阵</p>
+<h3 id="矩阵满秩分解的计算">矩阵满秩分解的计算</h3>
+<p>如何在给定矩阵 <span class="math inline">\(A\)</span>
+的情况下，求出矩阵 <span class="math inline">\(B,C\)</span> 呢？</p>
 <p>设</p>
-<p>$$ A &#x3D; [\alpha_1,\alpha_2,…,\alpha_n]\ B &#x3D; [\beta_1,\beta_2,…,\beta_r]$$</p>
-<p>其中 \beta_1,…,\beta_r 线性无关 </p>
-<p>所以<br>$$ \begin{aligned} &amp;A&#x3D;BC\ &amp;\Rightarrow[\alpha_1,\alpha_2,…,\alpha_n]&#x3D;[\beta_1,…,\beta_r]\begin{bmatrix}c_{11}&amp;\cdots &amp;c_{1n}\\vdots &amp;\ddots&amp;\vdots\c_{r1}&amp;\cdots &amp;c_{rn}\end{bmatrix} \end{aligned} $$</p>
-<p>实际上我们可以取 $\beta_1,…,\beta_r$ 为 $\alpha_1,…,\alpha_n$ 的一个极大线性无关组，因此 $B$ 就是矩阵 $A$ 列向量组的一个极大线性无关组，$C$ 就是用该线性无关组去表示 $A$ 时的系数</p>
-<h4 id="例-1"><a href="#例-1" class="headerlink" title="例 1"></a>例 1</h4><p>求矩阵 $A&#x3D;\begin {bmatrix} 1&amp;4&amp;-1&amp;5&amp;6\2&amp;0&amp;0&amp;0&amp;-14\-1&amp;2&amp;-4&amp;0&amp;1\2&amp;6&amp;-5&amp;5&amp;-7\end {bmatrix}$ 的满秩分解</p>
-<p><strong>解</strong>：对矩阵 $A$ 只作初等行变换<br>$$ A&#x3D;\begin{bmatrix}1&amp;4&amp;-1&amp;5&amp;6\2&amp;0&amp;0&amp;0&amp;-14\-1&amp;2&amp;-4&amp;0&amp;1\2&amp;6&amp;-5&amp;5&amp;-7\end{bmatrix}\to ···\to\begin{bmatrix}1&amp;0&amp;0&amp;0&amp;-7\0&amp;1&amp;0&amp;\frac{10}{7}&amp;\frac{29}{7}\0&amp;0&amp;1&amp;\frac{5}{7}&amp;\frac{25}{7}\0&amp;0&amp;0&amp;0&amp;0\end{bmatrix} $$</p>
-<p>$A$ 的秩为 3，且前三个列向量线性无关，故<br>$$ B &#x3D; \begin{bmatrix}1&amp;4&amp;-1\2&amp;0&amp;0\-1&amp;2&amp;-4\2&amp;6&amp;-5\end{bmatrix}，C&#x3D;\begin{bmatrix}1&amp;0&amp;0&amp;0&amp;-7\0&amp;1&amp;0&amp;\frac{10}{7}&amp;\frac{29}{7}\0&amp;0&amp;1&amp;\frac{5}{7}&amp;\frac{25}{7}\end{bmatrix} $$</p>
-<h4 id="例-2"><a href="#例-2" class="headerlink" title="例 2"></a>例 2</h4><p>求矩阵 $A&#x3D;\begin {bmatrix} 2&amp;1&amp;-2&amp;3&amp;1\2&amp;5&amp;-1&amp;4&amp;1\1&amp;3&amp;-1&amp;2&amp;1\end {bmatrix}$ 的满秩分解</p>
-<p><strong>解</strong>：对矩阵 $A$ 只作初等行变换</p>
-<p>$$ A&#x3D;\begin{bmatrix}2&amp;1&amp;-2&amp;3&amp;1\2&amp;5&amp;-1&amp;4&amp;1\1&amp;3&amp;-1&amp;2&amp;1\end{bmatrix}\to ···\to \begin{bmatrix}1&amp;0&amp;0&amp;\frac{8}{5}&amp;-\frac{2}{5}\0&amp;1&amp;0&amp;\frac{1}{5}&amp;\frac{1}{5}\0&amp;0&amp;1&amp;\frac{1}{5}&amp;-\frac{4}{5}\end{bmatrix} $$</p>
-<p>$A$ 的秩为 3，且前三个列向量线性无关，故<br>$$ B &#x3D; \begin{bmatrix}2&amp;1&amp;-2\2&amp;5&amp;-1\1&amp;3&amp;-1\end{bmatrix},C &#x3D; \begin{bmatrix}1&amp;0&amp;0&amp;\frac{8}{5}&amp;-\frac{2}{5}\0&amp;1&amp;0&amp;\frac{1}{5}&amp;\frac{1}{5}\0&amp;0&amp;1&amp;\frac{1}{5}&amp;-\frac{4}{5}\end{bmatrix} $$</p>
-<h2 id="矩阵的LU分解"><a href="#矩阵的LU分解" class="headerlink" title="矩阵的LU分解"></a>矩阵的LU分解</h2><p>LU 分解（LU Decomposition）是矩阵分解的一种，可以将一个矩阵分解为一个单位下三角矩阵和一个上三角矩阵的乘积，以四阶矩阵为例<br>$$ L &#x3D; \begin{bmatrix}1&amp;0&amp;0&amp;0\<em>&amp;1&amp;0&amp;0\</em>&amp;<em>&amp;1&amp;0\</em>&amp;<em>&amp;</em>&amp;1\end{bmatrix}, U&#x3D;\begin{bmatrix}<em>&amp;</em>&amp;<em>&amp;<em>\0&amp;</em>&amp;</em>&amp;<em>\0&amp;0&amp;</em>&amp;*\0&amp;0&amp;0&amp;*\end{bmatrix} $$</p>
+<p><span class="math display">\[ A = [\alpha_1,\alpha_2,...,\alpha_n]\\
+B = [\beta_1,\beta_2,...,\beta_r]\]</span></p>
+<p>其中 _1,...,_r 线性无关</p>
+<p>所以 <span class="math display">\[ \begin{aligned} &amp;A=BC\\
+&amp;\Rightarrow[\alpha_1,\alpha_2,...,\alpha_n]=[\beta_1,...,\beta_r]\begin{bmatrix}c_{11}&amp;\cdots
+&amp;c_{1n}\\\vdots &amp;\ddots&amp;\vdots\\c_{r1}&amp;\cdots
+&amp;c_{rn}\end{bmatrix} \end{aligned} \]</span></p>
+<p>实际上我们可以取 <span
+class="math inline">\(\beta_1,...,\beta_r\)</span> 为 <span
+class="math inline">\(\alpha_1,...,\alpha_n\)</span>
+的一个极大线性无关组，因此 <span class="math inline">\(B\)</span>
+就是矩阵 <span class="math inline">\(A\)</span>
+列向量组的一个极大线性无关组，<span class="math inline">\(C\)</span>
+就是用该线性无关组去表示 <span class="math inline">\(A\)</span>
+时的系数</p>
+<h4 id="例-1">例 1</h4>
+<p>求矩阵 <span class="math inline">\(A=\begin {bmatrix}
+1&amp;4&amp;-1&amp;5&amp;6\\2&amp;0&amp;0&amp;0&amp;-14\\-1&amp;2&amp;-4&amp;0&amp;1\\2&amp;6&amp;-5&amp;5&amp;-7\end
+{bmatrix}\)</span> 的满秩分解</p>
+<p><strong>解</strong>：对矩阵 <span class="math inline">\(A\)</span>
+只作初等行变换 <span class="math display">\[
+A=\begin{bmatrix}1&amp;4&amp;-1&amp;5&amp;6\\2&amp;0&amp;0&amp;0&amp;-14\\-1&amp;2&amp;-4&amp;0&amp;1\\2&amp;6&amp;-5&amp;5&amp;-7\end{bmatrix}\to
+···\to\begin{bmatrix}1&amp;0&amp;0&amp;0&amp;-7\\0&amp;1&amp;0&amp;\frac{10}{7}&amp;\frac{29}{7}\\0&amp;0&amp;1&amp;\frac{5}{7}&amp;\frac{25}{7}\\0&amp;0&amp;0&amp;0&amp;0\end{bmatrix}
+\]</span></p>
+<p><span class="math inline">\(A\)</span> 的秩为
+3，且前三个列向量线性无关，故 <span class="math display">\[ B =
+\begin{bmatrix}1&amp;4&amp;-1\\2&amp;0&amp;0\\-1&amp;2&amp;-4\\2&amp;6&amp;-5\end{bmatrix}，C=\begin{bmatrix}1&amp;0&amp;0&amp;0&amp;-7\\0&amp;1&amp;0&amp;\frac{10}{7}&amp;\frac{29}{7}\\0&amp;0&amp;1&amp;\frac{5}{7}&amp;\frac{25}{7}\end{bmatrix}
+\]</span></p>
+<h4 id="例-2">例 2</h4>
+<p>求矩阵 <span class="math inline">\(A=\begin {bmatrix}
+2&amp;1&amp;-2&amp;3&amp;1\\2&amp;5&amp;-1&amp;4&amp;1\\1&amp;3&amp;-1&amp;2&amp;1\end
+{bmatrix}\)</span> 的满秩分解</p>
+<p><strong>解</strong>：对矩阵 <span class="math inline">\(A\)</span>
+只作初等行变换</p>
+<p><span class="math display">\[
+A=\begin{bmatrix}2&amp;1&amp;-2&amp;3&amp;1\\2&amp;5&amp;-1&amp;4&amp;1\\1&amp;3&amp;-1&amp;2&amp;1\end{bmatrix}\to
+···\to
+\begin{bmatrix}1&amp;0&amp;0&amp;\frac{8}{5}&amp;-\frac{2}{5}\\0&amp;1&amp;0&amp;\frac{1}{5}&amp;\frac{1}{5}\\0&amp;0&amp;1&amp;\frac{1}{5}&amp;-\frac{4}{5}\end{bmatrix}
+\]</span></p>
+<p><span class="math inline">\(A\)</span> 的秩为
+3，且前三个列向量线性无关，故 <span class="math display">\[ B =
+\begin{bmatrix}2&amp;1&amp;-2\\2&amp;5&amp;-1\\1&amp;3&amp;-1\end{bmatrix},C
+=
+\begin{bmatrix}1&amp;0&amp;0&amp;\frac{8}{5}&amp;-\frac{2}{5}\\0&amp;1&amp;0&amp;\frac{1}{5}&amp;\frac{1}{5}\\0&amp;0&amp;1&amp;\frac{1}{5}&amp;-\frac{4}{5}\end{bmatrix}
+\]</span></p>
+<h2 id="矩阵的lu分解">矩阵的LU分解</h2>
+<p>LU 分解（LU
+Decomposition）是矩阵分解的一种，可以将一个矩阵分解为一个单位下三角矩阵和一个上三角矩阵的乘积，以四阶矩阵为例
+<span class="math display">\[ L =
+\begin{bmatrix}1&amp;0&amp;0&amp;0\\*&amp;1&amp;0&amp;0\\*&amp;*&amp;1&amp;0\\*&amp;*&amp;*&amp;1\end{bmatrix},
+U=\begin{bmatrix}*&amp;*&amp;*&amp;*\\0&amp;*&amp;*&amp;*\\0&amp;0&amp;*&amp;*\\0&amp;0&amp;0&amp;*\end{bmatrix}
+\]</span></p>
 <p>LU 矩阵是否一定存在？答案是否，具体看下面的例子</p>
-<p>设 $\begin {bmatrix} 0&amp;1\1&amp;0\end {bmatrix}&#x3D;\begin {bmatrix} a&amp;0\b&amp;c\end {bmatrix}\begin {bmatrix} l&amp;m\0&amp;n\end {bmatrix}$，则应该满足如下 4 个式子</p>
-<p>$$ \begin{cases} al&#x3D;0\ am&#x3D;1\ bl&#x3D;1\ bm+cn&#x3D;0 \end{cases} $$</p>
-<p>由 $al&#x3D;0$ 得 $a&#x3D;0$ 或 $l&#x3D;0$，但实际上这两种情况带入上面的式子都会推出矛盾，因此不是所有情况 LU 分解都存在</p>
-<p><strong>LU 分解定理</strong> ：设 $A\in \mathbb {C}_n^{n\times n}$，$A$ 有唯一的 LU 分解 $\Leftrightarrow A$ 的各阶顺序主子式 $\Delta k \neq 0,\ k&#x3D;1,2…,n$</p>
-<p>$k$ 阶顺序主子式指的是矩阵左上角 $k\times k$ 个元素组成的行列式</p>
-<p>将矩阵 $A$ 分解为 $L$ 和 $U$ 之后，解方程组 $Ax&#x3D;b$ 就变得简单了，因为 $A&#x3D;LU$，所以 $(LU) x&#x3D;b\Rightarrow L (Ux)&#x3D;b\Rightarrow \begin {cases} Ly&#x3D;b\Ux&#x3D;y\end {cases}$</p>
-<p>所以 $x&#x3D;U^{-1} y&#x3D;U^{-1} L^{-1} b$</p>
-<h3 id="LU-矩阵的求法"><a href="#LU-矩阵的求法" class="headerlink" title="LU 矩阵的求法"></a>LU 矩阵的求法</h3><p>实际上 LU 矩阵有非常多的求法，这里列举一种比较简单的待定系数法</p>
-<p>设 $A &#x3D; \begin {bmatrix} 2&amp;3&amp;4\1&amp;1&amp;9\1&amp;2&amp;-6\end {bmatrix}$，求矩阵 $A$ 的 LU 分解矩阵 $L$ 和 $U$</p>
-<p><strong>解</strong>：令<br>$$ L&#x3D;\begin{bmatrix}1&amp;0&amp;0\l_1&amp;1&amp;0\l_2&amp;l_3&amp;1\end{bmatrix},U &#x3D; \begin{bmatrix}u_1&amp;u_2&amp;u_3\0&amp;u_4&amp;u_5\0&amp;0&amp;u_6\end{bmatrix} $$</p>
-<p>由于 $A&#x3D;LU$，所以有</p>
-<p>$$ \begin{cases} u_1&#x3D;2\ u_2&#x3D;3\ u_3&#x3D;4\ l_1u_1&#x3D;1\ l_1u_2+u_4&#x3D;1\ l_1u_3+u_5&#x3D;9\ l_2u_1&#x3D;1\ l_2u_2+l_3u_4&#x3D;2\ l_2u_3+l_3u_5+u_6&#x3D;-6 \end{cases} $$</p>
+<p>设 <span class="math inline">\(\begin {bmatrix} 0&amp;1\\1&amp;0\end
+{bmatrix}=\begin {bmatrix} a&amp;0\\b&amp;c\end {bmatrix}\begin
+{bmatrix} l&amp;m\\0&amp;n\end {bmatrix}\)</span>，则应该满足如下 4
+个式子</p>
+<p><span class="math display">\[ \begin{cases} al=0\\ am=1\\ bl=1\\
+bm+cn=0 \end{cases} \]</span></p>
+<p>由 <span class="math inline">\(al=0\)</span> 得 <span
+class="math inline">\(a=0\)</span> 或 <span
+class="math inline">\(l=0\)</span>，但实际上这两种情况带入上面的式子都会推出矛盾，因此不是所有情况
+LU 分解都存在</p>
+<p><strong>LU 分解定理</strong> ：设 <span class="math inline">\(A\in
+\mathbb {C}_n^{n\times n}\)</span>，<span
+class="math inline">\(A\)</span> 有唯一的 LU 分解 <span
+class="math inline">\(\Leftrightarrow A\)</span> 的各阶顺序主子式 <span
+class="math inline">\(\Delta k \neq 0,\ k=1,2...,n\)</span></p>
+<p><span class="math inline">\(k\)</span> 阶顺序主子式指的是矩阵左上角
+<span class="math inline">\(k\times k\)</span> 个元素组成的行列式</p>
+<p>将矩阵 <span class="math inline">\(A\)</span> 分解为 <span
+class="math inline">\(L\)</span> 和 <span
+class="math inline">\(U\)</span> 之后，解方程组 <span
+class="math inline">\(Ax=b\)</span> 就变得简单了，因为 <span
+class="math inline">\(A=LU\)</span>，所以 <span
+class="math inline">\((LU) x=b\Rightarrow L (Ux)=b\Rightarrow \begin
+{cases} Ly=b\\Ux=y\end {cases}\)</span></p>
+<p>所以 <span class="math inline">\(x=U^{-1} y=U^{-1} L^{-1}
+b\)</span></p>
+<h3 id="lu-矩阵的求法">LU 矩阵的求法</h3>
+<p>实际上 LU 矩阵有非常多的求法，这里列举一种比较简单的待定系数法</p>
+<p>设 <span class="math inline">\(A = \begin {bmatrix}
+2&amp;3&amp;4\\1&amp;1&amp;9\\1&amp;2&amp;-6\end
+{bmatrix}\)</span>，求矩阵 <span class="math inline">\(A\)</span> 的 LU
+分解矩阵 <span class="math inline">\(L\)</span> 和 <span
+class="math inline">\(U\)</span></p>
+<p><strong>解</strong>：令 <span class="math display">\[
+L=\begin{bmatrix}1&amp;0&amp;0\\l_1&amp;1&amp;0\\l_2&amp;l_3&amp;1\end{bmatrix},U
+=
+\begin{bmatrix}u_1&amp;u_2&amp;u_3\\0&amp;u_4&amp;u_5\\0&amp;0&amp;u_6\end{bmatrix}
+\]</span></p>
+<p>由于 <span class="math inline">\(A=LU\)</span>，所以有</p>
+<p><span class="math display">\[ \begin{cases} u_1=2\\ u_2=3\\ u_3=4\\
+l_1u_1=1\\ l_1u_2+u_4=1\\ l_1u_3+u_5=9\\ l_2u_1=1\\ l_2u_2+l_3u_4=2\\
+l_2u_3+l_3u_5+u_6=-6 \end{cases} \]</span></p>
 <p>上面的方程组非常容易解，最后求出</p>
-<p>$$ L &#x3D; \begin{bmatrix}1&amp;0&amp;0\\frac{1}{2}&amp;1&amp;0\\frac{1}{2}&amp;-1&amp;1\end{bmatrix},U&#x3D;\begin{bmatrix}2&amp;3&amp;4\0&amp;-\frac{1}{2}&amp;7\0&amp;0&amp;-1\end{bmatrix} $$</p>
+<p><span class="math display">\[ L =
+\begin{bmatrix}1&amp;0&amp;0\\\frac{1}{2}&amp;1&amp;0\\\frac{1}{2}&amp;-1&amp;1\end{bmatrix},U=\begin{bmatrix}2&amp;3&amp;4\\0&amp;-\frac{1}{2}&amp;7\\0&amp;0&amp;-1\end{bmatrix}
+\]</span></p>
 
                 
               </div>
