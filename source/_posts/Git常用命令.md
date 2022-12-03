@@ -10,7 +10,7 @@ git reset HEAD~
 ```
 当要撤销的提交时最开始的提交时
 ```
-git update-ref -d HEAD
+git update -ref -d HEAD
 ```
 ## Git连接远程仓库
 ```

@@ -16,17 +16,17 @@
   <meta name="author" content="Starmin">
   <meta name="keywords" content="">
   
-    <meta name="description" content="Git撤销commit命令当要撤销的提交不是最开始的提交时    git reset HEAD~当要撤销的提交时最开始的提交时    git update-ref -d HEAD Git连接远程仓库git remote add origin url注：url为github仓库链接 Git删除已经add的文件1.要删除的文件少时    一种是 git rm –cached “文件路径”，不删除物理文">
+    <meta name="description" content="Git撤销commit命令当要撤销的提交不是最开始的提交时 1git reset HEAD~ 当要撤销的提交时最开始的提交时 1git update-ref -d HEAD Git连接远程仓库1git remote add origin url 注：url为github仓库链接 Git删除已经add的文件1.要删除的文件少时    一种是 git rm --cached “文件路径”，不删除物理文">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Git常用命令">
 <meta property="og:url" content="https://gstarmin.github.io/2022/12/02/Git%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/">
 <meta property="og:site_name" content="Starmin的个人杂记">
-<meta property="og:description" content="Git撤销commit命令当要撤销的提交不是最开始的提交时    git reset HEAD~当要撤销的提交时最开始的提交时    git update-ref -d HEAD Git连接远程仓库git remote add origin url注：url为github仓库链接 Git删除已经add的文件1.要删除的文件少时    一种是 git rm –cached “文件路径”，不删除物理文">
+<meta property="og:description" content="Git撤销commit命令当要撤销的提交不是最开始的提交时 1git reset HEAD~ 当要撤销的提交时最开始的提交时 1git update-ref -d HEAD Git连接远程仓库1git remote add origin url 注：url为github仓库链接 Git删除已经add的文件1.要删除的文件少时    一种是 git rm --cached “文件路径”，不删除物理文">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://img-blog.csdnimg.cn/20210403164118752.png">
 <meta property="og:image" content="https://img-blog.csdnimg.cn/20210403164816128.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzkzOTQyMQ==,size_16,color_FFFFFF,t_70">
 <meta property="article:published_time" content="2022-12-02T04:17:50.606Z">
-<meta property="article:modified_time" content="2022-12-02T04:19:14.099Z">
+<meta property="article:modified_time" content="2022-12-02T15:47:52.210Z">
 <meta property="article:author" content="Starmin">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://img-blog.csdnimg.cn/20210403164118752.png">
@@ -221,7 +221,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          580 字
+          616 字
         
       </span>
     
@@ -232,7 +232,7 @@
         
         
         
-          5 分钟
+          6 分钟
         
       </span>
     
@@ -275,13 +275,22 @@
             
               <div class="markdown-body">
                 
-                <h2 id="Git撤销commit命令"><a href="#Git撤销commit命令" class="headerlink" title="Git撤销commit命令"></a>Git撤销commit命令</h2><p>当要撤销的提交不是最开始的提交时<br>    git reset HEAD~<br>当要撤销的提交时最开始的提交时<br>    git update-ref -d HEAD</p>
-<h2 id="Git连接远程仓库"><a href="#Git连接远程仓库" class="headerlink" title="Git连接远程仓库"></a>Git连接远程仓库</h2><p>git remote add origin url<br>注：url为github仓库链接</p>
-<h2 id="Git删除已经add的文件"><a href="#Git删除已经add的文件" class="headerlink" title="Git删除已经add的文件"></a>Git删除已经add的文件</h2><p>1.要删除的文件少时<br>    一种是 git rm –cached “文件路径”，不删除物理文件，仅将该文件从缓存中删除；<br>    一种是 git rm –f  “文件路径”，不仅将该文件从缓存中删除，还会将物理文件删除（不会回收到垃圾桶）。<br>2.要删除的文件多时<br>    git rm -r –cached .  清空缓存区<br>    然后将本地文件删除，再次add</p>
-<h2 id="Git创建远程新分支"><a href="#Git创建远程新分支" class="headerlink" title="Git创建远程新分支"></a>Git创建远程新分支</h2><p>git无法直接通过命令方式创建远程新分支，需要间接来创建<br>这里我创建的远程新分支名叫 vedio<br>首先 <strong>git checkout –orphan 分支名</strong><br><img src="https://img-blog.csdnimg.cn/20210403164118752.png" srcset="/img/loading.gif" lazyload><br><strong>git rm -rf .</strong> （这一步很关键）<br>然后创建一个文件readme.md（其实任何文件都可以），add并commit，然后<strong>git push origin 分支名</strong> 就可以啦~<br>如下图红框圈注的命令<br><img src="https://img-blog.csdnimg.cn/20210403164816128.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzkzOTQyMQ==,size_16,color_FFFFFF,t_70" srcset="/img/loading.gif" lazyload></p>
-<h2 id="git强制提交本地分支覆盖远程分支"><a href="#git强制提交本地分支覆盖远程分支" class="headerlink" title="git强制提交本地分支覆盖远程分支"></a>git强制提交本地分支覆盖远程分支</h2><p>git push origin master –force</p>
-<h2 id="Git从远程仓库拉取"><a href="#Git从远程仓库拉取" class="headerlink" title="Git从远程仓库拉取"></a>Git从远程仓库拉取</h2><p>git pull origin main</p>
-<h2 id="Git创建与切换分支"><a href="#Git创建与切换分支" class="headerlink" title="Git创建与切换分支"></a>Git创建与切换分支</h2><p>创建分支 git branch branch_name<br>切换分支 git checkout branch_name</p>
+                <h2 id="Git撤销commit命令"><a href="#Git撤销commit命令" class="headerlink" title="Git撤销commit命令"></a>Git撤销commit命令</h2><p>当要撤销的提交不是最开始的提交时</p>
+<figure class="highlight maxima"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs maxima">git <span class="hljs-built_in">reset</span> HEAD~<br></code></pre></td></tr></table></figure>
+<p>当要撤销的提交时最开始的提交时</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql">git <span class="hljs-keyword">update</span><span class="hljs-operator">-</span><span class="hljs-keyword">ref</span> <span class="hljs-operator">-</span>d HEAD<br></code></pre></td></tr></table></figure>
+<h2 id="Git连接远程仓库"><a href="#Git连接远程仓库" class="headerlink" title="Git连接远程仓库"></a>Git连接远程仓库</h2><figure class="highlight mipsasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mipsasm">git remote <span class="hljs-keyword">add </span><span class="hljs-keyword">origin </span>url<br></code></pre></td></tr></table></figure>
+<p>注：url为github仓库链接</p>
+<h2 id="Git删除已经add的文件"><a href="#Git删除已经add的文件" class="headerlink" title="Git删除已经add的文件"></a>Git删除已经add的文件</h2><p>1.要删除的文件少时<br>    一种是 <code>git rm --cached</code> “文件路径”，不删除物理文件，仅将该文件从缓存中删除；<br>    一种是 <code>git rm --f</code>  “文件路径”，不仅将该文件从缓存中删除，还会将物理文件删除（不会回收到垃圾桶）。</p>
+<p>2.要删除的文件多时<br>    <code>git rm -r --cached</code> .  清空缓存区<br>    然后将本地文件删除，再次<code>add</code></p>
+<h2 id="Git创建远程新分支"><a href="#Git创建远程新分支" class="headerlink" title="Git创建远程新分支"></a>Git创建远程新分支</h2><p>git无法直接通过命令方式创建远程新分支，需要间接来创建,这里我创建的远程新分支名叫 vedio</p>
+<p>首先 </p>
+<p><code>git checkout --orphan 分支名</code><br><img src="https://img-blog.csdnimg.cn/20210403164118752.png" srcset="/img/loading.gif" lazyload><br><strong>git rm -rf .</strong> （这一步很关键）<br>然后创建一个文件readme.md（其实任何文件都可以），add并commit，然后</p>
+<p><code>git push origin 分支名</code> </p>
+<p>就可以啦~如下图红框圈注的命令<br><img src="https://img-blog.csdnimg.cn/20210403164816128.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzkzOTQyMQ==,size_16,color_FFFFFF,t_70" srcset="/img/loading.gif" lazyload></p>
+<h2 id="git强制提交本地分支覆盖远程分支"><a href="#git强制提交本地分支覆盖远程分支" class="headerlink" title="git强制提交本地分支覆盖远程分支"></a>git强制提交本地分支覆盖远程分支</h2><figure class="highlight maxima"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs maxima">git <span class="hljs-built_in">push</span> <span class="hljs-built_in">origin</span> localBranchName:remoteBranchName --force<br></code></pre></td></tr></table></figure>
+<h2 id="Git从远程仓库拉取"><a href="#Git从远程仓库拉取" class="headerlink" title="Git从远程仓库拉取"></a>Git从远程仓库拉取</h2><p><code>git pull origin main</code></p>
+<h2 id="Git创建与切换分支"><a href="#Git创建与切换分支" class="headerlink" title="Git创建与切换分支"></a>Git创建与切换分支</h2><p>创建分支 <code>git branch branch_name</code><br>切换分支 <code>git checkout branch_name</code></p>
 
                 
               </div>
@@ -353,12 +362,6 @@
                   </article>
                   <article class="post-next col-6">
                     
-                    
-                      <a href="/2022/12/01/hello-world/" title="Hello World">
-                        <span class="hidden-mobile">Hello World</span>
-                        <span class="visible-mobile">下一篇</span>
-                        <i class="iconfont icon-arrowright"></i>
-                      </a>
                     
                   </article>
                 </div>
