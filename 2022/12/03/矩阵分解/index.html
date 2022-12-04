@@ -24,7 +24,7 @@
 <meta property="og:description" content="三角分解(QR分解) 正交三角分解(通过Schmidt正交化) 若 \(n\) 阶实矩阵 \(A\in \mathbb {C}^{n\times n}\) 满秩，且 \[A &#x3D; [\alpha_1,...,\alpha_n]\] 其中 \(\alpha_1,...,\alpha_n\) 是 \(\mathbb {C}^{n\times n}\) 中线性无关向量组 正交化 令">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2022-12-03T13:15:58.658Z">
-<meta property="article:modified_time" content="2022-12-04T13:27:08.396Z">
+<meta property="article:modified_time" content="2022-12-04T13:45:14.219Z">
 <meta property="article:author" content="Starmin">
 <meta property="article:tag" content="矩阵论">
 <meta name="twitter:card" content="summary_large_image">
@@ -651,8 +651,9 @@ class="math inline">\(A=\begin{bmatrix}  1&amp;2 \\ 0&amp;0 \\ 0&amp;0
 <p>得到其特征值<span
 class="math inline">\(\lambda_1=5,\lambda_2=\lambda_3=0\)</span>，特征向量为<span
 class="math inline">\(\overrightarrow{p_1}=(1,0,0)^T,\overrightarrow{p_2}=(0,1,0)^T,\overrightarrow{p_3}=(0,0,1)^T\)</span></p>
-<p>由<span class="math inline">\(A^TA=\begin{bmatrix}  1&amp;2 \\
-2&amp;4 \end{bmatrix}\)</span></p>
+<p>由 <span class="math display">\[A^TA=\begin{bmatrix}
+    1&amp;2 \\ 2&amp;4
+\end{bmatrix}\]</span></p>
 <p>得到其特征值<span
 class="math inline">\(\lambda_1=5,\lambda_2=0\)</span>，特征向量为<span
 class="math inline">\(\overrightarrow{q_1}=(\frac{\sqrt{5}}{5},\frac{2\sqrt{5}}{5})^T,\overrightarrow{q_2}=(-\frac{\sqrt{5}}{5},\frac{2\sqrt{5}}{5})^T\)</span></p>
@@ -681,17 +682,22 @@ class="math inline">\(A=\begin{bmatrix}  2&amp;1 \\ 1&amp;2
 class="math inline">\(A^TA=AA^T=\begin{bmatrix}  2&amp;1 \\ 1&amp;2
 \end{bmatrix} \begin{bmatrix}  2&amp;1 \\ 1&amp;2
 \end{bmatrix}=\begin{bmatrix}  5&amp;4 \\ 4&amp;5
-\end{bmatrix}\)</span>，左奇异向量和右奇异向量构成的矩阵也是相等的，即<span
-class="math display">\[P=Q=\begin{bmatrix}
+\end{bmatrix}\)</span>，左奇异向量和右奇异向量构成的矩阵也是相等的，即
+<span class="math display">\[P=Q=\begin{bmatrix}
     \frac{\sqrt{2}}{2}&amp;\frac{\sqrt{2}}{2} \\
 -\frac{\sqrt{2}}{2}&amp;\frac{\sqrt{2}}{2}
 \end{bmatrix}\]</span></p>
-<p>则其奇异值分解为<span class="math inline">\(A=P\Sigma
-Q^T=\begin{bmatrix}  \frac{\sqrt{2}}{2}&amp;\frac{\sqrt{2}}{2} \\
--\frac{\sqrt{2}}{2}&amp;\frac{\sqrt{2}}{2} \end{bmatrix}
-\begin{bmatrix}  3&amp;0 \\ 0&amp;1
-\end{bmatrix}\begin{bmatrix}  \frac{\sqrt{2}}{2}&amp;\frac{\sqrt{2}}{2}
-\\ -\frac{\sqrt{2}}{2}&amp;\frac{\sqrt{2}}{2} \end{bmatrix}\)</span></p>
+<p>则其奇异值分解为 <span class="math display">\[A=P\Sigma
+Q^T=\begin{bmatrix}
+    \frac{\sqrt{2}}{2}&amp;\frac{\sqrt{2}}{2} \\ -
+\frac{\sqrt{2}}{2}&amp; \frac{\sqrt{2}}{2}
+\end{bmatrix}
+\begin{bmatrix}
+    3&amp;0 \\ 0&amp;1
+\end{bmatrix}\begin{bmatrix}
+    \frac{\sqrt{2}}{2}&amp;\frac{\sqrt{2}}{2} \\
+-\frac{\sqrt{2}}{2}&amp;\frac{\sqrt{2}}{2}
+\end{bmatrix}\]</span></p>
 <p><strong>注</strong>：这是由于当矩阵<span
 class="math inline">\(A\)</span>为对称矩阵时，其可以被正交对角化，这时奇异值分解等于正交对角化分解。</p>
 
