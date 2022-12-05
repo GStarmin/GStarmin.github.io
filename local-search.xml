@@ -4,6 +4,87 @@
   
   
   <entry>
+    <title>广义逆矩阵</title>
+    <link href="/2022/12/05/%E5%B9%BF%E4%B9%89%E9%80%86%E7%9F%A9%E9%98%B5/"/>
+    <url>/2022/12/05/%E5%B9%BF%E4%B9%89%E9%80%86%E7%9F%A9%E9%98%B5/</url>
+    
+    <content type="html"><![CDATA[<h2 id="单边逆">单边逆</h2><p>所谓矩阵的单边逆就是指矩阵的左逆和右逆。</p><figure><img src="/img/矩阵论/单边逆定义.png" alt="矩阵的单边逆" /><figcaption aria-hidden="true">矩阵的单边逆</figcaption></figure><p><strong>定理1</strong>:设 <span class="math inline">\(A \in\mathbb{C}^{m × n}\)</span>,则 - <spanclass="math inline">\(A\)</span>左可逆的充要条件是<spanclass="math inline">\(A\)</span>为列满秩矩阵 - <spanclass="math inline">\(A\)</span>右可逆的充要条件是<spanclass="math inline">\(A\)</span>为行满秩矩阵</p><p><strong>推论1</strong>:设 <span class="math inline">\(A \in\mathbb{C}^{m × n}\)</span>,则 - <spanclass="math inline">\(A\)</span>左可逆的充要条件是<spanclass="math inline">\(N(A)=\{0\}\)</span> - <spanclass="math inline">\(A\)</span>右可逆的充要条件是<spanclass="math inline">\(R(A)=\mathbb{C}^m\)</span></p><h3 id="单边逆的求法">单边逆的求法</h3><p><strong>例1</strong>: <img src="/img/矩阵论/例1-1.png" /> <imgsrc="/img/矩阵论/例1-2.png" /></p><p><strong>例2</strong>: <img src="/img/矩阵论/例2-1.png" /> <imgsrc="/img/矩阵论/例2-2.png" /></p><p>需要注意的是例1求左逆矩阵进行的是初等行变换,例2求右逆矩阵是进行的初等列变换，初等行变换我们在线性代数中常用，比较熟悉，但是要求右逆矩阵一定要进行初等列变换。</p><h2 id="广义逆矩阵">广义逆矩阵</h2><p><strong>定义</strong>: <img src="/img/矩阵论/广义逆定义.png" /></p><p><strong>性质</strong>: <img src="/img/矩阵论/广义逆定理1.png" /></p><p>推论: <img src="/img/矩阵论/广义逆推论1.png" /></p><p>需要注意的是，同线性代数中的矩阵的逆不同的是，这里求的广义逆一般不唯一。既然不唯一，有许多解的话，我们就考虑是否有一个通解可以将所有的广义逆全部表示呢？的确有，下面我们就介绍定理2，该定理表示的就是全部的广义逆：</p><p><img src="/img/矩阵论/全部广义逆集合定义.png" /></p><p><strong>定理2</strong>(不常考): <imgsrc="/img/矩阵论/广义逆定理2-1.png" /> <imgsrc="/img/矩阵论/广义逆定理2-2.png" /></p><p><strong>定理3</strong>: <img src="/img/矩阵论/广义逆定理3-1.png" /><img src="/img/矩阵论/广义逆定理3-2.png" /> -(i)是逆矩阵性质在广义逆的推广 -(ii)说的是一个矩阵乘以他的广义矩阵是幂等矩阵，且他们矩阵的秩相等 -(iii)可以看出0矩阵的广义逆矩阵可以是任何矩阵（包括0矩阵） -(v)说的是<span class="math inline">\(AA^{-1}\)</span>与<spanclass="math inline">\(A\)</span>的值域相同,<spanclass="math inline">\(A^{-1}A\)</span>与<spanclass="math inline">\(A\)</span>的零空间相同,证明如下:</p><p><img src="/img/矩阵论/定理3(v)证明.png" /></p><h2 id="自反广义逆矩阵">自反广义逆矩阵</h2><p>自反广义逆矩阵是广义逆矩阵里的一类特殊矩阵,其定义如下: <imgsrc="/img/矩阵论/自反广义逆矩阵定义.png" /></p><p><strong>定理1</strong>: <imgsrc="/img/矩阵论/自反广义逆矩阵定理1.png" /></p><p>需要注意的是，自反广义逆矩阵并不唯一。事实上，对于 <imgsrc="/img/矩阵论/广义逆矩阵/图1.png" /></p><p>构造这样的矩阵 <img src="/img/矩阵论/广义逆矩阵/图2.png" /></p><p>所有满足这样条件的矩阵G，就是A的自反广义逆。所以自反广义逆并不唯一.</p><p><strong>定理2</strong>(考试不要求): <imgsrc="/img/矩阵论/广义逆矩阵/定理2.png" /></p><p>定理2给出了自反广义逆矩阵的一种具体的构造方法,</p><p><strong>定理3</strong>: <imgsrc="/img/矩阵论/广义逆矩阵/定理3.png" /></p><p>定理3给出了在广义逆矩阵中，区分自反广义逆的一种有效方法。当广义逆矩阵的秩等于矩阵A的秩的时候是自反广义逆。当广义逆的秩大于矩阵A的秩的时候是广义逆矩阵而不是自反广义逆矩阵。</p><h2 id="m-p广义逆矩阵">M-P广义逆矩阵</h2><p>M-P广义逆矩阵（Moore-Penrose）矩阵是在自反广义逆矩阵之上又加了两个条件形成的矩阵，要求更加苛刻。我们一般用<span class="math inline">\(A^+\)</span> 来表示M-P广义逆矩阵。 <imgsrc="/img/矩阵论/广义逆矩阵/M-P广义逆定义.png" /></p><p>这四个条件，共同保证了 <span class="math inline">\(A^+\)</span>的<strong>唯一性</strong>。</p><p><strong>定理1</strong>: <imgsrc="/img/矩阵论/广义逆矩阵/M-P广义逆定理1.png" /></p><p>该定理给出了<span class="math inline">\(A^+\)</span>的具体计算方法。定理的证明直接用该式子验证定义中的四个式子即可.</p><p><strong>定理2</strong>:设 <span class="math inline">\(A \in\mathbb{C}^{m × n}\)</span>,则 <spanclass="math inline">\(A^+\)</span>是唯一的.</p><p>这一点已经在上面提到过了,定义中的四个式子保证了<spanclass="math inline">\(A^+\)</span>的唯一.</p><h3 id="m-p广义逆的性质">M-P广义逆的性质</h3><p><img src="/img/矩阵论/广义逆矩阵/M-P广义逆定理3.png" /></p><p><strong>定理5</strong>: <imgsrc="/img/矩阵论/广义逆矩阵/M-P广义逆定理5.png" /></p><h3 id="m-p广义逆的计算">M-P广义逆的计算</h3><h4 id="最大秩分解">最大秩分解</h4><p><img src="/img/矩阵论/广义逆矩阵/引理1.png" /></p>]]></content>
+    
+    
+    <categories>
+      
+      <category>数学</category>
+      
+      <category>矩阵论</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>矩阵论</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>矩阵级数和矩阵函数</title>
+    <link href="/2022/12/05/%E7%9F%A9%E9%98%B5%E7%BA%A7%E6%95%B0%E5%92%8C%E7%9F%A9%E9%98%B5%E5%87%BD%E6%95%B0/"/>
+    <url>/2022/12/05/%E7%9F%A9%E9%98%B5%E7%BA%A7%E6%95%B0%E5%92%8C%E7%9F%A9%E9%98%B5%E5%87%BD%E6%95%B0/</url>
+    
+    <content type="html"><![CDATA[<h2 id="矩阵序列">矩阵序列</h2>]]></content>
+    
+    
+    <categories>
+      
+      <category>数学</category>
+      
+      <category>矩阵论</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>矩阵论</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>Jordan标准型</title>
+    <link href="/2022/12/05/Jardon%E6%A0%87%E5%87%86%E5%9E%8B/"/>
+    <url>/2022/12/05/Jardon%E6%A0%87%E5%87%86%E5%9E%8B/</url>
+    
+    <content type="html"><![CDATA[<h2 id="jordan标准型">Jordan标准型</h2><figure><img src="/img/矩阵论/Jordan标准型定义.png" alt="Jordan标准型定义" /><figcaption aria-hidden="true">Jordan标准型定义</figcaption></figure><p>其中 <spanclass="math inline">\(J_1(\lambda_1),J_2(\lambda_2)\)</span>分别构成Jardon块。</p><p>即对任意矩阵 <spanclass="math inline">\(A\)</span>，比存在n阶可逆矩阵<spanclass="math inline">\(P\)</span>，使 <spanclass="math display">\[P^{-1}AP=\begin{bmatrix}    J_1 &amp; &amp; &amp; \\ &amp; J_2 &amp; &amp; \\ &amp; &amp; \ddots&amp; \\ &amp; &amp; &amp; J_n\end{bmatrix} = J\]</span></p><p>每一个 <span class="math inline">\(J\)</span> 都是Jardon块 <spanclass="math display">\[J_i=\begin{bmatrix}    \lambda_i &amp; 1 &amp; &amp; \\ &amp; \lambda_i &amp; \ddots &amp;&amp; \\ &amp; &amp; \ddots &amp;1 \\ &amp; &amp; &amp; \lambda_i\end{bmatrix}\]</span></p><h3 id="jordan标准型的结构与结论">Jordan标准型的结构与结论</h3><ul><li>Jordan标准型的个数<spanclass="math inline">\(k\)</span>是线性无关特征向量的个数</li><li>矩阵可对角化当且仅当<span class="math inline">\(k=n\)</span></li><li>相应于一个已知特征值的Jordan块的个数是该特征值的几何重数，它是相应的特征子空间的维数，相应于一个已知特征值的所有Jordan的阶数之和，是该特征值的代数重数</li><li>特征值的几何重数 &lt; 代数重数</li><li>矩阵不同特征值对应的特征向量线性无关</li></ul><figure><img src="/img/矩阵论/Jordan标准型定理2.png" alt="定理2" /><figcaption aria-hidden="true">定理2</figcaption></figure>]]></content>
+    
+    
+    <categories>
+      
+      <category>数学</category>
+      
+      <category>矩阵论</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>矩阵论</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>Latex常用表示</title>
     <link href="/2022/12/04/Latex%E5%B8%B8%E7%94%A8%E7%AC%A6%E5%8F%B7/"/>
     <url>/2022/12/04/Latex%E5%B8%B8%E7%94%A8%E7%AC%A6%E5%8F%B7/</url>

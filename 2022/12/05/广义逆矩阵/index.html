@@ -16,23 +16,36 @@
   <meta name="author" content="Starmin">
   <meta name="keywords" content="">
   
-    <meta name="description" content="希腊字母    小写字母 语法 大写字母 实现     \(\alpha\)  \(\Alpha\)    \(\beta\)  \(\Beta\)    \(\delta\)  \(\Delta\)    \(\epsilon\)  \(\Epsilon\)    \(\varepsilon\)      \(\">
+    <meta name="description" content="单边逆 所谓矩阵的单边逆就是指矩阵的左逆和右逆。   矩阵的单边逆  定理1:设 \(A \in \mathbb{C}^{m × n}\),则 - \(A\)左可逆的充要条件是\(A\)为列满秩矩阵 - \(A\)右可逆的充要条件是\(A\)为行满秩矩阵 推论1:设 \(A \in \mathbb{C}^{m × n}\),则 - \(A\)左可逆的充要条件是\(N(A)&#x3D;\{0">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Latex常用表示">
-<meta property="og:url" content="https://gstarmin.github.io/2022/12/04/Latex%E5%B8%B8%E7%94%A8%E7%AC%A6%E5%8F%B7/">
+<meta property="og:title" content="广义逆矩阵">
+<meta property="og:url" content="https://gstarmin.github.io/2022/12/05/%E5%B9%BF%E4%B9%89%E9%80%86%E7%9F%A9%E9%98%B5/">
 <meta property="og:site_name" content="Starmin的随笔">
-<meta property="og:description" content="希腊字母    小写字母 语法 大写字母 实现     \(\alpha\)  \(\Alpha\)    \(\beta\)  \(\Beta\)    \(\delta\)  \(\Delta\)    \(\epsilon\)  \(\Epsilon\)    \(\varepsilon\)      \(\">
+<meta property="og:description" content="单边逆 所谓矩阵的单边逆就是指矩阵的左逆和右逆。   矩阵的单边逆  定理1:设 \(A \in \mathbb{C}^{m × n}\),则 - \(A\)左可逆的充要条件是\(A\)为列满秩矩阵 - \(A\)右可逆的充要条件是\(A\)为行满秩矩阵 推论1:设 \(A \in \mathbb{C}^{m × n}\),则 - \(A\)左可逆的充要条件是\(N(A)&#x3D;\{0">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2022-12-04T12:38:30.385Z">
-<meta property="article:modified_time" content="2022-12-05T08:50:07.238Z">
+<meta property="og:image" content="https://gstarmin.github.io/img/矩阵论/单边逆定义.png">
+<meta property="og:image" content="https://gstarmin.github.io/img/矩阵论/例1-1.png">
+<meta property="og:image" content="https://gstarmin.github.io/img/矩阵论/例2-1.png">
+<meta property="og:image" content="https://gstarmin.github.io/img/矩阵论/广义逆定义.png">
+<meta property="og:image" content="https://gstarmin.github.io/img/矩阵论/广义逆定理1.png">
+<meta property="og:image" content="https://gstarmin.github.io/img/矩阵论/广义逆推论1.png">
+<meta property="og:image" content="https://gstarmin.github.io/img/矩阵论/全部广义逆集合定义.png">
+<meta property="og:image" content="https://gstarmin.github.io/img/矩阵论/广义逆定理3-1.png">
+<meta property="og:image" content="https://gstarmin.github.io/img/矩阵论/广义逆定理3-2.png">
+<meta property="og:image" content="https://gstarmin.github.io/img/矩阵论/定理3(v)证明.png">
+<meta property="og:image" content="https://gstarmin.github.io/img/矩阵论/广义逆矩阵/图2.png">
+<meta property="og:image" content="https://gstarmin.github.io/img/矩阵论/广义逆矩阵/M-P广义逆定理3.png">
+<meta property="og:image" content="https://gstarmin.github.io/img/矩阵论/广义逆矩阵/引理1.png">
+<meta property="article:published_time" content="2022-12-05T08:54:01.844Z">
+<meta property="article:modified_time" content="2022-12-05T10:17:01.044Z">
 <meta property="article:author" content="Starmin">
-<meta property="article:tag" content="latex">
-<meta property="article:tag" content="杂">
+<meta property="article:tag" content="矩阵论">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://gstarmin.github.io/img/矩阵论/单边逆定义.png">
   
   
   
-  <title>Latex常用表示 - Starmin的随笔</title>
+  <title>广义逆矩阵 - Starmin的随笔</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -201,7 +214,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="Latex常用表示"></span>
+            <span id="subtitle" data-typed-text="广义逆矩阵"></span>
           
         </div>
 
@@ -212,8 +225,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2022-12-04 20:38" pubdate>
-          2022年12月4日 晚上
+        <time datetime="2022-12-05 16:54" pubdate>
+          2022年12月5日 下午
         </time>
       </span>
     
@@ -224,7 +237,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          778 字
+          1.1k 字
         
       </span>
     
@@ -235,7 +248,7 @@
         
         
         
-          7 分钟
+          9 分钟
         
       </span>
     
@@ -273,335 +286,91 @@
         <div id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">Latex常用表示</h1>
+            <h1 style="display: none">广义逆矩阵</h1>
             
             
               <div class="markdown-body">
                 
-                <h2 id="希腊字母">希腊字母</h2>
-<table>
-<thead>
-<tr class="header">
-<th>小写字母</th>
-<th>语法</th>
-<th>大写字母</th>
-<th>实现</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><span class="math inline">\(\alpha\)</span></td>
-<td></td>
-<td><span class="math inline">\(\Alpha\)</span></td>
-<td></td>
-</tr>
-<tr class="even">
-<td><span class="math inline">\(\beta\)</span></td>
-<td></td>
-<td><span class="math inline">\(\Beta\)</span></td>
-<td></td>
-</tr>
-<tr class="odd">
-<td><span class="math inline">\(\delta\)</span></td>
-<td></td>
-<td><span class="math inline">\(\Delta\)</span></td>
-<td></td>
-</tr>
-<tr class="even">
-<td><span class="math inline">\(\epsilon\)</span></td>
-<td></td>
-<td><span class="math inline">\(\Epsilon\)</span></td>
-<td></td>
-</tr>
-<tr class="odd">
-<td><span class="math inline">\(\varepsilon\)</span></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="even">
-<td><span class="math inline">\(\zeta\)</span></td>
-<td></td>
-<td><span class="math inline">\(\Zeta\)</span></td>
-<td></td>
-</tr>
-<tr class="odd">
-<td><span class="math inline">\(\eta\)</span></td>
-<td></td>
-<td><span class="math inline">\(\Eta\)</span></td>
-<td></td>
-</tr>
-<tr class="even">
-<td><span class="math inline">\(\theta\)</span></td>
-<td></td>
-<td><span class="math inline">\(\Theta\)</span></td>
-<td></td>
-</tr>
-<tr class="odd">
-<td><span class="math inline">\(\vartheta\)</span></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="even">
-<td><span class="math inline">\(\iota\)</span></td>
-<td></td>
-<td><span class="math inline">\(\Iota\)</span></td>
-<td></td>
-</tr>
-<tr class="odd">
-<td><span class="math inline">\(\kappa\)</span></td>
-<td></td>
-<td><span class="math inline">\(\Kappa\)</span></td>
-<td></td>
-</tr>
-<tr class="even">
-<td><span class="math inline">\(\lambda\)</span></td>
-<td></td>
-<td><span class="math inline">\(\Lambda\)</span></td>
-<td></td>
-</tr>
-<tr class="odd">
-<td><span class="math inline">\(\mu\)</span></td>
-<td></td>
-<td><span class="math inline">\(\Mu\)</span></td>
-<td></td>
-</tr>
-<tr class="even">
-<td><span class="math inline">\(\nu\)</span></td>
-<td></td>
-<td><span class="math inline">\(\Nu\)</span></td>
-<td></td>
-</tr>
-<tr class="odd">
-<td><span class="math inline">\(\xi\)</span></td>
-<td></td>
-<td><span class="math inline">\(\Xi\)</span></td>
-<td></td>
-</tr>
-<tr class="even">
-<td><span class="math inline">\(\omicron\)</span></td>
-<td></td>
-<td><span class="math inline">\(\Omicron\)</span></td>
-<td></td>
-</tr>
-<tr class="odd">
-<td><span class="math inline">\(\pi\)</span></td>
-<td></td>
-<td><span class="math inline">\(\Pi\)</span></td>
-<td></td>
-</tr>
-<tr class="even">
-<td><span class="math inline">\(\varpi\)</span></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="odd">
-<td><span class="math inline">\(\rho\)</span></td>
-<td></td>
-<td><span class="math inline">\(\Rho\)</span></td>
-<td></td>
-</tr>
-<tr class="even">
-<td><span class="math inline">\(\varrho\)</span></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="odd">
-<td><span class="math inline">\(\sigma\)</span></td>
-<td></td>
-<td><span class="math inline">\(\Sigma\)</span></td>
-<td></td>
-</tr>
-<tr class="even">
-<td><span class="math inline">\(\varsigma\)</span></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="odd">
-<td><span class="math inline">\(\tau\)</span></td>
-<td></td>
-<td><span class="math inline">\(\Tau\)</span></td>
-<td></td>
-</tr>
-<tr class="even">
-<td><span class="math inline">\(\upsilon\)</span></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="odd">
-<td><span class="math inline">\(\phi\)</span></td>
-<td></td>
-<td><span class="math inline">\(\Phi\)</span></td>
-<td></td>
-</tr>
-<tr class="even">
-<td><span class="math inline">\(\varphi\)</span></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="odd">
-<td><span class="math inline">\(\chi\)</span></td>
-<td></td>
-<td><span class="math inline">\(\Chi\)</span></td>
-<td></td>
-</tr>
-<tr class="even">
-<td><span class="math inline">\(\psi\)</span></td>
-<td></td>
-<td><span class="math inline">\(\Psi\)</span></td>
-<td></td>
-</tr>
-<tr class="odd">
-<td><span class="math inline">\(\omega\)</span></td>
-<td></td>
-<td><span class="math inline">\(\Omega\)</span></td>
-<td></td>
-</tr>
-</tbody>
-</table>
-<p>var开头的只有小写希腊字母，没有大写。</p>
-<h2 id="运算符符号">运算符符号</h2>
-<table>
-<thead>
-<tr class="header">
-<th>符号</th>
-<th>实现</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><span class="math inline">\(\sum\)</span></td>
-<td></td>
-</tr>
-<tr class="even">
-<td><span class="math inline">\(\prod\)</span></td>
-<td></td>
-</tr>
-<tr class="odd">
-<td><span class="math inline">\(\int\)</span></td>
-<td></td>
-</tr>
-<tr class="even">
-<td><span class="math inline">\(\oplus\)</span></td>
-<td></td>
-</tr>
-<tr class="odd">
-<td><span class="math inline">\(\otimes\)</span></td>
-<td></td>
-</tr>
-<tr class="even">
-<td><span class="math inline">\(\times\)</span></td>
-<td></td>
-</tr>
-<tr class="odd">
-<td><span class="math inline">\(\cdot\)</span></td>
-<td></td>
-</tr>
-</tbody>
-</table>
-<h2 id="关系符号">关系符号</h2>
-<table>
-<thead>
-<tr class="header">
-<th>符号</th>
-<th>实现</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><span class="math inline">\(\le\)</span></td>
-<td></td>
-</tr>
-<tr class="even">
-<td><span class="math inline">\(\ge\)</span></td>
-<td></td>
-</tr>
-<tr class="odd">
-<td><span class="math inline">\(\ll\)</span></td>
-<td></td>
-</tr>
-<tr class="even">
-<td><span class="math inline">\(\gg\)</span></td>
-<td></td>
-</tr>
-<tr class="odd">
-<td><span class="math inline">\(\equiv\)</span></td>
-<td></td>
-</tr>
-</tbody>
-</table>
-<h2 id="箭头符号">箭头符号</h2>
-<table>
-<thead>
-<tr class="header">
-<th>符号</th>
-<th>实现</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><span class="math inline">\(\Leftarrow\)</span></td>
-<td></td>
-</tr>
-<tr class="even">
-<td><span class="math inline">\(\Rightarrow\)</span></td>
-<td></td>
-</tr>
-</tbody>
-</table>
-<h2 id="其他符号">其他符号</h2>
-<table>
-<thead>
-<tr class="header">
-<th>符号</th>
-<th>实现</th>
-<th>含义</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><span class="math inline">\(\infty\)</span></td>
-<td></td>
-<td>无穷</td>
-</tr>
-<tr class="even">
-<td><span class="math inline">\(\exists\)</span></td>
-<td></td>
-<td>存在</td>
-</tr>
-<tr class="odd">
-<td><span class="math inline">\(\forall\)</span></td>
-<td></td>
-<td>任取</td>
-</tr>
-<tr class="even">
-<td><span class="math inline">\(\ldots\)</span></td>
-<td></td>
-<td>下三连点</td>
-</tr>
-<tr class="odd">
-<td><span class="math inline">\(\cdots\)</span></td>
-<td></td>
-<td>中三连点</td>
-</tr>
-<tr class="even">
-<td><span class="math inline">\(\vdots\)</span></td>
-<td></td>
-<td>竖三连点</td>
-</tr>
-<tr class="odd">
-<td><span class="math inline">\(\ddots\)</span></td>
-<td></td>
-<td>斜三连点</td>
-</tr>
-</tbody>
-</table>
+                <h2 id="单边逆">单边逆</h2>
+<p>所谓矩阵的单边逆就是指矩阵的左逆和右逆。</p>
+<figure>
+<img src="/img/矩阵论/单边逆定义.png" srcset="/img/loading.gif" lazyload alt="矩阵的单边逆" />
+<figcaption aria-hidden="true">矩阵的单边逆</figcaption>
+</figure>
+<p><strong>定理1</strong>:设 <span class="math inline">\(A \in
+\mathbb{C}^{m × n}\)</span>,则 - <span
+class="math inline">\(A\)</span>左可逆的充要条件是<span
+class="math inline">\(A\)</span>为列满秩矩阵 - <span
+class="math inline">\(A\)</span>右可逆的充要条件是<span
+class="math inline">\(A\)</span>为行满秩矩阵</p>
+<p><strong>推论1</strong>:设 <span class="math inline">\(A \in
+\mathbb{C}^{m × n}\)</span>,则 - <span
+class="math inline">\(A\)</span>左可逆的充要条件是<span
+class="math inline">\(N(A)=\{0\}\)</span> - <span
+class="math inline">\(A\)</span>右可逆的充要条件是<span
+class="math inline">\(R(A)=\mathbb{C}^m\)</span></p>
+<h3 id="单边逆的求法">单边逆的求法</h3>
+<p><strong>例1</strong>: <img src="/img/矩阵论/例1-1.png" srcset="/img/loading.gif" lazyload /> <img
+src="/img/矩阵论/例1-2.png" srcset="/img/loading.gif" lazyload /></p>
+<p><strong>例2</strong>: <img src="/img/矩阵论/例2-1.png" srcset="/img/loading.gif" lazyload /> <img
+src="/img/矩阵论/例2-2.png" srcset="/img/loading.gif" lazyload /></p>
+<p>需要注意的是例1求左逆矩阵进行的是初等行变换,例2求右逆矩阵是进行的初等列变换，初等行变换我们在线性代数中常用，比较熟悉，但是要求右逆矩阵一定要进行初等列变换。</p>
+<h2 id="广义逆矩阵">广义逆矩阵</h2>
+<p><strong>定义</strong>: <img src="/img/矩阵论/广义逆定义.png" srcset="/img/loading.gif" lazyload /></p>
+<p><strong>性质</strong>: <img src="/img/矩阵论/广义逆定理1.png" srcset="/img/loading.gif" lazyload /></p>
+<p>推论: <img src="/img/矩阵论/广义逆推论1.png" srcset="/img/loading.gif" lazyload /></p>
+<p>需要注意的是，同线性代数中的矩阵的逆不同的是，这里求的广义逆一般不唯一。既然不唯一，有许多解的话，我们就考虑是否有一个通解可以将所有的广义逆全部表示呢？的确有，下面我们就介绍定理2，该定理表示的就是全部的广义逆：</p>
+<p><img src="/img/矩阵论/全部广义逆集合定义.png" srcset="/img/loading.gif" lazyload /></p>
+<p><strong>定理2</strong>(不常考): <img
+src="/img/矩阵论/广义逆定理2-1.png" srcset="/img/loading.gif" lazyload /> <img
+src="/img/矩阵论/广义逆定理2-2.png" srcset="/img/loading.gif" lazyload /></p>
+<p><strong>定理3</strong>: <img src="/img/矩阵论/广义逆定理3-1.png" srcset="/img/loading.gif" lazyload />
+<img src="/img/矩阵论/广义逆定理3-2.png" srcset="/img/loading.gif" lazyload /> -
+(i)是逆矩阵性质在广义逆的推广 -
+(ii)说的是一个矩阵乘以他的广义矩阵是幂等矩阵，且他们矩阵的秩相等 -
+(iii)可以看出0矩阵的广义逆矩阵可以是任何矩阵（包括0矩阵） -
+(v)说的是<span class="math inline">\(AA^{-1}\)</span>与<span
+class="math inline">\(A\)</span>的值域相同,<span
+class="math inline">\(A^{-1}A\)</span>与<span
+class="math inline">\(A\)</span>的零空间相同,证明如下:</p>
+<p><img src="/img/矩阵论/定理3(v)证明.png" srcset="/img/loading.gif" lazyload /></p>
+<h2 id="自反广义逆矩阵">自反广义逆矩阵</h2>
+<p>自反广义逆矩阵是广义逆矩阵里的一类特殊矩阵,其定义如下: <img
+src="/img/矩阵论/自反广义逆矩阵定义.png" srcset="/img/loading.gif" lazyload /></p>
+<p><strong>定理1</strong>: <img
+src="/img/矩阵论/自反广义逆矩阵定理1.png" srcset="/img/loading.gif" lazyload /></p>
+<p>需要注意的是，自反广义逆矩阵并不唯一。事实上，对于 <img
+src="/img/矩阵论/广义逆矩阵/图1.png" srcset="/img/loading.gif" lazyload /></p>
+<p>构造这样的矩阵 <img src="/img/矩阵论/广义逆矩阵/图2.png" srcset="/img/loading.gif" lazyload /></p>
+<p>所有满足这样条件的矩阵G，就是A的自反广义逆。所以自反广义逆并不唯一.</p>
+<p><strong>定理2</strong>(考试不要求): <img
+src="/img/矩阵论/广义逆矩阵/定理2.png" srcset="/img/loading.gif" lazyload /></p>
+<p>定理2给出了自反广义逆矩阵的一种具体的构造方法,</p>
+<p><strong>定理3</strong>: <img
+src="/img/矩阵论/广义逆矩阵/定理3.png" srcset="/img/loading.gif" lazyload /></p>
+<p>定理3给出了在广义逆矩阵中，区分自反广义逆的一种有效方法。当广义逆矩阵的秩等于矩阵A的秩的时候是自反广义逆。当广义逆的秩大于矩阵A的秩的时候是广义逆矩阵而不是自反广义逆矩阵。</p>
+<h2 id="m-p广义逆矩阵">M-P广义逆矩阵</h2>
+<p>M-P广义逆矩阵（Moore-Penrose）矩阵是在自反广义逆矩阵之上又加了两个条件形成的矩阵，要求更加苛刻。我们一般用
+<span class="math inline">\(A^+\)</span> 来表示M-P广义逆矩阵。 <img
+src="/img/矩阵论/广义逆矩阵/M-P广义逆定义.png" srcset="/img/loading.gif" lazyload /></p>
+<p>这四个条件，共同保证了 <span class="math inline">\(A^+\)</span>
+的<strong>唯一性</strong>。</p>
+<p><strong>定理1</strong>: <img
+src="/img/矩阵论/广义逆矩阵/M-P广义逆定理1.png" srcset="/img/loading.gif" lazyload /></p>
+<p>该定理给出了<span class="math inline">\(A^+\)</span>
+的具体计算方法。定理的证明直接用该式子验证定义中的四个式子即可.</p>
+<p><strong>定理2</strong>:设 <span class="math inline">\(A \in
+\mathbb{C}^{m × n}\)</span>,则 <span
+class="math inline">\(A^+\)</span>是唯一的.</p>
+<p>这一点已经在上面提到过了,定义中的四个式子保证了<span
+class="math inline">\(A^+\)</span>的唯一.</p>
+<h3 id="m-p广义逆的性质">M-P广义逆的性质</h3>
+<p><img src="/img/矩阵论/广义逆矩阵/M-P广义逆定理3.png" srcset="/img/loading.gif" lazyload /></p>
+<p><strong>定理5</strong>: <img
+src="/img/矩阵论/广义逆矩阵/M-P广义逆定理5.png" srcset="/img/loading.gif" lazyload /></p>
+<h3 id="m-p广义逆的计算">M-P广义逆的计算</h3>
+<h4 id="最大秩分解">最大秩分解</h4>
+<p><img src="/img/矩阵论/广义逆矩阵/引理1.png" srcset="/img/loading.gif" lazyload /></p>
 
                 
               </div>
@@ -610,13 +379,39 @@
             <div>
               <div class="post-metas my-3">
   
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E6%95%B0%E5%AD%A6/" class="category-chain-item">数学</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E6%95%B0%E5%AD%A6/%E7%9F%A9%E9%98%B5%E8%AE%BA/" class="category-chain-item">矩阵论</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
   
     <div class="post-meta">
       <i class="iconfont icon-tags"></i>
       
-        <a href="/tags/latex/">#latex</a>
-      
-        <a href="/tags/%E6%9D%82/">#杂</a>
+        <a href="/tags/%E7%9F%A9%E9%98%B5%E8%AE%BA/">#矩阵论</a>
       
     </div>
   
@@ -628,8 +423,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>Latex常用表示</div>
-      <div>https://gstarmin.github.io/2022/12/04/Latex常用符号/</div>
+      <div>广义逆矩阵</div>
+      <div>https://gstarmin.github.io/2022/12/05/广义逆矩阵/</div>
     </div>
     <div class="license-meta">
       
@@ -641,7 +436,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2022年12月4日</div>
+          <div>2022年12月5日</div>
         </div>
       
       
@@ -673,18 +468,12 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2022/12/05/Jardon%E6%A0%87%E5%87%86%E5%9E%8B/" title="Jordan标准型">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">Jordan标准型</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2022/12/03/%E7%9F%A9%E9%98%B5%E5%88%86%E8%A7%A3/" title="矩阵分解">
-                        <span class="hidden-mobile">矩阵分解</span>
+                      <a href="/2022/12/05/%E7%9F%A9%E9%98%B5%E7%BA%A7%E6%95%B0%E5%92%8C%E7%9F%A9%E9%98%B5%E5%87%BD%E6%95%B0/" title="矩阵级数和矩阵函数">
+                        <span class="hidden-mobile">矩阵级数和矩阵函数</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
