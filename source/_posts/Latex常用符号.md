@@ -66,6 +66,10 @@ var开头的只有小写希腊字母，没有大写。
 |$\ll$|\ll|
 |$\gg$|\gg|
 |$\equiv$|\equiv|
+|$\subseteq$| \subseteq |
+|$\supseteq$| \supseteq |
+|$\subset$| \subset |
+|$\supset$| \supset | 
 
 ## 箭头符号
 |符号|实现|
@@ -85,3 +89,4 @@ var开头的只有小写希腊字母，没有大写。
 |$\ddots$|\ddots|斜三连点|
 |$\overline{x}$|\overline{x}|平均|
 |$\quad$|\quad |空格|
+
