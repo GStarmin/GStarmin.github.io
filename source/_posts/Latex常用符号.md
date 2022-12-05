@@ -83,3 +83,5 @@ var开头的只有小写希腊字母，没有大写。
 |$\cdots$|\cdots|中三连点|
 |$\vdots$|\vdots|竖三连点|
 |$\ddots$|\ddots|斜三连点|
+|$\overline{x}$|\overline{x}|平均|
+|$\quad$|\quad |空格|
