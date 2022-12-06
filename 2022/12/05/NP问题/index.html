@@ -23,12 +23,14 @@
 <meta property="og:site_name" content="Starmin的随笔">
 <meta property="og:description" content="P、NP、NPC、NPH问题 P问题：存在多项式时间算法的决策问题。 NP问题 ：能在多项式时间内验证某个猜想答案的正确性，但问题求解可能在无法在多项式时间内完成。比如Composite问题、3-Satisfiability、Hamiltonian Cycle，很容易就确定一个答案是否正确，但确找不到一个公式来描述其规律。 结论1：P \(\subseteq\) NP 结论2：NP \">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gstarmin.github.io/img/多项式规约/3-SAT2IndependentSet.png">
 <meta property="article:published_time" content="2022-12-05T14:49:27.082Z">
-<meta property="article:modified_time" content="2022-12-05T15:25:29.856Z">
+<meta property="article:modified_time" content="2022-12-06T07:52:09.121Z">
 <meta property="article:author" content="Starmin">
 <meta property="article:tag" content="算法">
 <meta property="article:tag" content="算法设计与分析">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://gstarmin.github.io/img/多项式规约/3-SAT2IndependentSet.png">
   
   
   
@@ -224,7 +226,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          855 字
+          1.4k 字
         
       </span>
     
@@ -235,7 +237,7 @@
         
         
         
-          8 分钟
+          12 分钟
         
       </span>
     
@@ -319,6 +321,35 @@ class="math inline">\(=\)</span> NP</p>
 <p>要证明一个问题是NP-hard，通常是找到一个已被证明了的NPC问题，并把这个NPC问题归约到该问题上去（即NPC
 <span class="math inline">\(\le\)</span> NP-hard）,简单来说就是： -
 对问题A给定限制条件得到一个特例B问题 - 证明问题B是NPC问题</p>
+<h2 id="npc之间规约的例子">NPC之间规约的例子</h2>
+<h3 id="sat-le_p-independent-set">3-SAT <span
+class="math inline">\(\le_p\)</span> Independent Set</h3>
+<p><strong>证明：给定一个3-SAT的例子<span
+class="math inline">\(\Phi\)</span>,可以构造一个大小为<span
+class="math inline">\(k\)</span>的Independent Set当且仅当式子<span
+class="math inline">\(\Phi\)</span>是可满足的。</strong></p>
+<p>构造: -
+3-SAT中的每个Clause包含独立集里的三个顶点，其中每个Literal对应一个顶点 -
+连接句子里的点连接形成三角形 -
+连接不同Clause里每个Literal和它对应的非</p>
+<p>如下图所示：</p>
+<p><img src="/img/多项式规约/3-SAT2IndependentSet.png" srcset="/img/loading.gif" lazyload /></p>
+<p><strong>证明</strong>：</p>
+<p><span class="math inline">\(\Rightarrow\)</span></p>
+<p>令S为一个大小为<span
+class="math inline">\(k\)</span>的独立集，每个三角形里一定只有一个顶点在<span
+class="math inline">\(S\)</span>里，设该顶点取1，其余顶点取0，则其肯定是一个满足3-SAT的赋值。</p>
+<p><span class="math inline">\(\Leftarrow\)</span></p>
+<p>给定3-SAT一个满足的赋值，在每个三角形中选取一个取值为1的顶点，这样便构成了一个大小为<span
+class="math inline">\(k\)</span>的独立集。</p>
+<h3 id="sat-le_p-vertex-cover">3SAT <span
+class="math inline">\(\le_p\)</span> Vertex Cover</h3>
+<p><strong>Vertex
+Cover</strong>：一组顶点的集合，使得图的每条边至少与集合中的一个顶点相连接。在这里Vertex
+Cover问题是给定图<span class="math inline">\(G\)</span>和点集的个数<span
+class="math inline">\(k\)</span>，要找到图<span
+class="math inline">\(G\)</span>的一个大小为<span
+class="math inline">\(k\)</span>的点覆盖。（也就是常说的最小点覆盖）</p>
 
                 
               </div>
