@@ -23,12 +23,17 @@
 <meta property="og:site_name" content="Starmin的随笔">
 <meta property="og:description" content="P、NP、NPC、NPH问题 P问题：存在多项式时间算法的决策问题。 NP问题 ：能在多项式时间内验证某个猜想答案的正确性，但问题求解可能在无法在多项式时间内完成。比如Composite问题、3-Satisfiability、Hamiltonian Cycle，很容易就确定一个答案是否正确，但确找不到一个公式来描述其规律。 结论1：P \(\subseteq\) NP 结论2：NP \">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gstarmin.github.io/img/多项式规约/3-SAT2IndependentSet.png">
+<meta property="og:image" content="https://gstarmin.github.io/img/多项式规约/HamiltonianCycle定义.png">
+<meta property="og:image" content="https://gstarmin.github.io/img/多项式规约/DIR-HAM-CYC2Ham-Cycle.png">
+<meta property="og:image" content="https://gstarmin.github.io/img/多项式规约/3-SAT2Ham-Cycle构造.png">
 <meta property="article:published_time" content="2022-12-05T14:49:27.082Z">
-<meta property="article:modified_time" content="2022-12-05T15:25:29.856Z">
+<meta property="article:modified_time" content="2022-12-06T14:47:53.817Z">
 <meta property="article:author" content="Starmin">
 <meta property="article:tag" content="算法">
 <meta property="article:tag" content="算法设计与分析">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://gstarmin.github.io/img/多项式规约/3-SAT2IndependentSet.png">
   
   
   
@@ -224,7 +229,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          855 字
+          3.1k 字
         
       </span>
     
@@ -235,7 +240,7 @@
         
         
         
-          8 分钟
+          26 分钟
         
       </span>
     
@@ -287,7 +292,7 @@ Cycle，很容易就确定一个答案是否正确，但确找不到一个公式
 class="math inline">\(\subseteq\)</span> NP</p>
 <p><strong>结论2</strong>：NP <span
 class="math inline">\(\subseteq\)</span> EXP</p>
-<p><strong>EXP</strong>：存在指数时间算法的决策问题。</p>
+<p><strong>EXP问题</strong>：存在指数时间算法的决策问题。</p>
 <p><strong>NPC问题</strong>: 需要满足两个条件</p>
 <ul>
 <li>它是一个NP问题</li>
@@ -319,6 +324,140 @@ class="math inline">\(=\)</span> NP</p>
 <p>要证明一个问题是NP-hard，通常是找到一个已被证明了的NPC问题，并把这个NPC问题归约到该问题上去（即NPC
 <span class="math inline">\(\le\)</span> NP-hard）,简单来说就是： -
 对问题A给定限制条件得到一个特例B问题 - 证明问题B是NPC问题</p>
+<h2 id="npc之间规约的例子">NPC之间规约的例子</h2>
+<h3 id="sat-le_p-independent-set">3-SAT <span
+class="math inline">\(\le_p\)</span> Independent Set</h3>
+<p><strong>证明：给定一个3-SAT的例子<span
+class="math inline">\(\Phi\)</span>,可以构造一个大小为<span
+class="math inline">\(k\)</span>的Independent Set当且仅当式子<span
+class="math inline">\(\Phi\)</span>是可满足的。</strong></p>
+<p>构造: -
+3-SAT中的每个Clause包含独立集里的三个顶点，其中每个Literal对应一个顶点 -
+连接句子里的点连接形成三角形 -
+连接不同Clause里每个Literal和它对应的非</p>
+<p>如下图所示：</p>
+<p><img src="/img/多项式规约/3-SAT2IndependentSet.png" srcset="/img/loading.gif" lazyload /></p>
+<p><strong>证明</strong>：</p>
+<p><span class="math inline">\(\Rightarrow\)</span></p>
+<p>令S为一个大小为<span
+class="math inline">\(k\)</span>的独立集，每个三角形里一定只有一个顶点在<span
+class="math inline">\(S\)</span>里，设该顶点取1，其余顶点取0，则其肯定是一个满足3-SAT的赋值。</p>
+<p><span class="math inline">\(\Leftarrow\)</span></p>
+<p>给定3-SAT一个满足的赋值，在每个三角形中选取一个取值为1的顶点，这样便构成了一个大小为<span
+class="math inline">\(k\)</span>的独立集。</p>
+<h3 id="hamiltonian-cycle-problem">Hamiltonian Cycle problem</h3>
+<p><strong>Hamiltonian Cycle</strong>:给定一个无向图 <span
+class="math inline">\(G=(V,E)\)</span>，是否存在一个简单的环 <span
+class="math inline">\(\Gamma\)</span> 包含 <span
+class="math inline">\(V\)</span> 中所有的点。</p>
+<figure>
+<img src="/img/多项式规约/HamiltonianCycle定义.png" srcset="/img/loading.gif" lazyload
+alt="有奇数个节点的Hamiltonian Cycle" />
+<figcaption aria-hidden="true">有奇数个节点的Hamiltonian
+Cycle</figcaption>
+</figure>
+<p><strong>DIR-HAM-CYCLE</strong>：给定一个有向图 <span
+class="math inline">\(G=(V,E)\)</span>,是否存在一个简单环 <span
+class="math inline">\(\Gamma\)</span> 包含<span
+class="math inline">\(V\)</span>中所有顶点？</p>
+<p><strong>DIR-HAM-CYCL <span class="math inline">\(\le_p\)</span>
+Ham-Cycle</strong>: 证明：给定一个有向图<span
+class="math inline">\(G=(V,E)\)</span>,构造一个有<span
+class="math inline">\(3n\)</span>个节点的无向图<span
+class="math inline">\(G&#39;\)</span>，则<span
+class="math inline">\(G\)</span>有Hamiltonian Cycle当且仅当<span
+class="math inline">\(G&#39;\)</span>有Hamiltonian Cycle。</p>
+<p><img src="/img/多项式规约/DIR-HAM-CYC2Ham-Cycle.png" srcset="/img/loading.gif" lazyload /></p>
+<p><span class="math inline">\(\Rightarrow\)</span></p>
+<p>若<span class="math inline">\(G\)</span>中有一个有向的Hamiltonian
+Cycle，则<span
+class="math inline">\(G&#39;\)</span>中肯定也有一个Hamiltonian
+Cycle，且顺序与有向图的节点顺序相同。</p>
+<p><span class="math inline">\(\Leftarrow\)</span></p>
+<p>若<span
+class="math inline">\(G&#39;\)</span>中有一个无向的Hamiltonian
+Cycle，则从蓝色节点出发，节点的颜色出现顺序必然是两种中的一种 -
+B,G,R,B,G,R,<span class="math inline">\(\dots\)</span> -
+B,R,G,B,R,G,<span class="math inline">\(\dots\)</span></p>
+<p>若<span class="math inline">\(G&#39;\)</span>的Hamiltonian
+Cycle顺序是第一种，那么对应<span
+class="math inline">\(G\)</span>中的Hamiltonian
+Cycle的节点顺序与其蓝色节点顺序相同；若<span
+class="math inline">\(G&#39;\)</span>的Hamiltonian
+Cycle顺序是第二种，那么对应<span
+class="math inline">\(G\)</span>中的Hamiltonian
+Cycle的节点顺序与其蓝色节点顺序相反。</p>
+<h3 id="sat-le_p-hamiltonian-cycle-problem">3SAT <span
+class="math inline">\(\le_p\)</span> Hamiltonian Cycle problem</h3>
+<!-- **Vertex Cover**：一组顶点的集合，使得图的每条边至少与集合中的一个顶点相连接。在这里Vertex Cover问题是给定图$G$和点集的个数$k$，要找到图$G$的一个大小为$k$的点覆盖。（也就是常说的最小点覆盖） -->
+<p><strong>构造思路:有<span
+class="math inline">\(n\)</span>个变量的3-SAT有<span
+class="math inline">\(2^n\)</span>种可能的分配，要将其规约到Hamiltonian
+Cycle，其对应的Hamiltonian Cycle应该也有<span
+class="math inline">\(2^n\)</span>种可能的分配方式。</strong></p>
+<p>构造方法：对一个有<span class="math inline">\(n\)</span>个变量和<span
+class="math inline">\(k\)</span>个句子的3-SAT,构造<span
+class="math inline">\(3k+3\)</span>个节点的Hamiltonian
+Cycle，其中每个变量<span class="math inline">\(x_i\)</span>对应<span
+class="math inline">\(3k+3\)</span>个节点，令外再增加一个源点<span
+class="math inline">\(s\)</span>、一个汇点<span
+class="math inline">\(t\)</span>。</p>
+<p><img src="/img/多项式规约/3-SAT2Ham-Cycle构造.png" srcset="/img/loading.gif" lazyload /></p>
+<p>如果 <span
+class="math inline">\(x_i=1\)</span>，则形成从左向右的一个路径；如果
+<span
+class="math inline">\(x_i=0\)</span>，则形成从右向左的一个路径。</p>
+<p>对于每一个clause <span class="math inline">\(c_j=z_1 z_2
+z_3\)</span>，若<span class="math inline">\(z=x_i\)</span>,则添加有向边
+<span
+class="math inline">\((v_{i,3j},c_j)和(c_j,v_{i,3j+1})\)</span>;若<span
+class="math inline">\(z=\bar{x}_i\)</span>,则添加有向边<span
+class="math inline">\((c_j,v_{i,3j})和(v_{i,3j+1},c_j)\)</span>，这里<span
+class="math inline">\(1\le j\le m, 1\le i\le
+n\)</span>。如上图所示（即若<span
+class="math inline">\(z=x_i\)</span>,该节点与<span
+class="math inline">\(c\)</span>节点的连接顺序是从左边进入<span
+class="math inline">\(c\)</span>节点，然后从右边出<span
+class="math inline">\(c\)</span>节点；反之顺序相反）。</p>
+<p>如果选择子句<span class="math inline">\(C_1\)</span>中<span
+class="math inline">\(x_1=1\)</span>,则<span
+class="math inline">\(x_1\)</span>对应的路径为从左向右;同理<span
+class="math inline">\(x_2=0\)</span>,则<span
+class="math inline">\(x_2\)</span>对应的路径为从右向左；<span
+class="math inline">\(x_3=1\)</span>,则<span
+class="math inline">\(x_3\)</span>对应的路径为从左向右。其余句子同理，这样就得到了最终的图<span
+class="math inline">\(G\)</span>。</p>
+<p><strong>证明</strong>:</p>
+<p><span class="math inline">\(\Rightarrow\)</span></p>
+<p>假设3-SAT有一个可满足的分配<span
+class="math inline">\(x^*\)</span>：</p>
+<ul>
+<li>对于<span class="math inline">\(x_i\)</span>,若其为1，则第<span
+class="math inline">\(i\)</span>行从左往右遍历；反之，若其为0，则第<span
+class="math inline">\(i\)</span>行从右往左遍历</li>
+<li>且对于每个句子节点<span
+class="math inline">\(c_i\)</span>，至少会有一行便利的时候会经过<span
+class="math inline">\(c_i\)</span>，否则便不满足每个句子都为真的条件，也就是该分配并不是可满足的。</li>
+</ul>
+<p><span class="math inline">\(\Leftarrow\)</span></p>
+<p>假设构造的图<span
+class="math inline">\(G\)</span>有一个Ham-Cycle，那么</p>
+<ul>
+<li>若Ham-Cycle进入句子节点<span
+class="math inline">\(c_i\)</span>，那么它一定会返回相同的行，否则便不存在简单环。</li>
+<li>这样Ham-Cycle里的句子节点<span
+class="math inline">\(c_i\)</span>与同一行的两个相邻节点相连，记这两个相邻节点之间的边为<span
+class="math inline">\(e_i\)</span></li>
+<li>去掉句子节点<span class="math inline">\(c_i\)</span>，同时用<span
+class="math inline">\(e_i\)</span>替换与<span
+class="math inline">\(c_i\)</span>相连的两条边。</li>
+<li>按上面的方法去掉所有的句子节点得到图也必然存在Ham-Cycle，且节点的顺序是相同的。</li>
+<li>若Ham-Cycle的第<span
+class="math inline">\(i\)</span>行是从左往右遍历的，便令<span
+class="math inline">\(x_i=1\)</span>;反之则令<span
+class="math inline">\(x_i=0\)</span>，这样便得到一个分配方案，且其是可满足的。</li>
+</ul>
+<p>这样便得到一个分配方式，且每个句子都是可满足的。</p>
 
                 
               </div>

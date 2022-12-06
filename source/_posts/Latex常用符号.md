@@ -13,6 +13,7 @@ tags:
 |---------|--------|------|-----------|
 |$\alpha$| `\alpha` |$A$|`A` |
 |$\beta$| `\beta` |$B$|`B` |
+|$\gamma$|`\gamma`|$\Gamma$|`\Gamma`|
 |$\delta$|`\delta` |$\Delta$|`\Delta` |
 |$\epsilon$|`\epsilon` |$E$|`E` |
 |$\varepsilon$|`\varepsilon`|
