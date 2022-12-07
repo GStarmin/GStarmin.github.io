@@ -142,6 +142,81 @@ $\Leftarrow$
 这样便得到一个分配方式，且每个句子都是可满足的。
 
 
+### HAM-CYCLE $\le_p$ TSP(Traveling Saleperson Problem)
+**TSP(Traveling Saleperson Problem)**：给定一个$n$个城市的集合以及城市之间的距离$d(u,v)$,是否存在一个旅行的路线使行走的距离$\le n$?
+
+旅行者问题与HAM-CYCLE的区别在于：旅行者问题并不限定简单路径，也就是说一个节点可以通过多次，只需要考虑最后的路径长度。
+
+**DIR-HAM-CYCLE**：给定一个有向图 $G=(V,E)$,是否存在一个简单环 $\Gamma$ 包含$V$中所有顶点？
+
+$HAM-CYCLE $\le_p$ TSP(Traveling Saleperson Problem)$
+
+**构造**：给定一个HAM-CYCLE的实例$G=(V,E)$,$V$中的每个节点构造一个城市节点，城市之间的距离根据$E$进行赋值:
+$$d(u,v)= \begin{cases}
+    1, (u,v) \in E  \\
+    2, (u,v) \notin E
+\end{cases}$$
+
+则TSP中有一个旅行路径$\le n$当且仅当$G$中存在HAM-CYCLE
+
+### 3-SAT $\le$ 3-Colorable
+**3-Colorable**:给定一个无向图$G$，并给图中的每个节点染上红、蓝、绿的其中一种颜色，那么是否存在一种染色方式使相邻的节点都有不同的颜色？
+
+3-SAT $\le$ 3-Colorable
+
+**构造**：
+
+- 对每个Literal，构造一个节点
+- 同时添加三个节点$T、F、B$，连接这三个节点形成一个三角形
+- 对每个literal节点，创建一个它的"非"并与它相连
+- 所有的Literal节点都与$B$相连
+
+如下图所示：
+![](/img/多项式规约/3-SAT23-COLOLABLE-1.png)
+
+这样构造保证了下面的每个Literal节点都是绿色或红色，且它的“非”与它的颜色刚好相反。
+
+继续接上面：
+
+- 对每个Clause，假设$C_i=x_1 \vee \overline{x_2} \vee x_3$,则对$x_1 , \overline{x_2} , x_3$添加6个节点以及13条边
+
+![](/img/多项式规约/3-SAT23-COLOLABLE-2.png)
+
+即$x_1 , \overline{x_2} , x_3$下方的两行一共6个节点，并将左下角的节点、第一行的节点与之前构造的$T$节点相连，右下角的节点与之前的$F$节点相连。
+
+这样构造是为了保证当三个Literal节点全为红色的时候，是不满足三着色的，如下图所示：当三个Literal节点全为红色的时候，他们下面那行节点必须为蓝色，这样最后一行从左到右着色，最后一个节点冲突。
+
+![](/img/多项式规约/3-SAT23-COLOLABLE-3.png)
+
+**3-SAT $\le$ 3-Colorable**：
+
+$\Rightarrow$
+
+若图3-Colorable：
+
+- 将所有为绿色的Literal节点设为真
+- 由上面可知，当图3-Colorable的时候三个Literal节点至少有一个是绿色的，那么该句子的输出为真
+
+
+$\Leftarrow$
+
+若3-SAT是可满足的：则
+- 三个Literal节点至少有一个为真
+- 将为真的Literal节点染为绿色，然后将该节点下面的节点染为红色（否则会冲突），再继续将下面的节点染为蓝色
+- 对中间一行没有染红的节点染为蓝色，然后它们下面一行没有染色的节点可唯一确定颜色
+
+![](/img/多项式规约/3-SAT23-COLOLABLE-4.png)
+
+上面没有染色的Literal节点绿色、红色皆可。
+
+
+
+
+
+
+
+
+
 
 
 
