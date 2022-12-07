@@ -16,35 +16,27 @@
   <meta name="author" content="Starmin">
   <meta name="keywords" content="">
   
-    <meta name="description" content="严平稳过程   严平稳过程有限维分布不随时间的推移而改变，，它的当前变化情况与过去的情况有不可忽视的联系。 严平稳过程的一维分布与时间无关，而二维分布仅与\(t_1\)和\(t_2\)的时间间隔有关，与时间起点无关。 宽平稳过程 由于  工程中确定一个过程的有限维分布函数族,进而判定过程的严平稳性十分困难； 部分随机过程(如正态过程)的概率特征主要由一阶和二阶矩函数确定； 工程实">
+    <meta name="description" content="向量范数 1 - 范数：\(\Vert \boldsymbol {x}\Vert_1&#x3D;\sum\limits_{i&#x3D;1}^N |x_i|\)，即向量元素绝对值之和 2 - 范数：\(\Vert \boldsymbol {x}\Vert_2&#x3D;(\sum\limits_{i&#x3D;1}^N (x_i)^2)^{\frac {1}{2}}\)，也叫欧几里得范数，常用于计算向量长度，即向量元素的平方">
 <meta property="og:type" content="article">
-<meta property="og:title" content="平稳过程">
-<meta property="og:url" content="https://gstarmin.github.io/2022/12/07/%E5%B9%B3%E7%A8%B3%E8%BF%87%E7%A8%8B/">
+<meta property="og:title" content="范数">
+<meta property="og:url" content="https://gstarmin.github.io/2022/12/07/%E8%8C%83%E6%95%B0/">
 <meta property="og:site_name" content="Starmin的随笔">
-<meta property="og:description" content="严平稳过程   严平稳过程有限维分布不随时间的推移而改变，，它的当前变化情况与过去的情况有不可忽视的联系。 严平稳过程的一维分布与时间无关，而二维分布仅与\(t_1\)和\(t_2\)的时间间隔有关，与时间起点无关。 宽平稳过程 由于  工程中确定一个过程的有限维分布函数族,进而判定过程的严平稳性十分困难； 部分随机过程(如正态过程)的概率特征主要由一阶和二阶矩函数确定； 工程实">
+<meta property="og:description" content="向量范数 1 - 范数：\(\Vert \boldsymbol {x}\Vert_1&#x3D;\sum\limits_{i&#x3D;1}^N |x_i|\)，即向量元素绝对值之和 2 - 范数：\(\Vert \boldsymbol {x}\Vert_2&#x3D;(\sum\limits_{i&#x3D;1}^N (x_i)^2)^{\frac {1}{2}}\)，也叫欧几里得范数，常用于计算向量长度，即向量元素的平方">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://gstarmin.github.io/img/随机过程/平稳过程/严平稳过程定义.png">
-<meta property="og:image" content="https://gstarmin.github.io/img/随机过程/平稳过程/宽平稳过程定义.png">
-<meta property="og:image" content="https://gstarmin.github.io/img/随机过程/平稳过程/平稳过程自相关函数性质-1.png">
-<meta property="og:image" content="https://gstarmin.github.io/img/随机过程/平稳过程/平稳过程自相关函数性质-2.png">
-<meta property="og:image" content="https://gstarmin.github.io/img/随机过程/平稳过程/自相关证明1.png">
-<meta property="og:image" content="https://gstarmin.github.io/img/随机过程/平稳过程/自相关证明2.png">
-<meta property="og:image" content="https://gstarmin.github.io/img/随机过程/平稳过程/自相关证明3.png">
-<meta property="og:image" content="https://gstarmin.github.io/img/随机过程/平稳过程/自相关证明4.png">
-<meta property="og:image" content="https://gstarmin.github.io/img/随机过程/平稳过程/自相关函数推论.png">
-<meta property="og:image" content="https://gstarmin.github.io/img/随机过程/平稳过程/定理5.2.2.png">
-<meta property="og:image" content="https://gstarmin.github.io/img/随机过程/平稳过程/5.2.2证明.png">
-<meta property="og:image" content="https://gstarmin.github.io/img/随机过程/平稳过程/定理5.2.3.png">
-<meta property="article:published_time" content="2022-12-07T02:32:01.062Z">
-<meta property="article:modified_time" content="2022-12-07T07:45:45.494Z">
+<meta property="og:image" content="https://gstarmin.github.io/img/矩阵论/矩阵范数性质-定理1.png">
+<meta property="og:image" content="https://gstarmin.github.io/img/矩阵论/算子范数定义1.png">
+<meta property="og:image" content="https://gstarmin.github.io/img/矩阵论/算子范数定义2.png">
+<meta property="og:image" content="https://gstarmin.github.io/img/矩阵论/算子范数性质-定理3.png">
+<meta property="article:published_time" content="2022-12-07T13:41:37.028Z">
+<meta property="article:modified_time" content="2022-12-07T14:41:17.242Z">
 <meta property="article:author" content="Starmin">
-<meta property="article:tag" content="随机过程">
+<meta property="article:tag" content="矩阵论">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://gstarmin.github.io/img/随机过程/平稳过程/严平稳过程定义.png">
+<meta name="twitter:image" content="https://gstarmin.github.io/img/矩阵论/矩阵范数性质-定理1.png">
   
   
   
-  <title>平稳过程 - Starmin的随笔</title>
+  <title>范数 - Starmin的随笔</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -213,7 +205,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="平稳过程"></span>
+            <span id="subtitle" data-typed-text="范数"></span>
           
         </div>
 
@@ -224,8 +216,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2022-12-07 10:32" pubdate>
-          2022年12月7日 上午
+        <time datetime="2022-12-07 21:41" pubdate>
+          2022年12月7日 晚上
         </time>
       </span>
     
@@ -236,7 +228,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          563 字
+          1.4k 字
         
       </span>
     
@@ -247,7 +239,7 @@
         
         
         
-          5 分钟
+          12 分钟
         
       </span>
     
@@ -285,63 +277,83 @@
         <div id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">平稳过程</h1>
+            <h1 style="display: none">范数</h1>
             
             
               <div class="markdown-body">
                 
-                <h2 id="严平稳过程">严平稳过程</h2>
-<p><img src="/img/随机过程/平稳过程/严平稳过程定义.png" srcset="/img/loading.gif" lazyload /> <img
-src="/img/随机过程/平稳过程/严平稳过程定义-2.png" srcset="/img/loading.gif" lazyload
-alt="严平稳过程定义" /></p>
-<p>严平稳过程有限维分布不随时间的推移而改变，，它的当前变化情况与过去的情况有不可忽视的联系。</p>
-<p>严平稳过程的一维分布与时间无关，而二维分布仅与<span
-class="math inline">\(t_1\)</span>和<span
-class="math inline">\(t_2\)</span>的时间间隔有关，与时间起点无关。</p>
-<h2 id="宽平稳过程">宽平稳过程</h2>
-<p>由于</p>
+                <h2 id="向量范数">向量范数</h2>
+<p><strong>1 - 范数</strong>：<span class="math inline">\(\Vert
+\boldsymbol {x}\Vert_1=\sum\limits_{i=1}^N
+|x_i|\)</span>，即向量元素绝对值之和</p>
+<p><strong>2 - 范数</strong>：<span class="math inline">\(\Vert
+\boldsymbol {x}\Vert_2=(\sum\limits_{i=1}^N (x_i)^2)^{\frac
+{1}{2}}\)</span>，也叫欧几里得范数，常用于计算向量长度，即向量元素的平方和再开方</p>
+<p><strong><span class="math inline">\(\infty\)</span>-
+范数</strong>:<span class="math inline">\(\Vert \boldsymbol
+{x}\Vert_{\infty}=\max\limits_{i}
+|x_i|\)</span>，即所有向量元素中绝对值的最大值</p>
+<p><strong>-<span class="math inline">\(\infty\)</span>-
+范数</strong>:<span class="math inline">\(\Vert \boldsymbol
+{x}\Vert_{-\infty}=\min\limits_{i}
+|x_i|\)</span>，即所有向量元素绝对值中的最小值</p>
+<p><strong>P - 范数</strong>:<span class="math inline">\(\Vert
+\boldsymbol {x}\Vert_p=(\sum\limits_{i=1}^N (x_i)^p)^{\frac
+{1}{p}}\)</span>，即向量元素的 p 次方和再开 p 次方</p>
+<h2 id="矩阵范数">矩阵范数</h2>
+<p>设<span class="math inline">\(A \in \mathbb{C}^{m ×
+n}\)</span>，则</p>
+<p><span class="math inline">\({||A||}_{m_1} = \sum\limits^{n}_{j=1}
+\sum\limits^{m}_{i=1} |a_{ij}|\)</span></p>
+<p><span class="math inline">\(||A||_{m_2} = {||A||}_{F}
+=\sqrt{\sum\limits^{n}_{j=1} \sum\limits^{m}_{i=1} |a_{ij}^2|} =
+\sqrt{tr(A^HA)} = \sqrt{tr(AA^H)}\)</span></p>
+<p><span
+class="math inline">\(||A||_{m_\infty}=\max\limits_{i,j}\{|a_{ij}|\},
+1\le i \le m, 1 \le j \le n\)</span></p>
+<h3 id="矩阵范数的性质">矩阵范数的性质</h3>
+<p><img src="/img/矩阵论/矩阵范数性质-定理1.png" srcset="/img/loading.gif" lazyload /> <img
+src="/img/矩阵论/矩阵范数性质-定理1-2.png" srcset="/img/loading.gif" lazyload /></p>
 <ul>
-<li>工程中确定一个过程的有限维分布函数族,进而判定过程的严平稳性十分困难；</li>
-<li>部分随机过程(如正态过程)的概率特征主要由一阶和二阶矩函数确定；</li>
-<li>工程实际中,通常仅需在相关理论范畴内考虑平稳过程,即只限于研究一、二阶矩（均值、相关函数等）理论.</li>
+<li>${||A||}_{m_1} <span
+class="math inline">\(范数与向量范数\)</span>||x||_1$相容</li>
+<li>${||A||}_{m_2} <span
+class="math inline">\(范数与向量范数\)</span>||x||_2$相容</li>
+<li><span
+class="math inline">\({||A||}_{m_{\infty}}\)</span>范数与向量范数 <span
+class="math inline">\(||x||_\infty\)</span> 不相容 ## 算子范数
+算子范数定义1： <img src="/img/矩阵论/算子范数定义1.png" srcset="/img/loading.gif" lazyload /></li>
 </ul>
-<p>所以有了宽平稳过程。</p>
-<p>定义： <img src="/img/随机过程/平稳过程/宽平稳过程定义.png" srcset="/img/loading.gif" lazyload
-alt="宽平稳过程定义" /></p>
-<p>其中<span class="math inline">\(R_x(\tau)\)</span>为<span
-class="math inline">\(\{X(t),t \in
-T\}\)</span>的自相关函数。其协方差函数为 <span
-class="math display">\[C_X(s,t)=R_X(s,t)-|m_X|^2=R_X(\tau)-|m_X|^2\]</span></p>
-<p>自协方差函数与自相关函数都仅依赖于<span
-class="math inline">\(t－s\)</span></p>
-<p><strong>维纳过程不是宽平稳过程，但是维纳过程是增量宽平稳过程，即</strong>
-<span class="math display">\[X(t)=W(t+a)-W(t), t \ge 0, \quad
-(a&gt;0)\]</span></p>
-<p>是宽平稳过程</p>
-<h2 id="两种平稳性的关系">两种平稳性的关系</h2>
+<p>注意：并不是所以的矩阵范数都与向量范数相容。只有满足该条件的矩阵范数才与向量范数是相容的。</p>
+<p>算子范数定义2： <img src="/img/矩阵论/算子范数定义2.png" srcset="/img/loading.gif" lazyload /></p>
+<p><strong>则称此矩阵范数为从属于向量范数 <span
+class="math inline">\(||x||\)</span>
+的算子范数</strong>。这里的x可是n维空间的任意取向。</p>
+<p><strong>算子范数表示</strong>：</p>
+<p><span class="math inline">\({||A||}_1=\max\limits_{1 \le j \le
+n}\{\sum\limits^{s}_{j=1}|a_{ij}|\}\)</span>,
+列模和范数，即所有矩阵列向量绝对值之和的最大值</p>
+<p><span class="math inline">\(||A||_2=\sqrt{\rho(A^HA)}\)</span>，
+谱范数</p>
+<p><span class="math inline">\(||A||_\infty=\max\limits_{1 \le i \le
+s}\{\sum^n_{j=1}|a_{ij}|\}\)</span>,
+行模和范数,即所有矩阵行向量绝对值之和的最大值</p>
+<h3 id="算子范数性质">算子范数性质</h3>
 <ul>
-<li>严平稳过程不一定是宽平稳的;</li>
+<li>${||A||}_{1} <span
+class="math inline">\(范数与向量范数\)</span>||x||_1$相容</li>
+<li>${||A||}_{2} <span
+class="math inline">\(范数与向量范数\)</span>||x||_2$相容</li>
+<li><span class="math inline">\(||·||_a\)</span>是算子范数 <span
+class="math inline">\(\Rightarrow ||E||_a = 1\)</span></li>
+<li>设<span class="math inline">\(A \in \mathbb{C}^{n × n}，
+||A||\)</span>是从属向量范数<span
+class="math inline">\(||x||\)</span>的算子范数，若<span
+class="math inline">\(||A|| &lt; 1\)</span>,则 <span
+class="math inline">\(E \pm A\)</span> 可逆，且<span
+class="math inline">\(||(E \pm A)^{-1} \le 1 - ||A||^{-1}\)</span></li>
 </ul>
-<p>因宽平稳过程一定是二阶矩过程, 而严平稳过程未必是二阶矩过程.</p>
-<ul>
-<li>宽平稳不一定 严平稳;</li>
-<li>严平稳过程是宽平稳过程的充要条件是其二阶矩存在.</li>
-<li>对于正态过程, 宽平稳性与严平稳性等价.</li>
-</ul>
-<h2 id="平稳过程的自相关函数">平稳过程的自相关函数</h2>
-<p><img src="/img/随机过程/平稳过程/平稳过程自相关函数性质-1.png" srcset="/img/loading.gif" lazyload />
-<img src="/img/随机过程/平稳过程/平稳过程自相关函数性质-2.png" srcset="/img/loading.gif" lazyload /></p>
-<p>证明:</p>
-<ol type="1">
-<li><img src="/img/随机过程/平稳过程/自相关证明1.png" srcset="/img/loading.gif" lazyload /></li>
-<li><img src="/img/随机过程/平稳过程/自相关证明2.png" srcset="/img/loading.gif" lazyload /></li>
-<li><img src="/img/随机过程/平稳过程/自相关证明3.png" srcset="/img/loading.gif" lazyload /></li>
-<li><img src="/img/随机过程/平稳过程/自相关证明4.png" srcset="/img/loading.gif" lazyload /></li>
-</ol>
-<p>推论： <img src="/img/随机过程/平稳过程/自相关函数推论.png" srcset="/img/loading.gif" lazyload /></p>
-<p>定理： <img src="/img/随机过程/平稳过程/定理5.2.2.png" srcset="/img/loading.gif" lazyload /></p>
-<p>证明： <img src="/img/随机过程/平稳过程/5.2.2证明.png" srcset="/img/loading.gif" lazyload /></p>
-<p>定理: <img src="/img/随机过程/平稳过程/定理5.2.3.png" srcset="/img/loading.gif" lazyload /></p>
+<p><img src="/img/矩阵论/算子范数性质-定理3.png" srcset="/img/loading.gif" lazyload /></p>
 
                 
               </div>
@@ -365,7 +377,7 @@ class="math inline">\(t－s\)</span></p>
   
     <span>></span>
     
-  <a href="/categories/%E6%95%B0%E5%AD%A6/%E9%9A%8F%E6%9C%BA%E8%BF%87%E7%A8%8B/" class="category-chain-item">随机过程</a>
+  <a href="/categories/%E6%95%B0%E5%AD%A6/%E7%9F%A9%E9%98%B5%E8%AE%BA/" class="category-chain-item">矩阵论</a>
   
   
 
@@ -382,7 +394,7 @@ class="math inline">\(t－s\)</span></p>
     <div class="post-meta">
       <i class="iconfont icon-tags"></i>
       
-        <a href="/tags/%E9%9A%8F%E6%9C%BA%E8%BF%87%E7%A8%8B/">#随机过程</a>
+        <a href="/tags/%E7%9F%A9%E9%98%B5%E8%AE%BA/">#矩阵论</a>
       
     </div>
   
@@ -394,8 +406,8 @@ class="math inline">\(t－s\)</span></p>
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>平稳过程</div>
-      <div>https://gstarmin.github.io/2022/12/07/平稳过程/</div>
+      <div>范数</div>
+      <div>https://gstarmin.github.io/2022/12/07/范数/</div>
     </div>
     <div class="license-meta">
       
@@ -439,9 +451,9 @@ class="math inline">\(t－s\)</span></p>
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2022/12/07/%E8%8C%83%E6%95%B0/" title="范数">
+                      <a href="/2022/12/07/%E7%89%B9%E5%BE%81%E5%80%BC%E4%BC%B0%E8%AE%A1/" title="特征值估计">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">范数</span>
+                        <span class="hidden-mobile">特征值估计</span>
                         <span class="visible-mobile">上一篇</span>
                       </a>
                     
@@ -449,8 +461,8 @@ class="math inline">\(t－s\)</span></p>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2022/12/05/NP%E9%97%AE%E9%A2%98/" title="NP问题">
-                        <span class="hidden-mobile">NP问题</span>
+                      <a href="/2022/12/07/%E5%B9%B3%E7%A8%B3%E8%BF%87%E7%A8%8B/" title="平稳过程">
+                        <span class="hidden-mobile">平稳过程</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
