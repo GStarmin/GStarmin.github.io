@@ -16,19 +16,19 @@
   <meta name="author" content="Starmin">
   <meta name="keywords" content="">
   
-    <meta name="description" content="不管向量范数、矩阵范数还是算子范数，都需要满足三个特性:  正定性 齐次性 三角不等式  向量范数 1 - 范数：\(\Vert \boldsymbol {x}\Vert_1&#x3D;\sum\limits_{i&#x3D;1}^N |x_i|\)，即向量元素绝对值之和 2 - 范数：\(\Vert \boldsymbol {x}\Vert_2&#x3D;(\sum\limits_{i&#x3D;1}^N (x_">
+    <meta name="description" content="不管向量范数、矩阵范数还是算子范数，都需要满足三个特性:  正定性 齐次性 三角不等式  ## 向量范数 1 - 范数：\(\Vert \boldsymbol {x}\Vert_1&#x3D;\sum\limits_{i&#x3D;1}^N |x_i|\)，即向量元素绝对值之和 2 - 范数：\(\Vert \boldsymbol {x}\Vert_2&#x3D;(\sum\limits_{i&#x3D;1}^N (x">
 <meta property="og:type" content="article">
 <meta property="og:title" content="范数">
 <meta property="og:url" content="https://gstarmin.github.io/2022/12/07/%E8%8C%83%E6%95%B0/">
 <meta property="og:site_name" content="Starmin的随笔">
-<meta property="og:description" content="不管向量范数、矩阵范数还是算子范数，都需要满足三个特性:  正定性 齐次性 三角不等式  向量范数 1 - 范数：\(\Vert \boldsymbol {x}\Vert_1&#x3D;\sum\limits_{i&#x3D;1}^N |x_i|\)，即向量元素绝对值之和 2 - 范数：\(\Vert \boldsymbol {x}\Vert_2&#x3D;(\sum\limits_{i&#x3D;1}^N (x_">
+<meta property="og:description" content="不管向量范数、矩阵范数还是算子范数，都需要满足三个特性:  正定性 齐次性 三角不等式  ## 向量范数 1 - 范数：\(\Vert \boldsymbol {x}\Vert_1&#x3D;\sum\limits_{i&#x3D;1}^N |x_i|\)，即向量元素绝对值之和 2 - 范数：\(\Vert \boldsymbol {x}\Vert_2&#x3D;(\sum\limits_{i&#x3D;1}^N (x">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://gstarmin.github.io/img/矩阵论/矩阵范数性质-定理1.png">
 <meta property="og:image" content="https://gstarmin.github.io/img/矩阵论/算子范数定义1.png">
 <meta property="og:image" content="https://gstarmin.github.io/img/矩阵论/算子范数定义2.png">
 <meta property="og:image" content="https://gstarmin.github.io/img/矩阵论/算子范数性质-定理3.png">
 <meta property="article:published_time" content="2022-12-07T13:41:37.028Z">
-<meta property="article:modified_time" content="2022-12-08T01:45:09.675Z">
+<meta property="article:modified_time" content="2022-12-08T04:21:42.981Z">
 <meta property="article:author" content="Starmin">
 <meta property="article:tag" content="矩阵论">
 <meta name="twitter:card" content="summary_large_image">
@@ -288,9 +288,8 @@
 <li>齐次性</li>
 <li>三角不等式</li>
 </ul>
-<h2 id="向量范数">向量范数</h2>
-<p><strong>1 - 范数</strong>：<span class="math inline">\(\Vert
-\boldsymbol {x}\Vert_1=\sum\limits_{i=1}^N
+<p>## 向量范数 <strong>1 - 范数</strong>：<span
+class="math inline">\(\Vert \boldsymbol {x}\Vert_1=\sum\limits_{i=1}^N
 |x_i|\)</span>，即向量元素绝对值之和</p>
 <p><strong>2 - 范数</strong>：<span class="math inline">\(\Vert
 \boldsymbol {x}\Vert_2=(\sum\limits_{i=1}^N (x_i)^2)^{\frac
@@ -318,10 +317,10 @@ class="math inline">\(||A||_{m_\infty}=\max\limits_{i,j}\{|a_{ij}|\},
 <p><img src="/img/矩阵论/矩阵范数性质-定理1.png" srcset="/img/loading.gif" lazyload /> <img
 src="/img/矩阵论/矩阵范数性质-定理1-2.png" srcset="/img/loading.gif" lazyload /></p>
 <ul>
-<li>${||A||}_{m_1} <span
-class="math inline">\(范数与向量范数\)</span>||x||_1$相容</li>
-<li>${||A||}_{m_2} <span
-class="math inline">\(范数与向量范数\)</span>||x||_2$相容</li>
+<li><span class="math inline">\({||A||}_{m_1}\)</span>
+范数与向量范数<span class="math inline">\(||x||_1\)</span>相容</li>
+<li><span class="math inline">\({||A||}_{m_2}\)</span>
+范数与向量范数<span class="math inline">\(||x||_2\)</span>相容</li>
 <li><span
 class="math inline">\({||A||}_{m_{\infty}}\)</span>范数与向量范数 <span
 class="math inline">\(||x||_\infty\)</span> 不相容 ## 算子范数
@@ -343,10 +342,10 @@ s}\{\sum^n_{j=1}|a_{ij}|\}\)</span>,
 行模和范数,即所有矩阵行向量绝对值之和的最大值</p>
 <h3 id="算子范数性质">算子范数性质</h3>
 <ul>
-<li>${||A||}_{1} <span
-class="math inline">\(范数与向量范数\)</span>||x||_1$相容</li>
-<li>${||A||}_{2} <span
-class="math inline">\(范数与向量范数\)</span>||x||_2$相容</li>
+<li><span class="math inline">\({||A||}_{1}\)</span> 范数与向量范数
+<span class="math inline">\(||x||_1\)</span> 相容</li>
+<li><span class="math inline">\({||A||}_{2}\)</span> 范数与向量范数
+<span class="math inline">\(||x||_2\)</span> 相容</li>
 <li><span class="math inline">\(||·||_a\)</span>是算子范数 <span
 class="math inline">\(\Rightarrow ||E||_a = 1\)</span></li>
 <li>设<span class="math inline">\(A \in \mathbb{C}^{n × n}，
