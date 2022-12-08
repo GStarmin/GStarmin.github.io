@@ -33,7 +33,7 @@
 <meta property="og:image" content="https://gstarmin.github.io/img/近似算法/WeightedVertexCover-不等式放缩.png">
 <meta property="og:image" content="https://gstarmin.github.io/img/近似算法/证明PricingMethod2倍近似解.png">
 <meta property="article:published_time" content="2022-12-08T07:41:52.704Z">
-<meta property="article:modified_time" content="2022-12-08T14:12:36.497Z">
+<meta property="article:modified_time" content="2022-12-08T14:21:19.268Z">
 <meta property="article:author" content="Starmin">
 <meta property="article:tag" content="算法">
 <meta property="article:tag" content="高级算法设计与分析">
@@ -347,9 +347,9 @@ class="math display">\[  \begin{aligned}
 <p>分配任务<span class="math inline">\(j\)</span>后,由上式以及引理2:
 <span class="math display">\[L_i = (L_i -t_i) + t_j \le L^* +
 \max\limits_j t_j \le L^* + L^* = 2L^*\]</span></p>
-<p>那么贪心算法是Load
-Balancing的紧2倍近似算法吗?所谓紧的是指该算法可以相比于最优解更低的倍率吗(如1.5倍)?若可以则说明贪心算法并不是Load
-Balancing的紧2倍近似算法.</p>
+<p>那么贪心算法是Load Balancing的紧2倍近似算法吗?判断<span
+class="math inline">\(\rho\)</span>-近似算法是否紧的要看该算法相比于最优解有比<span
+class="math inline">\(\rho\)</span>更低的近似率吗?若有则说明其并不是紧的。</p>
 <p>答:大致是的,考虑下面的一个Load Balancing的实例,有<span
 class="math inline">\(m\)</span>个机器,<span
 class="math inline">\(m^2\)</span>个任务,其中有<span
@@ -495,7 +495,7 @@ class="math inline">\(S\)</span>是最优解的一个2倍近似解：</p>
 class="math inline">\(S\)</span>肯定为顶点集<span
 class="math inline">\(V\)</span>的一个子集；<span
 class="math inline">\(\sum\limits_{i \in V} \sum\limits_{e=(i,j)} p_e =
-2 \sum\limits_{e \in E} p_e\)</span>是因为算与<span
+2 \sum\limits_{e \in E} p_e\)</span>是因为计算与<span
 class="math inline">\(V\)</span>中所有顶点相连的边时，每条边会被计算两次；最右边一个放缩为引理的结论。</p>
 
                 
