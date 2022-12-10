@@ -1,5 +1,5 @@
 ---
-title: NP问题
+title: NP问题以及常见多项式规约
 tags: 
     - 算法
     - 算法设计与分析
@@ -51,6 +51,7 @@ $\Leftarrow$
 
 ### 证明一个问题是NPH问题的步骤
 要证明一个问题是NP-hard，通常是找到一个已被证明了的NPC问题，并把这个NPC问题归约到该问题上去（即NPC $\le$ NP-hard）,简单来说就是：
+
 - 对问题A给定限制条件得到一个特例B问题
 - 证明问题B是NPC问题
 
@@ -60,6 +61,7 @@ $\Leftarrow$
 **证明：给定一个3-SAT的例子$\Phi$,可以构造一个大小为$k$的Independent Set当且仅当式子$\Phi$是可满足的。**
 
 构造:
+
 - 3-SAT中的每个Clause包含独立集里的三个顶点，其中每个Literal对应一个顶点
 - 连接句子里的点连接形成三角形
 - 连接不同Clause里每个Literal和它对应的非
@@ -159,10 +161,10 @@ $$d(u,v)= \begin{cases}
 
 则TSP中有一个旅行路径$\le n$当且仅当$G$中存在HAM-CYCLE
 
-### 3-SAT $\le$ 3-Colorable
+### 3-SAT $\le_p$ 3-Colorable
 **3-Colorable**:给定一个无向图$G$，并给图中的每个节点染上红、蓝、绿的其中一种颜色，那么是否存在一种染色方式使相邻的节点都有不同的颜色？
 
-3-SAT $\le$ 3-Colorable
+3-SAT $\le_p$ 3-Colorable
 
 **构造**：
 
@@ -188,7 +190,7 @@ $$d(u,v)= \begin{cases}
 
 ![](/img/多项式规约/3-SAT23-COLOLABLE-3.png)
 
-**3-SAT $\le$ 3-Colorable**：
+**3-SAT $\le_p$ 3-Colorable**：
 
 $\Rightarrow$
 
@@ -209,7 +211,12 @@ $\Leftarrow$
 
 上面没有染色的Literal节点绿色、红色皆可。
 
+### 3-COLOR搜索问题 $\le_p$ 3-COLOR判断问题（自规约）
+将3-COLOR图中不相邻的点合并，合并后的点表示之前所有合并过来点的集合，如下图所示：
 
+![](/img/多项式规约/3-color自规约.png)
+
+然后一直重复上述步骤，若图可以进行3着色，那么到最后图必然会合并为一个三角形。染色是对最后的三角形三个点所代表的点的集合染成不同的颜色，便为最后的3着色。
 
 
 
