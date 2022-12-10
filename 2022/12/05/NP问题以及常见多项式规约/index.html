@@ -32,7 +32,7 @@
 <meta property="og:image" content="https://gstarmin.github.io/img/多项式规约/3-SAT23-COLOLABLE-4.png">
 <meta property="og:image" content="https://gstarmin.github.io/img/多项式规约/3-color自规约.png">
 <meta property="article:published_time" content="2022-12-05T14:49:27.082Z">
-<meta property="article:modified_time" content="2022-12-10T13:39:34.377Z">
+<meta property="article:modified_time" content="2022-12-10T13:45:36.426Z">
 <meta property="article:author" content="Starmin">
 <meta property="article:tag" content="算法">
 <meta property="article:tag" content="算法设计与分析">
@@ -338,10 +338,12 @@ class="math inline">\(\le_p\)</span> Independent Set</h3>
 class="math inline">\(\Phi\)</span>,可以构造一个大小为<span
 class="math inline">\(k\)</span>的Independent Set当且仅当式子<span
 class="math inline">\(\Phi\)</span>是可满足的。</strong></p>
-<p>构造: -
-3-SAT中的每个Clause包含独立集里的三个顶点，其中每个Literal对应一个顶点 -
-连接句子里的点连接形成三角形 -
-连接不同Clause里每个Literal和它对应的非</p>
+<p>构造:</p>
+<ul>
+<li>3-SAT中的每个Clause包含独立集里的三个顶点，其中每个Literal对应一个顶点</li>
+<li>连接句子里的点连接形成三角形</li>
+<li>连接不同Clause里每个Literal和它对应的非</li>
+</ul>
 <p>如下图所示：</p>
 <p><img src="/img/多项式规约/3-SAT2IndependentSet.png" srcset="/img/loading.gif" lazyload /></p>
 <p><strong>证明</strong>：</p>
