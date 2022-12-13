@@ -30,7 +30,7 @@
 <meta property="og:image" content="https://gstarmin.github.io/img/多项式规约/3-SAT例子.png">
 <meta property="og:image" content="https://gstarmin.github.io/img/多项式规约/3-SAT2IndependentSet.png">
 <meta property="article:published_time" content="2022-12-03T10:36:46.044Z">
-<meta property="article:modified_time" content="2022-12-13T06:46:21.685Z">
+<meta property="article:modified_time" content="2022-12-13T06:53:27.467Z">
 <meta property="article:author" content="Starmin">
 <meta property="article:tag" content="算法">
 <meta property="article:tag" content="高级算法设计与分析">
@@ -317,7 +317,7 @@ class="math inline">\(Y \le_{p} X\)</span>，那么X和Y是等价的。</li>
 class="math inline">\(G=(V,E)\)</span>和一个整数k(V为顶点集，E为边集)，是否有一个V的子集
 <span class="math inline">\(S \subseteq V\)</span>使得 <span
 class="math inline">\(|S| \ge
-k\)</span>并且S中的每条边至多有一个顶点在S中？</p>
+k\)</span>并且图中每条边至多有一个顶点在S中？</p>
 <figure>
 <img src="/img/多项式规约/独立集.png" srcset="/img/loading.gif" lazyload alt="独立集" />
 <figcaption aria-hidden="true">独立集</figcaption>
@@ -326,8 +326,8 @@ k\)</span>并且S中的每条边至多有一个顶点在S中？</p>
 <p><strong>定义</strong>:给定一个图 <span
 class="math inline">\(G=(V,E)\)</span>和一个整数k,是否有一个V的子集
 <span class="math inline">\(S \subseteq V\)</span>使得 <span
-class="math inline">\(|S| \le k\)</span>并且<span
-class="math inline">\(S\)</span>中的每条边至少有一个顶点在<span
+class="math inline">\(|S| \le
+k\)</span>并且图中的每条边至少有一个顶点在<span
 class="math inline">\(S\)</span>中？</p>
 <figure>
 <img src="/img/多项式规约/点覆盖.png" srcset="/img/loading.gif" lazyload alt="点覆盖" />
@@ -335,7 +335,7 @@ class="math inline">\(S\)</span>中？</p>
 </figure>
 <h4 id="vertex-cover和independent-set的关系">Vertex Cover和Independent
 Set的关系</h4>
-<p><strong>定理： <span class="math inline">\(点覆盖 \equiv
+<p><strong>定理： <span class="math inline">\(点覆盖 \equiv_p
 独立集\)</span></strong></p>
 <p>证明如下：</p>
 <p><span class="math inline">\(\Rightarrow\)</span></p>
