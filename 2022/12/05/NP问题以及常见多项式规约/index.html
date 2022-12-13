@@ -32,7 +32,7 @@
 <meta property="og:image" content="https://gstarmin.github.io/img/多项式规约/3-SAT23-COLOLABLE-4.png">
 <meta property="og:image" content="https://gstarmin.github.io/img/多项式规约/3-color自规约.png">
 <meta property="article:published_time" content="2022-12-05T14:49:27.082Z">
-<meta property="article:modified_time" content="2022-12-10T13:45:36.426Z">
+<meta property="article:modified_time" content="2022-12-13T11:31:21.121Z">
 <meta property="article:author" content="Starmin">
 <meta property="article:tag" content="算法">
 <meta property="article:tag" content="算法设计与分析">
@@ -233,7 +233,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          4.6k 字
+          5.2k 字
         
       </span>
     
@@ -244,7 +244,7 @@
         
         
         
-          39 分钟
+          44 分钟
         
       </span>
     
@@ -538,9 +538,49 @@ class="math inline">\(F\)</span>节点相连。</p>
 <p>上面没有染色的Literal节点绿色、红色皆可。</p>
 <h3 id="color搜索问题-le_p-3-color判断问题自规约">3-COLOR搜索问题 <span
 class="math inline">\(\le_p\)</span> 3-COLOR判断问题（自规约）</h3>
+<p><strong>方法1</strong>：</p>
 <p>将3-COLOR图中不相邻的点合并，合并后的点表示之前所有合并过来点的集合，如下图所示：</p>
 <p><img src="/img/多项式规约/3-color自规约.png" srcset="/img/loading.gif" lazyload /></p>
 <p>然后一直重复上述步骤，若图可以进行3着色，那么到最后图必然会合并为一个三角形。染色是对最后的三角形三个点所代表的点的集合染成不同的颜色，便为最后的3着色。</p>
+<p><strong>方法2</strong>：</p>
+<p>设判定算法为<span class="math inline">\(D\)</span></p>
+<ol type="1">
+<li>调用算法<span
+class="math inline">\(D\)</span>判断原图是否有解，若无解，则返回NO。</li>
+<li>任意选择一对边<span class="math inline">\((u,v)\)</span>，满足<span
+class="math inline">\((u,v) \notin E\)</span>
+<ol type="1">
+<li>考虑图<span class="math inline">\(G&#39; = G +
+(u,v)\)</span>，调用<span
+class="math inline">\(D\)</span>判断是否有解。</li>
+<li>若<span class="math inline">\(G&#39;\)</span>无解，标记点对<span
+class="math inline">\((u,v)\)</span>；若有解，添加边<span
+class="math inline">\((u,v)\)</span>到<span
+class="math inline">\(G\)</span>中。</li>
+</ol></li>
+<li>返回步骤2，继续选择一对未标记点对。</li>
+<li>若图<span
+class="math inline">\(G\)</span>构成一个三部完全图，每一部选择一个颜色，输出颜色方案。
+### 点覆盖搜索问题 <span class="math inline">\(\le_p\)</span>
+点覆盖判断问题</li>
+</ol>
+<ul>
+<li>从1开始，依次查找该图有没有<span
+class="math inline">\(k^*\)</span>个顶点的顶点覆盖(这样得到的第一次满足的<span
+class="math inline">\(k^*\)</span> 的值就是该图最小顶点覆盖的数目)</li>
+<li>从图中选出一个点<span class="math inline">\(v\)</span>
+，若去除该点后图的顶点覆盖数目变为<span class="math inline">\(k^* −
+1\)</span>，则<span
+class="math inline">\(v\)</span>是原图顶点覆盖中的一员，反之则不是</li>
+<li>在<span class="math inline">\(G −
+v\)</span>中递归执行上述两步。</li>
+</ul>
+<h3 id="ham-cycle搜索问题-le_p-ham-cycle判断问题">Ham-Cycle搜索问题
+<span class="math inline">\(\le_p\)</span> Ham-Cycle判断问题</h3>
+<p>证明：若可以在多项式时间内给出判定一个图是否存在哈密尔顿圈，则可以在多项式时间内找到一个图的哈密尔顿圈（如果存在的话）</p>
+<p>首先判断<span
+class="math inline">\(G\)</span>中是否存在Ham-Cycle,若不存在则算法结束，如果存在则继续寻找Ham-Cycle:
+<figure class="highlight fortran"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs fortran">对G中的每条边e<br>&#123;<br>    若G-e不存在Ham-<span class="hljs-keyword">Cycle</span>，将e加入S中；<br>    否则令G=G-e<br>&#125;<br>最后所得的集合便是一个Ham-<span class="hljs-keyword">Cycle</span><br></code></pre></td></tr></table></figure></p>
 
                 
               </div>
