@@ -43,7 +43,7 @@
 <meta property="og:image" content="https://gstarmin.github.io/img/近似算法/公式1.png">
 <meta property="og:image" content="https://gstarmin.github.io/img/近似算法/多项式时间逼近算法-证明.png">
 <meta property="article:published_time" content="2022-12-08T07:41:52.704Z">
-<meta property="article:modified_time" content="2022-12-10T13:36:37.108Z">
+<meta property="article:modified_time" content="2022-12-13T12:36:22.630Z">
 <meta property="article:author" content="Starmin">
 <meta property="article:tag" content="算法">
 <meta property="article:tag" content="高级算法设计与分析">
@@ -548,7 +548,7 @@ class="math inline">\(C\)</span>即为最小权值点覆盖问题的近似解的
 class="math inline">\(C\)</span>是最小权值点覆盖问题的近似解.</p>
 <ol type="1">
 <li>由于最小权值点覆盖问题的一个最优解是线性规划的一个可行解，故：<span
-class="math inline">\(Z \le W(C*)\)</span>(<span
+class="math inline">\(Z \le W(C^*)\)</span>(<span
 class="math inline">\(W\)</span>为求权值的函数)</li>
 <li>为什么求得的集合<span
 class="math inline">\(C\)</span>就是一个点覆盖呢？因为对任意边<span
@@ -563,10 +563,11 @@ class="math inline">\(G\)</span>中的每一条边都会被覆盖。</li>
 <li>由下式</li>
 </ol>
 <p><img src="/img/近似算法/证明线性规划是2倍近似解.png" srcset="/img/loading.gif" lazyload /></p>
-<p>以及<span class="math inline">\(Z \le W(C*)\)</span>,知:<span
-class="math inline">\(W(C) \le 2Z &lt;=2W(C*)\)</span>,即近似解<span
+<p>以及<span class="math inline">\(Z \le W(C^*)\)</span>,知:<span
+class="math inline">\(W(C) \le 2Z &lt;=2W(C^*)\)</span>,即近似解<span
 class="math inline">\(C\)</span>的权值<span class="math inline">\(W(C)
-\le\)</span> 二倍最优解C*的权值.</p>
+\le\)</span> 二倍最优解<span
+class="math inline">\(C^*\)</span>的权值.</p>
 <p>那么是否有比2倍近似解更小的近似解?最小的近似解倍率是多少?</p>
 <p>答:有.</p>
 <p><strong>定理</strong>: 若 P <span class="math inline">\(\ne\)</span>
@@ -762,6 +763,12 @@ class="math inline">\((1+\varepsilon) \sum\limits_{i \in S}v_i \ge
                 <div class="post-prevnext my-3">
                   <article class="post-prev col-6">
                     
+                    
+                      <a href="/2023/02/17/C++STL%E7%94%A8%E6%B3%95/" title="C++ STL容器用法">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">C++ STL容器用法</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
                     
                   </article>
                   <article class="post-next col-6">
