@@ -16,19 +16,27 @@
   <meta name="author" content="Starmin">
   <meta name="keywords" content="">
   
-    <meta property="og:type" content="website">
-<meta property="og:title" content="关于">
-<meta property="og:url" content="https://gstarmin.github.io/about/">
+    <meta name="description" content="Hexo 书写 LaTeX 公式时的一些问题及解决方法 使用hexo撰写博客的时候难免会用到数学公式，，如果公式过长，我们通常希望把方程分成多行显示，这时候就需要用到换行符号\\，但是写出来的 Markdown 经过 Hexo 的处理以后显示不正确，这与 Hexo 的渲染引擎有关系。 Hexo 的自带的 Markdown 引擎并不支持 LaTeX 公式。 但是 MathJax 支持，因此首先要启用">
+<meta property="og:type" content="article">
+<meta property="og:title" content="hexo中数学公式换行问题">
+<meta property="og:url" content="https://gstarmin.github.io/2023/02/19/hexo%E4%B8%AD%E6%95%B0%E5%AD%A6%E5%85%AC%E5%BC%8F%E6%8D%A2%E8%A1%8C%E9%97%AE%E9%A2%98/">
 <meta property="og:site_name" content="私人杂货铺">
+<meta property="og:description" content="Hexo 书写 LaTeX 公式时的一些问题及解决方法 使用hexo撰写博客的时候难免会用到数学公式，，如果公式过长，我们通常希望把方程分成多行显示，这时候就需要用到换行符号\\，但是写出来的 Markdown 经过 Hexo 的处理以后显示不正确，这与 Hexo 的渲染引擎有关系。 Hexo 的自带的 Markdown 引擎并不支持 LaTeX 公式。 但是 MathJax 支持，因此首先要启用">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2023-02-19T09:26:43.876Z">
-<meta property="article:modified_time" content="2023-02-19T09:26:43.876Z">
+<meta property="og:image" content="https://gstarmin.github.io/img/latex/错误用法.png">
+<meta property="og:image" content="https://gstarmin.github.io/img/latex/正确用法.png">
+<meta property="article:published_time" content="2023-02-19T09:11:34.000Z">
+<meta property="article:modified_time" content="2023-02-19T09:11:34.000Z">
 <meta property="article:author" content="Starmin">
+<meta property="article:tag" content="latex">
+<meta property="article:tag" content="杂">
+<meta property="article:tag" content="mathjax">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://gstarmin.github.io/img/latex/错误用法.png">
   
   
   
-  <title>关于 - 私人杂货铺</title>
+  <title>hexo中数学公式换行问题 - 私人杂货铺</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -160,7 +168,7 @@
   <header>
     
 
-<div class="header-inner" style="height: 60vh;">
+<div class="header-inner" style="height: 70vh;">
   <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
   <div class="container">
     <a class="navbar-brand" href="/">
@@ -265,9 +273,49 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="关于"></span>
+            <span id="subtitle" data-typed-text="hexo中数学公式换行问题"></span>
           
         </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-02-19 17:11" pubdate>
+          2023年2月19日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          802 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          11 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
 
         
       </div>
@@ -283,76 +331,155 @@
 
   <main>
     
-      <div class="container nopadding-x-md">
-        <div id="board"
-          >
-          
-            <div class="about-avatar">
-              <img src="/img/avatar.png" srcset="/img/loading.gif" lazyload class="img-fluid" alt="avatar">
-            </div>
-          
-          <div class="container">
-            <div class="row">
-              <div class="col-12 col-md-10 m-auto">
-                
+      
 
-<div class="text-center">
-  <div class="about-info">
-    <div class="about-name">Starmin</div>
-    <div class="about-intro">一条兴趣使然的咸鱼</div>
-    <div class="about-icons">
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
       
-        
-        
-        
-        <a href=https://github.com class="
-           hint--bottom hint--rounded"
-           aria-label=GitHub
-           target="_blank"
-        >
-          <i class="iconfont icon-github-fill" aria-hidden="true"></i>
-          
-        </a>
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">hexo中数学公式换行问题</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h2 id="hexo-书写-latex-公式时的一些问题及解决方法">Hexo 书写 LaTeX
+公式时的一些问题及解决方法</h2>
+<p>使用hexo撰写博客的时候难免会用到数学公式，，如果公式过长，我们通常希望把方程分成多行显示，这时候就需要用到换行符号<code>\\</code>，但是写出来的
+Markdown 经过 Hexo 的处理以后显示不正确，这与 Hexo
+的渲染引擎有关系。</p>
+<p>Hexo 的自带的 Markdown 引擎并不支持 LaTeX 公式。 但是 MathJax
+支持，因此首先要启用 MathJax 才能渲染 LaTeX
+公式.但是它并不支持MathJax换行，这是因为我们的markdown文件首先会被hexo-theme-marked的marked.js解析，这就会使得使用Latex语法所写的MathJax公式中的_和，最后轮到MathJax来对公式进行解析就出错了。</p>
+<h3 id="安装hexo-renderer-pandoc">安装hexo-renderer-pandoc</h3>
+<p>为了使用pandoc作为Hexo的渲染引擎，我们需要安装插件hexo-renderer-pandoc，步骤如下：</p>
+<figure class="highlight coffeescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs coffeescript"><span class="hljs-built_in">npm</span> uninstall hexo-renderer-marked --save  <span class="hljs-comment"># 卸载默认渲染插件</span><br><span class="hljs-built_in">npm</span> install hexo-renderer-pandoc --svae <span class="hljs-comment"># 安装pandoc</span><br></code></pre></td></tr></table></figure>
+<p>但是在安装pandoc之后发现，公式中使用<code>\\</code>仍然不能换行，经过一番折腾之后发现了一个曲线救国的方法：在需要换行的公式加上align对齐：</p>
+<p>例如</p>
+<figure class="highlight latex"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs latex"><span class="hljs-built_in">$</span><span class="hljs-built_in">$</span><br>A = [<span class="hljs-keyword">\alpha</span><span class="hljs-built_in">_</span>1,<span class="hljs-keyword">\alpha</span><span class="hljs-built_in">_</span>2,...,<span class="hljs-keyword">\alpha</span><span class="hljs-built_in">_</span>n]<span class="hljs-keyword">\\</span> B = [<span class="hljs-keyword">\beta</span><span class="hljs-built_in">_</span>1,<span class="hljs-keyword">\beta</span><span class="hljs-built_in">_</span>2,...,<span class="hljs-keyword">\beta</span><span class="hljs-built_in">_</span>r]<br><span class="hljs-built_in">$</span><span class="hljs-built_in">$</span><br></code></pre></td></tr></table></figure>
+<p>在显示的时候会发现并没有换行</p>
+<p><img src="/img/latex/错误用法.png" srcset="/img/loading.gif" lazyload /></p>
+<p>而加上aligin之后就可以正常换行</p>
+<figure class="highlight latex"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs latex"><span class="hljs-built_in">$</span><span class="hljs-built_in">$</span><br><span class="hljs-keyword">\begin</span>&#123;align&#125;<br><span class="hljs-built_in">&amp;</span>A = [<span class="hljs-keyword">\alpha</span><span class="hljs-built_in">_</span>1,<span class="hljs-keyword">\alpha</span><span class="hljs-built_in">_</span>2,...,<span class="hljs-keyword">\alpha</span><span class="hljs-built_in">_</span>n]<span class="hljs-keyword">\\</span> <span class="hljs-built_in">&amp;</span>B = [<span class="hljs-keyword">\beta</span><span class="hljs-built_in">_</span>1,<span class="hljs-keyword">\beta</span><span class="hljs-built_in">_</span>2,...,<span class="hljs-keyword">\beta</span><span class="hljs-built_in">_</span>r]  <br><span class="hljs-keyword">\end</span>&#123;align&#125;<br><span class="hljs-built_in">$</span><span class="hljs-built_in">$</span><br></code></pre></td></tr></table></figure>
+<p><img src="/img/latex/正确用法.png" srcset="/img/loading.gif" lazyload /></p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
       
-        
-        
-        
-        <a href=https://douban.com class="
-           hint--bottom hint--rounded"
-           aria-label=豆瓣
-           target="_blank"
-        >
-          <i class="iconfont icon-douban-fill" aria-hidden="true"></i>
-          
-        </a>
+        <a href="/tags/latex/">#latex</a>
       
-        
-        
-        
-        <a  class="qr-trigger
-           "
-           
-           target="_self"
-        >
-          <i class="iconfont icon-wechat-fill" aria-hidden="true"></i>
-          
-            <img class="qr-img" src="/img/favicon.png" srcset="/img/loading.gif" lazyload alt="qrcode" />
-          
-        </a>
+        <a href="/tags/%E6%9D%82/">#杂</a>
       
+        <a href="/tags/mathjax/">#mathjax</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>hexo中数学公式换行问题</div>
+      <div>https://gstarmin.github.io/2023/02/19/hexo中数学公式换行问题/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Starmin</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年2月19日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/02/18/%E5%B8%B8%E8%A7%81%E7%9A%84%E9%9A%8F%E6%9C%BA%E8%BF%87%E7%A8%8B/" title="常见的随机过程">
+                        <span class="hidden-mobile">常见的随机过程</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
     </div>
   </div>
 </div>
 
-<article class="about-content page-content mt-5">
-  <div class="markdown-body">
-    
-
-  </div>
-
-  
-</article>
-
 
 
 
@@ -385,11 +512,8 @@
 
 
 
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+
+
     
 
     
@@ -482,6 +606,46 @@
   
 
 
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
 
 
   <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
