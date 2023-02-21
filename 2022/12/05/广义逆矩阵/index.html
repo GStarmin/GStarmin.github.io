@@ -305,7 +305,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          1.2k 字
+          1.3k 字
         
       </span>
     
@@ -316,7 +316,7 @@
         
         
         
-          16 分钟
+          17 分钟
         
       </span>
     
@@ -456,14 +456,18 @@ src="/img/矩阵论/广义逆矩阵/最大秩分解法例1-3.png" srcset="/img/l
 src="/img/矩阵论/广义逆矩阵/M-P广义逆计算定理2-1.png" srcset="/img/loading.gif" lazyload /> <img
 src="/img/矩阵论/广义逆矩阵/M-P广义逆计算定理2-2.png" srcset="/img/loading.gif" lazyload /></p>
 <h3 id="m-p广义逆的应用">M-P广义逆的应用</h3>
-<h4 id="求方程的最佳逼近解">求方程的最佳逼近解</h4>
-<p>当方程没有解的时候，可以求出系数矩阵的M-P广义逆<span
-class="math inline">\(A^+\)</span>,然后求出<span
-class="math inline">\(A^+b\)</span>来作为其最佳逼近解</p>
 <h4 id="判断方程有没有解">判断方程有没有解</h4>
 <p>求出<span class="math inline">\(A^+\)</span>,判断<span
 class="math inline">\(AA^+b\)</span>是否等于<span
 class="math inline">\(b\)</span>,若不等于则没有解，否则有解。</p>
+<h4
+id="求方程的最佳逼近解最小范数解最小二乘解">求方程的最佳逼近解/最小范数解/最小二乘解</h4>
+<p>当方程有解的时候，可以求得最小范数解为<span
+class="math inline">\(A^+b\)</span>；当方程没有解的时候，可以求出最佳逼近解为<span
+class="math inline">\(A^+b\)</span>，最小二乘通解为<span
+class="math inline">\(A^+ b+(I-A^+ A)u, \forall u \in
+\mathbb{C^n}\)</span>,其中<span class="math inline">\(A\)</span>为<span
+class="math inline">\(n\)</span>阶矩阵。</p>
 
                 
               </div>
