@@ -16,27 +16,22 @@
   <meta name="author" content="Starmin">
   <meta name="keywords" content="">
   
-    <meta name="description" content="Hexo 书写 LaTeX 公式时的一些问题及解决方法 使用hexo撰写博客的时候难免会用到数学公式，，如果公式过长，我们通常希望把方程分成多行显示，这时候就需要用到换行符号\\，但是写出来的 Markdown 经过 Hexo 的处理以后显示不正确，这与 Hexo 的渲染引擎有关系。 Hexo 的自带的 Markdown 引擎并不支持 LaTeX 公式。 但是 MathJax 支持，因此首先要启用">
+    <meta name="description" content="accumulate定义在#include中，有两种用法，一个是累加求和，另一个是自定义类型数据的处理 默认累加求和 12template&lt; class InputIt, class T &gt;T accumulate( InputIt first, InputIt last, T init ); 自定义对数据的处理 123template&lt; class InputIt, class">
 <meta property="og:type" content="article">
-<meta property="og:title" content="hexo中数学公式换行问题">
-<meta property="og:url" content="https://gstarmin.github.io/2023/02/19/hexo%E4%B8%AD%E6%95%B0%E5%AD%A6%E5%85%AC%E5%BC%8F%E6%8D%A2%E8%A1%8C%E9%97%AE%E9%A2%98/">
+<meta property="og:title" content="C++ std::accumulate函数用法">
+<meta property="og:url" content="https://gstarmin.github.io/2023/02/24/C++%20accumulate%E5%87%BD%E6%95%B0%E7%94%A8%E6%B3%95/">
 <meta property="og:site_name" content="私人杂货铺">
-<meta property="og:description" content="Hexo 书写 LaTeX 公式时的一些问题及解决方法 使用hexo撰写博客的时候难免会用到数学公式，，如果公式过长，我们通常希望把方程分成多行显示，这时候就需要用到换行符号\\，但是写出来的 Markdown 经过 Hexo 的处理以后显示不正确，这与 Hexo 的渲染引擎有关系。 Hexo 的自带的 Markdown 引擎并不支持 LaTeX 公式。 但是 MathJax 支持，因此首先要启用">
+<meta property="og:description" content="accumulate定义在#include中，有两种用法，一个是累加求和，另一个是自定义类型数据的处理 默认累加求和 12template&lt; class InputIt, class T &gt;T accumulate( InputIt first, InputIt last, T init ); 自定义对数据的处理 123template&lt; class InputIt, class">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://gstarmin.github.io/img/latex/错误用法.png">
-<meta property="og:image" content="https://gstarmin.github.io/img/latex/正确用法.png">
-<meta property="article:published_time" content="2023-02-19T09:11:34.000Z">
-<meta property="article:modified_time" content="2023-02-19T09:11:34.000Z">
+<meta property="article:published_time" content="2023-02-24T13:32:02.000Z">
+<meta property="article:modified_time" content="2023-02-24T13:32:02.000Z">
 <meta property="article:author" content="Starmin">
-<meta property="article:tag" content="latex">
-<meta property="article:tag" content="杂">
-<meta property="article:tag" content="mathjax">
+<meta property="article:tag" content="C++">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://gstarmin.github.io/img/latex/错误用法.png">
   
   
   
-  <title>hexo中数学公式换行问题 - 私人杂货铺</title>
+  <title>C++ std::accumulate函数用法 - 私人杂货铺</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -273,7 +268,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="hexo中数学公式换行问题"></span>
+            <span id="subtitle" data-typed-text="C++ std::accumulate函数用法"></span>
           
         </div>
 
@@ -284,8 +279,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2023-02-19 17:11" pubdate>
-          2023年2月19日 下午
+        <time datetime="2023-02-24 21:32" pubdate>
+          2023年2月24日 晚上
         </time>
       </span>
     
@@ -296,7 +291,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          802 字
+          1.5k 字
         
       </span>
     
@@ -307,7 +302,7 @@
         
         
         
-          11 分钟
+          19 分钟
         
       </span>
     
@@ -345,30 +340,25 @@
         <div id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">hexo中数学公式换行问题</h1>
+            <h1 style="display: none">C++ std::accumulate函数用法</h1>
             
             
               <div class="markdown-body">
                 
-                <h2 id="hexo-书写-latex-公式时的一些问题及解决方法">Hexo 书写 LaTeX
-公式时的一些问题及解决方法</h2>
-<p>使用hexo撰写博客的时候难免会用到数学公式，，如果公式过长，我们通常希望把方程分成多行显示，这时候就需要用到换行符号<code>\\</code>，但是写出来的
-Markdown 经过 Hexo 的处理以后显示不正确，这与 Hexo
-的渲染引擎有关系。</p>
-<p>Hexo 的自带的 Markdown 引擎并不支持 LaTeX 公式。 但是 MathJax
-支持，因此首先要启用 MathJax 才能渲染 LaTeX
-公式.但是它并不支持MathJax换行，这是因为我们的markdown文件首先会被hexo-theme-marked的marked.js解析，这就会使得使用Latex语法所写的MathJax公式中的_和，最后轮到MathJax来对公式进行解析就出错了。</p>
-<h3 id="安装hexo-renderer-pandoc">安装hexo-renderer-pandoc</h3>
-<p>为了使用pandoc作为Hexo的渲染引擎，我们需要安装插件hexo-renderer-pandoc，步骤如下：</p>
-<figure class="highlight coffeescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs coffeescript"><span class="hljs-built_in">npm</span> uninstall hexo-renderer-marked --save  <span class="hljs-comment"># 卸载默认渲染插件</span><br><span class="hljs-built_in">npm</span> install hexo-renderer-pandoc --svae <span class="hljs-comment"># 安装pandoc</span><br></code></pre></td></tr></table></figure>
-<p>但是在安装pandoc之后发现，公式中使用<code>\\</code>仍然不能换行，经过一番折腾之后发现了一个曲线救国的方法：在需要换行的公式加上align对齐：</p>
-<p>例如</p>
-<figure class="highlight latex"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs latex"><span class="hljs-built_in">$</span><span class="hljs-built_in">$</span><br>A = [<span class="hljs-keyword">\alpha</span><span class="hljs-built_in">_</span>1,<span class="hljs-keyword">\alpha</span><span class="hljs-built_in">_</span>2,...,<span class="hljs-keyword">\alpha</span><span class="hljs-built_in">_</span>n]<span class="hljs-keyword">\\</span> B = [<span class="hljs-keyword">\beta</span><span class="hljs-built_in">_</span>1,<span class="hljs-keyword">\beta</span><span class="hljs-built_in">_</span>2,...,<span class="hljs-keyword">\beta</span><span class="hljs-built_in">_</span>r]<br><span class="hljs-built_in">$</span><span class="hljs-built_in">$</span><br></code></pre></td></tr></table></figure>
-<p>在显示的时候会发现并没有换行</p>
-<p><img src="/img/latex/错误用法.png" srcset="/img/loading.gif" lazyload /></p>
-<p>而加上aligin之后就可以正常换行</p>
-<figure class="highlight latex"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs latex"><span class="hljs-built_in">$</span><span class="hljs-built_in">$</span><br><span class="hljs-keyword">\begin</span>&#123;align&#125;<br><span class="hljs-built_in">&amp;</span>A = [<span class="hljs-keyword">\alpha</span><span class="hljs-built_in">_</span>1,<span class="hljs-keyword">\alpha</span><span class="hljs-built_in">_</span>2,...,<span class="hljs-keyword">\alpha</span><span class="hljs-built_in">_</span>n]<span class="hljs-keyword">\\</span> <span class="hljs-built_in">&amp;</span>B = [<span class="hljs-keyword">\beta</span><span class="hljs-built_in">_</span>1,<span class="hljs-keyword">\beta</span><span class="hljs-built_in">_</span>2,...,<span class="hljs-keyword">\beta</span><span class="hljs-built_in">_</span>r]  <br><span class="hljs-keyword">\end</span>&#123;align&#125;<br><span class="hljs-built_in">$</span><span class="hljs-built_in">$</span><br></code></pre></td></tr></table></figure>
-<p><img src="/img/latex/正确用法.png" srcset="/img/loading.gif" lazyload /></p>
+                <p>accumulate定义在#include<numeric>中，有两种用法，一个是累加求和，另一个是自定义类型数据的处理</p>
+<h2 id="默认累加求和">默认累加求和</h2>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-function"><span class="hljs-keyword">template</span>&lt; <span class="hljs-keyword">class</span> InputIt, <span class="hljs-keyword">class</span> T &gt;</span><br><span class="hljs-function">T <span class="hljs-title">accumulate</span><span class="hljs-params">( InputIt first, InputIt last, T init )</span></span>;<br></code></pre></td></tr></table></figure>
+<h2 id="自定义对数据的处理">自定义对数据的处理</h2>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-function"><span class="hljs-keyword">template</span>&lt; <span class="hljs-keyword">class</span> InputIt, <span class="hljs-keyword">class</span> T, <span class="hljs-keyword">class</span> BinaryOperation &gt;</span><br><span class="hljs-function"><span class="hljs-keyword">constexpr</span> T <span class="hljs-title">accumulate</span><span class="hljs-params">( InputIt first, InputIt last, T init,</span></span><br><span class="hljs-params"><span class="hljs-function">                        BinaryOperation op )</span></span>;<br></code></pre></td></tr></table></figure>
+<h2 id="参数">参数</h2>
+<p><strong>first, last</strong>: 要求和的元素范围</p>
+<p><strong>init</strong>：和的初值</p>
+<p><strong>op</strong>:被使用的二元函数对象。接收当前积累值 a （初始化为
+init ）和当前元素 b 的二元运算符。</p>
+<h2 id="例子">例子</h2>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-comment">// accumulate example</span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;iostream&gt;</span>     <span class="hljs-comment">// std::cout</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;functional&gt;</span>   <span class="hljs-comment">// std::minus</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;numeric&gt;</span>      <span class="hljs-comment">// std::accumulate</span></span><br><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">myfunction</span> <span class="hljs-params">(<span class="hljs-type">int</span> x, <span class="hljs-type">int</span> y)</span> </span>&#123;<span class="hljs-keyword">return</span> x+<span class="hljs-number">2</span>*y;&#125;<br><span class="hljs-keyword">struct</span> <span class="hljs-title class_">myclass</span> &#123;<br>	<span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">operator</span><span class="hljs-params">()</span><span class="hljs-params">(<span class="hljs-type">int</span> x, <span class="hljs-type">int</span> y)</span> </span>&#123;<span class="hljs-keyword">return</span> x+<span class="hljs-number">3</span>*y;&#125;<br>&#125; myobject;<br><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span> <span class="hljs-params">()</span> </span>&#123;<br>    <span class="hljs-type">int</span> init = <span class="hljs-number">100</span>;<br>    <span class="hljs-type">int</span> numbers[] = &#123;<span class="hljs-number">10</span>,<span class="hljs-number">20</span>,<span class="hljs-number">30</span>&#125;;<br><br>    std::cout &lt;&lt; <span class="hljs-string">&quot;using default accumulate: &quot;</span>;<br>    std::cout &lt;&lt; std::<span class="hljs-built_in">accumulate</span>(numbers,numbers+<span class="hljs-number">3</span>,init);<br>    std::cout &lt;&lt; <span class="hljs-string">&#x27;\n&#x27;</span>;<br><br>    std::cout &lt;&lt; <span class="hljs-string">&quot;using functional minus: &quot;</span>;<br>    std::cout &lt;&lt; std::<span class="hljs-built_in">accumulate</span> (numbers, numbers+<span class="hljs-number">3</span>, init, std::<span class="hljs-built_in">minus</span>&lt;<span class="hljs-type">int</span>&gt;());<br>    std::cout &lt;&lt; <span class="hljs-string">&#x27;\n&#x27;</span>;<br><br>    std::cout &lt;&lt; <span class="hljs-string">&quot;using custom function: &quot;</span>;<br>    std::cout &lt;&lt; std::<span class="hljs-built_in">accumulate</span>(numbers, numbers + <span class="hljs-number">3</span>, <span class="hljs-number">0</span>, [](<span class="hljs-type">int</span> a, Grade b)&#123;<span class="hljs-keyword">return</span> a + b * <span class="hljs-number">2</span>; &#125;);<br>    std::cout &lt;&lt; <span class="hljs-string">&#x27;\n&#x27;</span>;<br><br>    std::cout &lt;&lt; <span class="hljs-string">&quot;using custom object: &quot;</span>;<br>    std::cout &lt;&lt; std::<span class="hljs-built_in">accumulate</span> (numbers, numbers+<span class="hljs-number">3</span>, init, myobject);<br>    std::cout &lt;&lt; <span class="hljs-string">&#x27;\n&#x27;</span>;<br><br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p><strong>输出</strong>：</p>
+<figure class="highlight vbnet"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs vbnet"><span class="hljs-keyword">using</span> <span class="hljs-keyword">default</span> accumulate: <span class="hljs-number">160</span><br><span class="hljs-keyword">using</span> functional minus: <span class="hljs-number">40</span><br><span class="hljs-keyword">using</span> <span class="hljs-keyword">custom</span> <span class="hljs-keyword">function</span>: <span class="hljs-number">120</span><br><span class="hljs-keyword">using</span> <span class="hljs-keyword">custom</span> <span class="hljs-type">object</span>: <span class="hljs-number">280</span><br></code></pre></td></tr></table></figure>
 
                 
               </div>
@@ -377,15 +367,32 @@ Markdown 经过 Hexo 的处理以后显示不正确，这与 Hexo
             <div>
               <div class="post-metas my-3">
   
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/C/" class="category-chain-item">C++</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
   
     <div class="post-meta">
       <i class="iconfont icon-tags"></i>
       
-        <a href="/tags/latex/">#latex</a>
-      
-        <a href="/tags/%E6%9D%82/">#杂</a>
-      
-        <a href="/tags/mathjax/">#mathjax</a>
+        <a href="/tags/C/">#C++</a>
       
     </div>
   
@@ -397,8 +404,8 @@ Markdown 经过 Hexo 的处理以后显示不正确，这与 Hexo
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>hexo中数学公式换行问题</div>
-      <div>https://gstarmin.github.io/2023/02/19/hexo中数学公式换行问题/</div>
+      <div>C++ std::accumulate函数用法</div>
+      <div>https://gstarmin.github.io/2023/02/24/C++ accumulate函数用法/</div>
     </div>
     <div class="license-meta">
       
@@ -410,7 +417,7 @@ Markdown 经过 Hexo 的处理以后显示不正确，这与 Hexo
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2023年2月19日</div>
+          <div>2023年2月24日</div>
         </div>
       
       
@@ -442,9 +449,9 @@ Markdown 经过 Hexo 的处理以后显示不正确，这与 Hexo
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2023/02/24/C++%20accumulate%E5%87%BD%E6%95%B0%E7%94%A8%E6%B3%95/" title="C++ std::accumulate函数用法">
+                      <a href="/2023/02/24/C++%20lambda%E7%94%A8%E6%B3%95/" title="C++ lambda函数用法">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">C++ std::accumulate函数用法</span>
+                        <span class="hidden-mobile">C++ lambda函数用法</span>
                         <span class="visible-mobile">上一篇</span>
                       </a>
                     
@@ -452,8 +459,8 @@ Markdown 经过 Hexo 的处理以后显示不正确，这与 Hexo
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2023/02/18/%E5%B8%B8%E8%A7%81%E7%9A%84%E9%9A%8F%E6%9C%BA%E8%BF%87%E7%A8%8B/" title="常见的随机过程">
-                        <span class="hidden-mobile">常见的随机过程</span>
+                      <a href="/2023/02/19/hexo%E4%B8%AD%E6%95%B0%E5%AD%A6%E5%85%AC%E5%BC%8F%E6%8D%A2%E8%A1%8C%E9%97%AE%E9%A2%98/" title="hexo中数学公式换行问题">
+                        <span class="hidden-mobile">hexo中数学公式换行问题</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
