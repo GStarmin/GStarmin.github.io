@@ -25,6 +25,8 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://gstarmin.github.io/img/算法/异或/查找数组中出现奇数次个数的数图解.png">
 <meta property="og:image" content="https://gstarmin.github.io/img/算法/二分法/二分法拓展.png">
+<meta property="og:image" content="https://gstarmin.github.io/img/算法/二分法/局部最小值-2.png">
+<meta property="og:image" content="https://gstarmin.github.io/img/算法/二分法/局部最小值-1.png">
 <meta property="article:published_time" content="2023-02-17T15:00:00.000Z">
 <meta property="article:modified_time" content="2023-02-25T13:01:00.000Z">
 <meta property="article:author" content="Starmin">
@@ -294,7 +296,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          1.3k 字
+          1.7k 字
         
       </span>
     
@@ -305,7 +307,7 @@
         
         
         
-          17 分钟
+          21 分钟
         
       </span>
     
@@ -399,6 +401,13 @@ class="math inline">\(eor\)</span>用二进制表示就可以更直观的看出�
 <p><img src="/img/算法/二分法/二分法拓展.png" srcset="/img/loading.gif" lazyload /></p>
 <p>如上图所示，查找数组中最左侧大于或等于3的数也可以使用二分法。首先对整个数组二分，看中间的数是否满足大于或等于3，若满足继续在左侧二分，否则在右半侧二分，一直到结束，得到的所有满足条件的最小下标就是求得的结果。</p>
 <p><strong>这个问题与普通二分法查找的区别在于</strong>：二分法是使用二分找个一个满足条件的数之后就结果查找，但是这里需要一直二分到最后，然后在所有满足条件的数中比较。</p>
+<h3 id="寻找局部最小值">寻找局部最小值</h3>
+<p>在一个无序数组arr中，相邻的数都不相同，那么如何在这个数组arr中找到一个局部最小值？这里的极小值定义是比左右两侧都小的数，在数组最左侧则只需要满足比它右侧的数小，在数组最右侧的数只需要满足比它左侧的数小即可。</p>
+<p>首先判断<code>arr[0]</code>和<code>arr[n - 1]</code>是否是极小值，若右极小值则直接返回。若都不是极小值那么取最中间的数<code>arr[m]</code>,判断<code>arr[m]</code>是否为局部最小值，若为局部最小值则直接返回。</p>
+<p><img src="/img/算法/二分法/局部最小值-2.png" srcset="/img/loading.gif" lazyload /></p>
+<p>若不为极小值那么它要么比它左侧的数大，要么比它右侧的数大。假设它比左侧的数大，那么就在左半边进行二分，如此一来，就存在了二分的点，直至找到一个局部最小值为止。</p>
+<p><img src="/img/算法/二分法/局部最小值-1.png" srcset="/img/loading.gif" lazyload /></p>
+<p><strong>这里可以看出来二分法不只是能用在有序数组，在无序的情况下满足特定条件也可以用二分。</strong></p>
 
                 
               </div>
