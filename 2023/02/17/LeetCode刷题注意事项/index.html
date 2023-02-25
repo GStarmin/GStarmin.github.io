@@ -28,7 +28,7 @@
 <meta property="og:image" content="https://gstarmin.github.io/img/算法/二分法/局部最小值-2.png">
 <meta property="og:image" content="https://gstarmin.github.io/img/算法/二分法/局部最小值-1.png">
 <meta property="article:published_time" content="2023-02-17T15:00:00.000Z">
-<meta property="article:modified_time" content="2023-02-25T13:01:00.000Z">
+<meta property="article:modified_time" content="2023-02-25T13:53:00.000Z">
 <meta property="article:author" content="Starmin">
 <meta property="article:tag" content="LeetCode">
 <meta name="twitter:card" content="summary_large_image">
@@ -376,8 +376,8 @@ class="math inline">\(eor\)</span>就是出现奇数次的数。因为异或运�
 class="math inline">\(0\)</span>，出现奇数次的数相互异或的结果为这个数的值，所以总的结果就是这个出现奇数次的数。</p>
 <h4 id="有两种数出现奇数次">有两种数出现奇数次</h4>
 <p>一个数组中有两种数出现奇数次，其余的数都出现偶数次，那么如果寻找出现奇数次的数？</p>
-<p>设置一个<span class="math inline">\(eor =
-0\)</span>,然后让eor与数组中的每个数都异或一遍，最后得到的<span
+<p>设置一个<span class="math inline">\(eor = 0\)</span>,然后让<span
+class="math inline">\(eor\)</span>与数组中的每个数都异或一遍，最后得到的<span
 class="math inline">\(eor\)</span>为a ^
 b。因为a和b是不同的数，所以必然有a ^ b <span
 class="math inline">\(\ne\)</span> 0,也就是a ^
@@ -396,8 +396,9 @@ class="math inline">\(eor\)</span>异或第8位为1的数得到的就是a，b其
 class="math inline">\(eor\)</span>用二进制表示就可以更直观的看出来：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs C++">             eor = <span class="hljs-number">11001110</span>    <br>        ~eor + <span class="hljs-number">1</span> = <span class="hljs-number">00110010</span><br>eor &amp; (~eor + <span class="hljs-number">1</span>) = <span class="hljs-number">00000010</span> <span class="hljs-comment">// 提取出来最右侧的1</span><br></code></pre></td></tr></table></figure>
 <h2 id="二分法扩展">二分法扩展</h2>
-<p>二分法作为一种常见的查找算法，其实不单单可以只寻找某一个数。 ###
-查找有序数组中最左侧大于或等于k的数</p>
+<p>二分法作为一种常见的查找算法，其实不单单可以只寻找某一个数。</p>
+<h3
+id="查找有序数组中最左侧大于或等于k的数">查找有序数组中最左侧大于或等于k的数</h3>
 <p><img src="/img/算法/二分法/二分法拓展.png" srcset="/img/loading.gif" lazyload /></p>
 <p>如上图所示，查找数组中最左侧大于或等于3的数也可以使用二分法。首先对整个数组二分，看中间的数是否满足大于或等于3，若满足继续在左侧二分，否则在右半侧二分，一直到结束，得到的所有满足条件的最小下标就是求得的结果。</p>
 <p><strong>这个问题与普通二分法查找的区别在于</strong>：二分法是使用二分找个一个满足条件的数之后就结果查找，但是这里需要一直二分到最后，然后在所有满足条件的数中比较。</p>
