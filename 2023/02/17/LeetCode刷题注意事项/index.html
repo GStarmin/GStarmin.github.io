@@ -30,7 +30,8 @@
 <meta property="article:published_time" content="2023-02-17T15:00:00.000Z">
 <meta property="article:modified_time" content="2023-02-26T08:53:00.000Z">
 <meta property="article:author" content="Starmin">
-<meta property="article:tag" content="LeetCode">
+<meta property="article:tag" content="leetcode">
+<meta property="article:tag" content="算法与数据结构">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://gstarmin.github.io/img/算法/异或/查找数组中出现奇数次个数的数图解.png">
   
@@ -296,7 +297,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          2.1k 字
+          3.5k 字
         
       </span>
     
@@ -307,7 +308,7 @@
         
         
         
-          27 分钟
+          45 分钟
         
       </span>
     
@@ -416,7 +417,7 @@ id="查找有序数组中最左侧大于或等于k的数">查找有序数组中�
 <code>low</code>和<code>high</code>都没有溢出，那么<code>high - low</code>也不会溢出，这样结果就不会溢出。</p>
 <p>更加简化的写法是</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-type">int</span> mid = low + ((high - low) &gt;&gt; <span class="hljs-number">2</span>);<br></code></pre></td></tr></table></figure>
-<h3 id="时间复杂度master公式">时间复杂度（Master公式）</h3>
+<h2 id="时间复杂度master公式">时间复杂度（Master公式）</h2>
 <p>若有<span class="math inline">\(T(N)=a * T(\frac{N}{b})
 +O(N^d)\)</span>，则说明这个算法满足<strong>Master公式</strong>。也就是说只要是<strong>满足子问题等规模的递归都可以用Master公式</strong>。a，b，d的值可能会有三种情况。</p>
 <ol type="1">
@@ -430,6 +431,24 @@ a})\)</span>。</li>
 d\)</span>,则算法时间复杂度为<span class="math inline">\(O(N^d * \log
 n)\)</span>。</li>
 </ol>
+<h2 id="链表">链表</h2>
+<h3 id="面试时链表解题方法论">面试时链表解题方法论</h3>
+<ol type="1">
+<li>对于笔试，不用太在乎空间复杂度，一切为了时间复杂度。</li>
+<li>对于面试，时间复杂度仍然放在第一位，但是要找到空间复杂度最省的方法。</li>
+</ol>
+<h3 id="重要技巧">重要技巧</h3>
+<h4 id="额外数据结构记录哈希表等">额外数据结构记录（哈希表等）</h4>
+<p>此技巧一般只适用于笔试做题，面试一般不适用。</p>
+<p>设置额外的数据结构，比如数组、哈希表或者栈等来辅助做题。 ####
+快慢指针
+有一些问题诸如寻找链表的中点，最简单暴力的方法是遍历一遍链表然后得到链表长度，然后根据长度得到其最中间的节点。这样做有一个问题，就是需要遍历一遍半的链表。而使用快慢指针就可以少遍历一遍链表。</p>
+<p>它的思想是设置一个<code>fast</code>节点和一个<code>slow</code>节点，每次<code>fast</code>节点往后走两步，而<code>slow</code>节点往后走一步。这样当<code>fast</code>节点走完整个链表的时候，<code>slow</code>节点就在链表的中间。</p>
+<p>代码如下：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-comment">/**</span><br><span class="hljs-comment"> * Definition for singly-linked list.</span><br><span class="hljs-comment"> * struct ListNode &#123;</span><br><span class="hljs-comment"> *     int val;</span><br><span class="hljs-comment"> *     ListNode *next;</span><br><span class="hljs-comment"> *     ListNode() : val(0), next(nullptr) &#123;&#125;</span><br><span class="hljs-comment"> *     ListNode(int x) : val(x), next(nullptr) &#123;&#125;</span><br><span class="hljs-comment"> *     ListNode(int x, ListNode *next) : val(x), next(next) &#123;&#125;</span><br><span class="hljs-comment"> * &#125;;</span><br><span class="hljs-comment"> */</span><br> <span class="hljs-comment">// 链表长度为偶数情况下，默认寻找中间靠前的那个节点</span><br>ListNode *fast = head, slow = head;<br><span class="hljs-keyword">while</span>(fast != <span class="hljs-literal">nullptr</span>)<br>&#123;<br>      fast = fast -&gt; next;<br>      <span class="hljs-keyword">if</span>(fast != <span class="hljs-literal">nullptr</span>)<br>            fast = fast -&gt; next;<br>      <span class="hljs-keyword">else</span><br>            <span class="hljs-keyword">break</span>;<br>      slow = slow -&gt; next;   <br>&#125;<br></code></pre></td></tr></table></figure>
+<p>需要特别注意的是，<strong>不要死记这代码，实际上在做题或者应用中的不同情况是是有很多细微的差别的，比如若链表长度是偶数，有的时候需要中间靠前的节点，有的时候需要中间靠后的节点，还有的时候需要中间靠前节点的前驱节点，不同情况要做对应的调整，同时还要注意边界条件，比如节点为空或者只有一个节点的情况。</strong></p>
+<p>链表长度为偶数情况下，寻找中间靠后的那个节点:</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-comment">/**</span><br><span class="hljs-comment"> * Definition for singly-linked list.</span><br><span class="hljs-comment"> * struct ListNode &#123;</span><br><span class="hljs-comment"> *     int val;</span><br><span class="hljs-comment"> *     ListNode *next;</span><br><span class="hljs-comment"> *     ListNode() : val(0), next(nullptr) &#123;&#125;</span><br><span class="hljs-comment"> *     ListNode(int x) : val(x), next(nullptr) &#123;&#125;</span><br><span class="hljs-comment"> *     ListNode(int x, ListNode *next) : val(x), next(next) &#123;&#125;</span><br><span class="hljs-comment"> * &#125;;</span><br><span class="hljs-comment"> */</span><br> <span class="hljs-comment">// 链表长度为偶数情况下，寻找中间靠后的那个节点</span><br> <span class="hljs-comment">// 同时保证链表长度为奇数情况下可以找到正中间的节点</span><br>ListNode *fast = head, slow = head;<br><span class="hljs-keyword">while</span>(fast != <span class="hljs-literal">nullptr</span>)<br>&#123;<br>      fast = fast -&gt; next;<br>      <span class="hljs-keyword">if</span>(fast == <span class="hljs-literal">nullptr</span>)<br>            <span class="hljs-keyword">break</span>;<br>      slow = slow -&gt; next;   <br>      fast = fast -&gt; next;<br>&#125;<br></code></pre></td></tr></table></figure>
 
                 
               </div>
@@ -438,11 +457,34 @@ n)\)</span>。</li>
             <div>
               <div class="post-metas my-3">
   
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E7%AE%97%E6%B3%95%E4%B8%8E%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" class="category-chain-item">算法与数据结构</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
   
     <div class="post-meta">
       <i class="iconfont icon-tags"></i>
       
-        <a href="/tags/LeetCode/">#LeetCode</a>
+        <a href="/tags/leetcode/">#leetcode</a>
+      
+        <a href="/tags/%E7%AE%97%E6%B3%95%E4%B8%8E%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">#算法与数据结构</a>
       
     </div>
   
