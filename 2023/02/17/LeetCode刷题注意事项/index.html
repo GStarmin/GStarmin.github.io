@@ -432,11 +432,6 @@ d\)</span>,则算法时间复杂度为<span class="math inline">\(O(N^d * \log
 n)\)</span>。</li>
 </ol>
 <h2 id="链表">链表</h2>
-<h3 id="面试时链表解题方法论">面试时链表解题方法论</h3>
-<ol type="1">
-<li>对于笔试，不用太在乎空间复杂度，一切为了时间复杂度。</li>
-<li>对于面试，时间复杂度仍然放在第一位，但是要找到空间复杂度最省的方法。</li>
-</ol>
 <h3 id="重要技巧">重要技巧</h3>
 <h4 id="额外数据结构记录哈希表等">额外数据结构记录（哈希表等）</h4>
 <p>此技巧一般只适用于笔试做题，面试一般不适用。</p>
@@ -449,6 +444,11 @@ n)\)</span>。</li>
 <p>需要特别注意的是，<strong>不要死记这代码，实际上在做题或者应用中的不同情况是是有很多细微的差别的，比如若链表长度是偶数，有的时候需要中间靠前的节点，有的时候需要中间靠后的节点，还有的时候需要中间靠前节点的前驱节点，不同情况要做对应的调整，同时还要注意边界条件，比如节点为空或者只有一个节点的情况。</strong></p>
 <p>链表长度为偶数情况下，寻找中间靠后的那个节点:</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-comment">/**</span><br><span class="hljs-comment"> * Definition for singly-linked list.</span><br><span class="hljs-comment"> * struct ListNode &#123;</span><br><span class="hljs-comment"> *     int val;</span><br><span class="hljs-comment"> *     ListNode *next;</span><br><span class="hljs-comment"> *     ListNode() : val(0), next(nullptr) &#123;&#125;</span><br><span class="hljs-comment"> *     ListNode(int x) : val(x), next(nullptr) &#123;&#125;</span><br><span class="hljs-comment"> *     ListNode(int x, ListNode *next) : val(x), next(next) &#123;&#125;</span><br><span class="hljs-comment"> * &#125;;</span><br><span class="hljs-comment"> */</span><br> <span class="hljs-comment">// 链表长度为偶数情况下，寻找中间靠后的那个节点</span><br> <span class="hljs-comment">// 同时保证链表长度为奇数情况下可以找到正中间的节点</span><br>ListNode *fast = head, slow = head;<br><span class="hljs-keyword">while</span>(fast != <span class="hljs-literal">nullptr</span>)<br>&#123;<br>      fast = fast -&gt; next;<br>      <span class="hljs-keyword">if</span>(fast == <span class="hljs-literal">nullptr</span>)<br>            <span class="hljs-keyword">break</span>;<br>      slow = slow -&gt; next;   <br>      fast = fast -&gt; next;<br>&#125;<br></code></pre></td></tr></table></figure>
+<h3 id="面试时链表解题方法论">面试时链表解题方法论</h3>
+<ol type="1">
+<li>对于笔试，不用太在乎空间复杂度，一切为了时间复杂度。比如可以直接把链表copy到数组。</li>
+<li>对于面试，时间复杂度仍然放在第一位，但是要找到空间复杂度最省的方法。</li>
+</ol>
 
                 
               </div>
