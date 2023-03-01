@@ -1,0 +1,914 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Starmin">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="什么是二叉树 二叉树是一种常见的数据结构，它是每个节点至多有两棵子树的树。 二叉树有两种特殊的形式，满二叉树和完全二叉树。 满⼆叉树：如果⼀棵⼆叉树只有度为0的结点和度为2的结点，并且度为0的结点在同⼀层上，则这棵⼆叉树为满⼆叉树。一棵深度为k的满二叉树节点个数为\(2^k -1\)。 完全⼆叉树：至多只有最下面的两层结点的度数可以小于2, 并且最下一层上的结点都集中在该层最左边的若干位置上， 则">
+<meta property="og:type" content="article">
+<meta property="og:title" content="二叉树">
+<meta property="og:url" content="https://gstarmin.github.io/2023/03/01/%E4%BA%8C%E5%8F%89%E6%A0%91/">
+<meta property="og:site_name" content="私人杂货铺">
+<meta property="og:description" content="什么是二叉树 二叉树是一种常见的数据结构，它是每个节点至多有两棵子树的树。 二叉树有两种特殊的形式，满二叉树和完全二叉树。 满⼆叉树：如果⼀棵⼆叉树只有度为0的结点和度为2的结点，并且度为0的结点在同⼀层上，则这棵⼆叉树为满⼆叉树。一棵深度为k的满二叉树节点个数为\(2^k -1\)。 完全⼆叉树：至多只有最下面的两层结点的度数可以小于2, 并且最下一层上的结点都集中在该层最左边的若干位置上， 则">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gstarmin.github.io/img/算法/二叉树/完全二叉树和满二叉树.png">
+<meta property="og:image" content="https://gstarmin.github.io/img/算法/二叉树/二叉排序树.jpg">
+<meta property="article:published_time" content="2023-03-01T10:36:27.000Z">
+<meta property="article:modified_time" content="2023-03-01T10:36:27.000Z">
+<meta property="article:author" content="Starmin">
+<meta property="article:tag" content="leetcode">
+<meta property="article:tag" content="数据结构与苏纳法">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://gstarmin.github.io/img/算法/二叉树/完全二叉树和满二叉树.png">
+  
+  
+  
+  <title>二叉树 - 私人杂货铺</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"gstarmin.github.io","root":"/","version":"1.9.3","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 5.4.2"><style>.mjpage .MJX-monospace {
+  font-family: monospace;
+}
+
+.mjpage .MJX-sans-serif {
+  font-family: sans-serif;
+}
+
+.mjpage {
+  display: inline;
+  font-style: normal;
+  font-weight: normal;
+  line-height: normal;
+  font-size: 100%;
+  font-size-adjust: none;
+  text-indent: 0;
+  text-align: left;
+  text-transform: none;
+  letter-spacing: normal;
+  word-spacing: normal;
+  word-wrap: normal;
+  white-space: nowrap;
+  float: none;
+  direction: ltr;
+  max-width: none;
+  max-height: none;
+  min-width: 0;
+  min-height: 0;
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+
+.mjpage * {
+  transition: none;
+  -webkit-transition: none;
+  -moz-transition: none;
+  -ms-transition: none;
+  -o-transition: none;
+}
+
+.mjx-svg-href {
+  fill: blue;
+  stroke: blue;
+}
+
+.MathJax_SVG_LineBox {
+  display: table !important;
+}
+
+.MathJax_SVG_LineBox span {
+  display: table-cell !important;
+  width: 10000em !important;
+  min-width: 0;
+  max-width: none;
+  padding: 0;
+  border: 0;
+  margin: 0;
+}
+
+.mjpage__block {
+  text-align: center;
+  margin: 1em 0em;
+  position: relative;
+  display: block !important;
+  text-indent: 0;
+  max-width: none;
+  max-height: none;
+  min-width: 0;
+  min-height: 0;
+  width: 100%;
+}
+</style></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Starmin</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="二叉树"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-03-01 18:36" pubdate>
+          2023年3月1日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          7.9k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          99 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">二叉树</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h2 id="什么是二叉树">什么是二叉树</h2>
+<p>二叉树是一种常见的数据结构，它是每个节点至多有两棵子树的树。</p>
+<p>二叉树有两种特殊的形式，满二叉树和完全二叉树。</p>
+<p><strong>满⼆叉树</strong>：如果⼀棵⼆叉树只有度为0的结点和度为2的结点，并且度为0的结点在同⼀层上，则这棵⼆叉树为满⼆叉树。一棵深度为k的满二叉树节点个数为<span
+class="math inline">\(2^k -1\)</span>。</p>
+<p><strong>完全⼆叉树</strong>：至多只有最下面的两层结点的度数可以小于2,
+并且最下一层上的结点都集中在该层最左边的若干位置上，
+则此二叉树称为完全二叉树。</p>
+<p><img src="/img/算法/二叉树/完全二叉树和满二叉树.png" srcset="/img/loading.gif" lazyload /></p>
+<p>我们可以看出满二叉树是完全二叉树， 但完全二叉树不一定是满二叉树。</p>
+<h2 id="二叉排序树">二叉排序树</h2>
+<p>二叉排序树虽然名叫排序树，但是它其实是用来搜索的，是一种有序的二叉树。它遵循着左小右大的规则：</p>
+<ul>
+<li>若它的左⼦树不空，则左⼦树上所有结点的值均⼩于它的根结点的值；</li>
+<li>若它的右⼦树不空，则右⼦树上所有结点的值均⼤于它的根结点的值；</li>
+<li>它的左、右⼦树也分别为⼆叉搜索树。</li>
+</ul>
+<p><img src="/img/算法/二叉树/二叉排序树.jpg" srcset="/img/loading.gif" lazyload /></p>
+<h2 id="平衡二叉树">平衡二叉树</h2>
+<p>二叉搜索树有一个缺点，在插入数据是有序的序列（包括升序和降序），会导致二叉树退化成链表，从而导致在查找，删除，添加时的性能均从O（logN）降低为O（N），这是不能接受的。</p>
+<p>究其原因，是因为二叉搜索树退化成链表的时候，树的高度与节点的个数相等，也就是成正比，所以为了优化这种情况，就出现了具有平衡能力的二叉搜索树，其中AVL树是最早被发明的自平衡二叉查找树。在AVL树中，任一节点对应的两棵子树的最大高度差为1，因此它也被称为高度平衡树。查找、插入和删除在平均和最坏情况下的时间复杂度都是O（logN）。增加和删除元素的操作则可能需要借由一次或多次树旋转，以实现树的重新平衡。AVL树得名于它的发明者G.
+M. Adelson-Velsky和Evgenii Landis，他们在1962年的论文《An algorithm for
+the organization of information》中公开了这一数据结构。</p>
+<p><strong>平衡二叉树的性质</strong></p>
+<p>平衡二叉树本质上是特殊的二叉搜索树（二叉排序树），它具有二叉搜索树所有的特点，此外它有自己的特别的性质，如下：</p>
+<ul>
+<li>它是一棵空树或它的左右两个子树的高度差的绝对值不超过1；</li>
+<li>平衡二叉树的左右两个子树都是一棵平衡二叉树。</li>
+</ul>
+<p>平衡因子指的是，平衡二叉树在保持平衡的时候，是通过平衡因子来判断的</p>
+<p><span class="math display">\[节点的平衡因子 = 该节点的左子树的高度 -
+该节点右子树的高度\]</span></p>
+<p>只有当值等于-1（右子树的高度大），0（左右子树的高度相等），1（左子树的高度大）的时候，能够代表该子树是平衡的除此之外，就认为该节点已经失衡了，需要旋转来维持平衡。</p>
+<h2 id="二叉树的遍历">二叉树的遍历</h2>
+<p>二叉树的遍历是对于理解二叉树以及应对二叉树问题必不可少的因素，甚至有很多算法问题都是基于二叉树的不同遍历算法来做的。</p>
+<p>二叉树的遍历有多种实现方式，不同的方式这里都要熟练掌握，只有熟练掌握不同的遍历方式才能以不变应万变来应对不同的问题。</p>
+<h3 id="递归法">递归法</h3>
+<p>很简单，不需要都多说，二叉树的前序、中序、后序遍历其实都是一个模板，区别在于它们将当前节点值添加到结果数组<code>res</code>的时间不一样，而这种区别是由不同遍历方式下父节点与子节点的遍历次序导致的。</p>
+<h4 id="前序遍历">前序遍历</h4>
+<p>代码：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-comment">/**</span><br><span class="hljs-comment"> * Definition for a binary tree node.</span><br><span class="hljs-comment"> * struct TreeNode &#123;</span><br><span class="hljs-comment"> *     int val;</span><br><span class="hljs-comment"> *     TreeNode *left;</span><br><span class="hljs-comment"> *     TreeNode *right;</span><br><span class="hljs-comment"> *     TreeNode() : val(0), left(nullptr), right(nullptr) &#123;&#125;</span><br><span class="hljs-comment"> *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) &#123;&#125;</span><br><span class="hljs-comment"> *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) &#123;&#125;</span><br><span class="hljs-comment"> * &#125;;</span><br><span class="hljs-comment"> */</span><br><span class="hljs-function">vector&lt;<span class="hljs-type">int</span>&gt; <span class="hljs-title">inorderTraversal</span><span class="hljs-params">(TreeNode* root)</span></span><br><span class="hljs-function"></span>&#123;<br>    vector&lt;<span class="hljs-type">int</span>&gt; res;<br>    <span class="hljs-built_in">oreOrder</span>(root, res);<br>    <span class="hljs-keyword">return</span> res;<br>&#125;<br><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">preOrder</span><span class="hljs-params">(TreeNode *root, vector&lt;<span class="hljs-type">int</span>&gt; &amp;res)</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-keyword">if</span>(root == <span class="hljs-literal">nullptr</span>)<br>        <span class="hljs-keyword">return</span> ;<br>    res.<span class="hljs-built_in">emplace_back</span>(res -&gt; val, res);<br>    <span class="hljs-built_in">preOrder</span>(root -&gt; left);<br>    <span class="hljs-built_in">preOrder</span>(root -&gt; right, res);<br>&#125;<br></code></pre></td></tr></table></figure>
+<p><strong>复杂度分析</strong>：</p>
+<ul>
+<li>时间复杂度：<span class="math inline">\(O(n)\)</span>,其中 <span
+class="math inline">\(n\)</span>
+是二叉树的节点数。每一个节点恰好被遍历一次。</li>
+<li>空间复杂度：<span
+class="math inline">\(O(n)\)</span>，为迭代过程中显式栈的开销，平均情况下为
+<span class="math inline">\(O(\log n)\)</span>，最坏情况下树呈现链状，为
+<span class="math inline">\(O(n)\)</span>。</li>
+</ul>
+<h4 id="中序遍历">中序遍历</h4>
+<p>代码：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-comment">/**</span><br><span class="hljs-comment"> * Definition for a binary tree node.</span><br><span class="hljs-comment"> * struct TreeNode &#123;</span><br><span class="hljs-comment"> *     int val;</span><br><span class="hljs-comment"> *     TreeNode *left;</span><br><span class="hljs-comment"> *     TreeNode *right;</span><br><span class="hljs-comment"> *     TreeNode() : val(0), left(nullptr), right(nullptr) &#123;&#125;</span><br><span class="hljs-comment"> *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) &#123;&#125;</span><br><span class="hljs-comment"> *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) &#123;&#125;</span><br><span class="hljs-comment"> * &#125;;</span><br><span class="hljs-comment"> */</span><br><br><span class="hljs-function">vector&lt;<span class="hljs-type">int</span>&gt; <span class="hljs-title">inorderTraversal</span><span class="hljs-params">(TreeNode* root)</span></span><br><span class="hljs-function"></span>&#123;<br>    vector&lt;<span class="hljs-type">int</span>&gt; res;<br>    <span class="hljs-built_in">inOrder</span>(root, res);<br>    <span class="hljs-keyword">return</span> res;<br>&#125;<br><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">inOrder</span><span class="hljs-params">(TreeNode* root, vector&lt;<span class="hljs-type">int</span>&gt; &amp;res)</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-keyword">if</span>(root == <span class="hljs-literal">nullptr</span>)<br>        <span class="hljs-keyword">return</span> ;<br>    <span class="hljs-built_in">inOrder</span>(root -&gt; left, res);<br>    res.<span class="hljs-built_in">emplace_back</span>(root -&gt; val);<br>    <span class="hljs-built_in">inOrder</span>(root -&gt; right, res);<br>&#125;<br></code></pre></td></tr></table></figure>
+<p><strong>复杂度分析</strong>：</p>
+<ul>
+<li>时间复杂度：<span class="math inline">\(O(n)\)</span>,其中 <span
+class="math inline">\(n\)</span>
+是二叉树的节点数。每一个节点恰好被遍历一次。</li>
+<li>空间复杂度：<span
+class="math inline">\(O(n)\)</span>，为迭代过程中显式栈的开销，平均情况下为
+<span class="math inline">\(O(\log n)\)</span>，最坏情况下树呈现链状，为
+<span class="math inline">\(O(n)\)</span>。</li>
+</ul>
+<h4 id="后序遍历">后序遍历</h4>
+<p>代码：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-comment">/**</span><br><span class="hljs-comment"> * Definition for a binary tree node.</span><br><span class="hljs-comment"> * struct TreeNode &#123;</span><br><span class="hljs-comment"> *     int val;</span><br><span class="hljs-comment"> *     TreeNode *left;</span><br><span class="hljs-comment"> *     TreeNode *right;</span><br><span class="hljs-comment"> *     TreeNode() : val(0), left(nullptr), right(nullptr) &#123;&#125;</span><br><span class="hljs-comment"> *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) &#123;&#125;</span><br><span class="hljs-comment"> *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) &#123;&#125;</span><br><span class="hljs-comment"> * &#125;;</span><br><span class="hljs-comment"> */</span><br><span class="hljs-function">vector&lt;<span class="hljs-type">int</span>&gt; <span class="hljs-title">postorderTraversal</span><span class="hljs-params">(TreeNode* root)</span></span><br><span class="hljs-function"></span>&#123;<br>    vector&lt;<span class="hljs-type">int</span>&gt; res;<br>    <span class="hljs-built_in">postOrder</span>(root, res);<br>    <span class="hljs-keyword">return</span> res;<br>&#125;<br><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">postOrder</span><span class="hljs-params">(TreeNode* root, vector&lt;<span class="hljs-type">int</span>&gt; &amp;res)</span></span><br><span class="hljs-function"></span>&#123; <br>    <span class="hljs-keyword">if</span>(root == <span class="hljs-literal">nullptr</span>)<br>        <span class="hljs-keyword">return</span> ;<br>    <span class="hljs-built_in">postOrder</span>(root -&gt; left, res);<br>    <span class="hljs-built_in">postOrder</span>(root -&gt; right, res);<br>    res.<span class="hljs-built_in">emplace_back</span>(root -&gt; val);<br>&#125;<br></code></pre></td></tr></table></figure>
+<p><strong>复杂度分析</strong>：</p>
+<ul>
+<li>时间复杂度：<span class="math inline">\(O(n)\)</span>,其中 <span
+class="math inline">\(n\)</span>
+是二叉树的节点数。每一个节点恰好被遍历一次。</li>
+<li>空间复杂度：<span
+class="math inline">\(O(n)\)</span>，为迭代过程中显式栈的开销，平均情况下为
+<span class="math inline">\(O(\log n)\)</span>，最坏情况下树呈现链状，为
+<span class="math inline">\(O(n)\)</span>。</li>
+</ul>
+<h3 id="迭代法">迭代法</h3>
+<h4 id="前序遍历-1">前序遍历</h4>
+<p>代码：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-comment">/**</span><br><span class="hljs-comment"> * Definition for a binary tree node.</span><br><span class="hljs-comment"> * struct TreeNode &#123;</span><br><span class="hljs-comment"> *     int val;</span><br><span class="hljs-comment"> *     TreeNode *left;</span><br><span class="hljs-comment"> *     TreeNode *right;</span><br><span class="hljs-comment"> *     TreeNode() : val(0), left(nullptr), right(nullptr) &#123;&#125;</span><br><span class="hljs-comment"> *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) &#123;&#125;</span><br><span class="hljs-comment"> *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) &#123;&#125;</span><br><span class="hljs-comment"> * &#125;;</span><br><span class="hljs-comment"> */</span><br><span class="hljs-function">vector&lt;<span class="hljs-type">int</span>&gt; <span class="hljs-title">preorderTraversal</span><span class="hljs-params">(TreeNode* root)</span></span><br><span class="hljs-function"></span>&#123;<br>    vector&lt;<span class="hljs-type">int</span>&gt; res;<br>    <span class="hljs-keyword">if</span>(root == <span class="hljs-literal">nullptr</span>)<br>        <span class="hljs-keyword">return</span> res;<br>    stack&lt;TreeNode*&gt; stk;<br>    TreeNode* cur = root;<br>    <span class="hljs-keyword">while</span>(!stk.<span class="hljs-built_in">empty</span>() || cur != <span class="hljs-literal">nullptr</span>)<br>    &#123;<br>        <span class="hljs-keyword">while</span>(cur != <span class="hljs-literal">nullptr</span>)<br>        &#123;<br>            res.<span class="hljs-built_in">emplace_back</span>(cur -&gt; val);<br>            stk.<span class="hljs-built_in">emplace</span>(cur);<br>            cur = cur -&gt; left;<br>        &#125;<br>        cur = stk.<span class="hljs-built_in">top</span>();<br>        stk.<span class="hljs-built_in">pop</span>();<br>        cur = cur -&gt; right;<br>    &#125;<br>    <span class="hljs-keyword">return</span> res;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p><strong>复杂度分析</strong>：</p>
+<ul>
+<li>时间复杂度：<span class="math inline">\(O(n)\)</span>,其中 <span
+class="math inline">\(n\)</span>
+是二叉树的节点数。每一个节点恰好被遍历一次。</li>
+<li>空间复杂度：<span
+class="math inline">\(O(n)\)</span>，为迭代过程中显式栈的开销，平均情况下为
+<span class="math inline">\(O(\log n)\)</span>，最坏情况下树呈现链状，为
+<span class="math inline">\(O(n)\)</span>。</li>
+</ul>
+<h4 id="中序遍历-1">中序遍历</h4>
+<p>代码：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-comment">/**</span><br><span class="hljs-comment"> * Definition for a binary tree node.</span><br><span class="hljs-comment"> * struct TreeNode &#123;</span><br><span class="hljs-comment"> *     int val;</span><br><span class="hljs-comment"> *     TreeNode *left;</span><br><span class="hljs-comment"> *     TreeNode *right;</span><br><span class="hljs-comment"> *     TreeNode() : val(0), left(nullptr), right(nullptr) &#123;&#125;</span><br><span class="hljs-comment"> *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) &#123;&#125;</span><br><span class="hljs-comment"> *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) &#123;&#125;</span><br><span class="hljs-comment"> * &#125;;</span><br><span class="hljs-comment"> */</span><br><span class="hljs-function">vector&lt;<span class="hljs-type">int</span>&gt; <span class="hljs-title">inorderTraversal</span><span class="hljs-params">(TreeNode* root)</span></span><br><span class="hljs-function"></span>&#123;<br>    vector&lt;<span class="hljs-type">int</span>&gt; res;<br>    <span class="hljs-keyword">if</span>(root == <span class="hljs-literal">nullptr</span>)<br>        <span class="hljs-keyword">return</span> res;<br>    TreeNode* cur = root;<br>    stack&lt;TreeNode*&gt; stk;<br>    <span class="hljs-keyword">while</span>(!stk.<span class="hljs-built_in">empty</span>() || cur != <span class="hljs-literal">nullptr</span>)<br>    &#123;<br>        <span class="hljs-keyword">while</span>(cur != <span class="hljs-literal">nullptr</span>)<br>        &#123;<br>            stk.<span class="hljs-built_in">emplace</span>(cur);<br>            cur = cur -&gt; left;<br>        &#125;<br>        cur = stk.<span class="hljs-built_in">top</span>();<br>        stk.<span class="hljs-built_in">pop</span>();<br>        res.<span class="hljs-built_in">emplace_back</span>(cur -&gt; val);<br>        cur = cur -&gt; right;<br>    &#125;<br>    <span class="hljs-keyword">return</span> res;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p><strong>复杂度分析</strong>：</p>
+<ul>
+<li>时间复杂度：<span class="math inline">\(O(n)\)</span>,其中 <span
+class="math inline">\(n\)</span>
+是二叉树的节点数。每一个节点恰好被遍历一次。</li>
+<li>空间复杂度：<span
+class="math inline">\(O(n)\)</span>，为迭代过程中显式栈的开销，平均情况下为
+<span class="math inline">\(O(\log n)\)</span>，最坏情况下树呈现链状，为
+<span class="math inline">\(O(n)\)</span>。</li>
+</ul>
+<h4 id="后序遍历-1">后序遍历</h4>
+<p>迭代法的后序遍历相比较前序遍历和中序遍历是要麻烦一些的。</p>
+<p>代码：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-comment">/**</span><br><span class="hljs-comment"> * Definition for a binary tree node.</span><br><span class="hljs-comment"> * struct TreeNode &#123;</span><br><span class="hljs-comment"> *     int val;</span><br><span class="hljs-comment"> *     TreeNode *left;</span><br><span class="hljs-comment"> *     TreeNode *right;</span><br><span class="hljs-comment"> *     TreeNode() : val(0), left(nullptr), right(nullptr) &#123;&#125;</span><br><span class="hljs-comment"> *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) &#123;&#125;</span><br><span class="hljs-comment"> *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) &#123;&#125;</span><br><span class="hljs-comment"> * &#125;;</span><br><span class="hljs-comment"> */</span><br><span class="hljs-function">vector&lt;<span class="hljs-type">int</span>&gt; <span class="hljs-title">postorderTraversal</span><span class="hljs-params">(TreeNode* root)</span> </span><br><span class="hljs-function"></span>&#123;<br>    vector&lt;<span class="hljs-type">int</span>&gt; res;<br>    <span class="hljs-keyword">if</span>(root == <span class="hljs-literal">nullptr</span>)<br>        <span class="hljs-keyword">return</span> res;<br>    stack&lt;TreeNode*&gt; stk;<br>    TreeNode* cur = root, * pre = <span class="hljs-literal">nullptr</span>;<br>    <span class="hljs-comment">// stk.emplace(cur);</span><br>    <span class="hljs-keyword">while</span>(!stk.<span class="hljs-built_in">empty</span>() || cur != <span class="hljs-literal">nullptr</span>)<br>    &#123;<br>        <span class="hljs-keyword">while</span>(cur != <span class="hljs-literal">nullptr</span>)<br>        &#123;<br>            stk.<span class="hljs-built_in">emplace</span>(cur);<br>            cur = cur -&gt; left;<br>        &#125;<br>        cur = stk.<span class="hljs-built_in">top</span>();<br>        stk.<span class="hljs-built_in">pop</span>();<br>        <span class="hljs-keyword">if</span>(cur -&gt; right != <span class="hljs-literal">nullptr</span> &amp;&amp; cur -&gt; right != pre)<br>        &#123;<br>            stk.<span class="hljs-built_in">emplace</span>(cur);   <span class="hljs-comment">// 若右孩子存在且没有遍历过那么将cur重新压栈，访问右子树</span><br>            cur = cur -&gt; right;<br>        &#125;<br>        <span class="hljs-keyword">else</span><br>        &#123;<br>            res.<span class="hljs-built_in">emplace_back</span>(cur -&gt; val);<br>            pre = cur;<br>            cur = <span class="hljs-literal">nullptr</span>;<br>        &#125;<br>    &#125;<br>    <span class="hljs-keyword">return</span> res;<br>    <br>    <br>&#125;<br></code></pre></td></tr></table></figure>
+<p><strong>复杂度分析</strong>：</p>
+<ul>
+<li>时间复杂度：<span class="math inline">\(O(n)\)</span>,其中 <span
+class="math inline">\(n\)</span>
+是二叉树的节点数。每一个节点恰好被遍历一次。</li>
+<li>空间复杂度：<span
+class="math inline">\(O(n)\)</span>，为迭代过程中显式栈的开销，平均情况下为
+<span class="math inline">\(O(\log n)\)</span>，最坏情况下树呈现链状，为
+<span class="math inline">\(O(n)\)</span>。</li>
+</ul>
+<h3 id="morris法">Morris法</h3>
+<p>Morris法只占用常数空间来实现前序遍历。这种方法由 J. H. Morris 在 1979
+年的论文「Traversing Binary Trees Simply and
+Cheaply」中首次提出，因此被称为 Morris 遍历。</p>
+<h4 id="前序遍历-2">前序遍历</h4>
+<p>Morris
+遍历的核心思想是利用树的大量空闲指针，实现空间开销的极限缩减。其前序遍历规则总结如下:</p>
+<ol type="1">
+<li>新建临时节点，令该节点为 <code>root</code>；</li>
+<li>如果当前节点的左子节点为空，将当前节点加入答案，并遍历当前节点的右子节点；</li>
+<li>如果当前节点的左子节点不为空，在当前节点的左子树中找到当前节点在中序遍历下的前驱节点：
+<ul>
+<li>如果前驱节点的右子节点为空，将前驱节点的右子节点设置为当前节点。然后将当前节点加入答案，并将前驱节点的右子节点更新为当前节点。当前节点更新为当前节点的左子节点。</li>
+<li>如果前驱节点的右子节点为当前节点，将它的右子节点重新设为空。当前节点更新为当前节点的右子节点。</li>
+</ul></li>
+<li>重复步骤 2 和步骤 3，直到遍历结束。</li>
+</ol>
+<p>这样我们利用 Morris
+遍历的方法，前序遍历该二叉树，即可实现线性时间与常数空间的遍历。</p>
+<p>代码：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-comment">/**</span><br><span class="hljs-comment"> * Definition for a binary tree node.</span><br><span class="hljs-comment"> * struct TreeNode &#123;</span><br><span class="hljs-comment"> *     int val;</span><br><span class="hljs-comment"> *     TreeNode *left;</span><br><span class="hljs-comment"> *     TreeNode *right;</span><br><span class="hljs-comment"> *     TreeNode() : val(0), left(nullptr), right(nullptr) &#123;&#125;</span><br><span class="hljs-comment"> *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) &#123;&#125;</span><br><span class="hljs-comment"> *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) &#123;&#125;</span><br><span class="hljs-comment"> * &#125;;</span><br><span class="hljs-comment"> */</span><br> <span class="hljs-function">vector&lt;<span class="hljs-type">int</span>&gt; <span class="hljs-title">preorderTraversal</span><span class="hljs-params">(TreeNode* root)</span></span><br><span class="hljs-function"> </span>&#123;<br>    vector&lt;<span class="hljs-type">int</span>&gt; res;<br>    <span class="hljs-keyword">if</span>(root == <span class="hljs-literal">nullptr</span>)<br>        <span class="hljs-keyword">return</span> res;<br>    TreeNode* cur = root, * pre;<br>    <span class="hljs-keyword">while</span>(cur != <span class="hljs-literal">nullptr</span>)<br>    &#123;<br>        pre = cur -&gt; left;<br>        <span class="hljs-keyword">if</span>(pre == <span class="hljs-literal">nullptr</span>)      <span class="hljs-comment">// 左子节点为空直接将val加入res中</span><br>        &#123;<br>            res.<span class="hljs-built_in">emplace_back</span>(cur -&gt; val);<br>        &#125;<br>        <span class="hljs-keyword">else</span>        <span class="hljs-comment">// 左子节点不为空寻找cur的前驱节点</span><br>        &#123;<br>            <span class="hljs-keyword">while</span>(pre -&gt; right != <span class="hljs-literal">nullptr</span> &amp;&amp; pre -&gt; right != cur)<br>                pre = pre -&gt; right;<br>            <span class="hljs-keyword">if</span>(pre -&gt; right == <span class="hljs-literal">nullptr</span>) <span class="hljs-comment">// 前驱节点右指针为空说明还没有遍历过cur</span><br>            &#123;<br>                res.<span class="hljs-built_in">emplace_back</span>(cur -&gt; val);<br>                pre -&gt; right = cur;<br>                cur = cur -&gt; left;<br>                <span class="hljs-keyword">continue</span>;<br>            &#125;  <br>            <span class="hljs-keyword">else</span>        <span class="hljs-comment">// 否则说明已经遍历过cur，将前驱节点右指针重新设置为空</span><br>            &#123;<br>                pre -&gt; right = <span class="hljs-literal">nullptr</span>;<br>            &#125;<br>        &#125;<br>        cur = cur -&gt; right;<br>    &#125;<br>    <span class="hljs-keyword">return</span> res;<br> &#125;<br></code></pre></td></tr></table></figure>
+<p><strong>复杂度分析</strong>：</p>
+<ul>
+<li>时间复杂度：<span class="math inline">\(O(n)\)</span>，其中 <span
+class="math inline">\(n\)</span>
+是二叉树的节点数。没有左子树的节点只被访问一次，有左子树的节点被访问两次。</li>
+<li>空间复杂度：<span
+class="math inline">\(O(1)\)</span>。只操作已经存在的指针（树的空闲指针），因此只需要常数的额外空间。</li>
+</ul>
+<h4 id="中序遍历-2">中序遍历</h4>
+<p>未完待续</p>
+<h4 id="后序遍历-2">后序遍历</h4>
+<p>未完待续</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" class="category-chain-item">数据结构与算法</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/leetcode/">#leetcode</a>
+      
+        <a href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E8%8B%8F%E7%BA%B3%E6%B3%95/">#数据结构与苏纳法</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>二叉树</div>
+      <div>https://gstarmin.github.io/2023/03/01/二叉树/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Starmin</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年3月1日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/02/24/C++%20STL-unordered_map/" title="C++ STL-unordered_map">
+                        <span class="hidden-mobile">C++ STL-unordered_map</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
