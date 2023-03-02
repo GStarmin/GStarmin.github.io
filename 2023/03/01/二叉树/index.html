@@ -26,7 +26,7 @@
 <meta property="og:image" content="https://gstarmin.github.io/img/算法/二叉树/完全二叉树和满二叉树.png">
 <meta property="og:image" content="https://gstarmin.github.io/img/算法/二叉树/二叉排序树.jpg">
 <meta property="article:published_time" content="2023-03-01T10:36:27.000Z">
-<meta property="article:modified_time" content="2023-03-02T03:27:27.000Z">
+<meta property="article:modified_time" content="2023-03-02T07:01:27.000Z">
 <meta property="article:author" content="Starmin">
 <meta property="article:tag" content="leetcode">
 <meta property="article:tag" content="数据结构与苏纳法">
@@ -295,7 +295,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          12k 字
+          14k 字
         
       </span>
     
@@ -306,7 +306,7 @@
         
         
         
-          123 分钟
+          145 分钟
         
       </span>
     
@@ -359,7 +359,7 @@ class="math inline">\(2^k -1\)</span>。</p>
 则此二叉树称为完全二叉树。</p>
 <p><img src="/img/算法/二叉树/完全二叉树和满二叉树.png" srcset="/img/loading.gif" lazyload /></p>
 <p>我们可以看出满二叉树是完全二叉树， 但完全二叉树不一定是满二叉树。</p>
-<h2 id="二叉排序树">二叉排序树</h2>
+<h2 id="二叉搜索树二叉排序树">二叉搜索树（二叉排序树）</h2>
 <p>二叉排序树虽然名叫排序树，但是它其实是用来搜索的，是一种有序的二叉树。它遵循着左小右大的规则：</p>
 <ul>
 <li>若它的左⼦树不空，则左⼦树上所有结点的值均⼩于它的根结点的值；</li>
@@ -556,6 +556,29 @@ class="math inline">\(n\)</span>
 <li>空间复杂度：<span
 class="math inline">\(O(1)\)</span>。只操作已经存在的指针（树的空闲指针），因此只需要常数的额外空间。</li>
 </ul>
+<h2 id="二叉树问题的小trick">二叉树问题的小trick</h2>
+<p>二叉树中有一类问题其实套路是固定的，虽然不同问题要求的东西不一样，但是仔细分析会发现，其实它们用到的套路是一样的。<strong>当一个问题的结果需要树的左右子树也满足条件，且每层子树需要返回的参数一样时，便可以用到递归套路。</strong></p>
+<h3 id="验证二叉搜索树">验证二叉搜索树</h3>
+<p><strong>问题</strong>：给你一个二叉树的根节点 <code>root</code>
+，判断其是否是一个有效的二叉搜索树。</p>
+<p><strong>分析</strong>：如何判断一个二叉树是否是二叉搜索树？它需要满足两个条件：</p>
+<ol type="1">
+<li>它的左子树和右子树都是二叉搜索树；</li>
+<li>它的节点值大于左子树的最大值且小于右子树的最小值。</li>
+</ol>
+<p>那么从以上两点出发，就可以构造一个递归套路，每层需要向上层返回自己这颗树是否是二叉搜索树，如果不是那么整个树一定不是二叉搜索树；同时还要向上层返回自己这颗子树的最大值和最小值。</p>
+<p>代码：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-comment">/**</span><br><span class="hljs-comment"> * Definition for a binary tree node.</span><br><span class="hljs-comment"> * struct TreeNode &#123;</span><br><span class="hljs-comment"> *     int val;</span><br><span class="hljs-comment"> *     TreeNode *left;</span><br><span class="hljs-comment"> *     TreeNode *right;</span><br><span class="hljs-comment"> *     TreeNode() : val(0), left(nullptr), right(nullptr) &#123;&#125;</span><br><span class="hljs-comment"> *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) &#123;&#125;</span><br><span class="hljs-comment"> *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) &#123;&#125;</span><br><span class="hljs-comment"> * &#125;;</span><br><span class="hljs-comment"> */</span><br><br><span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">isValidBST</span><span class="hljs-params">(TreeNode* root)</span> </span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-keyword">return</span> <span class="hljs-built_in">isBST</span>(root, LONG_MIN, LONG_MAX);<br>&#125;<br><br><span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">isBST</span><span class="hljs-params">(TreeNode * root, <span class="hljs-type">long</span> lower, <span class="hljs-type">long</span> upper)</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-keyword">if</span>(root == <span class="hljs-literal">nullptr</span>) <span class="hljs-comment">// base case</span><br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;<br>    <span class="hljs-keyword">if</span>(root -&gt; val &gt;= upper || root -&gt; val &lt;= lower)<br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;<br>    <span class="hljs-keyword">return</span> <span class="hljs-built_in">isBST</span>(root -&gt; left, lower, root -&gt; val) &amp;&amp; <span class="hljs-built_in">isBST</span>(root -&gt; right, root -&gt; val, upper);<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>这里是反向思维，若<code>cur</code>的值需要大于左子树最大值并且小于右子树最小值，那么就等价于让它的左子树判断其最大值是否小于<code>cur</code>值以及<code>cur</code>右子树判断其最小值是否大于<code>cur</code>值.</p>
+<h3 id="验证平衡二叉树">验证平衡二叉树</h3>
+<p><strong>问题</strong>:给定一个二叉树，判断它是否是高度平衡的二叉树。</p>
+<p><strong>分析</strong>:一个二叉树是平衡二叉树,那么它必然满足它的左右子树都是平衡二叉树,且左右子树的高度差的绝对值不大于1.那么就又可以以相似的方式构造递归,每次需要向上层返回的参数有:</p>
+<ul>
+<li>当前子树是否是平衡二叉树</li>
+<li>当前子树的深度</li>
+</ul>
+<p>代码:</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-comment">/**</span><br><span class="hljs-comment"> * Definition for a binary tree node.</span><br><span class="hljs-comment"> * struct TreeNode &#123;</span><br><span class="hljs-comment"> *     int val;</span><br><span class="hljs-comment"> *     TreeNode *left;</span><br><span class="hljs-comment"> *     TreeNode *right;</span><br><span class="hljs-comment"> *     TreeNode() : val(0), left(nullptr), right(nullptr) &#123;&#125;</span><br><span class="hljs-comment"> *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) &#123;&#125;</span><br><span class="hljs-comment"> *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) &#123;&#125;</span><br><span class="hljs-comment"> * &#125;;</span><br><span class="hljs-comment"> */</span><br><span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">isBalanced</span><span class="hljs-params">(TreeNode* root)</span> </span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-type">int</span> height;<br>    <span class="hljs-type">bool</span> is_balance;<br>    <span class="hljs-built_in">isBalancedTree</span>(root, is_balance, height);<br>    <span class="hljs-keyword">return</span> is_balance;<br>&#125;<br><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">isBalancedTree</span><span class="hljs-params">(TreeNode* root, <span class="hljs-type">bool</span> &amp;is_balance, <span class="hljs-type">int</span> &amp;height)</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-keyword">if</span>(root == <span class="hljs-literal">nullptr</span>)<br>    &#123;<br>        is_balance = <span class="hljs-literal">true</span>;<br>        height = <span class="hljs-number">0</span>;<br>        <span class="hljs-keyword">return</span> ;<br>    &#125;<br>    <span class="hljs-type">bool</span> left_balance, right_balance;<br>    <span class="hljs-type">int</span> left_height, right_height;<br>    <span class="hljs-built_in">isBalancedTree</span>(root -&gt; left, left_balance, left_height);<br>    <span class="hljs-built_in">isBalancedTree</span>(root -&gt; right, right_balance, right_height);<br>    <span class="hljs-keyword">if</span>(!left_balance || !right_balance || <span class="hljs-built_in">abs</span>(left_height - right_height) &gt; <span class="hljs-number">1</span>)<br>        is_balance = <span class="hljs-literal">false</span>;<br>    <span class="hljs-keyword">else</span><br>        is_balance = <span class="hljs-literal">true</span>;<br>    height = <span class="hljs-built_in">max</span>(left_height, right_height) + <span class="hljs-number">1</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
 
                 
               </div>
