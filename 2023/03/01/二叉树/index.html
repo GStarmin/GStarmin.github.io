@@ -25,6 +25,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://gstarmin.github.io/img/算法/二叉树/完全二叉树和满二叉树.png">
 <meta property="og:image" content="https://gstarmin.github.io/img/算法/二叉树/二叉排序树.jpg">
+<meta property="og:image" content="https://gstarmin.github.io/img/算法/二叉树/完全二叉树第k个节点.png">
 <meta property="article:published_time" content="2023-03-01T10:36:27.000Z">
 <meta property="article:modified_time" content="2023-03-02T07:01:27.000Z">
 <meta property="article:author" content="Starmin">
@@ -295,7 +296,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          14k 字
+          15k 字
         
       </span>
     
@@ -306,7 +307,7 @@
         
         
         
-          145 分钟
+          153 分钟
         
       </span>
     
@@ -579,6 +580,49 @@ class="math inline">\(O(1)\)</span>。只操作已经存在的指针（树的空
 </ul>
 <p>代码:</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-comment">/**</span><br><span class="hljs-comment"> * Definition for a binary tree node.</span><br><span class="hljs-comment"> * struct TreeNode &#123;</span><br><span class="hljs-comment"> *     int val;</span><br><span class="hljs-comment"> *     TreeNode *left;</span><br><span class="hljs-comment"> *     TreeNode *right;</span><br><span class="hljs-comment"> *     TreeNode() : val(0), left(nullptr), right(nullptr) &#123;&#125;</span><br><span class="hljs-comment"> *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) &#123;&#125;</span><br><span class="hljs-comment"> *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) &#123;&#125;</span><br><span class="hljs-comment"> * &#125;;</span><br><span class="hljs-comment"> */</span><br><span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">isBalanced</span><span class="hljs-params">(TreeNode* root)</span> </span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-type">int</span> height;<br>    <span class="hljs-type">bool</span> is_balance;<br>    <span class="hljs-built_in">isBalancedTree</span>(root, is_balance, height);<br>    <span class="hljs-keyword">return</span> is_balance;<br>&#125;<br><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">isBalancedTree</span><span class="hljs-params">(TreeNode* root, <span class="hljs-type">bool</span> &amp;is_balance, <span class="hljs-type">int</span> &amp;height)</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-keyword">if</span>(root == <span class="hljs-literal">nullptr</span>)<br>    &#123;<br>        is_balance = <span class="hljs-literal">true</span>;<br>        height = <span class="hljs-number">0</span>;<br>        <span class="hljs-keyword">return</span> ;<br>    &#125;<br>    <span class="hljs-type">bool</span> left_balance, right_balance;<br>    <span class="hljs-type">int</span> left_height, right_height;<br>    <span class="hljs-built_in">isBalancedTree</span>(root -&gt; left, left_balance, left_height);<br>    <span class="hljs-built_in">isBalancedTree</span>(root -&gt; right, right_balance, right_height);<br>    <span class="hljs-keyword">if</span>(!left_balance || !right_balance || <span class="hljs-built_in">abs</span>(left_height - right_height) &gt; <span class="hljs-number">1</span>)<br>        is_balance = <span class="hljs-literal">false</span>;<br>    <span class="hljs-keyword">else</span><br>        is_balance = <span class="hljs-literal">true</span>;<br>    height = <span class="hljs-built_in">max</span>(left_height, right_height) + <span class="hljs-number">1</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<h3 id="完全二叉树的第k个节点">完全二叉树的第k个节点</h3>
+<p>规定根节点位于第 <span class="math inline">\(0\)</span>
+层，完全二叉树的最大层数为 <span
+class="math inline">\(h\)</span>。根据完全二叉树的特性可知，完全二叉树的最左边的节点一定位于最底层，因此从根节点出发，每次访问左子节点，直到遇到叶子节点，该叶子节点即为完全二叉树的最左边的节点，经过的路径长度即为最大层数
+<span class="math inline">\(h\)</span>。</p>
+<p>当 <span class="math inline">\(0 \le i &lt; h\)</span> 时，第 <span
+class="math inline">\(i\)</span> 层包含 <span
+class="math inline">\(2^i\)</span> 个节点，最底层包含的节点数最少为
+<span class="math inline">\(1\)</span>，最多为 <span
+class="math inline">\(2^h\)</span>。</p>
+<p>因此对于最大层数为 hhh 的完全二叉树，节点个数一定在 <span
+class="math inline">\([2^h,2^{h+1}-1]\)</span>
+的范围内，可以在该范围内通过二分查找的方式得到完全二叉树的节点个数。</p>
+<p>如何判断第 <span class="math inline">\(k\)</span>
+个节点是否存在呢？如果第 <span class="math inline">\(k\)</span>
+个节点位于第 <span class="math inline">\(h\)</span> 层，则 <span
+class="math inline">\(k\)</span> 的二进制表示包含 <span
+class="math inline">\(h+1\)</span> 位，其中最高位是 <span
+class="math inline">\(1\)</span>，其余各位从高到低表示从根节点到第 <span
+class="math inline">\(k\)</span> 个节点的路径，<span
+class="math inline">\(0\)</span> 表示移动到左子节点，<span
+class="math inline">\(1\)</span> 表示移动到右子节点。通过位运算得到第
+<span class="math inline">\(k\)</span>
+个节点对应的路径，判断该路径对应的节点是否存在，即可判断第 <span
+class="math inline">\(k\)</span> 个节点是否存在。</p>
+<p><img src="/img/算法/二叉树/完全二叉树第k个节点.png" srcset="/img/loading.gif" lazyload /></p>
+<p>那么如何依次判断k的各个二进制位是否为1呢？这里需要一个<span
+class="math inline">\(bits = 2^{h-1}\)</span>，<span
+class="math inline">\(h\)</span>为要查找节点所在层数(注意根节点是0层),比如现在要查找<span
+class="math inline">\(8\)</span>这个节点，那么<span
+class="math inline">\(bits = 2^{3 - 1} = 0100\)</span>,而<span
+class="math inline">\(8\)</span>的二进制表示是<span
+class="math inline">\(1000\)</span>,用<span
+class="math inline">\(bits\)</span> &amp; <span
+class="math inline">\(1000 = 0\)</span>，所以向左子树走，然后将<span
+class="math inline">\(bits\)</span>左移一位，再与<span
+class="math inline">\(8\)</span>（也就是<span
+class="math inline">\(1000\)</span>）相与得到<span
+class="math inline">\(0010 \&amp; 1000 =
+0\)</span>,继续向左子树移动，重复上面操作，一直到<span
+class="math inline">\(bits\)</span>为<span
+class="math inline">\(0\)</span>为止，此时节点若不为空，那么就是第<span
+class="math inline">\(8\)</span>个节点。</p>
 
                 
               </div>
