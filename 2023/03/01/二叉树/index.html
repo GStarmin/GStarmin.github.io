@@ -27,7 +27,7 @@
 <meta property="og:image" content="https://gstarmin.github.io/img/算法/二叉树/二叉排序树.jpg">
 <meta property="og:image" content="https://gstarmin.github.io/img/算法/二叉树/完全二叉树第k个节点.png">
 <meta property="article:published_time" content="2023-03-01T10:36:27.000Z">
-<meta property="article:modified_time" content="2023-03-06T01:30:27.000Z">
+<meta property="article:modified_time" content="2023-03-06T12:30:27.000Z">
 <meta property="article:author" content="Starmin">
 <meta property="article:tag" content="leetcode">
 <meta property="article:tag" content="数据结构与算法">
@@ -296,7 +296,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          15k 字
+          16k 字
         
       </span>
     
@@ -307,7 +307,7 @@
         
         
         
-          153 分钟
+          156 分钟
         
       </span>
     
@@ -559,6 +559,20 @@ class="math inline">\(O(1)\)</span>。只操作已经存在的指针（树的空
 </ul>
 <h2 id="二叉树问题的小trick">二叉树问题的小trick</h2>
 <p>二叉树中有一类问题其实套路是固定的，虽然不同问题要求的东西不一样，但是仔细分析会发现，其实它们用到的套路是一样的。<strong>当一个问题的结果需要树的左右子树也满足条件，且每层子树需要返回的参数一样时，便可以用到递归套路。</strong></p>
+<h3
+id="一棵子树上的点在深度优先搜索序列即先序遍历中是连续的">一棵子树上的点在深度优先搜索序列（即先序遍历）中是连续的</h3>
+<p>可以采用这个套路来求解一个树是否是另一个树的子树，但是但从一个树<code>s</code>的dfs遍历是否是另一个树<code>t</code>的dfs遍历的字串并不能判断出是否是子树，所以想要通过dfs的序列判断s是否是t的子树，还需要做一些额外的处理。</p>
+<p>可以通过引入两个空值 <code>lNull</code> 和
+<code>rNull</code>，当一个节点的左孩子或者右孩子为空的时候，就插入这两个空值，这样深度优先搜索序列就唯一对应一棵树。处理完之后，就可以通过判断「<code>s</code>的深度优先搜索序列包含
+<code>t</code>
+的深度优先搜索序列」来判断<code>s</code>是否是<code>t</code>的子树。</p>
+<p>这里判断<code>s</code>的遍历序列是否是<code>t</code>遍历序列的子串可以用KMP算法或Rabin-Karp算法</p>
+<h3 id="后序遍历迭代法">后序遍历迭代法</h3>
+<p>采用迭代法的后序遍历，即上边用栈的方法，当遍历到节点 <span
+class="math inline">\(p\)</span> 时，栈中的节点刚好是 <span
+class="math inline">\(p\)</span>
+的祖先节点，所以此时将栈中节点依次弹出便得到 <span
+class="math inline">\(p\)</span> 的祖先节点的倒序。</p>
 <h3 id="验证二叉搜索树">验证二叉搜索树</h3>
 <p><strong>问题</strong>：给你一个二叉树的根节点 <code>root</code>
 ，判断其是否是一个有效的二叉搜索树。</p>
