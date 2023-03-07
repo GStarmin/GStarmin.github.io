@@ -4,6 +4,31 @@
   
   
   <entry>
+    <title>C++deque和queue</title>
+    <link href="/2023/03/07/C++deque%E5%92%8Cqueue/"/>
+    <url>/2023/03/07/C++deque%E5%92%8Cqueue/</url>
+    
+    <content type="html"><![CDATA[<h1 id="c-deque和queue">C++ deque和queue</h1><p>deque是双端队列，queue可以访问两端但是只能修改队头，而deque可以访问两端并且可以在队首和队尾删除和插入元素。</p><p>queue操作</p><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs c++">queue&lt;<span class="hljs-type">int</span>&gt;q； <span class="hljs-comment">//创建一个int型空队列q</span><br><br>q.<span class="hljs-built_in">empty</span>();  <span class="hljs-comment">// 判断队列是否为空，为空返回true</span><br>q.<span class="hljs-built_in">push</span>(s);  <span class="hljs-comment">// 将变量s从队尾入队</span><br>q.<span class="hljs-built_in">pop</span>();    <span class="hljs-comment">// 将队头元素弹出</span><br>q.<span class="hljs-built_in">front</span>();  <span class="hljs-comment">// 只返回队头元素</span><br>q.<span class="hljs-built_in">back</span>();   <span class="hljs-comment">// 只返回队尾元素</span><br>q.<span class="hljs-built_in">size</span>();   <span class="hljs-comment">// 返回队列中元素个数</span><br></code></pre></td></tr></table></figure><p>deque操作</p><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs c++">deque&lt;<span class="hljs-type">int</span>&gt; dq； <span class="hljs-comment">// 创建一个数双端队列dq</span><br><br>dq.<span class="hljs-built_in">empty</span>();  <span class="hljs-comment">// 判断队列是否为空，为空返回true</span><br>dq.<span class="hljs-built_in">push_front</span>(s); <span class="hljs-comment">//  将s从队头入队</span><br>dq.<span class="hljs-built_in">push_back</span>(s);    <span class="hljs-comment">// 将s从队尾入队，和普通队列方式一样</span><br>dq.<span class="hljs-built_in">front</span>(); <span class="hljs-comment">// 只返回队头元素</span><br>dq.<span class="hljs-built_in">back</span>(); <span class="hljs-comment">// 只返回队尾元素</span><br>dq.<span class="hljs-built_in">pop_front</span>(); <span class="hljs-comment">// 将队头元素弹出</span><br>dq.<span class="hljs-built_in">pop_back</span>(); <span class="hljs-comment">// 将队尾元素弹出</span><br>dq.<span class="hljs-built_in">clear</span>(); <span class="hljs-comment">// 将队列清空</span><br></code></pre></td></tr></table></figure><p>由于deque两端都可以压入，只用个push的话到底是用哪端压入呢？所以有了<code>push_back()</code>和<code>push_front()</code>,同样，<code>pop()</code>是弹出，所以有<code>pop_back()</code>和<code>pop_front()</code>。</p>]]></content>
+    
+    
+    <categories>
+      
+      <category>C++</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>C++</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>C++函数后冒号的含义</title>
     <link href="/2023/03/06/C++%E5%87%BD%E6%95%B0%E5%90%8E%E5%86%92%E5%8F%B7%E7%9A%84%E5%90%AB%E4%B9%89/"/>
     <url>/2023/03/06/C++%E5%87%BD%E6%95%B0%E5%90%8E%E5%86%92%E5%8F%B7%E7%9A%84%E5%90%AB%E4%B9%89/</url>
