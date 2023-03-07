@@ -294,7 +294,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          1.2k 字
+          1.4k 字
         
       </span>
     
@@ -305,7 +305,7 @@
         
         
         
-          13 分钟
+          15 分钟
         
       </span>
     
@@ -397,6 +397,13 @@ class="math inline">\(1\)</span>其实是不受<strong>减一</strong>操作的�
 class="math inline">\(1\)</span>。</p>
 <p>那么就可以根据这个特性<strong>计算k的二进制1的个数</strong>：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-type">int</span> count = <span class="hljs-number">0</span>;<br><span class="hljs-keyword">while</span>(n)<br>&#123;<br>    n &amp;= n - <span class="hljs-number">1</span>;    <span class="hljs-comment">// 每次消去二进制中最低位的1</span><br>    count++;<br>&#125;<br></code></pre></td></tr></table></figure>
+<h2 id="求两个数的均值">求两个数的均值</h2>
+<p>一般的写法是 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-type">int</span> mid = (low + high) / <span class="hljs-number">2</span>;<br></code></pre></td></tr></table></figure>
+但是这样并不是无懈可击的，可能会出现一个问题，当<code>low</code>和<code>high</code>都很大的时候<code>low + high</code>可能会溢出，这样结果就变成一个负数。更加好的写法是
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-type">int</span> mid = low + (high - low) / <span class="hljs-number">2</span>; <br></code></pre></td></tr></table></figure>
+<code>low</code>和<code>high</code>都没有溢出，那么<code>high - low</code>也不会溢出，这样结果就不会溢出。</p>
+<p>更加简化的写法是</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-type">int</span> mid = low + ((high - low) &gt;&gt; <span class="hljs-number">2</span>);<br></code></pre></td></tr></table></figure>
 
                 
               </div>

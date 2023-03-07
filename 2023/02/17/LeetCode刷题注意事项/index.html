@@ -296,7 +296,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          2.5k 字
+          2.3k 字
         
       </span>
     
@@ -307,7 +307,7 @@
         
         
         
-          26 分钟
+          24 分钟
         
       </span>
     
@@ -369,13 +369,6 @@ id="查找有序数组中最左侧大于或等于k的数">查找有序数组中�
 <p>若不为极小值那么它要么比它左侧的数大，要么比它右侧的数大。假设它比左侧的数大，那么就在左半边进行二分，如此一来，就存在了二分的点，直至找到一个局部最小值为止。</p>
 <p><img src="/img/算法/二分法/局部最小值-1.png" srcset="/img/loading.gif" lazyload /></p>
 <p><strong>这里可以看出来二分法不只是能用在有序数组，在无序的情况下满足特定条件也可以用二分。</strong></p>
-<h2 id="求两个数的均值">求两个数的均值</h2>
-<p>一般的写法是 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-type">int</span> mid = (low + high) / <span class="hljs-number">2</span>;<br></code></pre></td></tr></table></figure>
-但是这样并不是无懈可击的，可能会出现一个问题，当<code>low</code>和<code>high</code>都很大的时候<code>low + high</code>可能会溢出，这样结果就变成一个负数。更加好的写法是
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-type">int</span> mid = low + (high - low) / <span class="hljs-number">2</span>; <br></code></pre></td></tr></table></figure>
-<code>low</code>和<code>high</code>都没有溢出，那么<code>high - low</code>也不会溢出，这样结果就不会溢出。</p>
-<p>更加简化的写法是</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-type">int</span> mid = low + ((high - low) &gt;&gt; <span class="hljs-number">2</span>);<br></code></pre></td></tr></table></figure>
 <h2 id="时间复杂度master公式">时间复杂度（Master公式）</h2>
 <p>若有<span class="math inline">\(T(N)=a * T(\frac{N}{b})
 +O(N^d)\)</span>，则说明这个算法满足<strong>Master公式</strong>。也就是说只要是<strong>满足子问题等规模的递归都可以用Master公式</strong>。a，b，d的值可能会有三种情况。</p>
