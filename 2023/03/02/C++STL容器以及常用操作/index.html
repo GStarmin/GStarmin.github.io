@@ -292,7 +292,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          6.4k 字
+          6.9k 字
         
       </span>
     
@@ -303,7 +303,7 @@
         
         
         
-          64 分钟
+          69 分钟
         
       </span>
     
@@ -360,17 +360,6 @@ vector 常用的基本操作：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs C++">v.<span class="hljs-built_in">size</span>();                 <span class="hljs-comment">// 返回 vector 中元素的个数</span><br>v.<span class="hljs-built_in">capacity</span>();             <span class="hljs-comment">// 返回 vector 可以存储的元素的数量，也就是预留的空间</span><br>v.<span class="hljs-built_in">empty</span>();                <span class="hljs-comment">// 如果 vector 为空，返回 true，否则返回 false</span><br>v.<span class="hljs-built_in">reserve</span>(capacity);      <span class="hljs-comment">// 预留 capacity 的存储空间</span><br>v.<span class="hljs-built_in">shrink_to_fit</span>();        <span class="hljs-comment">// 释放 vector 多余的存储空间</span><br></code></pre></td></tr></table></figure>
 <h3 id="vector-遍历操作">vector 遍历操作</h3>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-keyword">for</span> (<span class="hljs-keyword">auto</span> it = v.<span class="hljs-built_in">begin</span>(); it != v.<span class="hljs-built_in">end</span>(); it++) &#123;<br>    std::cout &lt;&lt; *it &lt;&lt; <span class="hljs-string">&quot; &quot;</span>;<br>&#125;<br><br><span class="hljs-keyword">for</span> (<span class="hljs-keyword">auto</span> x : v) &#123;<br>    std::cout &lt;&lt; x &lt;&lt; <span class="hljs-string">&quot; &quot;</span>;<br>&#125;<br><br>std::for_each(v.<span class="hljs-built_in">begin</span>(), v.<span class="hljs-built_in">end</span>(), [](<span class="hljs-type">int</span> x) &#123;<br>    std::cout &lt;&lt; x &lt;&lt; <span class="hljs-string">&quot; &quot;</span>;<br>&#125;);<br></code></pre></td></tr></table></figure>
-<h3 id="查找最大元素和最小元素">查找最大元素和最小元素</h3>
-<p><code>max_element()</code>函数是算法标头的库函数，用于查找范围中的最大元素，它接受容器范围[start，end]，并返回一个迭代器，该迭代器指向给定范围中具有最大值的元素。</p>
-<p><strong>参数</strong>：</p>
-<ul>
-<li>iterator start, iterator end,容器开始和结束位置;</li>
-<li>[compare comp]，可选参数，可以与给定范围内的元素进行比较。</li>
-</ul>
-<p><strong>返回值</strong>:</p>
-<p>iterator -
-返回一个迭代器，该迭代器指向给定范围内具有最大值的元素。</p>
-<p><code>min_element()</code>同理，参数用法也相同，不同的是它返回的是最小元素的迭代器。</p>
 <h3 id="两个元素之间的范围">两个元素之间的范围</h3>
 <p>我们知道，作用于同一容器的 2
 个同类型迭代器可以有效指定一个区间范围。在此基础上，如果想获取该指定范围内包含元素的个数，就可以借助
@@ -383,6 +372,20 @@ distance() 函数。</p>
 last)范围内包含的元素的个数。</p>
 <p>例子：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;iostream&gt;</span>     <span class="hljs-comment">// cout</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;iterator&gt;</span>     <span class="hljs-comment">// distance</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;list&gt;</span>         <span class="hljs-comment">// list</span></span><br><span class="hljs-keyword">using</span> <span class="hljs-keyword">namespace</span> std;<br> <br><span class="hljs-comment">//创建一个空 list 容器</span><br>list&lt;<span class="hljs-type">int</span>&gt; mylist;<br><span class="hljs-comment">//向空 list 容器中添加元素 0~9</span><br><span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">10</span>; i++) &#123;<br>	mylist.<span class="hljs-built_in">push_back</span>(i);<br>&#125;<br><span class="hljs-comment">//指定 2 个双向迭代器，用于执行某个区间</span><br>list&lt;<span class="hljs-type">int</span>&gt;::iterator first = mylist.<span class="hljs-built_in">begin</span>();<span class="hljs-comment">//指向元素 0</span><br>list&lt;<span class="hljs-type">int</span>&gt;::iterator last = mylist.<span class="hljs-built_in">end</span>();<span class="hljs-comment">//指向元素 9 之后的位置</span><br><span class="hljs-comment">//获取 [first,last) 范围内包含元素的个数</span><br>cout &lt;&lt; <span class="hljs-string">&quot;distance() = &quot;</span> &lt;&lt; <span class="hljs-built_in">distance</span>(first, last);<br></code></pre></td></tr></table></figure>
+<h3 id="查找某个值所在位置">查找某个值所在位置</h3>
+<p>使用 std::find()方法，代码如下：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;iostream&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;vector&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;algorithm&gt;</span></span><br> <br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span><br><span class="hljs-function"></span>&#123;<br>    std::vector&lt;<span class="hljs-type">int</span>&gt; v = &#123; <span class="hljs-number">7</span>, <span class="hljs-number">3</span>, <span class="hljs-number">6</span>, <span class="hljs-number">2</span>, <span class="hljs-number">6</span> &#125;;<br>    <span class="hljs-type">int</span> key = <span class="hljs-number">6</span>;<br> <br>    std::vector&lt;<span class="hljs-type">int</span>&gt;::iterator itr = std::<span class="hljs-built_in">find</span>(v.<span class="hljs-built_in">begin</span>(), v.<span class="hljs-built_in">end</span>(), key);<br> <br>    <span class="hljs-keyword">if</span> (itr != v.<span class="hljs-built_in">cend</span>()) &#123;<br>        std::cout &lt;&lt; <span class="hljs-string">&quot;Element present at index &quot;</span> &lt;&lt; std::<span class="hljs-built_in">distance</span>(v.<span class="hljs-built_in">begin</span>(), itr);<br>    &#125;<br>    <span class="hljs-keyword">else</span> &#123;<br>        std::cout &lt;&lt; <span class="hljs-string">&quot;Element not found&quot;</span>;<br>    &#125;<br> <br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<h3 id="查找最大元素和最小元素">查找最大元素和最小元素</h3>
+<p><code>max_element()</code>函数是算法标头的库函数，用于查找范围中的最大元素，它接受容器范围[start，end]，并返回一个迭代器，该迭代器指向给定范围中具有最大值的元素。</p>
+<p><strong>参数</strong>：</p>
+<ul>
+<li>iterator start, iterator end,容器开始和结束位置;</li>
+<li>[compare comp]，可选参数，可以与给定范围内的元素进行比较。</li>
+</ul>
+<p><strong>返回值</strong>:</p>
+<p>iterator -
+返回一个迭代器，该迭代器指向给定范围内具有最大值的元素。</p>
+<p><code>min_element()</code>同理，参数用法也相同，不同的是它返回的是最小元素的迭代器。</p>
 <h2 id="stack容器">stack容器</h2>
 <p>C++ STL 标准库中的 stack
 是一个后进先出（LIFO）的容器适配器，它可以使用不同的底层容器（默认使用
