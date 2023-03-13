@@ -16,22 +16,23 @@
   <meta name="author" content="Starmin">
   <meta name="keywords" content="">
   
-    <meta name="description" content="C++常量、#define、const和constexpr 常量 常量是固定值，在程序执行期间不会改变，可以是任何的基本数据类型，可分为整型数字、浮点数字、字符、字符串和布尔值，常量的值在定义后不能进行修改； 可以使用枚举、#define、const和constexpr等方法定义常量. #define #define是预处理阶段进行处理，是一种宏定义，所以定义常量的宏是没有类型的，是在编译前即预编">
+    <meta name="description" content="C++STL优先级队列 优先级队列是特殊的队列，它与queue的区别在于它可以定义队列中数据的优先级，让优先级高的排在队列前面，可以优先出队，它本质上是由堆实现的。 定义 定义：priority_queue&lt;Type, Container, Functional&gt;  Type:数据类型 Container：容器类型(Container必须是用数组实现的容器，比如vector,deque">
 <meta property="og:type" content="article">
-<meta property="og:title" content="C++常量、#define、const和constexpr">
-<meta property="og:url" content="https://gstarmin.github.io/2023/03/06/C++%E4%B8%ADdefine%E3%80%81const%E5%92%8Cconstexpr/">
+<meta property="og:title" content="C++STL优先级队列">
+<meta property="og:url" content="https://gstarmin.github.io/2023/03/09/CppSTL%E4%BC%98%E5%85%88%E7%BA%A7%E9%98%9F%E5%88%97/">
 <meta property="og:site_name" content="私人杂货铺">
-<meta property="og:description" content="C++常量、#define、const和constexpr 常量 常量是固定值，在程序执行期间不会改变，可以是任何的基本数据类型，可分为整型数字、浮点数字、字符、字符串和布尔值，常量的值在定义后不能进行修改； 可以使用枚举、#define、const和constexpr等方法定义常量. #define #define是预处理阶段进行处理，是一种宏定义，所以定义常量的宏是没有类型的，是在编译前即预编">
+<meta property="og:description" content="C++STL优先级队列 优先级队列是特殊的队列，它与queue的区别在于它可以定义队列中数据的优先级，让优先级高的排在队列前面，可以优先出队，它本质上是由堆实现的。 定义 定义：priority_queue&lt;Type, Container, Functional&gt;  Type:数据类型 Container：容器类型(Container必须是用数组实现的容器，比如vector,deque">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2023-03-06T14:57:46.000Z">
-<meta property="article:modified_time" content="2023-03-06T14:57:46.000Z">
+<meta property="article:published_time" content="2023-03-09T04:14:37.000Z">
+<meta property="article:modified_time" content="2023-03-09T04:14:37.000Z">
 <meta property="article:author" content="Starmin">
 <meta property="article:tag" content="C++">
+<meta property="article:tag" content="STL">
 <meta name="twitter:card" content="summary_large_image">
   
   
   
-  <title>C++常量、#define、const和constexpr - 私人杂货铺</title>
+  <title>C++STL优先级队列 - 私人杂货铺</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -268,7 +269,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="C++常量、#define、const和constexpr"></span>
+            <span id="subtitle" data-typed-text="C++STL优先级队列"></span>
           
         </div>
 
@@ -279,8 +280,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2023-03-06 22:57" pubdate>
-          2023年3月6日 晚上
+        <time datetime="2023-03-09 12:14" pubdate>
+          2023年3月9日 中午
         </time>
       </span>
     
@@ -291,7 +292,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          2.2k 字
+          2k 字
         
       </span>
     
@@ -302,7 +303,7 @@
         
         
         
-          23 分钟
+          20 分钟
         
       </span>
     
@@ -340,50 +341,44 @@
         <div id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">C++常量、#define、const和constexpr</h1>
+            <h1 style="display: none">C++STL优先级队列</h1>
             
             
               <div class="markdown-body">
                 
-                <h1
-id="c常量defineconst和constexpr">C++常量、#define、const和constexpr</h1>
-<h2 id="常量">常量</h2>
-<p>常量是固定值，在程序执行期间不会改变，可以是任何的基本数据类型，可分为整型数字、浮点数字、字符、字符串和布尔值，常量的值在定义后不能进行修改；</p>
-<p>可以使用枚举、#define、const和constexpr等方法定义常量.</p>
-<h2 id="define">#define</h2>
-<p>#define是预处理阶段进行处理，是一种宏定义，所以定义常量的宏是没有类型的，是在编译前即预编译阶段进行字符替换，并且由于是在预处理阶段替换所以不会有类型安全检查，系统也不会为它分配内存，存储在程序的代码段空间，实际就是给出了立即数，在运行过程中，常量在内存中会有若干个拷贝；</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-meta">#<span class="hljs-keyword">define</span> Pi 3.1415926</span><br>S = Pi * r * r <span class="hljs-comment">//这里Pi会替换成3.1415926</span><br></code></pre></td></tr></table></figure>
-<p>如果只想常量宏只在某段代码起作用，则使用#undef这个常量宏，如果再用到了这个常量宏，编译器就会报错</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-meta">#<span class="hljs-keyword">define</span> Pi 3.1415926</span><br>S = Pi * r * r; <span class="hljs-comment">//这里Pi会替换成3.1415926</span><br><span class="hljs-meta">#<span class="hljs-keyword">undef</span></span><br><br>S = Pi + <span class="hljs-number">1</span>; <span class="hljs-comment">//编译器报错</span><br></code></pre></td></tr></table></figure>
-<h2 id="const">const</h2>
-<p>const是一种Runtime，const常量会在内存中分配，可以是堆中也可以是栈中。以后在定义的常量调用时，只是使用对应的内存地址，不再开辟新的空间，在内存中只有一个拷贝，因此const相比#define，可以避免反复分配内存，节省空间</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-type">const</span> doulbe Pi=<span class="hljs-number">3.14159</span>;<br>S = Pi * r * r;<br></code></pre></td></tr></table></figure>
-<h3 id="const修饰指针">const修饰指针</h3>
-<p>const位于<code>*</code>的左侧，则const就是用来修饰指针所指向的变量，即指针指向为常量</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-type">int</span> test = <span class="hljs-number">1</span>;<br><span class="hljs-type">const</span> <span class="hljs-type">int</span>* test_ptr = &amp;test;<span class="hljs-comment">//禁止修改test_ptr指向的值, 可以修改test_ptr的值</span><br><span class="hljs-type">int</span> test2 = <span class="hljs-number">2</span>;<br>test_ptr = &amp;test2;<span class="hljs-comment">//指向另一个变量</span><br></code></pre></td></tr></table></figure>
-<p>const位于<code>*</code>的右侧，const就是修饰指针本身，即指针本身是常量</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-type">int</span> test = <span class="hljs-number">1</span>;<br><span class="hljs-type">int</span>* <span class="hljs-type">const</span> test_ptr = &amp;test;<br><br>*test_ptr = <span class="hljs-number">20</span>;        <span class="hljs-comment">// 可以修改test_ptr指向的值, 禁止修改test_ptr的值</span><br></code></pre></td></tr></table></figure>
-<h3 id="const修饰函数">const修饰函数</h3>
-<p>在类中将成员函数修饰为const表明在该函数体内，不能修改对象的数据成员而且不能调用非const函数，由于非const函数可能修改数据成员，const成员函数是不能修改数据成员的，所以在const成员函数内只能调用const函数</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-keyword">class</span> <span class="hljs-title class_">A</span><br>&#123;<br><span class="hljs-keyword">private</span>:<br>	<span class="hljs-type">int</span> i;<br><span class="hljs-keyword">public</span>:<br>	<span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">fun1</span><span class="hljs-params">(<span class="hljs-type">int</span> n)</span> <span class="hljs-comment">//fun1函数需要设置i的值，所以不能声明为const</span></span><br><span class="hljs-function">    </span>&#123;<br>		i = n;<br>	&#125;<br><br>	<span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">fun2</span><span class="hljs-params">()</span> <span class="hljs-type">const</span>    <span class="hljs-comment">//fun2函数返回i的值，不需要对i进行修改，则可以用const修饰。防止在函数体内对i进行修改。</span></span><br><span class="hljs-function">    </span>&#123; <br>		<span class="hljs-keyword">return</span> i;<br>	&#125;<br>&#125;;<br></code></pre></td></tr></table></figure>
-<h3 id="const修饰函数参数">const修饰函数参数</h3>
-<p>const修饰的函数参数是指针时,代表在函数体内不能修改该指针所指的内容，起到保护作用;const指针可以接收非const和const指针，而非const指针只能接收非const指针</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">Test</span><span class="hljs-params">(<span class="hljs-type">const</span> <span class="hljs-type">int</span> param)</span></span>;<br></code></pre></td></tr></table></figure>
-<h3 id="const修饰函数返回值">const修饰函数返回值</h3>
-<p>const来修饰返回的指针或引用，保护指针指向的内容或引用的内容不被修改，也常用于运算符重载。归根究底就是使得函数调用表达式不能作为左值</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-function"><span class="hljs-type">const</span> <span class="hljs-type">int</span>* <span class="hljs-title">Test</span><span class="hljs-params">()</span></span>;<br></code></pre></td></tr></table></figure>
-<h3 id="const修饰成员变量">const修饰成员变量</h3>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-keyword">class</span> <span class="hljs-title class_">Test</span><br>&#123;<br><span class="hljs-keyword">public</span>: <br>   <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">fun1</span><span class="hljs-params">()</span><span class="hljs-type">const</span></span>;<br><span class="hljs-keyword">private</span>:<br>   <span class="hljs-type">int</span> i;<br>&#125;<br><br><span class="hljs-type">void</span> Test:: <span class="hljs-built_in">fun1</span>() <span class="hljs-type">const</span><br>&#123;<br>    <span class="hljs-comment">//i++; i不能修改</span><br>&#125;<br></code></pre></td></tr></table></figure>
-<h2 id="constexpr">constexpr</h2>
-<p>constexpr与const一样，它可以应用于变量，不同的是可以应用于函数和类构造函数,constexpr指示值或返回值是常量，并且在可能的情况下，在编译时计算</p>
-<h3 id="修饰变量">修饰变量</h3>
-<p>const和constexpr之间的主要区别在于，const的初始化可以在到运行时，而constexpr编译时必须初始化</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-function"><span class="hljs-keyword">constexpr</span> <span class="hljs-type">float</span> <span class="hljs-title">exp</span><span class="hljs-params">(<span class="hljs-type">float</span> x, <span class="hljs-type">int</span> n)</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-keyword">return</span> n == <span class="hljs-number">0</span> ? <span class="hljs-number">1</span> :<br>        n % <span class="hljs-number">2</span> == <span class="hljs-number">0</span> ? <span class="hljs-built_in">exp</span>(x * x, n / <span class="hljs-number">2</span>) :<br>        <span class="hljs-built_in">exp</span>(x * x, (n - <span class="hljs-number">1</span>) / <span class="hljs-number">2</span>) * x;<br>&#125;<br></code></pre></td></tr></table></figure>
-<h3 id="修饰构造函数">修饰构造函数</h3>
-<p>constexpr还能用于修饰类的构造函数，即保证如果提供给该构造函数的参数都是constexpr，那么产生的对象中的所有成员都会是constexpr，该对象也就是constexpr对象了，可用于各种只能使用constexpr的场合。注意，constexpr构造函数必须有一个空的函数体，即所有成员变量的初始化都放到初始化列表中</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-keyword">struct</span> <span class="hljs-title class_">Base</span><br>&#123;<br>    <span class="hljs-function"><span class="hljs-keyword">constexpr</span> <span class="hljs-title">Base</span><span class="hljs-params">(<span class="hljs-type">int</span> xx, <span class="hljs-type">int</span> yy,<span class="hljs-type">int</span> zz)</span></span><br><span class="hljs-function">        :x(xx),y(yy),z(zz)&#123;</span>&#125;<br>    <span class="hljs-function"><span class="hljs-keyword">constexpr</span> <span class="hljs-title">Base</span><span class="hljs-params">()</span></span><br><span class="hljs-function">        :Base(<span class="hljs-number">0</span>,<span class="hljs-number">0</span>,<span class="hljs-number">0</span>)&#123;</span>&#125;<br>    <span class="hljs-type">int</span> x;<br>    <span class="hljs-type">int</span> y;<br>    <span class="hljs-type">int</span> z;<br>&#125;;<br><br><span class="hljs-keyword">constexpr</span> Base pt = &#123;<span class="hljs-number">100</span>,<span class="hljs-number">100</span>,<span class="hljs-number">100</span>&#125;;<br></code></pre></td></tr></table></figure>
-<p>转载自<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/473260243">C/C++
-常量、#define、const和constexpr</a></p>
+                <h1 id="cstl优先级队列">C++STL优先级队列</h1>
+<p>优先级队列是特殊的队列，它与queue的区别在于它可以定义队列中数据的优先级，让优先级高的排在队列前面，可以优先出队，它本质上是由堆实现的。</p>
+<h2 id="定义">定义</h2>
+<p><strong>定义</strong>：<code>priority_queue&lt;Type, Container, Functional&gt;</code></p>
+<ul>
+<li>Type:数据类型</li>
+<li>Container：容器类型(Container必须是用数组实现的容器，比如vector,deque等等，但不能用
+list。STL里面默认用的是vector)</li>
+<li>Functional:比较的方式，当需要用自定义的数据类型时才需要传入第三个参数，使用基本数据类型时，只需要传入数据类型，其默认是<strong>大根堆</strong>。</li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-comment">//升序队列</span><br>priority_queue &lt;<span class="hljs-type">int</span>,vector&lt;<span class="hljs-type">int</span>&gt;,greater&lt;<span class="hljs-type">int</span>&gt; &gt; q;<br><span class="hljs-comment">//降序队列</span><br>priority_queue &lt;<span class="hljs-type">int</span>,vector&lt;<span class="hljs-type">int</span>&gt;,less&lt;<span class="hljs-type">int</span>&gt; &gt;q;<br></code></pre></td></tr></table></figure>
+<p><code>greater</code>和<code>less</code>是std实现的两个仿函数（就是使一个类的使用看上去像一个函数。其实现就是类中实现一个operator()，这个类就有了类似函数的行为，就是一个仿函数类了）。</p>
+<h2 id="基本操作">基本操作</h2>
+<p><code>priority_queue</code>的基本操作：</p>
+<ul>
+<li>top 访问队头元素</li>
+<li>empty 队列是否为空</li>
+<li>size 返回队列内元素个数</li>
+<li>push 插入元素到队尾 (并排序)</li>
+<li>emplace 原地构造一个元素并插入队列</li>
+<li>pop 弹出队头元素</li>
+<li>swap 交换内容</li>
+</ul>
+<p>使用实例：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;iostream&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;queue&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;vector&gt;</span></span><br><span class="hljs-keyword">using</span> <span class="hljs-keyword">namespace</span> std;<br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span> </span><br><span class="hljs-function"></span>&#123;   <br>    <span class="hljs-comment">// pair 先比较first，first相等然后再比较second</span><br>    priority_queue&lt;pair&lt;<span class="hljs-type">int</span>, <span class="hljs-type">int</span>&gt; &gt; a;<br>    <span class="hljs-function">pair&lt;<span class="hljs-type">int</span>, <span class="hljs-type">int</span>&gt; <span class="hljs-title">b</span><span class="hljs-params">(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>)</span></span>;<br>    <span class="hljs-function">pair&lt;<span class="hljs-type">int</span>, <span class="hljs-type">int</span>&gt; <span class="hljs-title">c</span><span class="hljs-params">(<span class="hljs-number">1</span>, <span class="hljs-number">3</span>)</span></span>;<br>    <span class="hljs-function">pair&lt;<span class="hljs-type">int</span>, <span class="hljs-type">int</span>&gt; <span class="hljs-title">d</span><span class="hljs-params">(<span class="hljs-number">2</span>, <span class="hljs-number">5</span>)</span></span>;<br>    a.<span class="hljs-built_in">push</span>(d);<br>    a.<span class="hljs-built_in">push</span>(c);<br>    a.<span class="hljs-built_in">push</span>(b);<br>    <span class="hljs-keyword">while</span> (!a.<span class="hljs-built_in">empty</span>()) <br>    &#123;<br>        cout &lt;&lt; a.<span class="hljs-built_in">top</span>().first &lt;&lt; <span class="hljs-string">&#x27; &#x27;</span> &lt;&lt; a.<span class="hljs-built_in">top</span>().second &lt;&lt; <span class="hljs-string">&#x27;\n&#x27;</span>;<br>        a.<span class="hljs-built_in">pop</span>();<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>输出：</p>
+<figure class="highlight basic"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs basic"><span class="hljs-symbol">2 </span><span class="hljs-number">5</span><br><span class="hljs-symbol">1 </span><span class="hljs-number">3</span><br><span class="hljs-symbol">1 </span><span class="hljs-number">2</span><br></code></pre></td></tr></table></figure>
+<h2 id="自定义类型">自定义类型</h2>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;iostream&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;queue&gt;</span></span><br><span class="hljs-keyword">using</span> <span class="hljs-keyword">namespace</span> std;<br><br><span class="hljs-comment">//方法1</span><br><span class="hljs-keyword">struct</span> <span class="hljs-title class_">tmp1</span> <span class="hljs-comment">//运算符重载&lt;</span><br>&#123;<br>    <span class="hljs-type">int</span> x;<br>    <span class="hljs-built_in">tmp1</span>(<span class="hljs-type">int</span> a) &#123;x = a;&#125;<br>    <span class="hljs-type">bool</span> <span class="hljs-keyword">operator</span> &lt; (<span class="hljs-type">const</span> tmp1&amp; a) <span class="hljs-type">const</span><br>    &#123;<br>        <span class="hljs-keyword">return</span> x &lt; a.x;     <span class="hljs-comment">// 大根堆</span><br>        <span class="hljs-comment">// return x &gt; a.x   // 小根堆</span><br>    &#125;<br>&#125;;<br><br><span class="hljs-comment">//方法2</span><br><span class="hljs-keyword">struct</span> <span class="hljs-title class_">tmp2</span> <span class="hljs-comment">//重写仿函数</span><br>&#123;<br>    <span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">operator</span> <span class="hljs-params">()</span><span class="hljs-params">(tmp1 a, tmp1 b)</span> </span><br><span class="hljs-function">    </span>&#123;<br>        <span class="hljs-keyword">return</span> a.x &lt; b.x;    <span class="hljs-comment">// 大根堆</span><br>        <span class="hljs-comment">// return a.x &gt; b.x  // 小根堆</span><br>    &#125;<br>&#125;;<br><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span> </span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-function">tmp1 <span class="hljs-title">a</span><span class="hljs-params">(<span class="hljs-number">1</span>)</span></span>;<br>    <span class="hljs-function">tmp1 <span class="hljs-title">b</span><span class="hljs-params">(<span class="hljs-number">2</span>)</span></span>;<br>    <span class="hljs-function">tmp1 <span class="hljs-title">c</span><span class="hljs-params">(<span class="hljs-number">3</span>)</span></span>;<br>    priority_queue&lt;tmp1&gt; d;<br>    d.<span class="hljs-built_in">push</span>(b);<br>    d.<span class="hljs-built_in">push</span>(c);<br>    d.<span class="hljs-built_in">push</span>(a);<br>    <span class="hljs-keyword">while</span> (!d.<span class="hljs-built_in">empty</span>()) <br>    &#123;<br>        cout &lt;&lt; d.<span class="hljs-built_in">top</span>().x &lt;&lt; <span class="hljs-string">&#x27;\n&#x27;</span>;<br>        d.<span class="hljs-built_in">pop</span>();<br>    &#125;<br>    cout &lt;&lt; <span class="hljs-string">&quot;----&quot;</span>&lt;&lt; endl;<br>    priority_queue&lt;tmp1, vector&lt;tmp1&gt;, tmp2&gt; f;<br>    f.<span class="hljs-built_in">push</span>(c);<br>    f.<span class="hljs-built_in">push</span>(b);<br>    f.<span class="hljs-built_in">push</span>(a);<br>    <span class="hljs-keyword">while</span> (!f.<span class="hljs-built_in">empty</span>()) <br>    &#123;<br>        cout &lt;&lt; f.<span class="hljs-built_in">top</span>().x &lt;&lt; <span class="hljs-string">&#x27;\n&#x27;</span>;<br>        f.<span class="hljs-built_in">pop</span>();<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>输出：</p>
+<figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs asciidoc">3<br>2<br><span class="hljs-section">1</span><br><span class="hljs-section">----</span><br>3<br>2<br>1<br></code></pre></td></tr></table></figure>
+<p>参考:<a
+target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_36888577/article/details/79937886">c++优先队列(priority_queue)用法详解</a></p>
 
                 
               </div>
@@ -419,6 +414,8 @@ id="c常量defineconst和constexpr">C++常量、#define、const和constexpr</h1>
       
         <a href="/tags/C/">#C++</a>
       
+        <a href="/tags/STL/">#STL</a>
+      
     </div>
   
 </div>
@@ -429,8 +426,8 @@ id="c常量defineconst和constexpr">C++常量、#define、const和constexpr</h1>
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>C++常量、#define、const和constexpr</div>
-      <div>https://gstarmin.github.io/2023/03/06/C++中define、const和constexpr/</div>
+      <div>C++STL优先级队列</div>
+      <div>https://gstarmin.github.io/2023/03/09/CppSTL优先级队列/</div>
     </div>
     <div class="license-meta">
       
@@ -442,7 +439,7 @@ id="c常量defineconst和constexpr">C++常量、#define、const和constexpr</h1>
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2023年3月6日</div>
+          <div>2023年3月9日</div>
         </div>
       
       
@@ -474,9 +471,9 @@ id="c常量defineconst和constexpr">C++常量、#define、const和constexpr</h1>
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2023/03/06/C++%E5%87%BD%E6%95%B0%E5%90%8E%E5%86%92%E5%8F%B7%E7%9A%84%E5%90%AB%E4%B9%89/" title="C++函数后冒号的含义">
+                      <a href="/2023/03/13/Cpp-explicit%E7%94%A8%E6%B3%95/" title="C++ explicit用法">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">C++函数后冒号的含义</span>
+                        <span class="hidden-mobile">C++ explicit用法</span>
                         <span class="visible-mobile">上一篇</span>
                       </a>
                     
@@ -484,8 +481,8 @@ id="c常量defineconst和constexpr">C++常量、#define、const和constexpr</h1>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2023/03/06/%E7%B4%A0%E6%95%B0%E7%AD%9B%E6%B3%95%E4%B9%8B%E5%9F%83%E6%B0%8F%E7%AD%9B%E5%92%8C%E6%AC%A7%E6%8B%89%E7%AD%9B/" title="素数筛法:埃氏筛和欧拉筛">
-                        <span class="hidden-mobile">素数筛法:埃氏筛和欧拉筛</span>
+                      <a href="/2023/03/07/%E4%BD%8D%E8%BF%90%E7%AE%97%E7%9A%84%E5%A6%99%E7%94%A8/" title="位运算的妙用">
+                        <span class="hidden-mobile">位运算的妙用</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
