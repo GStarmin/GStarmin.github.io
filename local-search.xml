@@ -4,6 +4,31 @@
   
   
   <entry>
+    <title>C++ 右值引用</title>
+    <link href="/2023/03/30/Cpp-%E5%8F%B3%E5%80%BC%E5%BC%95%E7%94%A8/"/>
+    <url>/2023/03/30/Cpp-%E5%8F%B3%E5%80%BC%E5%BC%95%E7%94%A8/</url>
+    
+    <content type="html"><![CDATA[<h1 id="c-右值引用">C++ 右值引用</h1><p>C++11中一个最主要的特性是可以移动而非拷贝对象的能力。我们很多情况下都会发生对象拷贝，而在其中某些情况下，对象拷贝之后就立即背销毁了。这种情况下，移动而非拷贝对象会大幅度提升性能。</p><p>在C++11之前，没有直接的方法移动对象。因此，计时不必拷贝对象的情况下，我们也不得不拷贝。如果对象较大，或者是对象本身要求分配内存空间（如string），进行不必要的拷贝代价非常高。</p><p>为了支持移动操作，C++11中引入了一种新的引用类型————<strong>右值引用(rvaluereference)</strong>。所谓右值引用是就是必须绑定到右值的引用。<strong>我们通过<code>&amp;&amp;</code>而不是<code>&amp;</code>来获得右值引用</strong>。比如我们将要看到的，右值引用有一个重要的性质————<strong>只能绑定到一个将要销毁的对象上</strong>。因此，我们可以自由地将一个右值引用的资源“移动”到另一个对象中。</p><p>如我们所知，对于常规引用（为了与右值引用区分开，我们可以称之为<strong>左值引用</strong>），我们不能将其绑定到要求转换的表达式、字面常量、或者是返回右值的表达式。右值引用有完全相反的特性：我们可以将一个右值绑定到一个左值上，但不能将一个右值引用直接绑定到一个左值上。</p><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-type">int</span> i = <span class="hljs-number">42</span>;<br><span class="hljs-type">int</span> &amp;r = i;         <span class="hljs-comment">// 正确：r引用i</span><br><span class="hljs-type">int</span> &amp;&amp;rr = i;       <span class="hljs-comment">// 错误:不能将一个右值引用绑定到一个左值上</span><br><span class="hljs-type">int</span> &amp;r2 = i * <span class="hljs-number">42</span>;   <span class="hljs-comment">// 错误：i * 42是一个右值</span><br><span class="hljs-type">const</span> <span class="hljs-type">int</span> &amp;r3 = i * <span class="hljs-number">42</span>;     <span class="hljs-comment">// 正确:我们可以将一个const的引用绑定到一个右值上</span><br><span class="hljs-type">int</span> &amp;&amp;rr2 = i * <span class="hljs-number">42</span>;         <span class="hljs-comment">// 正确:将rr2绑定到乘法结果上</span><br></code></pre></td></tr></table></figure><p>返回左值引用的函数，连同赋值、下标、解引用和前置递增/递减运算符，都是返回左值的表达式的例子。我们可以将一个左值引用绑定到这类表达式的结果上。</p><p>返回非引用类型的函数，连同算数、关系、位以及后置递增/递减运算符，都生成右值。我们不能将一个右值引用绑定到这类表达式上，但我们可以将一个const的左值引用或一个右值引用绑定到这类表达式上。</p><h2 id="左值持久右值短暂">左值持久；右值短暂</h2><p>考察左值和右值表达式的列表，两者相互区别之处就很明显了：<strong>左值有持久的状态，而右值要么是字面常量，要么是在表达式求值过程中创建的临时对象</strong>。</p><p>由于右值引用只能绑定到临时对象，我们得知</p><ul><li>所引用的对象将要别销毁</li><li>该对象没有其他用户</li></ul><p>这两个特性意味着：使用右值引用的diamagnetic可以自由地接管所引用对象的资源.</p><h2 id="变量是左值">变量是左值</h2><p>变量可以看作只有一个变量没有运算符的表达式,虽然我们很少这样看待变量.类似其他任何表达式,变量表达式也有左值/右值属性.变量表达式都是左值,带来的结果就是,<strong>我们不能将一个右值引用绑定一个右值引用类型的变量上</strong></p><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-type">int</span> &amp;&amp;rr1 = <span class="hljs-number">42</span>;     <span class="hljs-comment">// 正确:字面常量是右值</span><br><span class="hljs-type">int</span> &amp;&amp;rr2 = rr1;    <span class="hljs-comment">// 错误:表达式rr1是左值!</span><br></code></pre></td></tr></table></figure><p>其实有了右值表示临时对象这一观察结果,变量是左值这一特性并不令人惊讶.毕竟,变量是持久的,直至离开作用域的时候才被销毁.</p><h2 id="stdmove函数">std::move函数</h2><p>虽然不能将一个右值引用直接绑定到一个左值上,但是我们可以显式地将一个左值转换为对应的右值引用.我们还可以通过调用一个名为<code>move</code>的函数来获得绑定到左值上的右值引用.<strong><code>move</code>函数可以返回给定对象的右值引用</strong>.</p><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-type">int</span> &amp;&amp;rr3 = std::<span class="hljs-built_in">move</span>(rr1);     <span class="hljs-comment">// OK</span><br></code></pre></td></tr></table></figure><p><code>move</code>调用告诉编译器:我们有一个左值,但我们希望像一个右值一样处理它.调用<code>move</code>就意味着承诺:除了对<code>rr1</code>赋值或销毁它外,我们将不再使用它.在调用<code>move</code>之后,我们不能对移后源对象的值做任何假设.(我们可以销毁一个移后源对象,也可以赋予它新值,但不能使用一个移后源对象的值)</p>]]></content>
+    
+    
+    <categories>
+      
+      <category>C++</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>C++</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>C++ explicit用法</title>
     <link href="/2023/03/13/Cpp-explicit%E7%94%A8%E6%B3%95/"/>
     <url>/2023/03/13/Cpp-explicit%E7%94%A8%E6%B3%95/</url>
