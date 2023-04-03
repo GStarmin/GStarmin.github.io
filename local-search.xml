@@ -4,6 +4,60 @@
   
   
   <entry>
+    <title>并查集</title>
+    <link href="/2023/04/03/%E5%B9%B6%E6%9F%A5%E9%9B%86/"/>
+    <url>/2023/04/03/%E5%B9%B6%E6%9F%A5%E9%9B%86/</url>
+    
+    <content type="html"><![CDATA[<h1 id="并查集union-find">并查集（UNION-FIND）</h1><p>并查集（Union-FindSet）是一种用来管理和解决集合分组问题的数据结构，它支持两个操作：</p><ul><li><strong>查找（Find）</strong>：查找一个元素属于哪个集合，即找出其所在的连通块。</li><li><strong>合并（Union）</strong>：将两个不相交的集合合并成一个新的集合。</li></ul><h2 id="并查集模板">并查集模板</h2><p><strong>查找（Find）</strong>：这里用树来表示是否属于同一个数组，使用<strong>查找（Find）</strong>操作返回的是该节点所在树的根节点，如果一个节点<code>x</code>所在树的根节点就是<code>x</code>自己，那么<code>findParent(x)</code>返回的结果就是<code>x</code>。</p><p><strong>合并（Union）</strong>：合并两个节点<code>x</code>和<code>y</code>之前需要先判断<code>x</code>和<code>y</code>是否属于一个集合，如果已经在一个集合里，那么直接返回，否则将<code>x</code>和<code>y</code>的集合合并（在此实现为将<code>x</code>和<code>y</code>的树合并为一个树）。</p><p>合并两个集合最原始的方式就是将一个节点的根节点接到另一个节点的根节点上：</p><p><img src="/img/算法/并查集/原始合并.jpg" /></p><p>其实就是一个树结构，每个节点的祖先节点是其所在的集合，那么就会有一个问题，在最坏的情况下，树会退化为一个链表，这时候的<strong>查找</strong>时间复杂度为<code>O(N)</code>，上面的<code>findParent</code>函数可以在查找过程中将树结构进行压缩，压缩之后的结构如下图所示，每个节点的父亲节点为所在树的根节点：</p><p><img src="/img/算法/并查集/路径压缩.jpg" /></p><p>代码如下：</p><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">findParent</span><span class="hljs-params">(<span class="hljs-type">int</span> x)</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-keyword">if</span>(x != parent[x])<br>        <span class="hljs-keyword">return</span> <span class="hljs-built_in">findParent</span>(parent[x]);<br>    <span class="hljs-keyword">return</span> parent[x];<br>&#125;<br></code></pre></td></tr></table></figure><p>其查找过程便是压缩过程，见下面的动图：</p><p><img src="/img/算法/并查集/路径压缩动图.gif" /></p><p>并查集的模板如下所示：</p><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-keyword">class</span> <span class="hljs-title class_">UF</span><br>&#123;<br><span class="hljs-keyword">public</span>:<br>    <span class="hljs-built_in">UF</span>(<span class="hljs-type">int</span> n)   <span class="hljs-comment">// 构造函数，输入n为节点个数</span><br>    &#123;<br>        parent = <span class="hljs-built_in">vector</span>&lt;<span class="hljs-type">int</span>&gt;(n + <span class="hljs-number">1</span>);    <span class="hljs-comment">// n + 1是可以parent[i]为第i个节点的祖先，视情况而定</span><br>        <span class="hljs-keyword">for</span>(<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; n + <span class="hljs-number">1</span>; ++i)<br>            parent[i] = i;      <span class="hljs-comment">// 初始时每个节点都是单独的结合</span><br>    &#125;<br><br>    <span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">findParent</span><span class="hljs-params">(<span class="hljs-type">int</span> x)</span></span><br><span class="hljs-function">    </span>&#123;<br>        <span class="hljs-keyword">if</span>(x != parent[x])      <span class="hljs-comment">// 路径压缩</span><br>            <span class="hljs-keyword">return</span> <span class="hljs-built_in">findParent</span>(parent[x]);<br>        <span class="hljs-keyword">return</span> parent[x];<br>    &#125;<br><br>    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">unionNode</span><span class="hljs-params">(<span class="hljs-type">int</span> x, <span class="hljs-type">int</span> y)</span></span><br><span class="hljs-function">    </span>&#123;<br>        <span class="hljs-type">int</span> parent_x = <span class="hljs-built_in">findParent</span>(x);<br>        <span class="hljs-type">int</span> parent_y = <span class="hljs-built_in">findParent</span>(y);<br><br>        <span class="hljs-keyword">if</span>(parent_x == parent_y)  <span class="hljs-comment">// x，y已经属于同一个集合，直接返回     </span><br>            <span class="hljs-keyword">return</span> ;<br>        <br>        parent[parent_y] = parent_x;   <span class="hljs-comment">// 将两个集合合并</span><br>    &#125;<br><br>    <span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">isConnected</span><span class="hljs-params">(<span class="hljs-type">int</span> x, <span class="hljs-type">int</span> y)</span>  <span class="hljs-comment">// 判断两个节点是否属于一个集合</span></span><br><span class="hljs-function">    </span>&#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-built_in">findParent</span>(x) == <span class="hljs-built_in">findParent</span>(y);<br>    &#125;<br><span class="hljs-keyword">private</span>:<br>    vector&lt;<span class="hljs-type">int</span>&gt; parent;     <span class="hljs-comment">// parent[i]为第i个节点的祖先</span><br>&#125;;<br></code></pre></td></tr></table></figure><p>参考：本文中的图引用自<ahref="https://labuladong.github.io/algo/di-yi-zhan-da78c/shou-ba-sh-03a72/bing-cha-j-323f3/">labuladong的算法小抄</a>,模板实现是根据其模板修改而来。</p>]]></content>
+    
+    
+    <categories>
+      
+      <category>数据结构与算法</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>数据结构与算法</tag>
+      
+      <tag>leetcode</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>图算法</title>
+    <link href="/2023/04/03/Dijkstra%E7%AE%97%E6%B3%95/"/>
+    <url>/2023/04/03/Dijkstra%E7%AE%97%E6%B3%95/</url>
+    
+    <content type="html"><![CDATA[<h1 id="图算法">图算法</h1><h2 id="dijkstra算法">Dijkstra算法</h2><p>输入是一个图<code>graph</code>,返回是一个最短路径权重的数组。</p><p>思路：将<code>dis</code>的初始值出<code>start</code>之外设置为<code>INT_MAX</code>，<code>start</code>设置为<code>0</code>，然后将<code>start</code>加入到优先级队列中，依次将优先级队列中到<code>start</code>距离最小的节点<code>cur</code>弹出，看是否可以更新<code>cur</code>相邻节点<code>next_node</code>的dis值，如果出现下面<code>next_cost &lt; dis[edge.first]</code>的情况，那么就表示<code>next_node</code>的值可以被更新，且新的最短距离是经过<code>cur</code>的，同时将<code>next_node</code>加入到优先级队列中。重复这个过程，最终得到的<code>dis</code>数组就是<code>start</code>到其他节点的距离。<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-comment">// graph为输入的图，graph[i]为节点i的邻接表，pair.first为相邻的节点编号,pair.second为该边的权重</span><br><span class="hljs-comment">// start为起点</span><br><span class="hljs-comment">// n为图的节点个数</span><br><span class="hljs-function">vector&lt;<span class="hljs-type">int</span>&gt; <span class="hljs-title">Dijkstra</span><span class="hljs-params">(vector&lt;vector&lt;pair&lt;<span class="hljs-type">int</span>, <span class="hljs-type">int</span>&gt;&gt;&gt; &amp;graph, <span class="hljs-type">int</span> start, <span class="hljs-type">int</span> n)</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-function">vector&lt;<span class="hljs-type">int</span>&gt; <span class="hljs-title">dis</span><span class="hljs-params">(n + <span class="hljs-number">1</span>, INT_MAX)</span></span>;   <span class="hljs-comment">// 距离起点的距离数组,初始设置为INT_MAX,方便以后遍历到之后更新</span><br>    <span class="hljs-keyword">auto</span> cmp = [](pair&lt;<span class="hljs-type">int</span>, <span class="hljs-type">int</span>&gt; &amp;p1, pair&lt;<span class="hljs-type">int</span>, <span class="hljs-type">int</span>&gt; &amp;p2) &#123;<span class="hljs-keyword">return</span> p1.second &lt; p2.second;&#125;;<br>    priority_queue&lt;pair&lt;<span class="hljs-type">int</span>, <span class="hljs-type">int</span>&gt;, vector&lt;pair&lt;<span class="hljs-type">int</span>, <span class="hljs-type">int</span>&gt;&gt;, <span class="hljs-keyword">decltype</span>(cmp)&gt; <span class="hljs-built_in">pq</span>(cmp);  <span class="hljs-comment">// 使用优先级队列，pair.first为节点编号,pair.second到该节点的最小距离</span><br>    dis[start] = <span class="hljs-number">0</span>;<br>    pq.<span class="hljs-built_in">emplace</span>(<span class="hljs-built_in">make_pair</span>(start, <span class="hljs-number">0</span>));<br>    <span class="hljs-keyword">while</span>(!pq.<span class="hljs-built_in">empty</span>())<br>    &#123;<br>        <span class="hljs-keyword">auto</span> [id, cost] = pq.<span class="hljs-built_in">top</span>();<br>        pq.<span class="hljs-built_in">pop</span>();<br>        <span class="hljs-keyword">if</span>(cost &gt; dis[id])  <br>            <span class="hljs-keyword">continue</span>;<br>        <span class="hljs-keyword">for</span>(<span class="hljs-keyword">auto</span> edge : graph[id])<br>        &#123;<br>            <span class="hljs-type">int</span> next_cost = edge.second + dis[id];<br>            <span class="hljs-keyword">if</span>(next_cost &lt; dis[edge.first])     <span class="hljs-comment">// 如果下一个节点cost小于dis存储的值，更新dis并将其加入到优先级队列中</span><br>            &#123;<br>                dis[edge.first] = next_cost;<br>                pq.<span class="hljs-built_in">emplace</span>(<span class="hljs-built_in">make_pair</span>(edge.first, next_cost));   <span class="hljs-comment">// 该节点的cost更新之后，其相邻节点的cost可能也会因此更新</span><br>            &#125;<br>        &#125;<br>    &#125;<br>    <span class="hljs-keyword">return</span> dis;<br>&#125;<br></code></pre></td></tr></table></figure></p><h2 id="kruskal-最小生成树算法">KRUSKAL 最小生成树算法</h2><p>思想：从图<code>graph</code>中每次选择一条最短的边<code>e</code>，若加入<code>e</code>之后不构成环，将<code>e</code>加入到最小生成树的结果中；重复上述步骤，一直到有<code>n - 1</code>条边为止（<code>n</code>为图的节点个数，因为<code>n</code>个节点不存在环的连通图中必定有<code>n - 1</code>条边）。</p><p>这里实现KRUSKAL使用了并查集，可以参考</p><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs C++"><br><br></code></pre></td></tr></table></figure>]]></content>
+    
+    
+    <categories>
+      
+      <category>数据结构与算法</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>数据结构与算法</tag>
+      
+      <tag>leetcode</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>C++ 右值引用</title>
     <link href="/2023/03/30/Cpp-%E5%8F%B3%E5%80%BC%E5%BC%95%E7%94%A8/"/>
     <url>/2023/03/30/Cpp-%E5%8F%B3%E5%80%BC%E5%BC%95%E7%94%A8/</url>
@@ -330,9 +384,9 @@
     
     <tags>
       
-      <tag>leetcode</tag>
-      
       <tag>数据结构与算法</tag>
+      
+      <tag>leetcode</tag>
       
     </tags>
     
@@ -511,9 +565,9 @@
     
     <tags>
       
-      <tag>leetcode</tag>
-      
       <tag>数据结构与算法</tag>
+      
+      <tag>leetcode</tag>
       
     </tags>
     
