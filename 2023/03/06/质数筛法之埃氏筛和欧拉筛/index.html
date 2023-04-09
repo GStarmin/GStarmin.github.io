@@ -16,12 +16,12 @@
   <meta name="author" content="Starmin">
   <meta name="keywords" content="">
   
-    <meta name="description" content="素数筛法 本文主要介绍埃氏筛法和欧拉筛法。 暴力筛法 学习埃氏筛之前，我们先看一下暴力筛法，即对每个数都用试除法判断其是不是质数： 12345678910static final int N &#x3D; 1e7 + 5;int st[N]; &#x2F;&#x2F; 初始化为0， 0表示质数，1表示合数for(int i &#x3D; 2; i &lt;&#x3D; n; i++)&amp;#123;	for(int j &#x3D; 2; j &lt;&#x3D; i">
+    <meta name="description" content="质数数筛法 本文主要介绍埃氏筛法和欧拉筛法。 判断单个数是不是质数 1234567891011121314bool isPrime(int num)&amp;#123;	if(num&#x3D;&#x3D;1)		return 0;	if(num&#x3D;&#x3D;2||num&#x3D;&#x3D;3)		return 1;	if(num%6!&#x3D;1&amp;&amp;num%6!&#x3D;5)		return 0;	int tmp&#x3D;sqrt(num);	for(in">
 <meta property="og:type" content="article">
-<meta property="og:title" content="素数筛法:埃氏筛和欧拉筛">
-<meta property="og:url" content="https://gstarmin.github.io/2023/03/06/%E7%B4%A0%E6%95%B0%E7%AD%9B%E6%B3%95%E4%B9%8B%E5%9F%83%E6%B0%8F%E7%AD%9B%E5%92%8C%E6%AC%A7%E6%8B%89%E7%AD%9B/">
+<meta property="og:title" content="质数筛法:埃氏筛和欧拉筛">
+<meta property="og:url" content="https://gstarmin.github.io/2023/03/06/%E8%B4%A8%E6%95%B0%E7%AD%9B%E6%B3%95%E4%B9%8B%E5%9F%83%E6%B0%8F%E7%AD%9B%E5%92%8C%E6%AC%A7%E6%8B%89%E7%AD%9B/">
 <meta property="og:site_name" content="私人杂货铺">
-<meta property="og:description" content="素数筛法 本文主要介绍埃氏筛法和欧拉筛法。 暴力筛法 学习埃氏筛之前，我们先看一下暴力筛法，即对每个数都用试除法判断其是不是质数： 12345678910static final int N &#x3D; 1e7 + 5;int st[N]; &#x2F;&#x2F; 初始化为0， 0表示质数，1表示合数for(int i &#x3D; 2; i &lt;&#x3D; n; i++)&amp;#123;	for(int j &#x3D; 2; j &lt;&#x3D; i">
+<meta property="og:description" content="质数数筛法 本文主要介绍埃氏筛法和欧拉筛法。 判断单个数是不是质数 1234567891011121314bool isPrime(int num)&amp;#123;	if(num&#x3D;&#x3D;1)		return 0;	if(num&#x3D;&#x3D;2||num&#x3D;&#x3D;3)		return 1;	if(num%6!&#x3D;1&amp;&amp;num%6!&#x3D;5)		return 0;	int tmp&#x3D;sqrt(num);	for(in">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://gstarmin.github.io/img/算法/素数筛法/数1-11.png">
 <meta property="og:image" content="https://gstarmin.github.io/img/算法/素数筛法/筛去2倍数.png">
@@ -36,7 +36,7 @@
   
   
   
-  <title>素数筛法:埃氏筛和欧拉筛 - 私人杂货铺</title>
+  <title>质数筛法:埃氏筛和欧拉筛 - 私人杂货铺</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -273,7 +273,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="素数筛法:埃氏筛和欧拉筛"></span>
+            <span id="subtitle" data-typed-text="质数筛法:埃氏筛和欧拉筛"></span>
           
         </div>
 
@@ -296,7 +296,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          3k 字
+          3.6k 字
         
       </span>
     
@@ -307,7 +307,7 @@
         
         
         
-          31 分钟
+          36 分钟
         
       </span>
     
@@ -345,13 +345,16 @@
         <div id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">素数筛法:埃氏筛和欧拉筛</h1>
+            <h1 style="display: none">质数筛法:埃氏筛和欧拉筛</h1>
             
             
               <div class="markdown-body">
                 
-                <h1 id="素数筛法">素数筛法</h1>
+                <h1 id="质数数筛法">质数数筛法</h1>
 <p>本文主要介绍埃氏筛法和欧拉筛法。</p>
+<h2 id="判断单个数是不是质数">判断单个数是不是质数</h2>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">isPrime</span><span class="hljs-params">(<span class="hljs-type">int</span> num)</span></span><br><span class="hljs-function"></span>&#123;<br>	<span class="hljs-keyword">if</span>(num==<span class="hljs-number">1</span>)<br>		<span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>	<span class="hljs-keyword">if</span>(num==<span class="hljs-number">2</span>||num==<span class="hljs-number">3</span>)<br>		<span class="hljs-keyword">return</span> <span class="hljs-number">1</span>;<br>	<span class="hljs-keyword">if</span>(num%<span class="hljs-number">6</span>!=<span class="hljs-number">1</span>&amp;&amp;num%<span class="hljs-number">6</span>!=<span class="hljs-number">5</span>)<br>		<span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>	<span class="hljs-type">int</span> tmp=<span class="hljs-built_in">sqrt</span>(num);<br>	<span class="hljs-keyword">for</span>(<span class="hljs-type">int</span> i=<span class="hljs-number">5</span>;i&lt;=tmp;i+=<span class="hljs-number">6</span>)<br>		<span class="hljs-keyword">if</span>(num%i==<span class="hljs-number">0</span>||num%(i+<span class="hljs-number">2</span>)==<span class="hljs-number">0</span>)<br>			<span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>	<span class="hljs-keyword">return</span> <span class="hljs-number">1</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>但是当有很多个数需要判断的时候，每次都输入num判断是否是质数就很耗时了，这样提前将一个范围的质数算出来可以更节省时间，所以就用到了质数筛法。</p>
 <h2 id="暴力筛法">暴力筛法</h2>
 <p>学习埃氏筛之前，我们先看一下暴力筛法，即对每个数都用试除法判断其是不是质数：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-type">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">int</span> N = <span class="hljs-number">1e7</span> + <span class="hljs-number">5</span>;<br><span class="hljs-type">int</span> st[N]; <span class="hljs-comment">// 初始化为0， 0表示质数，1表示合数</span><br><br><span class="hljs-keyword">for</span>(<span class="hljs-type">int</span> i = <span class="hljs-number">2</span>; i &lt;= n; i++)&#123;<br>	<span class="hljs-keyword">for</span>(<span class="hljs-type">int</span> j = <span class="hljs-number">2</span>; j &lt;= i / j; j++)&#123;<span class="hljs-comment">//试除法</span><br>		<span class="hljs-keyword">if</span>(i % j == <span class="hljs-number">0</span>)&#123;<br>			st[i] = <span class="hljs-number">1</span>; <span class="hljs-comment">// 合数，标记为1 </span><br>		&#125;<br>	&#125;<br>&#125;<br></code></pre></td></tr></table></figure>
@@ -429,7 +432,7 @@ class="math inline">\(2,3,4,...,n\)</span>。</p>
 \end{align}\]</span></p>
 <p>会发现，第二个数列是第一个数列的系数,所以，我们不需要用一个for循环去筛除一个质数的所有倍数，我们将所有质数存储到<code>primes[]</code>中，然后枚举到第i个数时，就筛去所有的<code>primes[j] * i</code>。这样就在每一次遍历中，正好筛除了所有已知素数的<code>i</code>倍。</p>
 <p>代码如下：</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-type">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">int</span> N = <span class="hljs-number">1e7</span> + <span class="hljs-number">5</span>;<br><span class="hljs-type">static</span> <span class="hljs-type">int</span>[] st = <span class="hljs-keyword">new</span> <span class="hljs-type">int</span>[N], primes = <span class="hljs-keyword">new</span> <span class="hljs-type">int</span>[N];<br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">ola</span><span class="hljs-params">(<span class="hljs-type">int</span> n)</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-type">int</span> cnt = <span class="hljs-number">0</span>;<br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">2</span>; i &lt;= n; i ++ )<br>    &#123;<br>        <span class="hljs-keyword">if</span> (st[i] == <span class="hljs-number">0</span>) primes[cnt++] = i;<span class="hljs-comment">//将质数存到primes中</span><br>        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> j = <span class="hljs-number">0</span>; j &lt;= cnt &amp;&amp; primes[j] &lt;= n / i; j ++ )<span class="hljs-comment">//要确保质数的第i倍是小于等于n的。</span><br>        &#123;<br>            st[primes[j] * i] = <span class="hljs-number">1</span>;<br>            <span class="hljs-keyword">if</span> (i % primes[j] == <span class="hljs-number">0</span>) <span class="hljs-keyword">break</span>;<br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-type">static</span> <span class="hljs-keyword">constexpr</span> <span class="hljs-type">int</span> N = <span class="hljs-number">1e7</span> + <span class="hljs-number">5</span>;<br><span class="hljs-comment">//isPrime[i] == 1表示：i是素数</span><br><span class="hljs-type">bool</span> isPrime[N];<br><span class="hljs-comment">//Prime存质数</span><br><span class="hljs-type">int</span> Prime[N], cnt = <span class="hljs-number">0</span>;<br><br><br>  <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">GetPrime</span><span class="hljs-params">(<span class="hljs-type">int</span> n)</span><span class="hljs-comment">//筛到n</span></span><br><span class="hljs-function">  </span>&#123;<br>      <span class="hljs-built_in">memset</span>(isPrime, <span class="hljs-number">1</span>, <span class="hljs-built_in">sizeof</span>(isPrime));<br>      <span class="hljs-comment">//以“每个数都是素数”为初始状态，逐个删去</span><br>      isPrime[<span class="hljs-number">1</span>] = <span class="hljs-number">0</span>;<span class="hljs-comment">//1不是素数</span><br><br>      <span class="hljs-keyword">for</span>(<span class="hljs-type">int</span> i = <span class="hljs-number">2</span>; i &lt;= n; i++)<br>      &#123;<br>          <span class="hljs-keyword">if</span>(isPrime[i])<span class="hljs-comment">//没筛掉 </span><br>              Prime[++cnt] = i; <span class="hljs-comment">//i成为下一个素数</span><br><br>          <span class="hljs-keyword">for</span>(<span class="hljs-type">int</span> j = <span class="hljs-number">1</span>; j &lt;= cnt &amp;&amp; i*Prime[j] &lt;= n<span class="hljs-comment">/*不超上限*/</span>; j++) <br>          &#123;<br>              <span class="hljs-comment">//从Prime[1]，即最小质数2开始，逐个枚举已知的质数，并期望Prime[j]是(i*Prime[j])的最小质因数</span><br>              <span class="hljs-comment">//当然，i肯定比Prime[j]大，因为Prime[j]是在i之前得出的</span><br>              isPrime[i*Prime[j]] = <span class="hljs-number">0</span>;<br><br>              <span class="hljs-keyword">if</span>(i % Prime[j] == <span class="hljs-number">0</span>)<span class="hljs-comment">//i中也含有Prime[j]这个因子</span><br>                  <span class="hljs-keyword">break</span>; <span class="hljs-comment">//重要步骤。见原理</span><br>          &#125;<br>      &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
 <p>注意内层循环有一个<code>break</code>的条件<code>i % primes[j] == 0</code>,为什么呢？</p>
 <p><strong>因为</strong>:</p>
 <p>由</p>
@@ -512,8 +515,8 @@ class="math inline">\(2*6\)</span>筛掉。</p>
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>素数筛法:埃氏筛和欧拉筛</div>
-      <div>https://gstarmin.github.io/2023/03/06/素数筛法之埃氏筛和欧拉筛/</div>
+      <div>质数筛法:埃氏筛和欧拉筛</div>
+      <div>https://gstarmin.github.io/2023/03/06/质数筛法之埃氏筛和欧拉筛/</div>
     </div>
     <div class="license-meta">
       
