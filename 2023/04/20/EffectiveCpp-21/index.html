@@ -16,23 +16,23 @@
   <meta name="author" content="Starmin">
   <meta name="keywords" content="">
   
-    <meta name="description" content="单调栈 单调栈是一种运用栈数据结构来解决一些特定问题的解题技巧。它主要用于解决需要快速寻找一个元素左(或右)边第一个比它大(或小)的元素的问题。 使用单调栈的基本思路是保持栈内的元素单调递增或单调递减，栈顶元素是当前栈内最大或最小的元素，同时记录下每个元素的相关信息，如坐标、面积、数量等，根据这些信息计算出所需的结果。 单调栈的实现主要有两种，第一种是从前往后遍历数组，第二种是从后往前遍历数组。">
+    <meta name="description" content="Effective C++ 条款21：必须返回对象时，不要返回reference 众所周知，C++中函数传参pass-by-value的效率是要低于pass-by-reference的，所以函数传参尽量以pass-by-reference-to-const 替换 pass-by-value,但是在函数返回的时候，返回一个reference并不一定是一件好事，因为这可能会导致我们传递一些refere">
 <meta property="og:type" content="article">
-<meta property="og:title" content="单调栈">
-<meta property="og:url" content="https://gstarmin.github.io/2023/04/08/%E5%8D%95%E8%B0%83%E6%A0%88/">
+<meta property="og:title" content="EffectiveCpp-21">
+<meta property="og:url" content="https://gstarmin.github.io/2023/04/20/EffectiveCpp-21/">
 <meta property="og:site_name" content="私人杂货铺">
-<meta property="og:description" content="单调栈 单调栈是一种运用栈数据结构来解决一些特定问题的解题技巧。它主要用于解决需要快速寻找一个元素左(或右)边第一个比它大(或小)的元素的问题。 使用单调栈的基本思路是保持栈内的元素单调递增或单调递减，栈顶元素是当前栈内最大或最小的元素，同时记录下每个元素的相关信息，如坐标、面积、数量等，根据这些信息计算出所需的结果。 单调栈的实现主要有两种，第一种是从前往后遍历数组，第二种是从后往前遍历数组。">
+<meta property="og:description" content="Effective C++ 条款21：必须返回对象时，不要返回reference 众所周知，C++中函数传参pass-by-value的效率是要低于pass-by-reference的，所以函数传参尽量以pass-by-reference-to-const 替换 pass-by-value,但是在函数返回的时候，返回一个reference并不一定是一件好事，因为这可能会导致我们传递一些refere">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2023-04-08T03:22:22.000Z">
-<meta property="article:modified_time" content="2023-04-08T03:22:22.000Z">
+<meta property="article:published_time" content="2023-04-20T07:09:26.000Z">
+<meta property="article:modified_time" content="2023-04-20T07:09:26.000Z">
 <meta property="article:author" content="Starmin">
-<meta property="article:tag" content="数据结构与算法">
-<meta property="article:tag" content="leetcode">
+<meta property="article:tag" content="C++">
+<meta property="article:tag" content="Effective C++">
 <meta name="twitter:card" content="summary_large_image">
   
   
   
-  <title>单调栈 - 私人杂货铺</title>
+  <title>EffectiveCpp-21 - 私人杂货铺</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -269,7 +269,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="单调栈"></span>
+            <span id="subtitle" data-typed-text="EffectiveCpp-21"></span>
           
         </div>
 
@@ -280,8 +280,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2023-04-08 11:22" pubdate>
-          2023年4月8日 上午
+        <time datetime="2023-04-20 15:09" pubdate>
+          2023年4月20日 下午
         </time>
       </span>
     
@@ -292,7 +292,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          1k 字
+          2.6k 字
         
       </span>
     
@@ -303,7 +303,7 @@
         
         
         
-          11 分钟
+          27 分钟
         
       </span>
     
@@ -341,19 +341,45 @@
         <div id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">单调栈</h1>
+            <h1 style="display: none">EffectiveCpp-21</h1>
             
             
               <div class="markdown-body">
                 
-                <h1 id="单调栈">单调栈</h1>
-<p>单调栈是一种运用栈数据结构来解决一些特定问题的解题技巧。它主要用于解决需要快速寻找<strong>一个元素左(或右)边第一个比它大(或小)的元素</strong>的问题。</p>
-<p>使用单调栈的基本思路是保持栈内的元素单调递增或单调递减，栈顶元素是当前栈内最大或最小的元素，同时记录下每个元素的相关信息，如坐标、面积、数量等，根据这些信息计算出所需的结果。</p>
-<p>单调栈的实现主要有两种，第一种是从前往后遍历数组，第二种是从后往前遍历数组。</p>
-<p>以寻找数组中当前元素右侧第一个比它大的数为例,第一种实现方式：</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-comment">// 从前往后遍历</span><br><span class="hljs-function">vector&lt;<span class="hljs-type">int</span>&gt; <span class="hljs-title">nextGreaterElement</span><span class="hljs-params">(vector&lt;<span class="hljs-type">int</span>&gt; &amp;nums)</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-type">int</span> n = nums.<span class="hljs-built_in">size</span>();<br>    stack&lt;<span class="hljs-type">int</span>&gt; s;<br>    <span class="hljs-function">vector&lt;<span class="hljs-type">int</span>&gt; <span class="hljs-title">res</span><span class="hljs-params">(n, <span class="hljs-number">-1</span>)</span></span>; <span class="hljs-comment">// 右侧没有比它大的数时对应res为-1，所以初始值全部设置为-1</span><br><br>    <span class="hljs-keyword">for</span>(<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; n; ++i)<br>    &#123;<br>        <span class="hljs-comment">// 当前元素大于栈顶元素时，当前元素就是栈顶元素右侧第一个大于栈顶的元素，并将栈顶出栈</span><br>        <span class="hljs-keyword">while</span>(!s.<span class="hljs-built_in">empty</span>() &amp;&amp; nums[s.<span class="hljs-built_in">top</span>()] &lt; nums[i])    <br>        &#123;<br>            res[s.<span class="hljs-built_in">top</span>()] = nums[i];<br>            s.<span class="hljs-built_in">pop</span>();<br>        &#125;<br>        s.<span class="hljs-built_in">emplace</span>(i);<br>    &#125;<br>    <span class="hljs-keyword">return</span> res;<br>&#125;<br></code></pre></td></tr></table></figure>
-<p>第二种实现方式：</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-comment">// 从后往前遍历</span><br><span class="hljs-function">vector&lt;<span class="hljs-type">int</span>&gt; <span class="hljs-title">nextGreaterElement</span><span class="hljs-params">(vector&lt;<span class="hljs-type">int</span>&gt; &amp;nums)</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-type">int</span> n = nums.<span class="hljs-built_in">size</span>();<br>    stack&lt;<span class="hljs-type">int</span>&gt; s;<br>    <span class="hljs-function">vector&lt;<span class="hljs-type">int</span>&gt; <span class="hljs-title">res</span><span class="hljs-params">(n, <span class="hljs-number">-1</span>)</span></span>; <span class="hljs-comment">// 右侧没有比它大的数时对应res为-1，所以初始值全部设置为-1</span><br><br>    <span class="hljs-keyword">for</span>(<span class="hljs-type">int</span> i = n - <span class="hljs-number">1</span>; i &gt;= <span class="hljs-number">0</span>; --i)     <br>    &#123;<br>        <span class="hljs-comment">// 栈顶元素在当前元素右侧，当栈顶元素小于或等于当前元素的时候，将其出栈，继续寻找当前元素右侧第一个比它大的元素</span><br>        <span class="hljs-keyword">while</span>(!s.<span class="hljs-built_in">empty</span>() &amp;&amp; s.<span class="hljs-built_in">top</span>() &lt;= nums[i])  <br>            s.<span class="hljs-built_in">pop</span>();<br>        res[i] = s.<span class="hljs-built_in">empty</span>() ? <span class="hljs-number">-1</span> : s.<span class="hljs-built_in">top</span>();<br>        s.<span class="hljs-built_in">emplace</span>(nums[i]);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+                <h1 id="effective-c-条款21必须返回对象时不要返回reference">Effective C++
+条款21：必须返回对象时，不要返回reference</h1>
+<p>众所周知，C++中函数传参<em>pass-by-value</em>的效率是要低于<em>pass-by-reference</em>的，所以函数传参尽量以<strong><em>pass-by-reference-to-const</em>
+替换
+<em>pass-by-value</em></strong>,但是在函数返回的时候，返回一个<em>reference</em>并不一定是一件好事，因为这可能会导致我们<strong>传递一些<em>reference</em>并不存在的对象</strong>。</p>
+<p>考虑一个用于表现有理数的class,内含一个函数用来计算两个有理数的乘积：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-keyword">class</span> <span class="hljs-title class_">Rational</span>&#123;<br><span class="hljs-keyword">public</span>:<br>    <span class="hljs-built_in">Rational</span>(<span class="hljs-type">int</span> numerator = <span class="hljs-number">0</span>, <span class="hljs-type">int</span> denominator = <span class="hljs-number">1</span>);<br><br><span class="hljs-keyword">private</span>:<br>    <span class="hljs-type">int</span> n, d;   <span class="hljs-comment">// 分子numerator 和 分母denominator</span><br>    <span class="hljs-keyword">friend</span> <span class="hljs-type">const</span> Rational <span class="hljs-keyword">operator</span>*(<span class="hljs-type">const</span> Rational &amp;lhs, <span class="hljs-type">const</span> Rational &amp;rhs);<br>&#125;;<br></code></pre></td></tr></table></figure>
+<p>这个类的<code>operator*</code>是以<em>by-value</em>返回其计算结果。如果现在你想节省掉该对象的构造和析构函数成本，而改用传递reference，那么请先回想一下，<strong>所谓reference只是一个名称，代表某个既有对象。任何时候看到一个reference对象声明式，都要立刻提醒自己，它的另一个名称是什么？因为它一定是某物的另一个名称</strong>。如果上面
+<code>operator*</code>返回reference，那么它一定指向一个既有的<code>Rational</code>对象,内含两个<code>Rational</code>对象的乘积。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-function">Rational <span class="hljs-title">a</span><span class="hljs-params">(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>)</span></span>;   <span class="hljs-comment">// a = 1/2</span><br><span class="hljs-function">Rational <span class="hljs-title">b</span><span class="hljs-params">(<span class="hljs-number">3</span>, <span class="hljs-number">5</span>)</span></span>;   <span class="hljs-comment">// b = 3/5</span><br>Rational c = a * b; <span class="hljs-comment">// c 应该是 3/10</span><br></code></pre></td></tr></table></figure>
+<p>以上面的代码为例，期望一个值为<code>3/10</code>的Rational对象已经存在并不合理，如果<code>operator*</code>返回一个reference指向如此数值，它必须自己创建那个Rational对象。</p>
+<p>创建新对象的方式有两种：在stack空间或者在heap空间创建。如果要定义一个local变量，就是在stack空间上创建对象。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-type">const</span> Rational&amp; <span class="hljs-keyword">operator</span>* (<span class="hljs-type">const</span> Rational &amp;lhs, <span class="hljs-type">const</span> Rational &amp;rhs)<br>&#123;<br>    <span class="hljs-function">Rational <span class="hljs-title">result</span><span class="hljs-params">(lhs.n * rhs.n, lhs.d * rhs.d)</span></span>;<br>    <span class="hljs-keyword">return</span> result;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>然后这样做有一个很明显的漏洞：函数返回一个reference指向result，但result是一个local对象，而local对象在函数退出之前就已经销毁了。因此这个版本的<code>operator*</code>并未返回reference指向某个Rational，它返回的额reference指向一个已经被销毁的“从前的”Rational。而任何使用到这个返回值的操作都会引发“无定义行为”的报错。所以，<strong>任何函数都不要返回reference指向一个local对象</strong>。</p>
+<p>那么考虑在heap内构建对象，并返回reference指向它，Heap-based对象由new创建，所以写一个heap-based
+<code>operator*</code>如下：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-type">const</span> Rational* <span class="hljs-keyword">operator</span>* (<span class="hljs-type">const</span> Rational &amp;lhs, <span class="hljs-type">const</span> Rational &amp;rhs)<br>&#123;<br>    Rational *result = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Rational</span>(lhs.n * rhs.n, lhs.d * rhs.d);<br>    <span class="hljs-keyword">return</span> *result;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>即便如此，我们还是要付出一个“构造函数”的代价，因为分配所得的内存将以一个适当的构造函数并完成初始化操作。但此外你又有了另一个问题：谁该对着这个new出来的对象实施delete？</p>
+<p>即便调用者诚实诚谨，并出于良好意识，他们还是不太能在这样合情合理的用法下阻止内存泄漏：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs C++">Rational w, x, y, z;<br>w = x * y * z;      <span class="hljs-comment">// 与 operator* (operator* (x, y), z)相同</span><br></code></pre></td></tr></table></figure>
+<p>这里同一个语句调用了两次<code>operator*</code>，也就需要使用两次new，对应的就需要两次delete。但是却没有合理的方法让<code>operator*</code>的使用者进行那些delete调用，因为没有合理的方法让他们取得<code>operator*</code>返回的reference背后隐藏的那个指针。这一定会导致内存泄露。</p>
+<p>所以不管是on-the-stack或者是on-the-heap的做法，都会因为<code>operator*</code>的返回结果调用构造函数而出错或付出代价。而我们想返回引用的最初目的是<strong>避免构造函数的调用</strong>。</p>
+<p>或许还有一种避免任何构造函数被调用的方法，那就是“让<code>operator*</code>返回的reference指向一个被定义于函数内部的static
+Rational对象”：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-type">const</span> Rational&amp; <span class="hljs-keyword">operator</span>* (<span class="hljs-type">const</span> Rational &amp;lhs, <span class="hljs-type">const</span> Rational &amp;rhs)<br>&#123;<br>    <span class="hljs-type">static</span> Rational result;<br><br>    result = ...;<br><br>    <span class="hljs-keyword">return</span> result;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>然而这也是一个非常糟糕的设计，看下面这段代码：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-type">bool</span> <span class="hljs-keyword">operator</span>* (<span class="hljs-type">const</span> Rational &amp;lhs, <span class="hljs-type">const</span> Rational &amp;rhs);<br><br>Rational a, b, c, d;<br><br><span class="hljs-keyword">if</span>((a * b) == (c * d))      <span class="hljs-comment">// 这个表达式一定为true</span><br>    ...<br><span class="hljs-keyword">else</span><br>    ...<br></code></pre></td></tr></table></figure>
+<p>不管<code>a</code>,<code>b</code>,<code>c</code>,<code>d</code>的值是什么，表达式<code>(a * b) == (c * d)</code>一定为<code>true</code>。上述的<code>if</code>判别式可以写为下面的等价形式：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-keyword">if</span>(<span class="hljs-keyword">operator</span>== (<span class="hljs-keyword">operator</span>* (a, b), <span class="hljs-keyword">operator</span>* (c, d)))<br></code></pre></td></tr></table></figure>
+<p>在<code>operator==</code>被调用之前，两个<code>operator*</code>已经被调用，每个都返回reference指向<code>operator*</code>内部定义的static对象。因此<code>operator==</code>比较的两个对象都是<code>operator*</code>内定义的static对象，所以判别式一定是<code>true</code>。</p>
+<h2 id="总结">总结</h2>
+<p>绝不要返回pointer或reference指向一个local
+stack对象，或返回有一个reference指向一个heap-allocated对象，或返回pointer或reference指向一个loacl
+staic对象而又可能同时需要多个这样的对象。</p>
 
                 
               </div>
@@ -372,8 +398,15 @@
     
       <span class="category-chain">
         
-  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" class="category-chain-item">数据结构与算法</a>
+  <a href="/categories/C/" class="category-chain-item">C++</a>
   
+  
+    <span>></span>
+    
+  <a href="/categories/C/Effective-C/" class="category-chain-item">Effective C++</a>
+  
+  
+
   
 
       </span>
@@ -387,9 +420,9 @@
     <div class="post-meta">
       <i class="iconfont icon-tags"></i>
       
-        <a href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/">#数据结构与算法</a>
+        <a href="/tags/C/">#C++</a>
       
-        <a href="/tags/leetcode/">#leetcode</a>
+        <a href="/tags/Effective-C/">#Effective C++</a>
       
     </div>
   
@@ -401,8 +434,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>单调栈</div>
-      <div>https://gstarmin.github.io/2023/04/08/单调栈/</div>
+      <div>EffectiveCpp-21</div>
+      <div>https://gstarmin.github.io/2023/04/20/EffectiveCpp-21/</div>
     </div>
     <div class="license-meta">
       
@@ -414,7 +447,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2023年4月8日</div>
+          <div>2023年4月20日</div>
         </div>
       
       
@@ -446,18 +479,12 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2023/04/08/%E5%89%8D%E7%BC%80%E6%A0%91/" title="前缀树">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">前缀树</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2023/04/04/%E5%BF%AB%E9%80%9F%E6%8E%92%E5%BA%8F/" title="快速排序">
-                        <span class="hidden-mobile">快速排序</span>
+                      <a href="/2023/04/17/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E7%9A%84%E5%87%A0%E7%A7%8D%E5%AE%9E%E7%8E%B0%E6%96%B9%E5%BC%8F/" title="动态规划的几种实现方式">
+                        <span class="hidden-mobile">动态规划的几种实现方式</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
