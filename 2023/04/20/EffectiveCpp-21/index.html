@@ -16,12 +16,12 @@
   <meta name="author" content="Starmin">
   <meta name="keywords" content="">
   
-    <meta name="description" content="Effective C++ 条款21：必须返回对象时，不要返回reference 众所周知，C++中函数传参pass-by-value的效率是要低于pass-by-reference的，所以函数传参尽量以pass-by-reference-to-const 替换 pass-by-value,但是在函数返回的时候，返回一个reference并不一定是一件好事，因为这可能会导致我们传递一些refere">
+    <meta name="description" content="Effective C++ Item 21：必须返回对象时，不要返回reference 众所周知，C++中函数传参pass-by-value的效率是要低于pass-by-reference的，所以函数传参尽量以pass-by-reference-to-const 替换 pass-by-value,但是在函数返回的时候，返回一个reference并不一定是一件好事，因为这可能会导致我们传递一些ref">
 <meta property="og:type" content="article">
 <meta property="og:title" content="EffectiveCpp-21：必须返回对象时，不要返回reference">
 <meta property="og:url" content="https://gstarmin.github.io/2023/04/20/EffectiveCpp-21/">
 <meta property="og:site_name" content="私人杂货铺">
-<meta property="og:description" content="Effective C++ 条款21：必须返回对象时，不要返回reference 众所周知，C++中函数传参pass-by-value的效率是要低于pass-by-reference的，所以函数传参尽量以pass-by-reference-to-const 替换 pass-by-value,但是在函数返回的时候，返回一个reference并不一定是一件好事，因为这可能会导致我们传递一些refere">
+<meta property="og:description" content="Effective C++ Item 21：必须返回对象时，不要返回reference 众所周知，C++中函数传参pass-by-value的效率是要低于pass-by-reference的，所以函数传参尽量以pass-by-reference-to-const 替换 pass-by-value,但是在函数返回的时候，返回一个reference并不一定是一件好事，因为这可能会导致我们传递一些ref">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2023-04-20T07:09:26.000Z">
 <meta property="article:modified_time" content="2023-04-20T07:09:26.000Z">
@@ -346,8 +346,8 @@
             
               <div class="markdown-body">
                 
-                <h1 id="effective-c-条款21必须返回对象时不要返回reference">Effective C++
-条款21：必须返回对象时，不要返回reference</h1>
+                <h1 id="effective-c-item-21必须返回对象时不要返回reference">Effective
+C++ Item 21：必须返回对象时，不要返回reference</h1>
 <p>众所周知，C++中函数传参<em>pass-by-value</em>的效率是要低于<em>pass-by-reference</em>的，所以函数传参尽量以<strong><em>pass-by-reference-to-const</em>
 替换
 <em>pass-by-value</em></strong>,但是在函数返回的时候，返回一个<em>reference</em>并不一定是一件好事，因为这可能会导致我们<strong>传递一些<em>reference</em>并不存在的对象</strong>。</p>
@@ -479,9 +479,9 @@ staic对象而又可能同时需要多个这样的对象。</p>
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2023/04/20/EffectiveCpp-41/" title="EffectiveCpp-41：编译期多态与运行期多态">
+                      <a href="/2023/04/20/EffectiveCpp-41/" title="EffectiveCpp-41：了解隐式接口和编译期多态">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">EffectiveCpp-41：编译期多态与运行期多态</span>
+                        <span class="hidden-mobile">EffectiveCpp-41：了解隐式接口和编译期多态</span>
                         <span class="visible-mobile">上一篇</span>
                       </a>
                     

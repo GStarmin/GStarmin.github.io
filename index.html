@@ -298,14 +298,14 @@
       <h1 class="index-header">
         
         <a href="/2023/04/20/EffectiveCpp-41/" target="_self">
-          EffectiveCpp-41：编译期多态与运行期多态
+          EffectiveCpp-41：了解隐式接口和编译期多态
         </a>
       </h1>
 
       
       <a class="index-excerpt index-excerpt__noimg" href="/2023/04/20/EffectiveCpp-41/" target="_self">
         <div>
-          Effective C++ 条款41：编译器多态与运行期多态 今日的C++不再是个单纯的“带类的C”语言，它已经发展成为一个多种次语言所组成的语言集合，其中泛型编程与基于它的STL是C++发展中最为出彩的那部分。在面向对象C++编程中，多态是OO三大特性之一，这种多态称为运行期多态，也称为动态多态；在泛型编程中，多态基于template(模板)的具现化与函数的重载解析，这种多态在编译期进行，因此称
+          Effective C++ Item 41 了解隐式接口和编译期多态 显式接口和运行时多态 面向对象编程的世界围绕着显式接口和运行时多态。举个例子，考虑下面的类（无意义的类）： 12345678class Widget &#123;public:    Widget();    virtual ~Widget();    virtual std::size_t size() const;    v
         </div>
       </a>
 
@@ -375,7 +375,7 @@
       
       <a class="index-excerpt index-excerpt__noimg" href="/2023/04/20/EffectiveCpp-21/" target="_self">
         <div>
-          Effective C++ 条款21：必须返回对象时，不要返回reference 众所周知，C++中函数传参pass-by-value的效率是要低于pass-by-reference的，所以函数传参尽量以pass-by-reference-to-const 替换 pass-by-value,但是在函数返回的时候，返回一个reference并不一定是一件好事，因为这可能会导致我们传递一些refere
+          Effective C++ Item 21：必须返回对象时，不要返回reference 众所周知，C++中函数传参pass-by-value的效率是要低于pass-by-reference的，所以函数传参尽量以pass-by-reference-to-const 替换 pass-by-value,但是在函数返回的时候，返回一个reference并不一定是一件好事，因为这可能会导致我们传递一些ref
         </div>
       </a>
 
