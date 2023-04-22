@@ -4,6 +4,33 @@
   
   
   <entry>
+    <title>Bellman-Ford单源最短路径算法</title>
+    <link href="/2023/04/22/Bellman-Ford%E5%8D%95%E6%BA%90%E6%9C%80%E7%9F%AD%E8%B7%AF%E5%BE%84%E7%AE%97%E6%B3%95/"/>
+    <url>/2023/04/22/Bellman-Ford%E5%8D%95%E6%BA%90%E6%9C%80%E7%9F%AD%E8%B7%AF%E5%BE%84%E7%AE%97%E6%B3%95/</url>
+    
+    <content type="html"><![CDATA[<h1 id="bellman-ford单源最短路径算法">Bellman-Ford单源最短路径算法</h1><p>Bellman-Ford算法是一种用于计算带权有向图中单源最短路径（SSSP：Single-Source ShortestPath）的算法。该算法由 Richard Bellman 和 Lester Ford 分别发表于 1958年和 1956 年，而实际上 Edward F. Moore 也在 1957年发布了相同的算法，因此，此算法也常被称为 Bellman-Ford-Moore 算法。</p><p>Bellman-Ford 算法和 Dijkstra算法同为解决单源最短路径的算法。对于带权有向图 <spanclass="math inline">\(G = (V, E)\)</span>，Dijkstra 算法要求图 G中边的权值均为非负，而 Bellman-Ford算法能适应一般的情况（即存在负权边的情况）。一个实现的很好的 Dijkstra算法比 Bellman-Ford 算法的运行时间要低。</p><p>Bellman-Ford 算法采用动态规划（DynamicProgramming）进行设计，实现的时间复杂度为<spanclass="math inline">\(O(V*E)\)</span>，其中 <spanclass="math inline">\(V\)</span> 为顶点数量，<spanclass="math inline">\(E\)</span> 为边的数量。Dijkstra算法采用贪心算法（Greedy Algorithm）范式进行设计，普通实现的时间复杂度为<span class="math inline">\(O(V^2)\)</span>，若基于 Fibonacci heap的最小优先队列实现版本则时间复杂度为 <span class="math inline">\(O(E +VlogV)\)</span>。</p><p>Bellman-Ford 算法描述：</p><ol type="1"><li>创建源顶点 v 到图中所有顶点的距离的集合distSet，为图中的所有顶点指定一个距离值，初始均为 Infinite，源顶点距离为0；</li><li>计算最短路径，执行 V - 1 次遍历；<ul><li>对于图中的每条边：如果起点 u 的距离 d 加上边的权值 w 小于终点 v的距离 d，则更新终点 v 的距离值 d；</li></ul></li><li>检测图中是否有负权边形成了环，遍历图中的所有边，计算 u 至 v的距离，如果对于 v 存在更小的距离，则说明存在环；</li></ol><p>代码如下：</p><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-keyword">struct</span> <span class="hljs-title class_">edge</span><span class="hljs-comment">//用来存边</span><br>&#123;<br>    <span class="hljs-type">int</span> from;<br>    <span class="hljs-type">int</span> to;<br>    <span class="hljs-type">int</span> cost;<br>&#125;Edge[M];<br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">Bellman_Ford</span><span class="hljs-params">(<span class="hljs-type">int</span> src, <span class="hljs-type">int</span> destination)</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-comment">// n是节点个数</span><br>    vector&lt;vector&lt;<span class="hljs-type">int</span>&gt;&gt; dist = <span class="hljs-built_in">vector</span>&lt;<span class="hljs-type">int</span>&gt;(k + <span class="hljs-number">1</span>, <span class="hljs-built_in">vector</span>&lt;<span class="hljs-type">int</span>&gt;(n, INT_MAX));<br>    <span class="hljs-keyword">for</span>(<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>;i &lt; n; ++i)<br>        dist[i][<span class="hljs-number">0</span>];<br>    <span class="hljs-keyword">for</span>(<span class="hljs-type">int</span> i = <span class="hljs-number">0</span> ; i &lt; k ; i++)          <span class="hljs-comment">// 查找从源点开始，经过k个节点可以</span><br>    &#123;<br>        <span class="hljs-keyword">for</span>(<span class="hljs-type">int</span> j = <span class="hljs-number">0</span> ; j &lt; m ; j++)      <span class="hljs-comment">// m 条边</span><br>        &#123;<br>            <span class="hljs-type">int</span> from = Edge[j].from, to = Edge[j].to, cost = Edge[j].cost;<br>            dist[b] = <span class="hljs-built_in">min</span>(dist[i][to], dist[i - <span class="hljs-number">1</span>][from]);<br>        &#125;                          <br>    &#125;<br>    <span class="hljs-comment">// dist[k][n]是刚好经过k步到达节点n的最短路径，若为INT_MAX则表示不能到达</span><br>    <span class="hljs-type">int</span> res = INT_MAX;<br>    <span class="hljs-keyword">for</span>(<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt;= k; ++i)<br>    &#123;<br>        res = <span class="hljs-built_in">min</span>(res, dist[k][destination]);       <span class="hljs-comment">// 查找k步内到达destination的最短路径</span><br>    &#125;<br>    <span class="hljs-comment">// 未考虑负环的存在</span><br>    <span class="hljs-keyword">return</span> res == INT_MAX ? <span class="hljs-number">-1</span> : res;    <br>&#125;<br></code></pre></td></tr></table></figure>]]></content>
+    
+    
+    <categories>
+      
+      <category>数据结构与算法</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>数据结构与算法</tag>
+      
+      <tag>leetcode</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>EffectiveCpp-41：了解隐式接口和编译期多态</title>
     <link href="/2023/04/20/EffectiveCpp-41/"/>
     <url>/2023/04/20/EffectiveCpp-41/</url>
