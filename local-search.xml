@@ -4,6 +4,31 @@
   
   
   <entry>
+    <title>WSL2下linux header的安装</title>
+    <link href="/2023/05/09/WSL2%E4%B8%8Blinux_header%E5%AE%89%E8%A3%85/"/>
+    <url>/2023/05/09/WSL2%E4%B8%8Blinux_header%E5%AE%89%E8%A3%85/</url>
+    
+    <content type="html"><![CDATA[<h1 id="wsl2下linux-header的安装">WSL2下linux header的安装</h1><p>正常的linux发行版执行<code>linux-headers-$(uname -r)</code>命令就能装上内核头文件，但WSL2作为一个不一般的linux发行版，并没有直接给出安装包，要手动安装才能正常使用。</p><h2 id="安装步骤">安装步骤</h2><h3 id="确认kernel版本">确认Kernel版本</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">uname -r<br></code></pre></td></tr></table></figure><h3 id="安装相应依赖">安装相应依赖</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell">sudo apt install libelf-dev build-essential pkg-config<br>sudo apt install bison build-essential flex libssl-dev libelf-dev bc<br></code></pre></td></tr></table></figure><h3 id="下载相应版本源码">下载相应版本源码</h3><p>从https://github.com/microsoft/WSL2-Linux-Kernel/releases下载刚才得到对应版本的源码。</p><h3 id="解压刚下载的包并编译">解压刚下载的包并编译</h3>]]></content>
+    
+    
+    <categories>
+      
+      <category>linux</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>linux</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>pair tuple 作为 unordered_map unordered_set 的键值</title>
     <link href="/2023/05/06/Cpp-pair%E6%88%96tuple%E4%BD%9C%E4%B8%BA%E5%93%88%E5%B8%8C%E8%A1%A8%E7%9A%84%E9%94%AE%E5%80%BC/"/>
     <url>/2023/05/06/Cpp-pair%E6%88%96tuple%E4%BD%9C%E4%B8%BA%E5%93%88%E5%B8%8C%E8%A1%A8%E7%9A%84%E9%94%AE%E5%80%BC/</url>
