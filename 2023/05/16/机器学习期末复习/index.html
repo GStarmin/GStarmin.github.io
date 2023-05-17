@@ -318,7 +318,7 @@
         
         
         
-          176 分钟
+          182 分钟
         
       </span>
     
@@ -1115,6 +1115,33 @@ target="_blank" rel="noopener" href="https://www.jianshu.com/p/1121509ac1dc">如
 Gaussian Process Regression 基本原理、超参优化、高维输入等问题。</p>
 <p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/75589452">高斯过程 Gaussian
 Processes 原理、可视化及代码实现</a></p>
+<h3 id="第九章-集成学习">第九章 集成学习</h3>
+<h4 id="bagging">Bagging</h4>
+<p>Bagging（装袋算法）的集成学习方法非常简单，假设我们有一个数据集<span
+class="math inline">\(D\)</span>，使用Bootstrap
+sample（有放回的随机采样，这里说明一下，有放回抽样是抽一个就放回一个，然后再抽，而不是这个人抽<span
+class="math inline">\(10\)</span>个，再放回，下一个继续抽，它是每一个样本被抽中概率符合均匀分布）的方法取了<span
+class="math inline">\(k\)</span>个数据子集（子集样本数都相等）：<span
+class="math inline">\(D_1，D_2，…，D_k\)</span>，作为新的训练集，我们使用这<span
+class="math inline">\(k\)</span>个子集分别训练一个分类器（使用分类、回归等算法），最后会得到<span
+class="math inline">\(k\)</span>个分类模型。我们将测试数据输入到这<span
+class="math inline">\(k\)</span>个分类器，会得到<span
+class="math inline">\(k\)</span>个分类结果，比如分类结果是<span
+class="math inline">\(0\)</span>和<span
+class="math inline">\(1\)</span>，那么这<span
+class="math inline">\(k\)</span>个结果中谁占比最多，那么预测结果就是谁。</p>
+<p><strong>方法</strong>：</p>
+<ul>
+<li>通过K次的有放回抽样，训练K个子模型（每次随机抽样训练1个模型）</li>
+<li>对K个模型结果进行Voting/Average融合</li>
+</ul>
+<p><strong>特点</strong>：</p>
+<ul>
+<li>关于bagging所采用的抽样方式为有放回抽样，抽样的样本数量等于总体样本数量；</li>
+<li>由于某些样本在有放回的情况下不止被抽到一次，有些样本一次也不会被抽到；</li>
+<li>可以并行产生所需要的样本子集个数以及并行训练子模型</li>
+<li>对于二分类问题，一般选取样本子集个数为奇数（避免出现两个类别投票数相同）</li>
+</ul>
 
                 
               </div>
