@@ -1170,9 +1170,10 @@ class="math inline">\(M\)</span>个基学习器的组合。</li>
 class="math inline">\(T={(x1,y1),(x2,y2),(xN,yN)}\)</span>，其中，<span
 class="math inline">\(xi∈X⊆R^n\)</span>，<span
 class="math inline">\(yi∈Y=−1,1\)</span>，迭代次数<span
-class="math inline">\(M\)</span> 1. 初始化训练样本的权值分布: <span
-class="math display">\[D_1=(w_{1,1},w_{1,2},…,w_{1,i}),w_{1,i}=\frac{1}{N},i=1,2,…,N\]</span></p>
-<ol start="2" type="1">
+class="math inline">\(M\)</span></p>
+<ol type="1">
+<li><p>初始化训练样本的权值分布: <span
+class="math display">\[D_1=(w_{1,1},w_{1,2},…,w_{1,i}),w_{1,i}=\frac{1}{N},i=1,2,…,N\]</span></p></li>
 <li><p>对于<span class="math inline">\(m=1,2,…,M\)</span></p>
 <ol type="1">
 <li><p>使用具有权值分布<span
@@ -1191,8 +1192,9 @@ class="math inline">\(z_m\)</span>是归一化因子，为了使样本的概率�
 class="math inline">\(1\)</span>）：</p></li>
 </ol>
 <p><span class="math display">\[w_{m+1,i}=\frac{w_{m,i}}{z_m}exp⁡(-α_m
-y_i G_m (x_i ))，i=1,2,…,10 \\
-z_m=\sum_{i=1}^Nw_{m,i}exp⁡(-α_m y_i G_m (x_i ))\]</span></p></li>
+y_i G_m (x_i ))，i=1,2,…,10\]</span></p>
+<p><span class="math display">\[z_m=\sum_{i=1}^Nw_{m,i}exp⁡(-α_m y_i G_m
+(x_i ))\]</span></p></li>
 <li><p>得到最终分类器:</p>
 <p><span class="math display">\[F(x)=sign(\sum_{i=1}^Nα_m G_m
 (x))\]</span></p></li>
@@ -1218,7 +1220,7 @@ z_m=\sum_{i=1}^Nw_{m,i}exp⁡(-α_m y_i G_m (x_i ))\]</span></p></li>
 </ol>
 <p>Bagging：各个预测函数可以并行生成</p>
 <p>Boosting：各个预测函数只能顺序生成，因为后一个模型参数需要前一轮模型的结果。</p>
-<h2 id="半监督学习">半监督学习</h2>
+<h2 id="第十章-半监督学习">第十章 半监督学习</h2>
 <h3 id="基于图的半监督学习">基于图的半监督学习</h3>
 <h4 id="图的概念">图的概念</h4>
 <p>我们首先来看看如何从训练数据中构建出图，给定半监督数据集<span
