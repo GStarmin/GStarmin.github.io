@@ -38,6 +38,8 @@
 <meta property="og:image" content="https://gstarmin.github.io/img/机器学习/期末复习/支持向量.jpg">
 <meta property="og:image" content="https://gstarmin.github.io/img/机器学习/期末复习/硬间隔-1.png">
 <meta property="og:image" content="https://gstarmin.github.io/img/机器学习/期末复习/kmeans过程.png">
+<meta property="og:image" content="https://gstarmin.github.io/img/机器学习/期末复习/调和函数电网解释.png">
+<meta property="og:image" content="https://gstarmin.github.io/img/机器学习/期末复习/调和函数随机游走解释.png">
 <meta property="article:published_time" content="2023-05-16T14:42:17.000Z">
 <meta property="article:modified_time" content="2023-05-16T14:42:17.000Z">
 <meta property="article:author" content="Starmin">
@@ -307,7 +309,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          21k 字
+          25k 字
         
       </span>
     
@@ -318,7 +320,7 @@
         
         
         
-          213 分钟
+          246 分钟
         
       </span>
     
@@ -1283,6 +1285,112 @@ class="math inline">\(w_{ij}=0\)</span>。那么最小割的正则化风险最�
 \sum_{i=1}^{l}(y_{i}-f(\mathbf{x}_{i}))^{2}+\sum_{i,j=1}^{l+u}w_{i
 j}(f(\mathbf{x}_{i})-f(\mathbf{x}_{j}))^{2}\]</span></p>
 <p>这是一个整数规划问题，因此，最小割问题可以有许多多项式时间算法可以解决。这种形式的最小割问题可能存在多个最优解，比如下图有两个带标签点一正一负，每条边有相同的权重，有6种最小割解决方案（移除任意一条边即可）。</p>
+<h4 id="调和函数harmonic-function">调和函数（HARMONIC FUNCTION）</h4>
+<p>对于有标签数据，调和函数的值为标签值；对于无标签数据，标签值是其邻居顶点标签值的权重平均</p>
+<p><span class="math display">\[\begin{array}{r c
+l}{f(\mathbf{x}_{i})}&amp;{=}&amp;{y_{i},}&amp;{i=1,\cdot\cdot,
+l}\end{array}\]</span></p>
+<p><span class="math display">\[f(x_j) = \frac{\sum\limits_{k=1}^{l+u}
+w_{jk}f(x_k)}{\sum\limits_{k=1}^{l+u} w_{jk}}, j =
+l+1,\cdots,l+u\]</span></p>
+<p>然后把它代入上面提到过的目标函数，并松弛<span
+class="math inline">\(f\)</span>使它的值域为实数：</p>
+<p><span class="math display">\[\min\limits_{f:f(x)\in\mathbb{R}} \infty
+\sum\limits_{i=1}^{l}(y_{i}-f({\bf
+x}_{i}))^{2}+\sum\limits_{i=1}^{l+u}w_{i j}(f({\bf x}_{i})-f({\bf
+x}_{j}))^{2}\]</span></p>
+<p>相当于求解：</p>
+<p><span
+class="math display">\[\min\limits_{f:f(x)\in\mathbb{R}}\sum\limits_{i=1}^{l+u}w_{i
+j}(f({\bf x}_{i})-f({\bf x}_{j}))^{2}\]</span></p>
+<p>对<span class="math inline">\(f\)</span>进行松弛使得<span
+class="math inline">\(f\)</span>有一个闭式解，也就是说上述目标方程有全局最优解，缺点是<span
+class="math inline">\(f(x)\)</span>现在是一个<span
+class="math inline">\([0,1]\)</span>的实数，并不能直接作为一个标签。这可以通过设定阈值进行处理（如，如果<span
+class="math inline">\(f(x)&gt;=0.5\)</span>，预测标签<span
+class="math inline">\(y=1\)</span>，否则为<span
+class="math inline">\(0\)</span>）.</p>
+<p>调和函数有许多有趣的解释，比如，将图看作一张电网，每一条边的电阻为<span
+class="math inline">\(1/w_{ij}\)</span>，有标签的点连接到<span
+class="math inline">\(1v\)</span>的电池，正标签顶点连接电池正极，零标签顶点连接电池负极，每个节点两端的电压就是调和函数值，如下图所示：</p>
+<p><img src="/img/机器学习/期末复习/调和函数电网解释.png" srcset="/img/loading.gif" lazyload /></p>
+<p>也可以解释为图上的随机游走，想象一个粒子在顶点<span
+class="math inline">\(i\)</span>上，那么这个粒子会随机走到下一个顶点<span
+class="math inline">\(j\)</span>的概率是，随机游走以这种方式继续，直到粒子到达一个有标记的顶点。那么顶点<span
+class="math inline">\(i\)</span>的调和函数值<span
+class="math inline">\(f(x_i)\)</span>就是粒子从<span
+class="math inline">\(i\)</span>顶点出发最终走到一个正标签的顶点的概率，如下图所示：</p>
+<p><img src="/img/机器学习/期末复习/调和函数随机游走解释.png" srcset="/img/loading.gif" lazyload /></p>
+<h5 id="调和函数的求解">调和函数的求解</h5>
+<p>求解调和函数的过程是迭代的，初始的，我们设定：对于有标签顶点，<span
+class="math inline">\(f(x_i)=y_i\)</span>，对于无标签顶点，<span
+class="math inline">\(f\)</span>为任意值。每一轮迭代都用无标签顶点邻居的权重平均更新该无标签顶点的标签值：</p>
+<p><span
+class="math display">\[f(\mathbf{x}_{i})={\frac{\sum\limits_{j=1}^{l+u}w_{i
+j}f(\mathbf{x}_{j})}{\sum\limits_{j=1}^{l+u}w_{i j}}}\]</span></p>
+<h4 id="半监督支持向量机s3vmstsvms">半监督支持向量机(S3VMs/TSVMs)</h4>
+<p>Semi-Supervised Support Vector
+Machines(S3VMs)最初被称为直推式支持向量机(Transductive Support Vector
+Machines(TSVMs))，因为它的理论是为了给无标记样本提供性能界限(理论保证)。但是由于学习到的函数<span
+class="math inline">\(f\)</span>
+应用到了无标记的样本中，所以被称为半监督支持向量机S3VMs。</p>
+<p>对于S3VMs的直观理解是使得有标记和无标记样本处于间隔边界之外。但是，对于无标记样本，我们无法得知其是否处于处于正确的分类。这里给出一种方法将无标记样本用到学习中。</p>
+<p>对于样本<span class="math inline">\(x\)</span>,它的预测值<span
+class="math inline">\(\hat{y} =
+sign(f(x))\)</span>，将该预测值假定为该样本的真实标签，则<span
+class="math inline">\(x\)</span>的hinge损失函数为</p>
+<p><span class="math display">\[\begin{align}
+c(x, \hat{y}, f(x)) &amp; = \max(1-\hat{y}(w^Tx+b), 0) \\
+&amp; = \max(1-sign(w^Tx+b)(w^Tx+b), 0) \\
+&amp; = \max(1- |w^Tx+b|, 0)
+\end{align}\]</span></p>
+<p>该损失函数与hinge损失的不同之处在于它不需要样本真实的标签，而是由<span
+class="math inline">\(f(x)\)</span>替代。该损失函数由上图中的右图所示。基于该损失函数的图形的形状，将其命名为hat
+loss。</p>
+<p>虽然假设预测的分类结果都是正确的，但是基于hat
+loss，有些样本还是会存在惩罚。对于<span class="math inline">\(f(x) \le
+-1\)</span>或<span class="math inline">\(f(x) \ge
+1\)</span>的样本，它们处在间隔边界之外，远离决策边界，是不存在惩罚的。但是对于<span
+class="math inline">\(-1 \le f(x) \le 1\)</span>的样本，尤其是<span
+class="math inline">\(f(x) \approx
+0\)</span>的样本，它们在决策边界内，对于预测值<span
+class="math inline">\(f(x)\)</span>是存在不确定性的，所以存在惩罚。</p>
+<p>将无标记样本<span
+class="math inline">\(\{x_j\}_{j=l+1}^{l+u}\)</span>的hat
+loss加到SVM的损失函数中，定义S3VMs的损失函数</p>
+<p><span class="math display">\[\min_{w,b} \sum_{i=1}^{l} \max(1 -
+y_i(w^Tx_i+b), 0) + \lambda_1 ||w||^2  + \lambda_2\sum_{j=l+1}^{l+u}
+\max(1 - |w^Tx_i+b|, 0)\]</span></p>
+<p>由上式可以看出，S3VMs更希望无标记数据能够在决策边界的外边，也就是决策边界更希望出现在数据的低密度区域。此时，可以将hat
+loss看做正则化项</p>
+<p><span class="math display">\[\Omega(f) = \lambda_1 ||w||^2  +
+\lambda_2\sum_{j=l+1}^{l+u} \max(1 - |w^Tx_i+b|, 0)\]</span></p>
+<p>注意，有些时候，无标记数据的预测值只存在一个类，也就是无标记数据都被预测成了同一个类。为了纠正这种不平衡性，一种直接的想法就是限制预测值中各个类的比例。假设无标记数据的预测值中各个类的比例与有标记数据中各个类的比例相同，即</p>
+<p><span class="math display">\[\frac{1}{u}\sum_{j=l+1}^{l+u} \hat{y}_j
+= \frac{1}{l}\sum_{i=1}^{l} y_i\]</span></p>
+<p>因为<span class="math inline">\(\hat{y}_j =
+sign(f(x_j))\)</span>不是一个连续函数，所以很难满足上述约束条件。因此放松该约束条件为</p>
+<p><span class="math display">\[\frac{1}{u}\sum_{j=l+1}^{l+u} f(x_j) =
+\frac{1}{l}\sum_{i=1}^{l} y_i\]</span></p>
+<p>该约束被称为类别的平衡约束。</p>
+<p>所以，带类别平衡约束的S3VMs可以表示为</p>
+<p><span class="math display">\[\begin{align}
+\min_{w,b}  &amp;  \sum_{i=1}^{l} \max(1 - y_i(w^Tx_i+b), 0) + \lambda_1
+||w||^2  + \lambda_2\sum_{j=l+1}^{l+u} \max(1 - |w^Tx_i+b|, 0)    \\
+s.t. &amp; \frac{1}{u}\sum_{j=l+1}^{l+u} f(x_j) =
+\frac{1}{l}\sum_{i=1}^{l} y_i  \tag{4}
+\end{align}\]</span></p>
+<p>S3VMs的解是很难计算的，因为它的目标函数是<strong>非凸</strong>的。</p>
+<p>上述S3VMs部分转载自<a
+target="_blank" rel="noopener" href="https://blog.csdn.net/extremebingo/article/details/79020907">Semi-Supervised
+Support Vector Machines(S3VMs)</a></p>
+<h2 id="第十二章-强化学习">第十二章 强化学习</h2>
+<p>强化学习（Reinforcement Learning, 简称
+RL）是机器学习的范式和方法论之一，用于描述和解决智能体（Agent）在与环境（Environment）的交互过程中通过学习策略（Policy）以达成奖励或回报（Reward）最大化或实现特定目标的问题。</p>
+<p>强化学习主要涉及<strong>无模型（Model-Free）</strong>和<strong>有模型（Model-based）</strong>两大类算法。Model-Free算法可分为<strong>Q-Learning</strong>和<strong>基于策略优化（Policy
+Optimization）</strong>两大类。Model-based算法可分为<strong>模型学习（Learn
+the Model）</strong>和<strong>给定模型（Given the
+Model）</strong>两大类。</p>
 
                 
               </div>
