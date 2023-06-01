@@ -16,22 +16,22 @@
   <meta name="author" content="Starmin">
   <meta name="keywords" content="">
   
-    <meta name="description" content="WSL2下linux header的安装 正常的linux发行版执行linux-headers-$(uname -r)命令就能装上内核头文件，但WSL2作为一个不一般的linux发行版，并没有直接给出安装包，要手动安装才能正常使用。 安装步骤 确认Kernel版本 1uname -r 安装相应依赖 12sudo apt install libelf-dev build-essential pkg-">
+    <meta name="description" content="前缀和数组与差分数组 一维前缀和 对于一维数组nums，其前缀和数组prefix为 \[ prefix[i] &#x3D; \sum\limits^{i}_{1} nums[i] \] 实际中多在前面加一个0，这样prefix[i]就刚好是nums数组的前i项和。 一维差分数组 一维数组nums的差分数组diff定义： \[ diff[i] &#x3D; nums[i] - nums[i - 1] \] 二维差分、二">
 <meta property="og:type" content="article">
-<meta property="og:title" content="WSL2下linux header的安装">
-<meta property="og:url" content="https://gstarmin.github.io/2023/05/09/WSL2%E4%B8%8Blinux_header%E5%AE%89%E8%A3%85/">
+<meta property="og:title" content="前缀和数组与差分数组">
+<meta property="og:url" content="https://gstarmin.github.io/2023/06/01/%E5%89%8D%E7%BC%80%E5%92%8C%E6%95%B0%E7%BB%84%E4%B8%8E%E5%B7%AE%E5%88%86%E6%95%B0%E7%BB%84/">
 <meta property="og:site_name" content="私人杂货铺">
-<meta property="og:description" content="WSL2下linux header的安装 正常的linux发行版执行linux-headers-$(uname -r)命令就能装上内核头文件，但WSL2作为一个不一般的linux发行版，并没有直接给出安装包，要手动安装才能正常使用。 安装步骤 确认Kernel版本 1uname -r 安装相应依赖 12sudo apt install libelf-dev build-essential pkg-">
+<meta property="og:description" content="前缀和数组与差分数组 一维前缀和 对于一维数组nums，其前缀和数组prefix为 \[ prefix[i] &#x3D; \sum\limits^{i}_{1} nums[i] \] 实际中多在前面加一个0，这样prefix[i]就刚好是nums数组的前i项和。 一维差分数组 一维数组nums的差分数组diff定义： \[ diff[i] &#x3D; nums[i] - nums[i - 1] \] 二维差分、二">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2023-05-09T14:42:17.000Z">
-<meta property="article:modified_time" content="2023-05-09T14:42:17.000Z">
+<meta property="article:published_time" content="2023-06-01T13:18:41.000Z">
+<meta property="article:modified_time" content="2023-06-01T13:18:41.000Z">
 <meta property="article:author" content="Starmin">
-<meta property="article:tag" content="linux">
+<meta property="article:tag" content="leetcode">
 <meta name="twitter:card" content="summary_large_image">
   
   
   
-  <title>WSL2下linux header的安装 - 私人杂货铺</title>
+  <title>前缀和数组与差分数组 - 私人杂货铺</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -268,7 +268,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="WSL2下linux header的安装"></span>
+            <span id="subtitle" data-typed-text="前缀和数组与差分数组"></span>
           
         </div>
 
@@ -279,8 +279,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2023-05-09 22:42" pubdate>
-          2023年5月9日 晚上
+        <time datetime="2023-06-01 21:18" pubdate>
+          2023年6月1日 晚上
         </time>
       </span>
     
@@ -291,7 +291,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          872 字
+          381 字
         
       </span>
     
@@ -302,7 +302,7 @@
         
         
         
-          9 分钟
+          4 分钟
         
       </span>
     
@@ -340,32 +340,32 @@
         <div id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">WSL2下linux header的安装</h1>
+            <h1 style="display: none">前缀和数组与差分数组</h1>
             
             
               <div class="markdown-body">
                 
-                <h1 id="wsl2下linux-header的安装">WSL2下linux header的安装</h1>
-<p>正常的linux发行版执行<code>linux-headers-$(uname -r)</code>命令就能装上内核头文件，但WSL2作为一个不一般的linux发行版，并没有直接给出安装包，要手动安装才能正常使用。</p>
-<h2 id="安装步骤">安装步骤</h2>
-<h3 id="确认kernel版本">确认Kernel版本</h3>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">uname -r<br></code></pre></td></tr></table></figure>
-<h3 id="安装相应依赖">安装相应依赖</h3>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell">sudo apt install libelf-dev build-essential pkg-config<br>sudo apt install bison build-essential flex libssl-dev libelf-dev bc<br></code></pre></td></tr></table></figure>
-<h3 id="下载相应版本源码">下载相应版本源码</h3>
-<p>从<a
-target="_blank" rel="noopener" href="https://github.com/microsoft/WSL2-Linux-Kernel/releases">https://github.com/microsoft/WSL2-Linux-Kernel/releases</a>下载刚才得到对应版本的源码。</p>
-<h3 id="解压刚下载的包并编译">解压刚下载的包并编译</h3>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs shell">tar -zvxf linux-msft-wsl-5.15.90.1.tar.gz<br>cd WSL2-Linux-Kernel-linux-msft-wsl-5.15.90.1<br>zcat /proc/config.gz &gt; .config<br>sudo make -j $(nproc) <br>sudo make -j $(nproc) modules_install<br></code></pre></td></tr></table></figure>
-<p>安装过程中出现一下错误：</p>
-<figure class="highlight vbnet"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs vbnet"><span class="hljs-symbol">BTF:</span> .tmp_vmlinux.btf: pahole (pahole) <span class="hljs-built_in">is</span> <span class="hljs-built_in">not</span> available<br>Failed <span class="hljs-keyword">to</span> generate BTF <span class="hljs-keyword">for</span> vmlinux<br><span class="hljs-keyword">Try</span> <span class="hljs-keyword">to</span> disable CONFIG_DEBUG_INFO_BTF<br><span class="hljs-symbol">make:</span> *** [Makefile:<span class="hljs-number">1218</span>: vmlinux] <span class="hljs-keyword">Error</span> <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
-<p>原因是系统缺少dwarves软件包，故我们需要安装相应的软件包</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">sudo apt-get install dwarves<br></code></pre></td></tr></table></figure>
-<h3 id="软链接">软链接</h3>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell">sudo ln -s ~/Kernel/WSL2-Linux-Kernel-linux-msft-wsl-5.15.90.1 usr/src/linux-<br>headers-5.15.90.1-microsoft-standard-WSL2<br></code></pre></td></tr></table></figure>
-<p>参考：<a
-target="_blank" rel="noopener" href="https://blog.csdn.net/qq_53928256/article/details/129737658">WSL2下kernel
-header的安装</a></p>
+                <h1 id="前缀和数组与差分数组">前缀和数组与差分数组</h1>
+<h2 id="一维前缀和">一维前缀和</h2>
+<p>对于一维数组<code>nums</code>，其前缀和数组<code>prefix</code>为
+<span class="math display">\[
+prefix[i] = \sum\limits^{i}_{1} nums[i]
+\]</span></p>
+<p>实际中多在前面加一个<code>0</code>，这样<code>prefix[i]</code>就刚好是<code>nums</code>数组的前<code>i</code>项和。</p>
+<h2 id="一维差分数组">一维差分数组</h2>
+<p>一维数组<code>nums</code>的差分数组<code>diff</code>定义：</p>
+<p><span class="math display">\[
+diff[i] = nums[i] - nums[i - 1]
+\]</span></p>
+<p>二维差分、二维前缀和与一维差分一维前缀和同理。</p>
+<p>二维前缀和、二维差分定义以及例题详见<a
+target="_blank" rel="noopener" href="https://juejin.cn/post/7051851325746708511">Hard题学算法(二维前缀和+二维差分）</a></p>
+<h2
+id="从差分数组前缀和数组求原数组">从差分数组、前缀和数组求原数组</h2>
+<p><strong>差分数组求原数组</strong>：差分数组的前缀和数组就是原数组</p>
+<p><strong>前缀和数组求原数组</strong>（以二维为例,默认在前面添加了一维的<code>0</code>防止越界）：</p>
+<p><span class="math display">\[nums[i][j] = prefix[i + 1][j + 1] -
+prefix[i][j + 1] - prefix[i + 1][j] + prefix[i][j]\]</span></p>
 
                 
               </div>
@@ -384,7 +384,7 @@ header的安装</a></p>
     
       <span class="category-chain">
         
-  <a href="/categories/linux/" class="category-chain-item">linux</a>
+  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" class="category-chain-item">数据结构与算法</a>
   
   
 
@@ -399,7 +399,7 @@ header的安装</a></p>
     <div class="post-meta">
       <i class="iconfont icon-tags"></i>
       
-        <a href="/tags/linux/">#linux</a>
+        <a href="/tags/leetcode/">#leetcode</a>
       
     </div>
   
@@ -411,8 +411,8 @@ header的安装</a></p>
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>WSL2下linux header的安装</div>
-      <div>https://gstarmin.github.io/2023/05/09/WSL2下linux_header安装/</div>
+      <div>前缀和数组与差分数组</div>
+      <div>https://gstarmin.github.io/2023/06/01/前缀和数组与差分数组/</div>
     </div>
     <div class="license-meta">
       
@@ -424,7 +424,7 @@ header的安装</a></p>
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2023年5月9日</div>
+          <div>2023年6月1日</div>
         </div>
       
       
@@ -456,18 +456,12 @@ header的安装</a></p>
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2023/05/16/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E6%9C%9F%E6%9C%AB%E5%A4%8D%E4%B9%A0/" title="机器学习期末复习">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">机器学习期末复习</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2023/05/06/Cpp-pair%E6%88%96tuple%E4%BD%9C%E4%B8%BA%E5%93%88%E5%B8%8C%E8%A1%A8%E7%9A%84%E9%94%AE%E5%80%BC/" title="pair tuple 作为 unordered_map unordered_set 的键值">
-                        <span class="hidden-mobile">pair tuple 作为 unordered_map unordered_set 的键值</span>
+                      <a href="/2023/05/16/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E6%9C%9F%E6%9C%AB%E5%A4%8D%E4%B9%A0/" title="机器学习期末复习">
+                        <span class="hidden-mobile">机器学习期末复习</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
