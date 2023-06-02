@@ -294,7 +294,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          3k 字
+          3.7k 字
         
       </span>
     
@@ -305,7 +305,7 @@
         
         
         
-          31 分钟
+          37 分钟
         
       </span>
     
@@ -390,12 +390,14 @@ step in the process of knowledge discovery in database.</p>
 <h3 id="the-challenges-of-big-data-mining">The challenges of big data
 mining</h3>
 <ul>
-<li>Data Quality</li>
-<li>Data Complexity</li>
-<li>Data Privacy and Security</li>
-<li>Scalability</li>
-<li>Ethics(伦理学)</li>
-<li>interpretability</li>
+<li>Curse of dimensionality</li>
+<li>Storage cost</li>
+<li>Query speed <!-- - Data Quality
+- Data Complexity
+- Data Privacy and Security
+- Scalability
+- Ethics(伦理学)
+- interpretability --></li>
 </ul>
 <h2 id="ch2-foundations-of-data-mining">Ch2 Foundations of Data
 Mining</h2>
@@ -487,6 +489,30 @@ Learning并没有从特定的模型中提取基本规则或一般情况，而是
 class="math inline">\(\alpha\)</span>是正则化参数。</p>
 <h4 id="subspace-clustering子空间聚类">Subspace
 Clustering(子空间聚类)</h4>
+<h2 id="ch3-hashing">Ch3 Hashing</h2>
+<h3 id="the-role-of-hashing作用">The role of Hashing(作用)</h3>
+<ul>
+<li>After using the hash code to represent the data, the required
+storage space will be greatly
+reduced（使用哈希码表示数据后，所需要的存储空间会被大幅减小）</li>
+<li>Can reduce data dimensionality, thereby alleviating the
+dimensionality curse
+problem(可以降低数据维度，从而减轻维度灾难问题)</li>
+<li>Can realize fast neighbor retrieval at constant or sub-linear level,
+and provide support for the rapid realization of upper-level learning
+tasks(可以实现常数或者次线性级别的快速近邻检索，为上层学习任务的快速实现提供支撑)</li>
+</ul>
+<h3 id="find-similar-items">Find similar items</h3>
+<p>Many Web-mining problems can be expressed as finding
+“<strong>similar</strong>” sets</p>
+<ul>
+<li><strong>K-Shingling</strong>：convert documents, emails, etc., to
+sets.</li>
+<li><strong>Minhashing</strong>：convert large sets to short signatures,
+while preserving similarity.</li>
+<li><strong>Locality-sensitive hashing</strong> : focus on pairs of
+signatures likely to be similar.</li>
+</ul>
 
                 
               </div>
