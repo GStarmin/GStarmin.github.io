@@ -16,22 +16,25 @@
   <meta name="author" content="Starmin">
   <meta name="keywords" content="">
   
-    <meta name="description" content="前缀和数组与差分数组 一维前缀和 对于一维数组nums，其前缀和数组prefix为 \[ prefix[i] &#x3D; \sum\limits^{i}_{1} nums[i] \] 实际中多在前面加一个0，这样prefix[i]就刚好是nums数组的前i项和。 一维差分数组 一维数组nums的差分数组diff定义： \[ diff[i] &#x3D; nums[i] - nums[i - 1] \] 二维差分、二">
+    <meta name="description" content="大数据期末复习 Ch1 Intruction What is big data? Big data is used to describe a massive volume of both structured and unstructured data that is so large that it&#39;s difficult to process using traditional databa">
 <meta property="og:type" content="article">
-<meta property="og:title" content="前缀和数组与差分数组">
-<meta property="og:url" content="https://gstarmin.github.io/2023/06/01/%E5%89%8D%E7%BC%80%E5%92%8C%E6%95%B0%E7%BB%84%E4%B8%8E%E5%B7%AE%E5%88%86%E6%95%B0%E7%BB%84/">
+<meta property="og:title" content="大数据期末复习">
+<meta property="og:url" content="https://gstarmin.github.io/2023/06/02/%E5%A4%A7%E6%95%B0%E6%8D%AE%E6%9C%9F%E6%9C%AB%E5%A4%8D%E4%B9%A0/">
 <meta property="og:site_name" content="私人杂货铺">
-<meta property="og:description" content="前缀和数组与差分数组 一维前缀和 对于一维数组nums，其前缀和数组prefix为 \[ prefix[i] &#x3D; \sum\limits^{i}_{1} nums[i] \] 实际中多在前面加一个0，这样prefix[i]就刚好是nums数组的前i项和。 一维差分数组 一维数组nums的差分数组diff定义： \[ diff[i] &#x3D; nums[i] - nums[i - 1] \] 二维差分、二">
+<meta property="og:description" content="大数据期末复习 Ch1 Intruction What is big data? Big data is used to describe a massive volume of both structured and unstructured data that is so large that it&#39;s difficult to process using traditional databa">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2023-06-01T13:18:41.000Z">
-<meta property="article:modified_time" content="2023-06-01T13:18:41.000Z">
+<meta property="og:image" content="https://gstarmin.github.io/img/大数据/4v-features.png">
+<meta property="og:image" content="https://gstarmin.github.io/img/大数据/KDD-process.png">
+<meta property="og:image" content="https://gstarmin.github.io/img/大数据/ch2-lossfunction.png">
+<meta property="article:published_time" content="2023-06-02T09:38:02.000Z">
+<meta property="article:modified_time" content="2023-06-02T09:38:02.000Z">
 <meta property="article:author" content="Starmin">
-<meta property="article:tag" content="leetcode">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://gstarmin.github.io/img/大数据/4v-features.png">
   
   
   
-  <title>前缀和数组与差分数组 - 私人杂货铺</title>
+  <title>大数据期末复习 - 私人杂货铺</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -268,7 +271,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="前缀和数组与差分数组"></span>
+            <span id="subtitle" data-typed-text="大数据期末复习"></span>
           
         </div>
 
@@ -279,8 +282,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2023-06-01 21:18" pubdate>
-          2023年6月1日 晚上
+        <time datetime="2023-06-02 17:38" pubdate>
+          2023年6月2日 下午
         </time>
       </span>
     
@@ -291,7 +294,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          381 字
+          2.4k 字
         
       </span>
     
@@ -302,7 +305,7 @@
         
         
         
-          4 分钟
+          24 分钟
         
       </span>
     
@@ -340,32 +343,111 @@
         <div id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">前缀和数组与差分数组</h1>
+            <h1 style="display: none">大数据期末复习</h1>
             
             
               <div class="markdown-body">
                 
-                <h1 id="前缀和数组与差分数组">前缀和数组与差分数组</h1>
-<h2 id="一维前缀和">一维前缀和</h2>
-<p>对于一维数组<code>nums</code>，其前缀和数组<code>prefix</code>为
-<span class="math display">\[
-prefix[i] = \sum\limits^{i}_{1} nums[i]
-\]</span></p>
-<p>实际中多在前面加一个<code>0</code>，这样<code>prefix[i]</code>就刚好是<code>nums</code>数组的前<code>i</code>项和。</p>
-<h2 id="一维差分数组">一维差分数组</h2>
-<p>一维数组<code>nums</code>的差分数组<code>diff</code>定义：</p>
-<p><span class="math display">\[
-diff[i] = nums[i] - nums[i - 1]
-\]</span></p>
-<p>二维差分、二维前缀和与一维差分一维前缀和同理。</p>
-<p>二维前缀和、二维差分定义以及例题详见<a
-target="_blank" rel="noopener" href="https://juejin.cn/post/7051851325746708511">Hard题学算法(二维前缀和+二维差分）</a></p>
-<h2
-id="从差分数组前缀和数组求原数组">从差分数组、前缀和数组求原数组</h2>
-<p><strong>差分数组求原数组</strong>：差分数组的前缀和数组就是原数组</p>
-<p><strong>前缀和数组求原数组</strong>（以二维为例,默认在前面添加了一维的<code>0</code>防止越界）：</p>
-<p><span class="math display">\[nums[i][j] = prefix[i + 1][j + 1] -
-prefix[i][j + 1] - prefix[i + 1][j] + prefix[i][j]\]</span></p>
+                <h1 id="大数据期末复习">大数据期末复习</h1>
+<h2 id="ch1-intruction">Ch1 Intruction</h2>
+<h3 id="what-is-big-data">What is big data?</h3>
+<p><strong>Big data</strong> is used to describe a massive volume of
+both structured and unstructured data that is so large that it's
+difficult to process using traditional database and software
+techniques.</p>
+<p><strong>大数据</strong>用来描述大量的结构化和非结构化的数据，这些数据非常大，难以用传统的数据库和软件技术来处理。</p>
+<h3 id="the-4v-features-of-big-data">The 4V Features of big data</h3>
+<p><img src="/img/大数据/4v-features.png" srcset="/img/loading.gif" lazyload /></p>
+<ul>
+<li>Volume (Scale of Data)</li>
+<li>Velocity (Data Stream)</li>
+<li>Variety (Different types of data)</li>
+<li>Veracity (Uncertainty, missing value)</li>
+</ul>
+<h3 id="what-is-data-mining">What is data mining?</h3>
+<p><strong>Data mining</strong> consists of applying data analysis and
+discovery algorithms that, under acceptable computational efficiency
+limitations, produce a particular enumeration of patterns over the
+data.</p>
+<p><strong>数据挖掘</strong>包括应用数据分析和发现算法，在可接受的计算效率限制下，在数据上产生特定的模式列举。</p>
+<h3 id="the-kdd-processcore-part">The KDD Process(core part)</h3>
+<p><img src="/img/大数据/KDD-process.png" srcset="/img/loading.gif" lazyload /></p>
+<h3 id="the-main-tasks-of-data-mining">The main tasks of Data
+mining</h3>
+<ul>
+<li>Association Rule Mining(关联规则挖掘)</li>
+<li>Cluster Analysis(聚类分析)</li>
+<li>Classification/Prediction(分类/预测)</li>
+<li>Outlier Detection(异常点检测)</li>
+</ul>
+<h3
+id="the-relationship-between-data-minning-and-other-subjectse.g.-database">The
+relationship between Data minning and other subjects(e.g. Database)</h3>
+<p>Data mining is known as Knowledge Discovery in Database (KDD) in the
+field of artificial intelligence, is also considered as a fundamental
+step in the process of knowledge discovery in database.</p>
+<p>数据挖掘在人工智能领域被称为数据库知识发现（KDD），也被认为是数据库知识发现过程中的一个基本步骤。</p>
+<h3 id="the-challenges-of-big-data-mining">The challenges of big data
+mining</h3>
+<ul>
+<li>Data Quality</li>
+<li>Data Complexity</li>
+<li>Data Privacy and Security</li>
+<li>Scalability</li>
+<li>Ethics(伦理学)</li>
+<li>interpretability</li>
+</ul>
+<h2 id="ch2-foundations-of-data-mining">Ch2 Foundations of Data
+Mining</h2>
+<h3
+id="supervised-learningunsupervised-learningsemi-supervised-learning">Supervised
+learning/Unsupervised learning/Semi-supervised learning</h3>
+<ul>
+<li><strong>Supervised learning</strong>: targets to learn the mapping
+function or relationship between the features and the labels based on
+the labeled data. Namely, <span class="math inline">\(𝑌=𝐹(𝑋|𝜃)\)</span>.
+(e.g. Classification, Prediction)</li>
+<li><strong>Unsupervised learning</strong>: aims at learning the
+intrinsic structure from unlabeled data. (e.g. Clustering, Latent Factor
+Learning and Frequent Items Mining)</li>
+<li><strong>Semi-supervised learning</strong>: can be regarded as the
+unsupervised learning with some constraints on labels, or the supervised
+learning with additional information on the distribution of data.</li>
+</ul>
+<h3 id="loss-function">LOSS FUNCTION</h3>
+<p><img src="/img/大数据/ch2-lossfunction.png" srcset="/img/loading.gif" lazyload /></p>
+<p><span class="math inline">\(l_1\)</span> norm:</p>
+<p><span class="math display">\[L(\beta) =\frac{1}{N}\sum\limits_{i =
+1}^{N}L(Y_i, F(X_i | \beta)) + \frac{\lambda}{2} || \beta
+||_2\]</span></p>
+<p><span class="math inline">\(l_2\)</span> norm:</p>
+<p><span class="math display">\[L(\beta) =\frac{1}{N}\sum\limits_{i =
+1}^{N}L(Y_i, F(X_i | \beta)) + \frac{\lambda}{2} || \beta
+||_1\]</span></p>
+<p><span class="math inline">\(||A||_∗\)</span> nuclear norm:</p>
+<p><span class="math display">\[||A||∗=∑_i{σ_i}(A).\]</span></p>
+<h3 id="overfittingunderfitting-problem">Overfitting/Underfitting
+problem</h3>
+<p><strong>Reason</strong>?</p>
+<p><strong>How to avoid overfitting</strong>?</p>
+<h3 id="classfied-algorithms">Classfied Algorithms</h3>
+<h4 id="decision-tree">Decision Tree</h4>
+<ul>
+<li>How to construct DT?</li>
+<li>Attribute selection Criteria
+<ul>
+<li>Information Gain</li>
+<li>Information Gain Ratio</li>
+<li>Gini index</li>
+</ul></li>
+</ul>
+<h4 id="knn">KNN</h4>
+<!-- **Eager Learning**:预测之前先利用训练数据 -->
+<p><strong>Lazy Learning</strong>: lazy learning is a learning method in
+which generalization of the training data is, in theory, delayed until a
+query is made to the system, as opposed to eager learning, where the
+system tries to generalize the training data before receiving
+queries.</p>
 
                 
               </div>
@@ -374,34 +456,6 @@ prefix[i][j + 1] - prefix[i + 1][j] + prefix[i][j]\]</span></p>
             <div>
               <div class="post-metas my-3">
   
-    <div class="post-meta mr-3 d-flex align-items-center">
-      <i class="iconfont icon-category"></i>
-      
-
-<span class="category-chains">
-  
-  
-    
-      <span class="category-chain">
-        
-  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" class="category-chain-item">数据结构与算法</a>
-  
-  
-
-      </span>
-    
-  
-</span>
-
-    </div>
-  
-  
-    <div class="post-meta">
-      <i class="iconfont icon-tags"></i>
-      
-        <a href="/tags/leetcode/">#leetcode</a>
-      
-    </div>
   
 </div>
 
@@ -411,8 +465,8 @@ prefix[i][j + 1] - prefix[i + 1][j] + prefix[i][j]\]</span></p>
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>前缀和数组与差分数组</div>
-      <div>https://gstarmin.github.io/2023/06/01/前缀和数组与差分数组/</div>
+      <div>大数据期末复习</div>
+      <div>https://gstarmin.github.io/2023/06/02/大数据期末复习/</div>
     </div>
     <div class="license-meta">
       
@@ -424,7 +478,7 @@ prefix[i][j + 1] - prefix[i + 1][j] + prefix[i][j]\]</span></p>
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2023年6月1日</div>
+          <div>2023年6月2日</div>
         </div>
       
       
@@ -456,18 +510,12 @@ prefix[i][j + 1] - prefix[i + 1][j] + prefix[i][j]\]</span></p>
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2023/06/02/%E5%A4%A7%E6%95%B0%E6%8D%AE%E6%9C%9F%E6%9C%AB%E5%A4%8D%E4%B9%A0/" title="大数据期末复习">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">大数据期末复习</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2023/05/16/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E6%9C%9F%E6%9C%AB%E5%A4%8D%E4%B9%A0/" title="机器学习期末复习">
-                        <span class="hidden-mobile">机器学习期末复习</span>
+                      <a href="/2023/06/01/%E5%89%8D%E7%BC%80%E5%92%8C%E6%95%B0%E7%BB%84%E4%B8%8E%E5%B7%AE%E5%88%86%E6%95%B0%E7%BB%84/" title="前缀和数组与差分数组">
+                        <span class="hidden-mobile">前缀和数组与差分数组</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
