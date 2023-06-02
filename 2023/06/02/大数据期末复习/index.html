@@ -294,7 +294,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          2.4k 字
+          3k 字
         
       </span>
     
@@ -305,7 +305,7 @@
         
         
         
-          24 分钟
+          31 分钟
         
       </span>
     
@@ -442,12 +442,51 @@ problem</h3>
 </ul></li>
 </ul>
 <h4 id="knn">KNN</h4>
-<!-- **Eager Learning**:预测之前先利用训练数据 -->
-<p><strong>Lazy Learning</strong>: lazy learning is a learning method in
-which generalization of the training data is, in theory, delayed until a
-query is made to the system, as opposed to eager learning, where the
-system tries to generalize the training data before receiving
-queries.</p>
+<p><strong>Lazy Learning</strong>: Lazy Learning does not extract rules
+or generalizations from a specific model. Instead, it searches for
+historical instances that are similar to the testing instance and makes
+a prediction based on their output results.(Lazy
+Learning并没有从特定的模型中提取基本规则或一般情况，而是在预测时查找与测试实例相似的历史实例，并根据它们的输出结果做出预测)</p>
+<p><strong>advantage</strong>:</p>
+<ul>
+<li>local data distribution（适用本地数据分布）</li>
+<li>Incremental/online learning（渐进式/在线学习）</li>
+<li>large number of classes（可以对很大的类型数量分类）</li>
+</ul>
+<p><strong>disvantage</strong>:</p>
+<ul>
+<li>parameter k(要设置参数k)</li>
+<li>imbalanced data（数据不平衡时分类效果差）</li>
+<li>slow inference（推理慢）</li>
+</ul>
+<h4 id="naive-bayse">Naive bayse</h4>
+<p><strong>basic idea</strong></p>
+<p><strong>advantage</strong></p>
+<h4 id="svm">SVM</h4>
+<ol type="1">
+<li>basic concept</li>
+<li>Linear seperation problem
+<ol type="1">
+<li>Why SVM works well on small size of samples?</li>
+<li>Good generalization</li>
+</ol></li>
+<li>NonLinear problem
+<ol type="1">
+<li>solution: map data into high dimension space</li>
+<li>Trick: kernel Trick <span class="math inline">\(K(X,Y) = \Phi(X)
+\Phi(Y)\)</span></li>
+<li>Kernel function: Gaussian kernel, polynormial kernel</li>
+</ol></li>
+</ol>
+<h4 id="section"></h4>
+<p>损失函数是平方损失加上L1正则化</p>
+<p><span class="math display">\[J(\theta) = \frac{1}{2m} \sum_{i=1}^m
+(h_\theta(x^{(i)}) - y^{(i)})^2 + \alpha \sum_{j=1}^n
+|\theta_j|\]</span></p>
+<p>其中，第一项是平方损失，第二项是L1正则化项，<span
+class="math inline">\(\alpha\)</span>是正则化参数。</p>
+<h4 id="subspace-clustering子空间聚类">Subspace
+Clustering(子空间聚类)</h4>
 
                 
               </div>
