@@ -304,7 +304,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          6.8k 字
+          7.1k 字
         
       </span>
     
@@ -315,7 +315,7 @@
         
         
         
-          69 分钟
+          72 分钟
         
       </span>
     
@@ -691,6 +691,17 @@ class="math inline">\(q(x)\)</span>的分布选择很重要。</p>
 Sampling(重要性采样)</h3>
 <p>重要性采样（Importance Sampling）与Rejection
 Sampling(拒绝采样)的区别在于，重要性采样不会拒绝采样的点，而是对采样的点赋予一个权重，使得采样的点更多地来自于目标分布。</p>
+<h3 id="importance-sampling和rejection-sampling的区别">Importance
+Sampling和Rejection Sampling的区别</h3>
+<ul>
+<li>RS的实例有一个相同的权重，只有部分的实例会被保留</li>
+<li>IS的实例有不同的权重，所有的实例都会被保留</li>
+<li>IS对对proposal distribution的选择更不敏感</li>
+</ul>
+<h3 id="markov-chain-monte-carlomcmc">Markov Chain Monte
+Carlo(MCMC)</h3>
+<p>马尔可夫链蒙特卡洛（Markov Chain Monte
+Carlo，MCMC）是一种基于马尔可夫链的随机采样方法。它的基本思想是：对于一个难以采样的分布，我们可以构造一个马尔可夫链，使得该马尔可夫链的平稳分布为该难以采样的分布，然后从该马尔可夫链中采样，得到的样本服从该难以采样的分布。</p>
 
                 
               </div>
