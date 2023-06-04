@@ -36,8 +36,15 @@
 <meta property="og:image" content="https://gstarmin.github.io/img/大数据/ch4-CDF.png">
 <meta property="og:image" content="https://gstarmin.github.io/img/大数据/ch4-Rejection-Sampling.png">
 <meta property="og:image" content="https://gstarmin.github.io/img/大数据/ch4-Rejection-Sampling-步骤.png">
+<meta property="og:image" content="https://gstarmin.github.io/2023/06/02/%E5%A4%A7%E6%95%B0%E6%8D%AE%E6%9C%9F%E6%9C%AB%E5%A4%8D%E4%B9%A0/img/大数据/ch4-MCMC流程.png">
+<meta property="og:image" content="https://gstarmin.github.io/2023/06/02/%E5%A4%A7%E6%95%B0%E6%8D%AE%E6%9C%9F%E6%9C%AB%E5%A4%8D%E4%B9%A0/img/大数据/ch4-MH算法流程.png">
+<meta property="og:image" content="https://gstarmin.github.io/2023/06/02/%E5%A4%A7%E6%95%B0%E6%8D%AE%E6%9C%9F%E6%9C%AB%E5%A4%8D%E4%B9%A0/img/大数据/ch4-MH算法具体流程.png">
+<meta property="og:image" content="https://gstarmin.github.io/2023/06/02/%E5%A4%A7%E6%95%B0%E6%8D%AE%E6%9C%9F%E6%9C%AB%E5%A4%8D%E4%B9%A0/img/大数据/ch4-Gibbs.png">
+<meta property="og:image" content="https://gstarmin.github.io/2023/06/02/%E5%A4%A7%E6%95%B0%E6%8D%AE%E6%9C%9F%E6%9C%AB%E5%A4%8D%E4%B9%A0/img/大数据/ch4-Gibbs-二维流程.png">
+<meta property="og:image" content="https://gstarmin.github.io/2023/06/02/%E5%A4%A7%E6%95%B0%E6%8D%AE%E6%9C%9F%E6%9C%AB%E5%A4%8D%E4%B9%A0/img/大数据/ch4-Gibbs-多维流程.png">
+<meta property="og:image" content="https://gstarmin.github.io/2023/06/02/%E5%A4%A7%E6%95%B0%E6%8D%AE%E6%9C%9F%E6%9C%AB%E5%A4%8D%E4%B9%A0/img/大数据/ch4-Reservoir.png">
 <meta property="article:published_time" content="2023-06-02T09:38:02.000Z">
-<meta property="article:modified_time" content="2023-06-03T14:30:02.000Z">
+<meta property="article:modified_time" content="2023-06-04T03:30:02.000Z">
 <meta property="article:author" content="Starmin">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://gstarmin.github.io/img/大数据/4V-features.png">
@@ -304,7 +311,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          7.1k 字
+          9.4k 字
         
       </span>
     
@@ -315,7 +322,7 @@
         
         
         
-          72 分钟
+          94 分钟
         
       </span>
     
@@ -702,6 +709,136 @@ Sampling和Rejection Sampling的区别</h3>
 Carlo(MCMC)</h3>
 <p>马尔可夫链蒙特卡洛（Markov Chain Monte
 Carlo，MCMC）是一种基于马尔可夫链的随机采样方法。它的基本思想是：对于一个难以采样的分布，我们可以构造一个马尔可夫链，使得该马尔可夫链的平稳分布为该难以采样的分布，然后从该马尔可夫链中采样，得到的样本服从该难以采样的分布。</p>
+<p><strong>蒙特卡洛法</strong>：</p>
+<p>蒙特卡洛法（Monte Carlo
+Method）是一种基于随机数的数值计算方法。它的基本思想是：对于一个难以计算的问题，我们可以构造一个概率分布，使得该概率分布的期望为该问题的解，然后从该概率分布中采样，得到的样本的平均值即为该问题的解。</p>
+<h4 id="detailed-balance-condition细致平衡条件">Detailed Balance
+Condition(细致平衡条件)</h4>
+<p>细致平衡条件（Detailed Balance
+Condition）是马尔可夫链平稳分布的一个必要条件。它的基本思想是：对于一个马尔可夫链，若该马尔可夫链的平稳分布为<span
+class="math inline">\(\pi(x)\)</span>，则该马尔可夫链的任意两个状态<span
+class="math inline">\(x\)</span>和<span
+class="math inline">\(y\)</span>满足：</p>
+<p><span class="math display">\[\pi(x)P(x, y) = \pi(y)P(y,
+x)\]</span></p>
+<p>其中<span class="math inline">\(P(x, y)\)</span>为从状态<span
+class="math inline">\(x\)</span>转移到状态<span
+class="math inline">\(y\)</span>的概率,<span
+class="math inline">\(\pi(x)\)</span>为状态<span
+class="math inline">\(x\)</span>的概率。那么<span
+class="math inline">\(\pi(x)\)</span>就是该马尔可夫链的平稳分布。</p>
+<h4 id="the-procedure-of-mcmcmcmc的流程">The Procedure of
+MCMC(MCMC的流程)</h4>
+<p><img src="img/大数据/ch4-MCMC流程.png" srcset="/img/loading.gif" lazyload /></p>
+<h3 id="metropolis-hastings-algorithmmh算法">Metropolis-Hastings
+Algorithm(MH算法)</h3>
+<p>由于MCMC采样有收敛太慢的问题,所以在MCMC的基础之上进行改进，引出MH算法。</p>
+<p><img src="img/大数据/ch4-MH算法流程.png" srcset="/img/loading.gif" lazyload /></p>
+<p>MH算法的具体流程如下：</p>
+<p><img src="img/大数据/ch4-MH算法具体流程.png" srcset="/img/loading.gif" lazyload /></p>
+<p>一般来说M-H采样算法较MCMC算法应用更广泛，然而在大数据时代，M-H算法面临着两个问题：</p>
+<ol type="1">
+<li>在高维时的计算量很大，算法效率很低，同时存在拒绝转移的问题，也会加大计算量</li>
+<li>由于特征维度大，很多时候我们甚至很难求出目标的各特征维度联合分布，但是可以方便求出各个特征之间的条件概率分布（因此就思考是否能只知道条件概率分布的情况下进行采样）。</li>
+</ol>
+<h3 id="gibbs-sampling">Gibbs Sampling</h3>
+<p>Gibbs Sampling是MH算法的一种特殊情况。它的基本思想是：</p>
+<p><img src="img/大数据/ch4-Gibbs.png" srcset="/img/loading.gif" lazyload /> <img
+src="img/大数据/ch4-Gibbs-1.png" srcset="/img/loading.gif" lazyload /></p>
+<p>因此可以得出在二维的情况下Gibbs采样算法的流程如下：</p>
+<p><img src="img/大数据/ch4-Gibbs-二维流程.png" srcset="/img/loading.gif" lazyload /></p>
+<p>而在多维的情况下，比如一个n维的概率分布<span
+class="math inline">\(π(x_1, x_2, ...x_n)\)</span>，我们可以通过在<span
+class="math inline">\(n\)</span>个坐标轴上轮换采样，来得到新的样本。对于轮换到的任意一个坐标轴<span
+class="math inline">\(x_i\)</span>上的转移，马尔科夫链的状态转移概率为<span
+class="math inline">\(P(x_i|x_1, x_2, ..., x_{i−1}, x_{i+1}, ...,
+x_n)\)</span>，即固定<span
+class="math inline">\(n−1\)</span>个坐标轴，在某一个坐标轴上移动。而在多维的情况下Gibbs采样算法的流程如下：</p>
+<p><img src="img/大数据/ch4-Gibbs-多维流程.png" srcset="/img/loading.gif" lazyload /></p>
+<h3 id="gibbs-sampling和mh算法的联系与区别">Gibbs
+Sampling和MH算法的联系与区别</h3>
+<ul>
+<li>Gibbs Sampling和MH都是MCMC</li>
+<li>Acceptance Ratio:
+<ul>
+<li>Gibbs Sampling: <span class="math inline">\(1\)</span></li>
+<li>MH: <span class="math inline">\(\frac{\pi(y)q(y, x)}{\pi(x)q(x, y)}
+&lt; 1\)</span></li>
+</ul></li>
+<li>MH不需要知道条件概率，而Gibbs Sampling需要知道条件概率</li>
+</ul>
+<h3 id="reservoir-sampling">Reservoir sampling</h3>
+<p>Reservoir
+sampling是一种随机采样算法，它的基本思想是：对于一个数据流，我们希望从中随机采样出<span
+class="math inline">\(k\)</span>个样本，但是我们不知道数据流的长度，也就是说我们不知道<span
+class="math inline">\(k\)</span>的大小。具体流程如下：</p>
+<p><img src="img/大数据/ch4-Reservoir.png" srcset="/img/loading.gif" lazyload /></p>
+<h2 id="ch5-data-stream-mining">Ch5 Data Stream Mining</h2>
+<h3 id="data-stream">Data Stream</h3>
+<h4 id="properity-of-data-stream">Properity of Data Stream</h4>
+<p>数据流（Data Stream）是一种连续不断的数据，它的特点是：</p>
+<ul>
+<li>One by One(逐个到达)</li>
+<li>Potentially Unbounded(无界)</li>
+<li><strong>Concept Drift(概念漂移)</strong></li>
+</ul>
+<h4 id="conncept-drift概念漂移">Conncept Drift(概念漂移)</h4>
+<p>概念漂移（Concept
+Drift）是指数据流中的数据分布随着时间的推移而发生变化的现象。概念漂移分为两种类型：</p>
+<ul>
+<li>Real concept drift (真实概念漂移)</li>
+<li>Virtual concept drift (虚假概念漂移)</li>
+</ul>
+<h4 id="concept-drift-detection概念漂移检测">Concept Drift
+Detection(概念漂移检测)</h4>
+<ol type="1">
+<li>Distribution-based detector(基于分布的检测器)</li>
+</ol>
+<p>监测两个固定或可变化的数据窗口之间的数据分布变化，如果数据分布发生变化，则认为发生了概念漂移。方法很简单：只要<span
+class="math inline">\(W\)</span>的两个足够大的子窗口<span
+class="math inline">\(W_1\)</span>和<span
+class="math inline">\(W_2\)</span>的数据分布不同，就认为发生了概念漂移，这时较旧的窗口就被放弃。</p>
+<p><strong>Adaptive Windowing(ADWIN)</strong>:</p>
+<p>ADWIN 的思想是从时间窗口 <span class="math inline">\(W\)</span>
+开始，在上下文没有明显变化时动态增大窗口 <span
+class="math inline">\(W\)</span>，并在检测到变化时将其缩小。
+该算法试图找到显示不同平均值的 <span class="math inline">\(W -
+w_0\)</span> 和 <span class="math inline">\(w_1\)</span> 的两个子窗口。
+这意味着窗口的旧部分 <span class="math inline">\(- w_0\)</span>
+是基于与实际不同的数据分布，因此被删除。</p>
+<p><strong>draw back(缺点)</strong>：</p>
+<ul>
+<li>计算成本高</li>
+<li>模型复杂度高</li>
+<li>无法检测全局漂移</li>
+<li>对数据集的依赖性高</li>
+</ul>
+<ol start="2" type="1">
+<li>Error-rate based detector(基于错误率的检测器)</li>
+</ol>
+<p>根据分类性能的变化来捕捉概念的漂移,如果分类器的错误率超过了某个阈值，则认为发生了概念漂移。</p>
+<p>DDM算法：</p>
+<p>DDM算法的基本思想是：在数据流中，如果某个时间点的错误率比之前的错误率大很多，则认为发生了概念漂移。确定错误率的变化是否显著的方法如下公式：</p>
+<p><span class="math display">\[p_i + s_i \ge p_{min} + 3 \times
+s_{min}\]</span></p>
+<p>误差率是指观察到错误的概率<span
+class="math inline">\(p_i\)</span>，其标准差为<span
+class="math inline">\(s_i = sqrt(p_i (1 - p_i) / i)\)</span></p>
+<p><strong>draw back(缺点)</strong>：</p>
+<ul>
+<li>对噪声敏感</li>
+<li>对异常数据分布假设的依赖性高</li>
+<li>受到数据流非稳态性的影响</li>
+<li>受到样本的影响</li>
+<li>无法处理高维数据</li>
+</ul>
+<h4 id="data-stream面临的挑战">Data Stream面临的挑战</h4>
+<ul>
+<li>Infinite Length(无限长度)</li>
+<li>Evolving Nature(不断变化的数据)</li>
+</ul>
+<h3 id="data-stream-clissification数据流分类">Data Stream
+Clissification(数据流分类)</h3>
 
                 
               </div>
@@ -738,7 +875,7 @@ Carlo，MCMC）是一种基于马尔可夫链的随机采样方法。它的基�
       
         <div class="license-meta-item license-meta-date">
           <div>更新于</div>
-          <div>2023年6月3日</div>
+          <div>2023年6月4日</div>
         </div>
       
       
