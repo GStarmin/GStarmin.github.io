@@ -43,8 +43,10 @@
 <meta property="og:image" content="https://gstarmin.github.io/2023/06/02/%E5%A4%A7%E6%95%B0%E6%8D%AE%E6%9C%9F%E6%9C%AB%E5%A4%8D%E4%B9%A0/img/大数据/ch4-Gibbs-二维流程.png">
 <meta property="og:image" content="https://gstarmin.github.io/2023/06/02/%E5%A4%A7%E6%95%B0%E6%8D%AE%E6%9C%9F%E6%9C%AB%E5%A4%8D%E4%B9%A0/img/大数据/ch4-Gibbs-多维流程.png">
 <meta property="og:image" content="https://gstarmin.github.io/2023/06/02/%E5%A4%A7%E6%95%B0%E6%8D%AE%E6%9C%9F%E6%9C%AB%E5%A4%8D%E4%B9%A0/img/大数据/ch4-Reservoir.png">
+<meta property="og:image" content="https://gstarmin.github.io/img/大数据/ch4-CVFDT-流程.png">
+<meta property="og:image" content="https://gstarmin.github.io/img/大数据/ch5-流聚类算法.png">
 <meta property="article:published_time" content="2023-06-02T09:38:02.000Z">
-<meta property="article:modified_time" content="2023-06-04T03:30:02.000Z">
+<meta property="article:modified_time" content="2023-06-04T14:30:02.000Z">
 <meta property="article:author" content="Starmin">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://gstarmin.github.io/img/大数据/4V-features.png">
@@ -311,7 +313,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          9.4k 字
+          13k 字
         
       </span>
     
@@ -322,7 +324,7 @@
         
         
         
-          94 分钟
+          132 分钟
         
       </span>
     
@@ -839,6 +841,156 @@ class="math inline">\(s_i = sqrt(p_i (1 - p_i) / i)\)</span></p>
 </ul>
 <h3 id="data-stream-clissification数据流分类">Data Stream
 Clissification(数据流分类)</h3>
+<p>流程：</p>
+<ul>
+<li>从数据流中读取下一个可用数据(要求1)</li>
+<li>用读取的数据更新分类器，并且这样做不回超过对它设置的内存限制(要求2)，并尽可能快地完成（要求3）</li>
+<li>算法已经学习了足够的数据，以便在新数据上进行分类(要求4)</li>
+</ul>
+<p><strong>典型算法</strong>：</p>
+<ul>
+<li>VFDT(very fast decision tree, KDD'00)</li>
+<li>CVFDT(Concept-adapting very fast decision tree, KDD'01)</li>
+<li>SyncStream(同步流算法, KDD'14)</li>
+</ul>
+<h4 id="vfdt">VFDT</h4>
+<p>Hoeffding树是一种基于决策树学习的数据流分类算法，在处理数据流时，可以保证挖掘效率的同时，达到对数据流一些必要操作的要求。该算法简单的对数据流中的每个样本检查一次，并逐步生成一颗决策树，而在这些样本更新完决策树之后无需进行存储。
+在内存中只需维护决策树信息，因为在决策树的叶结点中存储着决策树扩展所必须的统计信息，并且在处理训练数据集时，可以用决策树中的信息进行预测。</p>
+<p>VFDT（very fast decision tree）是基于Hoeffding
+tree改进的算法和系统，它和Hoeffding
+tree算法相似之处在于都是根据<strong>Hoeffding
+不等式</strong>来决定决策节点的最佳属性从而建立决策树模型。</p>
+<p>Hoeffding 不等式:</p>
+<p>Hoeffding不等式适用于有界的随机变量。设有两两独立的一系列随机变量<span
+class="math inline">\(X_1, X_2, ..., X_n\)</span>，且<span
+class="math inline">\(X_i\)</span>的取值范围是<span
+class="math inline">\([a_i, b_i]\)</span>，这<span
+class="math inline">\(n\)</span>个随机变量的经验期望<span
+class="math inline">\(\bar{X}=\frac{X_1 + \dots +
+X_n}{n}\)</span>满足以下不等式：</p>
+<p><span class="math display">\[P(|\bar{X} - E(\bar{X})| \ge \epsilon)
+\ge \exp(-\frac{2n^2\epsilon^2}{\sum_{i=1}^n(b_i - a_i)^2})\]</span></p>
+<p><span class="math display">\[P(|\bar{X} - E(\bar{X})| \ge \epsilon)
+\le 2 \exp(-\frac{2n^2\epsilon^2}{\sum_{i=1}^n(b_i -
+a_i)^2})\]</span></p>
+<p>其中<span class="math inline">\(E(\bar{X})\)</span>是<span
+class="math inline">\(\bar{X}\)</span>的期望，<span
+class="math inline">\(\epsilon\)</span>是一个正数。</p>
+<p>VFDT系统解决了Hoeffding
+tree算法没有提到的实际问题，就是当两个属性的信息熵差不多时，这个时候就会发生两个属性之间的权衡。这是系统需要花费大量的时间和空间，利用更多的样本来决定选择哪个属性为最佳的决策节点的属性，而这显然是浪费的。</p>
+<p>VFDT算法相较于Hoeffding Tress算法的改进：</p>
+<ul>
+<li>提供了一个用户定义的阈值<span class="math inline">\(τ\)</span>
+用来解决“两个属性的信息熵差不多时的博弈”。当信息熵差值小于某个阈值时，即可判定其为决策节点属性。</li>
+<li>允许设定节点的最小样本个数值<span
+class="math inline">\(n_{min}\)</span>，在用户能够承受的置信度下，让用户设定每个节点最小的样本数将有效的减少样本信息熵<span
+class="math inline">\(G\)</span>的计算而消耗的时间复杂度。</li>
+<li>提供重新扫描数据集和二次抽样的功能，并且在数据流中的样本数减少时，决策树的精度也会无限逼近于读取所有样本建立决策树的精度。</li>
+</ul>
+<p><strong>以下是 VFDT 算法的基本流程</strong>：</p>
+<ol type="1">
+<li><p>构建决策树：对于一个分类问题，首先需要构建一颗决策树。该决策树会被
+VFDT 算法不断地更新和重新构建。</p></li>
+<li><p>建立示例集：随机选择一些实例作为示例集。</p></li>
+<li><p>计算初始统计信息：对于示例集中的每个实例，计算它们分类结果的概率分布。</p></li>
+<li><p>增量统计每个实例：对于新增加的每个实例，将其加入当前的示例集，并更新分类结果的概率分布。</p></li>
+<li><p>检查增量误差：计算每个分类器的误差，并选择一个误差最小的分类器来更新决策树。</p></li>
+<li><p>执行更新：将当前分类器放到决策树上对应的位置，并更新决策树。</p></li>
+</ol>
+<p>重复步骤 4-6，直到决策树满足一定条件。</p>
+<p>VFDT
+算法是一种增量式建树算法，它通过不断更新决策树的方法来尽可能地减小误差。这种算法的好处是，可以随时加入新的数据，更新模型，同时不需要重新训练整个模型。但是，VFDT
+算法也存在一些缺点，比如计算复杂度较高，对异常数据较为敏感等。</p>
+<h5 id="vfdt的优缺点">VFDT的优缺点</h5>
+<p><strong>优点</strong>：</p>
+<ul>
+<li>Scales better than traditional methods(比传统方法更好)
+<ul>
+<li>Sublinear with sampling(子线性采样)</li>
+<li>Very small memory utilization(非常小的内存使用率)</li>
+</ul></li>
+<li>Incremental(增量学习)
+<ul>
+<li>Make class predictions in parallel(并行预测分类)</li>
+<li>New examples are added as they come(新的样本随着到来而添加)</li>
+</ul></li>
+</ul>
+<p><strong>缺点</strong>：</p>
+<ul>
+<li>Could spend a lot of time with ties(可能会花费很多时间)</li>
+<li>Memory used with tree expansion(内存使用率随着树的扩展而增加)</li>
+<li>Number of candidate attributes(候选属性的数量大)</li>
+</ul>
+<h4
+id="cvfdtconcept-adapting-very-fast-decision-tree">CVFDT(Concept-adapting
+very fast decision tree)</h4>
+<p>CVFDT是VFDT的改进版，它保持了VFDT的精度和速度，VFDT
+算法假设所分析处理的数据流是平稳分布的，所以应对数据流中概念变化时采用的是单一的决策树模型，这就导致VFDT的决策树模型不能及时反映数据流随时间变化的趋势。</p>
+<p>另外VFDT也没有处理连续值属性的问题。因为在CVFDT
+中滑动窗口的引入，过时的样本都被删除，所以 CVFDT 树比 VFDT 树要小很多。
+CVFDT根据滑动窗口中的数据流样本来持续检测旧的决策树的有效性从而保证建立模型与概念漂移同步。</p>
+<p>CVFDT算法对VFDT算法的改进如下：</p>
+<ul>
+<li><strong>CVFDT算法解决了VFDT算法不能处理数据流中概念漂移的问题</strong>。通过在VFDT算法基础上添加滑动窗口使得建立决策树模型的数据流能够不断实现更新，保证在概念漂移的数据流中保持模型的准确率。</li>
+<li>对于每个节点包括根节点都有相应的ID。样本遍历每个节点时不仅会在节点处保存其样本的属性信息，同时窗口中的样本也会保存其遍历过的节点信息。当样本滑出窗口时，该样本所经历过的节点统计值将依次减一。</li>
+<li>CVFDT还为每个决策节点设置备选子树，周期性的检测每个决策节点的准确率从而决定替代子树是否替换当前的决策节点，从而也有效的提高了决策树模型的准确率。</li>
+</ul>
+<p>CVFDT算法流程如下：</p>
+<p><img src="/img/大数据/ch4-CVFDT-流程.png" srcset="/img/loading.gif" lazyload /></p>
+<p>CVFDT算法采用增量的方式训练决策树，解决了VFDT算法不能处理连续属性的问题，并且在处理大规模数据时效率更高。</p>
+<h4 id="syncstream">SyncStream</h4>
+<p>KNN style</p>
+<h4 id="open-set-problem">Open-set problem</h4>
+<ul>
+<li>Novel class Dection(Extreme Value Theory,EVT)</li>
+</ul>
+<p>EVT 中心思想是概率分布，可给出事件发生概率的数学公式。</p>
+<ul>
+<li>Continued learning(Elastic Weight Consolidation,EWC)</li>
+</ul>
+<p>EWC的基本思想：模型中的一些参数对前面的任务很重要。只改变不重要的参数</p>
+<p>Gradient Episodic Memory
+(GEM)的基本思想:限制梯度的方向来改善之前的工作</p>
+<ul>
+<li>Class-incremental learning</li>
+</ul>
+<p>问题：</p>
+<ol type="1">
+<li>怎么平衡新旧类的样本</li>
+<li>怎么平衡新旧类的样本的重要性</li>
+<li>怎么提取榜样样本(exemplars examples)</li>
+</ol>
+<p><strong>Knowledge Distillation(知识蒸馏)</strong>:</p>
+<p><strong>Weight Aligning(权重对齐)</strong>:
+通过对齐权重来减少模型的参数数量</p>
+<h3 id="data-stream-clustering流聚类">Data Stream
+Clustering(流聚类)</h3>
+<h4 id="framework">Framework</h4>
+<p>有两个阶段</p>
+<ol type="1">
+<li>online Data
+abstraction(数据抽象):将数据归纳为具有内存效率的数据结构</li>
+<li>offline clustering(离线聚类):使用聚类算法来寻找数据类别</li>
+</ol>
+<p>online阶段首先根据K-mens算法生成p个初始的聚类中心(micro
+clusters)，并为每一个簇提供一个独一无二的ID，其中P是大于具体的聚类数目但是要远远小于具体数据点的个数。</p>
+<p>对于每一个到来的数据点，要么被现有的微集群吸收（是否在一个集群的最大边界内-均值根偏差RMS），要么自己成立一个集群。但是数据点不属于现有的集群有两种情况，一种是该点是一个异常点，第二种是该点是一个新集群的起始点。</p>
+<p>那么如果要新建立一个集群的话，就需要将已有的集群删除一个或者合并两个相似的集群。若要删除一个集群的话，首先判断删除该集群是否会有不良的影响，所以根据该集群的数据点的时间戳信息来判断，如果该簇的时间戳不满足设定的阈值，将其删除。合并集群的话，将两个最近的集群进行合并。</p>
+<p>流聚类算法：</p>
+<p><img src="/img/大数据/ch5-流聚类算法.png" srcset="/img/loading.gif" lazyload /></p>
+<ol start="2" type="1">
+<li>offline clustering(离线聚类)</li>
+</ol>
+<p>根据用户输入的需要查看的时间，从特征金字塔中取出两个时间段的汇总信息，相减之后就得到用户所需时间段的近似数据集，在此基础上进行聚类即可。</p>
+<h4 id="online-data-abstraction">online Data abstraction</h4>
+<ol type="1">
+<li>A Micro-Cluster is a set of individual data points that are close to
+each other and will be treated as a single unit in further offline
+Macro-clustering.(微集群是一组彼此接近的单个数据点，将在进一步的离线宏聚类中作为单个单元处理。)</li>
+<li>动态选择short-term和long-term的代表性example，代表性高的保留，代表性低的删除，没有，若代表性没有改变，就进行statistic
+summary(摘要统计)</li>
+<li>簇特征的属性</li>
+</ol>
 
                 
               </div>
