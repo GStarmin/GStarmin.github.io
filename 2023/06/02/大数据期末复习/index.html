@@ -46,6 +46,8 @@
 <meta property="og:image" content="https://gstarmin.github.io/img/大数据/ch4-CVFDT-流程.png">
 <meta property="og:image" content="https://gstarmin.github.io/img/大数据/ch5-流聚类算法.png">
 <meta property="og:image" content="https://gstarmin.github.io/img/大数据/ch5-CF属性-1.png">
+<meta property="og:image" content="https://gstarmin.github.io/img/大数据/ch6-ratio-cut.png">
+<meta property="og:image" content="https://gstarmin.github.io/img/大数据/ch6-norm-cut.png">
 <meta property="article:published_time" content="2023-06-02T09:38:02.000Z">
 <meta property="article:modified_time" content="2023-06-05T08:30:00.000Z">
 <meta property="article:author" content="Starmin">
@@ -325,7 +327,7 @@
         
         
         
-          141 分钟
+          143 分钟
         
       </span>
     
@@ -534,8 +536,8 @@ signatures likely to be similar.</li>
 </ul>
 <p><img src="/img/大数据/ch3-the-big-pic.png" srcset="/img/loading.gif" lazyload /></p>
 <h4 id="shingles">Shingles</h4>
-<p>A k -shingle (or k -gram) for a document is a sequence of k
-characters that appears in the document.
+<p>A k-shingle (or k-gram) for a document is a sequence of k characters
+that appears in the document.
 一个文件的k-shingle（或k-gram）是一个出现在文件中的k个字符的序列。</p>
 <p>Example: <span class="math inline">\(k=2; doc = abcab\)</span>. Set
 of 2-shingles = <span class="math inline">\(\{ab, bc, ca\}\)</span>.</p>
@@ -1032,12 +1034,19 @@ id="eigenvector特征向量e.g.pagerank">Eigenvector（特征向量）e.g.PageRa
 <p>PageRank是Google最早的搜索引擎核心用的就是这个算法</p>
 <p>PageRank基本思想：如果一个页面被很多其他页面链接到的话说明这个页面比较重要，如果一个页面被一个很重要的页面链接到的话，那么这个页面也很重要。</p>
 <h3 id="community-detection">Community Detection</h3>
-<h4 id="minimum-cut">Minimum Cut</h4>
+<h4 id="cut-based-methods">Cut-based Methods</h4>
+<h5 id="minimum-cut">Minimum Cut</h5>
 <p>由于大多数节点互动是在组内进行的，而组与组之间的互动则很少。所以我们可以把community
 detection问题转换为一个最小割问题。最小割问题是指在一个无向图中，找到一条边的集合，使得这些边的权重之和最小，且删除这些边之后，图被分成两个部分。</p>
-<h4 id="ratio-cut-normalized-cut">Ratio Cut &amp; Normalized Cut</h4>
+<h5 id="ratio-cut-normalized-cut">Ratio Cut &amp; Normalized Cut</h5>
 <p>由于最小割往往返回一个不平衡的partation，其中的一个集合是一个单点，所以我们可以用Ratio
-Cut和Normalized Cut来解决这个问题。</p>
+Cut和Normalized
+Cut来解决这个问题。思想是在最小割的基础之上修改目标函数以考虑到partation的平衡性。</p>
+<p><img src="/img/大数据/ch6-ratio-cut.png" srcset="/img/loading.gif" lazyload /></p>
+<p><img src="/img/大数据/ch6-norm-cut.png" srcset="/img/loading.gif" lazyload /></p>
+<p>其中<span class="math inline">\(C_i\)</span>是一个子集和，<span
+class="math inline">\(|C_i|\)</span>是子集和的大小，<span
+class="math inline">\(vol(C_i)\)</span>是子集和中所有节点的度之和。</p>
 
                 
               </div>
