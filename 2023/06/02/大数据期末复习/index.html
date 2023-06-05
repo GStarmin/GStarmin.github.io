@@ -45,6 +45,7 @@
 <meta property="og:image" content="https://gstarmin.github.io/2023/06/02/%E5%A4%A7%E6%95%B0%E6%8D%AE%E6%9C%9F%E6%9C%AB%E5%A4%8D%E4%B9%A0/img/大数据/ch4-Reservoir.png">
 <meta property="og:image" content="https://gstarmin.github.io/img/大数据/ch4-CVFDT-流程.png">
 <meta property="og:image" content="https://gstarmin.github.io/img/大数据/ch5-流聚类算法.png">
+<meta property="og:image" content="https://gstarmin.github.io/img/大数据/ch5-CF属性-1.png">
 <meta property="article:published_time" content="2023-06-02T09:38:02.000Z">
 <meta property="article:modified_time" content="2023-06-04T14:30:00.000Z">
 <meta property="article:author" content="Starmin">
@@ -940,6 +941,7 @@ CVFDT根据滑动窗口中的数据流样本来持续检测旧的决策树的有
 <p>CVFDT算法采用增量的方式训练决策树，解决了VFDT算法不能处理连续属性的问题，并且在处理大规模数据时效率更高。</p>
 <h4 id="syncstream">SyncStream</h4>
 <p>KNN style</p>
+<!-- 待完善 -->
 <h4 id="open-set-problem">Open-set problem</h4>
 <ul>
 <li>Novel class Dection(Extreme Value Theory,EVT)</li>
@@ -972,25 +974,45 @@ Clustering(流聚类)</h3>
 abstraction(数据抽象):将数据归纳为具有内存效率的数据结构</li>
 <li>offline clustering(离线聚类):使用聚类算法来寻找数据类别</li>
 </ol>
-<p>online阶段首先根据K-mens算法生成p个初始的聚类中心(micro
-clusters)，并为每一个簇提供一个独一无二的ID，其中P是大于具体的聚类数目但是要远远小于具体数据点的个数。</p>
-<p>对于每一个到来的数据点，要么被现有的微集群吸收（是否在一个集群的最大边界内-均值根偏差RMS），要么自己成立一个集群。但是数据点不属于现有的集群有两种情况，一种是该点是一个异常点，第二种是该点是一个新集群的起始点。</p>
-<p>那么如果要新建立一个集群的话，就需要将已有的集群删除一个或者合并两个相似的集群。若要删除一个集群的话，首先判断删除该集群是否会有不良的影响，所以根据该集群的数据点的时间戳信息来判断，如果该簇的时间戳不满足设定的阈值，将其删除。合并集群的话，将两个最近的集群进行合并。</p>
+<!-- online阶段首先根据K-mens算法生成p个初始的聚类中心(micro clusters)，并为每一个簇提供一个独一无二的ID，其中P是大于具体的聚类数目但是要远远小于具体数据点的个数。
+
+对于每一个到来的数据点，要么被现有的微集群吸收（是否在一个集群的最大边界内-均值根偏差RMS），要么自己成立一个集群。但是数据点不属于现有的集群有两种情况，一种是该点是一个异常点，第二种是该点是一个新集群的起始点。
+
+那么如果要新建立一个集群的话，就需要将已有的集群删除一个或者合并两个相似的集群。若要删除一个集群的话，首先判断删除该集群是否会有不良的影响，所以根据该集群的数据点的时间戳信息来判断，如果该簇的时间戳不满足设定的阈值，将其删除。合并集群的话，将两个最近的集群进行合并。 -->
 <p>流聚类算法：</p>
 <p><img src="/img/大数据/ch5-流聚类算法.png" srcset="/img/loading.gif" lazyload /></p>
-<ol start="2" type="1">
-<li>offline clustering(离线聚类)</li>
-</ol>
-<p>根据用户输入的需要查看的时间，从特征金字塔中取出两个时间段的汇总信息，相减之后就得到用户所需时间段的近似数据集，在此基础上进行聚类即可。</p>
+<!-- offline clustering(离线聚类)
+
+根据用户输入的需要查看的时间，从特征金字塔中取出两个时间段的汇总信息，相减之后就得到用户所需时间段的近似数据集，在此基础上进行聚类即可。 -->
 <h4 id="online-data-abstraction">online Data abstraction</h4>
+<p><strong>Micro-Cluster</strong>: A Micro-Cluster is a set of
+individual data points that are close to each other and will be treated
+as a single unit in further offline
+Macro-clustering.(Micro-Cluster是一组彼此接近的单个数据点，将在进一步的离线宏聚类中作为单个单元处理。)</p>
+<p><strong>Cluster Feature</strong>:
+用来表示一个Micro-Cluster的属性，<span class="math inline">\(CF = (N,
+LS, SS)\)</span></p>
+<p>其中<span class="math inline">\(LS = \sum\limits_{i=1}^N X_i, SS =
+\sum\limits_{i=1}^N X_i^2\)</span></p>
+<p>其中<span class="math inline">\(N\)</span>是数据点，<span
+class="math inline">\(LS,SS\)</span>中的<span
+class="math inline">\(X_i\)</span>是一个向量。</p>
+<p><strong>Cluster Feature</strong>的属性：Additivity Property</p>
+<p><img src="/img/大数据/ch5-CF属性-1.png" srcset="/img/loading.gif" lazyload /> <img
+src="/img/大数据/ch5-CF属性-2.png" srcset="/img/loading.gif" lazyload /></p>
 <ol type="1">
-<li>A Micro-Cluster is a set of individual data points that are close to
-each other and will be treated as a single unit in further offline
-Macro-clustering.(微集群是一组彼此接近的单个数据点，将在进一步的离线宏聚类中作为单个单元处理。)</li>
 <li>动态选择short-term和long-term的代表性example，代表性高的保留，代表性低的删除，没有，若代表性没有改变，就进行statistic
 summary(摘要统计)</li>
-<li>簇特征的属性</li>
+<li>Cluster Feature的属性：Additivity Property</li>
 </ol>
+<h2 id="ch6-graph-mining">Ch6 Graph Mining</h2>
+<h3 id="key-node-identification">Key Node Identification</h3>
+<h4 id="centrality">Centrality</h4>
+<p><strong>Degree
+Centrality</strong>:节点度的大小用来衡量节点的重要性（节点的直接影响）。</p>
+<p><strong>Betweenness
+Centrality</strong>：每个顶点的间性中心度是通过该顶点的这些最短路径的数量。</p>
+<p><strong>Closeness Centrality</strong>：</p>
 
                 
               </div>
