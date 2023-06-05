@@ -36,13 +36,13 @@
 <meta property="og:image" content="https://gstarmin.github.io/img/大数据/ch4-CDF.png">
 <meta property="og:image" content="https://gstarmin.github.io/img/大数据/ch4-Rejection-Sampling.png">
 <meta property="og:image" content="https://gstarmin.github.io/img/大数据/ch4-Rejection-Sampling-步骤.png">
-<meta property="og:image" content="https://gstarmin.github.io/2023/06/02/%E5%A4%A7%E6%95%B0%E6%8D%AE%E6%9C%9F%E6%9C%AB%E5%A4%8D%E4%B9%A0/img/大数据/ch4-MCMC流程.png">
-<meta property="og:image" content="https://gstarmin.github.io/2023/06/02/%E5%A4%A7%E6%95%B0%E6%8D%AE%E6%9C%9F%E6%9C%AB%E5%A4%8D%E4%B9%A0/img/大数据/ch4-MH算法流程.png">
-<meta property="og:image" content="https://gstarmin.github.io/2023/06/02/%E5%A4%A7%E6%95%B0%E6%8D%AE%E6%9C%9F%E6%9C%AB%E5%A4%8D%E4%B9%A0/img/大数据/ch4-MH算法具体流程.png">
-<meta property="og:image" content="https://gstarmin.github.io/2023/06/02/%E5%A4%A7%E6%95%B0%E6%8D%AE%E6%9C%9F%E6%9C%AB%E5%A4%8D%E4%B9%A0/img/大数据/ch4-Gibbs.png">
-<meta property="og:image" content="https://gstarmin.github.io/2023/06/02/%E5%A4%A7%E6%95%B0%E6%8D%AE%E6%9C%9F%E6%9C%AB%E5%A4%8D%E4%B9%A0/img/大数据/ch4-Gibbs-二维流程.png">
-<meta property="og:image" content="https://gstarmin.github.io/2023/06/02/%E5%A4%A7%E6%95%B0%E6%8D%AE%E6%9C%9F%E6%9C%AB%E5%A4%8D%E4%B9%A0/img/大数据/ch4-Gibbs-多维流程.png">
-<meta property="og:image" content="https://gstarmin.github.io/2023/06/02/%E5%A4%A7%E6%95%B0%E6%8D%AE%E6%9C%9F%E6%9C%AB%E5%A4%8D%E4%B9%A0/img/大数据/ch4-Reservoir.png">
+<meta property="og:image" content="https://gstarmin.github.io/img/大数据/ch4-MCMC流程.png">
+<meta property="og:image" content="https://gstarmin.github.io/img/大数据/ch4-MH算法流程.png">
+<meta property="og:image" content="https://gstarmin.github.io/img/大数据/ch4-MH算法具体流程.png">
+<meta property="og:image" content="https://gstarmin.github.io/img/大数据/ch4-Gibbs.png">
+<meta property="og:image" content="https://gstarmin.github.io/img/大数据/ch4-Gibbs-二维流程.png">
+<meta property="og:image" content="https://gstarmin.github.io/img/大数据/ch4-Gibbs-多维流程.png">
+<meta property="og:image" content="https://gstarmin.github.io/img/大数据/ch4-Reservoir.png">
 <meta property="og:image" content="https://gstarmin.github.io/img/大数据/ch4-CVFDT-流程.png">
 <meta property="og:image" content="https://gstarmin.github.io/img/大数据/ch5-流聚类算法.png">
 <meta property="og:image" content="https://gstarmin.github.io/img/大数据/ch5-CF属性-1.png">
@@ -734,13 +734,13 @@ class="math inline">\(x\)</span>的概率。那么<span
 class="math inline">\(\pi(x)\)</span>就是该马尔可夫链的平稳分布。</p>
 <h4 id="the-procedure-of-mcmcmcmc的流程">The Procedure of
 MCMC(MCMC的流程)</h4>
-<p><img src="img/大数据/ch4-MCMC流程.png" srcset="/img/loading.gif" lazyload /></p>
+<p><img src="/img/大数据/ch4-MCMC流程.png" srcset="/img/loading.gif" lazyload /></p>
 <h3 id="metropolis-hastings-algorithmmh算法">Metropolis-Hastings
 Algorithm(MH算法)</h3>
 <p>由于MCMC采样有收敛太慢的问题,所以在MCMC的基础之上进行改进，引出MH算法。</p>
-<p><img src="img/大数据/ch4-MH算法流程.png" srcset="/img/loading.gif" lazyload /></p>
+<p><img src="/img/大数据/ch4-MH算法流程.png" srcset="/img/loading.gif" lazyload /></p>
 <p>MH算法的具体流程如下：</p>
-<p><img src="img/大数据/ch4-MH算法具体流程.png" srcset="/img/loading.gif" lazyload /></p>
+<p><img src="/img/大数据/ch4-MH算法具体流程.png" srcset="/img/loading.gif" lazyload /></p>
 <p>一般来说M-H采样算法较MCMC算法应用更广泛，然而在大数据时代，M-H算法面临着两个问题：</p>
 <ol type="1">
 <li>在高维时的计算量很大，算法效率很低，同时存在拒绝转移的问题，也会加大计算量</li>
@@ -748,10 +748,10 @@ Algorithm(MH算法)</h3>
 </ol>
 <h3 id="gibbs-sampling">Gibbs Sampling</h3>
 <p>Gibbs Sampling是MH算法的一种特殊情况。它的基本思想是：</p>
-<p><img src="img/大数据/ch4-Gibbs.png" srcset="/img/loading.gif" lazyload /> <img
-src="img/大数据/ch4-Gibbs-1.png" srcset="/img/loading.gif" lazyload /></p>
+<p><img src="/img/大数据/ch4-Gibbs.png" srcset="/img/loading.gif" lazyload /> <img
+src="/img/大数据/ch4-Gibbs-1.png" srcset="/img/loading.gif" lazyload /></p>
 <p>因此可以得出在二维的情况下Gibbs采样算法的流程如下：</p>
-<p><img src="img/大数据/ch4-Gibbs-二维流程.png" srcset="/img/loading.gif" lazyload /></p>
+<p><img src="/img/大数据/ch4-Gibbs-二维流程.png" srcset="/img/loading.gif" lazyload /></p>
 <p>而在多维的情况下，比如一个n维的概率分布<span
 class="math inline">\(π(x_1, x_2, ...x_n)\)</span>，我们可以通过在<span
 class="math inline">\(n\)</span>个坐标轴上轮换采样，来得到新的样本。对于轮换到的任意一个坐标轴<span
@@ -759,7 +759,7 @@ class="math inline">\(x_i\)</span>上的转移，马尔科夫链的状态转移�
 class="math inline">\(P(x_i|x_1, x_2, ..., x_{i−1}, x_{i+1}, ...,
 x_n)\)</span>，即固定<span
 class="math inline">\(n−1\)</span>个坐标轴，在某一个坐标轴上移动。而在多维的情况下Gibbs采样算法的流程如下：</p>
-<p><img src="img/大数据/ch4-Gibbs-多维流程.png" srcset="/img/loading.gif" lazyload /></p>
+<p><img src="/img/大数据/ch4-Gibbs-多维流程.png" srcset="/img/loading.gif" lazyload /></p>
 <h3 id="gibbs-sampling和mh算法的联系与区别">Gibbs
 Sampling和MH算法的联系与区别</h3>
 <ul>
@@ -777,7 +777,7 @@ Sampling和MH算法的联系与区别</h3>
 sampling是一种随机采样算法，它的基本思想是：对于一个数据流，我们希望从中随机采样出<span
 class="math inline">\(k\)</span>个样本，但是我们不知道数据流的长度，也就是说我们不知道<span
 class="math inline">\(k\)</span>的大小。具体流程如下：</p>
-<p><img src="img/大数据/ch4-Reservoir.png" srcset="/img/loading.gif" lazyload /></p>
+<p><img src="/img/大数据/ch4-Reservoir.png" srcset="/img/loading.gif" lazyload /></p>
 <h2 id="ch5-data-stream-mining">Ch5 Data Stream Mining</h2>
 <h3 id="data-stream">Data Stream</h3>
 <h4 id="properity-of-data-stream">Properity of Data Stream</h4>
