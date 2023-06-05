@@ -314,7 +314,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          13k 字
+          14k 字
         
       </span>
     
@@ -325,7 +325,7 @@
         
         
         
-          132 分钟
+          140 分钟
         
       </span>
     
@@ -1012,7 +1012,29 @@ summary(摘要统计)</li>
 Centrality</strong>:节点度的大小用来衡量节点的重要性（节点的直接影响）。</p>
 <p><strong>Betweenness
 Centrality</strong>：每个顶点的间性中心度是通过该顶点的这些最短路径的数量。</p>
-<p><strong>Closeness Centrality</strong>：</p>
+<p><strong>Closeness
+Centrality</strong>：计算为节点与图中所有其他节点之间的最短路径长度之和。</p>
+<h3 id="k-shell-decomposition">K-shell Decomposition</h3>
+<p>将图中结点度为1的所有结点和对应的连边去掉后，新的网络中可能会有新的度为1的结点，把这些结点和边也去掉，重复操作，直到不再有度为1的结点为止。这种操作类似于剥去网络最外面一层壳，所以把所有去除的结点以及他们之间的连边称为网络的1-壳(1-shell)。网络中度为0的独立结点称为0-壳(0-shell)。在去除1-壳后的网络中，所有结点度都大于等于2，因此，接着把度为2的结点和对应连边去掉，直到不再有度为2的结点为止，则去除的结点和边称为2-壳(2-shell)。依此类推，直到网络中每个结点都划分到相应k-shell中，就得到网络的k-shell分解。</p>
+<p>每个结点都唯一对应一个k-shell，这个k-shell中的结点的度一定大于等于k。但是注意，度相同的结点不一定属于同一个k-shell。并且，度大的结点既可能属于k值大的k-shell(最内层)，可能能属于k值较小的shell(外层)。所以，度值大的未必就重要。</p>
+<p>优点：</p>
+<ul>
+<li>计算复杂度低</li>
+<li>直观的揭示了网络的层次结构</li>
+</ul>
+<p>缺点：</p>
+<ul>
+<li>不能在很多网络中使用，如星形网络、树形网络等。</li>
+<li>不能很好地反映网络的重要性，有时候甚至不如单纯用节点度值衡量效果好。</li>
+</ul>
+<h3
+id="eigenvector特征向量e.g.pagerank">Eigenvector（特征向量）e.g.PageRank</h3>
+<p>PageRank是Google最早的搜索引擎核心用的就是这个算法</p>
+<p>PageRank基本思想：如果一个页面被很多其他页面链接到的话说明这个页面比较重要，如果一个页面被一个很重要的页面链接到的话，那么这个页面也很重要。</p>
+<h3 id="community-detection">Community Detection</h3>
+<h4 id="minimum-cut">Minimum Cut</h4>
+<p>由于大多数节点互动是在组内进行的，而组与组之间的互动则很少。所以我们可以把community
+detection问题转换为一个最小割问题。最小割问题是指在一个无向图中，找到一条边的集合，使得这些边的权重之和最小，且删除这些边之后，图被分成两个部分。</p>
 
                 
               </div>
