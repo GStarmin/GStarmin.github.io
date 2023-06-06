@@ -52,7 +52,7 @@
 <meta property="og:image" content="https://gstarmin.github.io/img/大数据/ch6-Distance-Dynamics-流程.png">
 <meta property="og:image" content="https://gstarmin.github.io/img/大数据/ch7-Hadoop-Architecture.png">
 <meta property="article:published_time" content="2023-06-02T09:38:02.000Z">
-<meta property="article:modified_time" content="2023-06-06T08:30:00.000Z">
+<meta property="article:modified_time" content="2023-06-06T13:30:00.000Z">
 <meta property="article:author" content="Starmin">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://gstarmin.github.io/img/大数据/4V-features.png">
@@ -319,7 +319,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          18k 字
+          19k 字
         
       </span>
     
@@ -330,7 +330,7 @@
         
         
         
-          180 分钟
+          193 分钟
         
       </span>
     
@@ -415,7 +415,7 @@ step in the process of knowledge discovery in database.</p>
 <h3 id="the-challenges-of-big-data-mining">The challenges of big data
 mining</h3>
 <ul>
-<li>Curse of dimensionality</li>
+<li>Curse of dimensionality(维度灾难)</li>
 <li>Storage cost</li>
 <li>Query speed <!-- - Data Quality
 - Data Complexity
@@ -452,7 +452,7 @@ learning with additional information on the distribution of data.</li>
 1}^{N}L(Y_i, F(X_i | \beta)) + \frac{\lambda}{2} || \beta
 ||_1\]</span></p>
 <p><span class="math inline">\(||A||_∗\)</span> nuclear norm:</p>
-<p><span class="math display">\[||A||∗=∑_i{σ_i}(A).\]</span></p>
+<p><span class="math display">\[||A||_∗=∑\limits_i{σ_i}(A).\]</span></p>
 <h3 id="overfittingunderfitting-problem">Overfitting/Underfitting
 problem</h3>
 <p><strong>Reason</strong>?</p>
@@ -505,15 +505,97 @@ Learning并没有从特定的模型中提取基本规则或一般情况，而是
 <li>Kernel function: Gaussian kernel, polynormial kernel</li>
 </ol></li>
 </ol>
-<h4 id="section"></h4>
 <p>损失函数是平方损失加上L1正则化</p>
 <p><span class="math display">\[J(\theta) = \frac{1}{2m} \sum_{i=1}^m
 (h_\theta(x^{(i)}) - y^{(i)})^2 + \alpha \sum_{j=1}^n
 |\theta_j|\]</span></p>
 <p>其中，第一项是平方损失，第二项是L1正则化项，<span
 class="math inline">\(\alpha\)</span>是正则化参数。</p>
-<h4 id="subspace-clustering子空间聚类">Subspace
-Clustering(子空间聚类)</h4>
+<h3 id="ensemble-learning">Ensemble Learning</h3>
+<p>Rationale for Ensemble Learning: No Free Lunch thm: There is no
+algorithm that is always the most accurate</p>
+<p><strong>Two Criteria</strong>:</p>
+<ul>
+<li>Good base learner</li>
+<li>diversity</li>
+</ul>
+<p><strong>Three Strategies</strong>:</p>
+<ul>
+<li>Bagging(Random Forest)</li>
+<li>Boosting(AdaBoost)</li>
+<li>Stacking</li>
+</ul>
+<h3 id="clustering">Clustering</h3>
+<h4 id="k-means-procedure-and-darwbacks">K-means procedure and
+darwbacks</h4>
+<p>K-means procedure:</p>
+<ol type="1">
+<li>从数据中选择k个对象作为初始聚类中心;</li>
+<li>计算每个聚类对象到聚类中心的距离来划分；</li>
+<li>再次计算每个聚类中心;</li>
+<li>计算标准测度函数，之道达到最大迭代次数，则停止，否则，继续操作。</li>
+</ol>
+<p>优点：</p>
+<ul>
+<li>原理简单，实现容易；</li>
+<li>复杂度与样本数量线性相关，对于处理大数据集合，该算法非常高效，且伸缩性较好。</li>
+</ul>
+<p>drawbacks（缺点）:</p>
+<ul>
+<li>K需要事先给定；</li>
+<li>Kmeans需要人为地确定初始聚类中心，不同的初始聚类中心可能导致完全不同的聚类结果；</li>
+<li>结果不一定是全局最优，只能保证局部最优；</li>
+<li>对噪声和离群点敏感；</li>
+<li>该方法不适于发现非凸面形状的簇或大小差别很大的簇；</li>
+<li>需样本存在均值（限定数据种类）。</li>
+</ul>
+<h4 id="dbscan">DBSCAN</h4>
+<p><strong>Advantage</strong>:</p>
+<ul>
+<li>可以对任意形状的稠密数据集进行聚类，相对的，K-Means之类的聚类算法一般只适用于凸数据集。</li>
+<li>可以在聚类的同时发现异常点，对数据集中的异常点不敏感;</li>
+<li>聚类结果没有偏倚，相对的，K-Means之类的聚类算法初始值对聚类结果有很大影响。</li>
+</ul>
+<p><strong>Disadvantage</strong>:</p>
+<ul>
+<li>如果样本集的密度不均匀、聚类间距差相差很大时，聚类质量较差。If the
+density of the sample set is not uniform and the distance between
+clusters is very different, the clustering quality is poor.</li>
+<li>如果样本集较大时，聚类收敛时间较长。If the sample set is large, the
+clustering convergence time is long.</li>
+<li>调参相对于传统的K-Means之类的聚类算法稍复杂. Parameter adjustment is
+more complex than K-means.</li>
+</ul>
+<h3 id="subspace-learning">Subspace learning</h3>
+<h4 id="dimension-reduction">Dimension Reduction</h4>
+<p><strong>Models</strong>:</p>
+<ul>
+<li>Linear methods
+<ul>
+<li>PCA(Principal Component Analysis)</li>
+<li>MDS(Multi-Dimensional Scaling)</li>
+</ul></li>
+<li>Nonlinear methods
+<ul>
+<li>LLE(Locally Linear Embedding)</li>
+<li>LEM(Laplacian eigenmaps)</li>
+<li>Isomap</li>
+</ul></li>
+</ul>
+<h4 id="feature-selectionclassification">Feature
+selection(Classification)</h4>
+<ul>
+<li>Filter Method(IG, <span class="math inline">\(\mathcal{X}^2\)</span>
+)</li>
+<li>wrapper Method</li>
+<li>Embedded Methods</li>
+</ul>
+<h3 id="subspace-clustering子空间聚类">Subspace
+Clustering(子空间聚类)</h3>
+<ul>
+<li>Sparse subspace clustering (SSC)</li>
+<li>Low-rank representation (LRR)</li>
+</ul>
 <h2 id="ch3-hashing">Ch3 Hashing</h2>
 <h3 id="the-role-of-hashing作用">The role of Hashing(作用)</h3>
 <ul>
