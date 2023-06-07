@@ -599,12 +599,12 @@ Clustering(子空间聚类)</h3>
 <h2 id="ch3-hashing">Ch3 Hashing</h2>
 <h3 id="the-role-of-hashing作用">The role of Hashing(作用)</h3>
 <ul>
-<li>After using the hash code to represent the data, the required
-storage space will be greatly
-reduced（使用哈希码表示数据后，所需要的存储空间会被大幅减小）</li>
-<li>Can reduce data dimensionality, thereby alleviating the
-dimensionality curse
-problem(可以降低数据维度，从而减轻维度灾难问题)</li>
+<li>After using the hash code to represent the data, <strong>the
+required storage space will be greatly
+reduced</strong>（使用哈希码表示数据后，所需要的存储空间会被大幅减小）</li>
+<li>Can <strong>reduce data dimensionality</strong>, thereby alleviating
+the <strong>dimensionality curse
+problem</strong>(可以降低数据维度，从而减轻维度灾难问题)</li>
 <li>Can realize fast neighbor retrieval at constant or sub-linear level,
 and provide support for the rapid realization of upper-level learning
 tasks(可以实现常数或者次线性级别的快速近邻检索，为上层学习任务的快速实现提供支撑)</li>
@@ -614,26 +614,27 @@ tasks(可以实现常数或者次线性级别的快速近邻检索，为上层�
 <ul>
 <li><strong>K-Shingling</strong>：convert documents, emails, etc., to
 sets.</li>
-<li><strong>Minhashing</strong>：convert large sets to short signatures,
-while preserving similarity.</li>
+<li><strong>Min-hashing</strong>：convert large sets to short
+signatures, while preserving similarity.</li>
 <li><strong>Locality-sensitive hashing</strong> : focus on pairs of
 signatures likely to be similar.</li>
 </ul>
 <p><img src="/img/大数据/ch3-the-big-pic.png" srcset="/img/loading.gif" lazyload /></p>
 <h4 id="shingles">Shingles</h4>
-<p>A k-shingle (or k-gram) for a document is a sequence of k characters
-that appears in the document.
+<p>A k-shingle (or k-gram) for a document is <strong>a sequence of k
+characters that appears in the document</strong>.
 一个文件的k-shingle（或k-gram）是一个出现在文件中的k个字符的序列。</p>
 <p>Example: <span class="math inline">\(k=2; doc = abcab\)</span>. Set
 of 2-shingles = <span class="math inline">\(\{ab, bc, ca\}\)</span>.</p>
 <h4 id="min-hashing">min-hashing</h4>
-<p>definition:min-hash is an algorithm for text and data similarity
-comparison that efficiently extracts the signature of each data from
-large-scale data, thus supporting fast comparison of their similarity.
+<p>definition:min-hash is an algorithm for <strong>text and data
+similarity comparison</strong> that efficiently extracts the signature
+of each data from large-scale data, thus supporting fast comparison of
+their similarity.
 min-hash是一种用于文本和数据相似度比较的算法，它可以高效地从大规模数据中提取每个数据的签名，从而支持快速地比较它们之间的相似程度。</p>
-<h4 id="signature-matrix-rightarrow-how-to-compute-similarity">signature
+<h5 id="signature-matrix-rightarrow-how-to-compute-similarity">signature
 matrix <span class="math inline">\(\Rightarrow\)</span> how to compute
-similarity</h4>
+similarity</h5>
 <p><img src="/img/大数据/ch3-similarity.png" srcset="/img/loading.gif" lazyload /></p>
 <p>Jaccard similarity：不将<span
 class="math inline">\((0,0)\)</span>计入分母，相同的行占全部行的比率</p>
@@ -642,8 +643,8 @@ class="math inline">\((0,0)\)</span>计入分母，相同的行占全部行的�
 <p><img src="/img/大数据/ch3-signature计算方法.png" srcset="/img/loading.gif" lazyload /></p>
 <p>上图中间矩阵是输入矩阵，左侧的每一列都代表输入矩阵行的一种排列，那么signature
 matrix的每一行都对应左侧的一种排列方式，该行的每列数字对应该种排列方式对应列的第一个1的出现行数。</p>
-<h4 id="locality-sensitive-hashinglsh">Locality-Sensitive
-Hashing（LSH）</h4>
+<h5 id="locality-sensitive-hashinglsh">Locality-Sensitive
+Hashing（LSH）</h5>
 <p>假设我们在主内存中有代表大量对象的数据</p>
 <ul>
 <li>可能是对象本身</li>
