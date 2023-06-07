@@ -52,7 +52,7 @@
 <meta property="og:image" content="https://gstarmin.github.io/img/大数据/ch6-Distance-Dynamics-流程.png">
 <meta property="og:image" content="https://gstarmin.github.io/img/大数据/ch7-Hadoop-Architecture.png">
 <meta property="article:published_time" content="2023-06-02T09:38:02.000Z">
-<meta property="article:modified_time" content="2023-06-06T13:30:00.000Z">
+<meta property="article:modified_time" content="2023-06-07T03:30:00.000Z">
 <meta property="article:author" content="Starmin">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://gstarmin.github.io/img/大数据/4V-features.png">
@@ -319,7 +319,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          19k 字
+          20k 字
         
       </span>
     
@@ -330,7 +330,7 @@
         
         
         
-          193 分钟
+          203 分钟
         
       </span>
     
@@ -678,7 +678,9 @@ Signatures</h5>
 <p>总体思想：把标记矩阵里的hash很多遍，只有hash到同一个桶(bucket)里的列才被认为是可能相似的。</p>
 <p><strong>Partion Into Bands</strong></p>
 <p><img src="/img/大数据/Partion-Into-Bands.png" srcset="/img/loading.gif" lazyload /></p>
-<p>如图所示，把标记矩阵(signature matrix)的所有行分成 <span
+<p>Divide matrix M into b bands of r rows. For each band, hash its
+portion of each column to a hash table with k buckets.
+如图所示，把标记矩阵(signature matrix)的所有行分成 <span
 class="math inline">\(b\)</span> 个带(bands)，每个带有 <span
 class="math inline">\(r\)</span>
 行。对于每条带，对带里面每列进行hash，分别hash到<span
@@ -743,14 +745,28 @@ id="general-approach-to-learning-based-hashinglearning-based哈希的一般方�
 Approach to Learning-Based Hashing(Learning-Based哈希的一般方法)</h4>
 <p>将哈希学习问题分解为两个步骤：</p>
 <ol type="1">
-<li>哈希比特学习</li>
-<li>基于所学习的哈希比特的哈希函数学习</li>
+<li>hash bit learning. 哈希比特学习</li>
+<li>hash function learning based on the learned bits.
+基于所学习的哈希比特的哈希函数学习</li>
 </ol>
 <p><img src="/img/大数据/ch3-Learning-Based-Hashing-步骤.png" srcset="/img/loading.gif" lazyload /></p>
 <h2 id="ch4-sampling">Ch4 Sampling</h2>
+<p>Why sampling?</p>
+<ul>
+<li>Big data issue
+<ul>
+<li>Store complexity</li>
+<li>Calculate complexity</li>
+</ul></li>
+<li>Posterior estimation
+<ul>
+<li>Expectation estimation</li>
+</ul></li>
+</ul>
 <h3 id="inverse-transform-sampling逆采样变换">Inverse Transform
 Sampling(逆采样变换)</h3>
-<p>逆采样变换（Inverse Transform
+<p>Inverse Transform Sampling based on the inverse of Cumulative
+Distribution Function (CDF). 逆采样变换（Inverse Transform
 Sampling）是伪随机数采样的一种基本方法。在已知任意概率分布的累积分布函数<span
 class="math inline">\(CDF\)</span>时，可以通过<span
 class="math inline">\(CDF\)</span>的逆函数来实现随机数的采样。</p>
@@ -772,10 +788,11 @@ class="math inline">\(X\)</span>分布的随机变量样本。</p>
 </ul>
 <p>缺点：</p>
 <ul>
-<li>逆函数不一定存在或很难确定逆函数</li>
+<li>Hard to get the inverse function. 很难确定逆函数</li>
 </ul>
 <h3 id="rejection-sampling拒绝采样">Rejection Sampling(拒绝采样)</h3>
-<p>拒绝采样（Rejection
+<p>Rejection Sampling accept the samples in the region under the graph
+of its density function and reject others. 拒绝采样（Rejection
 Sampling）是一种基本的随机数采样方法。它的基本思想是：对于一个难以采样的分布，我们可以找到一个容易采样的分布，使得容易采样的分布包含难以采样的分布，然后从容易采样的分布中采样，若采样的点在难以采样的分布中，则接受该点，否则拒绝该点。</p>
 <p>方法：</p>
 <p><img src="/img/大数据/ch4-Rejection-Sampling.png" srcset="/img/loading.gif" lazyload /></p>
@@ -787,7 +804,9 @@ class="math inline">\(p(x)\)</span>的支撑集。所以<span
 class="math inline">\(q(x)\)</span>的分布选择很重要。</p>
 <h3 id="importance-sampling重要性采样">Importance
 Sampling(重要性采样)</h3>
-<p>重要性采样（Importance Sampling）与Rejection
+<p>Importance Sampling not reject but assign weight to each instance so
+that the correct distribution is targeted. 重要性采样（Importance
+Sampling）与Rejection
 Sampling(拒绝采样)的区别在于，重要性采样不会拒绝采样的点，而是对采样的点赋予一个权重，使得采样的点更多地来自于目标分布。</p>
 <h3 id="importance-sampling和rejection-sampling的区别">Importance
 Sampling和Rejection Sampling的区别</h3>
@@ -798,6 +817,11 @@ Sampling和Rejection Sampling的区别</h3>
 </ul>
 <h3 id="markov-chain-monte-carlomcmc">Markov Chain Monte
 Carlo(MCMC)</h3>
+<p>MCMC methods are a class of algorithms for <strong>sampling from a
+probability distribution based on constructing a Markov chain</strong>
+that has the desired distribution as its <strong>equilibrium
+distribution</strong>. The state of the chain after a number of steps is
+then used as a sample of the desired distribution.</p>
 <p>马尔可夫链蒙特卡洛（Markov Chain Monte
 Carlo，MCMC）是一种基于马尔可夫链的随机采样方法。它的基本思想是：对于一个难以采样的分布，我们可以构造一个马尔可夫链，使得该马尔可夫链的平稳分布为该难以采样的分布，然后从该马尔可夫链中采样，得到的样本服从该难以采样的分布。</p>
 <p><strong>蒙特卡洛法</strong>：</p>
@@ -866,6 +890,9 @@ class="math inline">\(k\)</span>的大小。具体流程如下：</p>
 <p><img src="/img/大数据/ch4-Reservoir.png" srcset="/img/loading.gif" lazyload /></p>
 <h2 id="ch5-data-stream-mining">Ch5 Data Stream Mining</h2>
 <h3 id="data-stream">Data Stream</h3>
+<p><strong>What is Data Stream?</strong></p>
+<p>A data stream is a massive sequence of data objects which have some
+unique features.</p>
 <h4 id="properity-of-data-stream">Properity of Data Stream</h4>
 <p>数据流（Data Stream）是一种连续不断的数据，它的特点是：</p>
 <ul>
@@ -874,6 +901,7 @@ class="math inline">\(k\)</span>的大小。具体流程如下：</p>
 <li><strong>Concept Drift(概念漂移)</strong></li>
 </ul>
 <h4 id="conncept-drift概念漂移">Conncept Drift(概念漂移)</h4>
+<p>Concept Drift is the probability distribution changes.</p>
 <p>概念漂移（Concept
 Drift）是指数据流中的数据分布随着时间的推移而发生变化的现象。概念漂移分为两种类型：</p>
 <ul>
@@ -889,6 +917,12 @@ Detection(概念漂移检测)</h4>
 class="math inline">\(W\)</span>的两个足够大的子窗口<span
 class="math inline">\(W_1\)</span>和<span
 class="math inline">\(W_2\)</span>的数据分布不同，就认为发生了概念漂移，这时较旧的窗口就被放弃。</p>
+<p><strong>draw back(缺点)</strong>：</p>
+<ul>
+<li>Hard to determine window size.</li>
+<li>Learn concept drift slower</li>
+<li>Virtual concept drift</li>
+</ul>
 <p><strong>Adaptive Windowing(ADWIN)</strong>:</p>
 <p>ADWIN 的思想是从时间窗口 <span class="math inline">\(W\)</span>
 开始，在上下文没有明显变化时动态增大窗口 <span
@@ -897,14 +931,7 @@ class="math inline">\(W\)</span>，并在检测到变化时将其缩小。
 w_0\)</span> 和 <span class="math inline">\(w_1\)</span> 的两个子窗口。
 这意味着窗口的旧部分 <span class="math inline">\(- w_0\)</span>
 是基于与实际不同的数据分布，因此被删除。</p>
-<p><strong>draw back(缺点)</strong>：</p>
-<ul>
-<li>计算成本高</li>
-<li>模型复杂度高</li>
-<li>无法检测全局漂移</li>
-<li>对数据集的依赖性高</li>
-</ul>
-<ol start="2" type="1">
+<ol type="1">
 <li>Error-rate based detector(基于错误率的检测器)</li>
 </ol>
 <p>根据分类性能的变化来捕捉概念的漂移,如果分类器的错误率超过了某个阈值，则认为发生了概念漂移。</p>
@@ -917,11 +944,9 @@ class="math inline">\(p_i\)</span>，其标准差为<span
 class="math inline">\(s_i = sqrt(p_i (1 - p_i) / i)\)</span></p>
 <p><strong>draw back(缺点)</strong>：</p>
 <ul>
-<li>对噪声敏感</li>
-<li>对异常数据分布假设的依赖性高</li>
-<li>受到数据流非稳态性的影响</li>
-<li>受到样本的影响</li>
-<li>无法处理高维数据</li>
+<li>Sensitive to noise</li>
+<li>Hard to deal with gradual concept drift</li>
+<li>Depend on learning model itself heavily</li>
 </ul>
 <h4 id="data-stream面临的挑战">Data Stream面临的挑战</h4>
 <ul>
@@ -1385,7 +1410,7 @@ data-structure（RDD）.(用分布式集合数据结构（RDD）扩展了一种�
       
         <div class="license-meta-item license-meta-date">
           <div>更新于</div>
-          <div>2023年6月6日</div>
+          <div>2023年6月7日</div>
         </div>
       
       
