@@ -1,0 +1,871 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Starmin">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="muduo库-时间戳类Timestamp 如何度量程序在某一时刻的时间？ 通常，我们用时刻来表示，比如&quot;2023-06-26 23:43:00.000000&quot;，这种方式便于人查看，但不便于程序中的比较和计算。比如有2个时刻A和B，计算哪个时刻在前，哪个在后，或者要计算时刻A和B的时间差时，这种字符串表示方式就很麻烦。 我们想到将字符串形式的时刻，用自纪元时间（Epoch时间，1970-01-01">
+<meta property="og:type" content="article">
+<meta property="og:title" content="muduo库-时间戳类Timestamp">
+<meta property="og:url" content="https://gstarmin.github.io/2023/06/21/muduo%E5%BA%93-%E6%97%B6%E9%97%B4%E6%88%B3%E7%B1%BBTimestamp/">
+<meta property="og:site_name" content="私人杂货铺">
+<meta property="og:description" content="muduo库-时间戳类Timestamp 如何度量程序在某一时刻的时间？ 通常，我们用时刻来表示，比如&quot;2023-06-26 23:43:00.000000&quot;，这种方式便于人查看，但不便于程序中的比较和计算。比如有2个时刻A和B，计算哪个时刻在前，哪个在后，或者要计算时刻A和B的时间差时，这种字符串表示方式就很麻烦。 我们想到将字符串形式的时刻，用自纪元时间（Epoch时间，1970-01-01">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gstarmin.github.io/img/muduo/Timestamp/Timestamp.png">
+<meta property="article:published_time" content="2023-06-21T14:05:09.000Z">
+<meta property="article:modified_time" content="2023-06-21T14:05:09.000Z">
+<meta property="article:author" content="Starmin">
+<meta property="article:tag" content="C++">
+<meta property="article:tag" content="muduo库">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://gstarmin.github.io/img/muduo/Timestamp/Timestamp.png">
+  
+  
+  
+  <title>muduo库-时间戳类Timestamp - 私人杂货铺</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"gstarmin.github.io","root":"/","version":"1.9.3","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 5.4.2"><style>.mjpage .MJX-monospace {
+  font-family: monospace;
+}
+
+.mjpage .MJX-sans-serif {
+  font-family: sans-serif;
+}
+
+.mjpage {
+  display: inline;
+  font-style: normal;
+  font-weight: normal;
+  line-height: normal;
+  font-size: 100%;
+  font-size-adjust: none;
+  text-indent: 0;
+  text-align: left;
+  text-transform: none;
+  letter-spacing: normal;
+  word-spacing: normal;
+  word-wrap: normal;
+  white-space: nowrap;
+  float: none;
+  direction: ltr;
+  max-width: none;
+  max-height: none;
+  min-width: 0;
+  min-height: 0;
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+
+.mjpage * {
+  transition: none;
+  -webkit-transition: none;
+  -moz-transition: none;
+  -ms-transition: none;
+  -o-transition: none;
+}
+
+.mjx-svg-href {
+  fill: blue;
+  stroke: blue;
+}
+
+.MathJax_SVG_LineBox {
+  display: table !important;
+}
+
+.MathJax_SVG_LineBox span {
+  display: table-cell !important;
+  width: 10000em !important;
+  min-width: 0;
+  max-width: none;
+  padding: 0;
+  border: 0;
+  margin: 0;
+}
+
+.mjpage__block {
+  text-align: center;
+  margin: 1em 0em;
+  position: relative;
+  display: block !important;
+  text-indent: 0;
+  max-width: none;
+  max-height: none;
+  min-width: 0;
+  min-height: 0;
+  width: 100%;
+}
+</style></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Starmin</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="muduo库-时间戳类Timestamp"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-06-21 22:05" pubdate>
+          2023年6月21日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          5.8k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          59 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">muduo库-时间戳类Timestamp</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="muduo库-时间戳类timestamp">muduo库-时间戳类Timestamp</h1>
+<h2
+id="如何度量程序在某一时刻的时间">如何度量程序在某一时刻的时间？</h2>
+<p>通常，我们用时刻来表示，比如"2023-06-26
+23:43:00.000000"，这种方式便于人查看，但不便于程序中的比较和计算。比如有2个时刻A和B，计算哪个时刻在前，哪个在后，或者要计算时刻A和B的时间差时，这种字符串表示方式就很麻烦。</p>
+<p>我们想到将字符串形式的时刻，用自纪元时间（Epoch时间，1970-01-01
+00:00:00 +0000 (UTC)）以来的时间戳来表示，精度为1us（微秒）。</p>
+<h2 id="linux中如何获取这个时间呢">Linux中，如何获取这个时间呢？</h2>
+<p>使用<code>gettimeofday</code>，分辨率1us，其实现也能达到毫秒级（当然分辨率不等于精度），再加上Linux是非实时任务系统，也能满足日常计时功能。
+前面讲过，<code>time</code>只能精确到1s，<code>ftime</code>已被废弃，<code>clock_gettime</code>精度高，但系统调用开销比<code>gettimeofday</code>大，网络编程中，最适合用<code>gettimeofday</code>来计时。muduo中也是这么做的。</p>
+<p>有没有一种可能，两个线程，或者两段出现在1us内执行？答案是有可能的，对于常规情况，即使时间戳相同，并不影响我们的日常计时功能；对于特殊需求，比如排序、查找，需要区分时间戳大小的，后面遇到具体情况具体分析。</p>
+<h2 id="timestamp类">Timestamp类</h2>
+<p><img src="/img/muduo/Timestamp/Timestamp.png" srcset="/img/loading.gif" lazyload /></p>
+<p>由于时间戳希望在不同变量之间赋值、拷贝，因此设计成值语义的，继承自copyable
+class。</p>
+<p>数据成员：</p>
+<p>成员变量<code>microSecondsSinceEpoch_</code>，用来来表示从
+Epoch时间到目前为止的微妙数，初值0（也表示无效值）。</p>
+<p><code>microSecondsSinceEpoch_</code>的数据类型为什么是<code>int64_t</code>，而不是<code>int32_t</code>或者<code>uint64_t</code>？因为32位连一年的微妙数都不能表示，而<code>int64_t</code>可以表示290余年的微妙数（一年按<span
+class="math inline">\(365243600 *
+100000\)</span>计算），未来还能表示一百余年，也就是说，其范围满足目前日常需求。而有符号的<code>int64_t</code>可以用来让2个时间戳进行差值计算，从而表示先后顺序。当然，时间戳本身为负数没有意义。</p>
+<h3 id="构造函数">构造函数</h3>
+<p>可以像这样定义Timstamp及其构造函数：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-comment">/**</span><br><span class="hljs-comment">* Time stamp in UTC, in microseconds resolution.</span><br><span class="hljs-comment">*/</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Timestamp</span> : <span class="hljs-keyword">public</span> copyable<br>&#123;<br><span class="hljs-keyword">public</span>:<br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * Constructs an invalid Timestamp</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-built_in">Timestamp</span>() : <span class="hljs-built_in">microSecondsSinceEpoch_</span>(<span class="hljs-number">0</span>)<br>    &#123; &#125;<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * Constructs a Timestamp at specific time</span><br><span class="hljs-comment">     * @param microSecondsSinceEpochArg</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-function"><span class="hljs-keyword">explicit</span> <span class="hljs-title">Timestamp</span><span class="hljs-params">(<span class="hljs-type">int64_t</span> microSecondsSinceEpochArg)</span></span><br><span class="hljs-function">            : microSecondsSinceEpoch_(microSecondsSinceEpochArg)</span><br><span class="hljs-function">    &#123;</span><br>    &#125;<br>    ...<br><br><span class="hljs-keyword">private</span>:<br>    <span class="hljs-type">int64_t</span> microSecondsSinceEpoch_;<br>&#125;;<br></code></pre></td></tr></table></figure>
+<ol type="1">
+<li>继承自copyable，表明这是一个值语义的class，其对象能够进行copy操作；</li>
+<li>default
+ctor（构造函数），存储时间戳变量<code>microSecondsSinceEpoch_</code>初值0，0和负数都表示无效值。同时，也提供单一参数版本<code>ctor</code>，给调用者构造指定时间戳值的Timestamp对象的机会。</li>
+</ol>
+<h3 id="对象有效性">对象有效性</h3>
+<p>至于<code>microSecondsSinceEpoch_</code>符号，我们可以定义成员函数valid()判断其有效性，通过invalid()构造一个无效的Timestamp对象。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-comment">// Timestamp.h</span><br><span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">valid</span><span class="hljs-params">()</span> <span class="hljs-type">const</span></span><br><span class="hljs-function"></span>&#123; <br>    <span class="hljs-keyword">return</span> microSecondsSinceEpoch_ &gt; <span class="hljs-number">0</span>; <br>&#125;<br><br><span class="hljs-function"><span class="hljs-type">static</span> Timestamp <span class="hljs-title">invalid</span><span class="hljs-params">()</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-keyword">return</span> <span class="hljs-built_in">Timestamp</span>();<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>用<code>gettimeofday()</code>获取当前时刻，转化为微秒，并构造一个<code>Timestamp</code>临时对象。1换算公式：sec
+= 1e6 usec</p>
+<h3 id="时间换算">时间换算</h3>
+<p>如何将由<code>time()</code>获得的自Epoch时间（1970-01-01 00:00:00
++0000 (UTC).）以来的秒数（time_t类型），转化为Timestamp类型对象？</p>
+<p>可以定义<code>fromUnixTime</code>来完成这个工作：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-comment">// Timestamp.h</span><br>    <span class="hljs-function"><span class="hljs-type">static</span> Timestamp <span class="hljs-title">fromUnixTime</span><span class="hljs-params">(<span class="hljs-type">time_t</span> t)</span></span><br><span class="hljs-function">    </span>&#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-built_in">fromUnixTime</span>(t, <span class="hljs-number">0</span>);<br>    &#125;<br>    <span class="hljs-function"><span class="hljs-type">static</span> Timestamp <span class="hljs-title">fromUnixTime</span><span class="hljs-params">(<span class="hljs-type">time_t</span> t, <span class="hljs-type">int</span> microseconds)</span></span><br><span class="hljs-function">    </span>&#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-built_in">Timestamp</span>(<span class="hljs-built_in">static_cast</span>&lt;<span class="hljs-type">int64_t</span>&gt;(t) * kMicroSecondsPerSecond + microseconds);<br>    &#125;<br></code></pre></td></tr></table></figure>
+<p>第一个重载版本，只转换提供的秒数，微秒数默认0；第二个版本，提供了秒数和微秒数的设置</p>
+<h3 id="对象交换">对象交换</h3>
+<p>有时为了避免对象数据成员的拷贝，会利用swap对对象进行交换操作。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-comment">// Timestamp.h</span><br>    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">swap</span><span class="hljs-params">(Timestamp&amp; that)</span></span><br><span class="hljs-function">    </span>&#123;<br>        std::<span class="hljs-built_in">swap</span>(microSecondsSinceEpoch_, that.microSecondsSinceEpoch_);<br>    &#125;<br></code></pre></td></tr></table></figure>
+<p>就目前的设计来说，完全可以用std::swap来交换2个对象，而不用定义Timestamp::swap()。这里是为了以后方便扩展，自定义swap行为。</p>
+<h3 id="获取时间戳">获取时间戳</h3>
+<p>获取从Epoch时间，到目前为止的时间戳数值</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-comment">// Timestamp.h</span><br>    <span class="hljs-function"><span class="hljs-type">int64_t</span> <span class="hljs-title">microSecondsSinceEpoch</span><span class="hljs-params">()</span> <span class="hljs-type">const</span> </span>&#123; <span class="hljs-keyword">return</span> microSecondsSinceEpoch_;&#125;; <span class="hljs-comment">// 微秒数</span><br>    <span class="hljs-function"><span class="hljs-type">time_t</span> <span class="hljs-title">secondsSinceEpoch</span><span class="hljs-params">()</span> <span class="hljs-type">const</span> <span class="hljs-comment">// 秒数</span></span><br><span class="hljs-function">    </span>&#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-built_in">static_cast</span>&lt;<span class="hljs-type">time_t</span>&gt;(microSecondsSinceEpoch_ / kMicroSecondsPerSecond);<br>    &#125;<br></code></pre></td></tr></table></figure>
+<h3 id="获取可打印字符串">获取可打印字符串</h3>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-comment">// Timestamp.h</span><br>    <span class="hljs-function">std::string <span class="hljs-title">toString</span><span class="hljs-params">()</span> <span class="hljs-type">const</span></span>;<br>    <span class="hljs-function">std::string <span class="hljs-title">toFormattedString</span><span class="hljs-params">(<span class="hljs-type">bool</span> showMicroseconds = <span class="hljs-literal">true</span>)</span> <span class="hljs-type">const</span></span>;<br><br><span class="hljs-meta">#<span class="hljs-keyword">ifndef</span> __STDC_FORMAT_MACROS <span class="hljs-comment">// PRId64, for printf data in cross platform</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> __STDC_FORMAT_MACROS</span><br><span class="hljs-meta">#<span class="hljs-keyword">endif</span></span><br><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;inttypes.h&gt;</span></span><br><br><span class="hljs-function">string <span class="hljs-title">Timestamp::toString</span><span class="hljs-params">()</span> <span class="hljs-type">const</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-type">char</span> buf[<span class="hljs-number">32</span>] = &#123;<span class="hljs-number">0</span>&#125;;<br>    <span class="hljs-type">int64_t</span> seconds = microSecondsSinceEpoch_ / kMicroSecondsPerSecond;<br>    <span class="hljs-type">int64_t</span> microseconds = microSecondsSinceEpoch_ % kMicroSecondsPerSecond;<br>    <span class="hljs-built_in">snprintf</span>(buf, <span class="hljs-built_in">sizeof</span>(buf), <span class="hljs-string">&quot;%&quot;</span> PRId64 <span class="hljs-string">&quot;.%06&quot;</span> PRId64 <span class="hljs-string">&quot;&quot;</span>, seconds, microseconds);<br>    <span class="hljs-keyword">return</span> buf;<br>&#125;<br><span class="hljs-function">string <span class="hljs-title">Timestamp::toFormattedString</span><span class="hljs-params">(<span class="hljs-type">bool</span> showMicroseconds)</span> <span class="hljs-type">const</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-type">char</span> buf[<span class="hljs-number">64</span>] = &#123;<span class="hljs-number">0</span>&#125;;<br>    <span class="hljs-type">time_t</span> seconds = <span class="hljs-built_in">static_cast</span>&lt;<span class="hljs-type">time_t</span>&gt;(microSecondsSinceEpoch_ / kMicroSecondsPerSecond);<br>    <span class="hljs-keyword">struct</span> <span class="hljs-title class_">tm</span> tm_time;<br>    <span class="hljs-built_in">gmtime_r</span>(&amp;seconds, &amp;tm_time); <span class="hljs-comment">// convert seconds since Epoch to UTC time (struct tm)</span><br><br>    <span class="hljs-keyword">if</span> (showMicroseconds)<br>    &#123;<br>        <span class="hljs-type">int</span> microseconds = <span class="hljs-built_in">static_cast</span>&lt;<span class="hljs-type">int</span>&gt;(microSecondsSinceEpoch_ % kMicroSecondsPerSecond);<br>        <span class="hljs-built_in">snprintf</span>(buf, <span class="hljs-built_in">sizeof</span>(buf), <span class="hljs-string">&quot;%4d%02d%02d %02d:%02d:%02d.%06d&quot;</span>,<br>                 tm_time.tm_year + <span class="hljs-number">1990</span>, tm_time.tm_mon + <span class="hljs-number">1</span>, tm_time.tm_mday,<br>                 tm_time.tm_hour, tm_time.tm_min, tm_time.tm_sec,<br>                 microseconds);<br>    &#125;<br>    <span class="hljs-keyword">else</span><br>    &#123;<br>        <span class="hljs-built_in">snprintf</span>(buf, <span class="hljs-built_in">sizeof</span>(buf), <span class="hljs-string">&quot;%4d%02d%02d %02d:%02d:%02d&quot;</span>,<br>                 tm_time.tm_year + <span class="hljs-number">1990</span>, tm_time.tm_mon + <span class="hljs-number">1</span>, tm_time.tm_mday,<br>                 tm_time.tm_hour, tm_time.tm_min, tm_time.tm_sec);<br>    &#125;<br>    <span class="hljs-keyword">return</span> buf;<br>&#125;<br></code></pre></td></tr></table></figure>
+<ol type="1">
+<li><code>toString()</code>
+将秒数、微秒数转换为可打印的std::string类型，用PRId64跨平台输出64bit数据到string缓存；</li>
+<li><code>toFormattedString()</code>将时间戳转换为人类可理解的格式化时间字符串，形如"yyyymmdd
+hh:mm:ss.zzzzzz"。</li>
+</ol>
+<h3 id="辅助函数非class-member函数">辅助函数（非class member函数）</h3>
+<p>常需要比较2个时间先后顺序，计算这2个时刻之间的时间差，一个时刻加上一段时间来得到另外一个时刻，可以通过定义helper函数来实现：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-keyword">inline</span> <span class="hljs-type">bool</span> <span class="hljs-keyword">operator</span>&lt;(Timestamp lhs, Timestamp rhs)<br>&#123;<br>    <span class="hljs-keyword">return</span> lhs.<span class="hljs-built_in">microSecondsSinceEpoch</span>() &lt; rhs.<span class="hljs-built_in">microSecondsSinceEpoch</span>();<br>&#125;<br><br><span class="hljs-comment">/**</span><br><span class="hljs-comment">* Gets time difference of two timestamps, result in seconds.</span><br><span class="hljs-comment">* @param high</span><br><span class="hljs-comment">* @param low</span><br><span class="hljs-comment">* @return (high - low) in seconds.</span><br><span class="hljs-comment">* @c double has 52-bit precision, enough for one-microsecond</span><br><span class="hljs-comment">* resolution for next 100 years.</span><br><span class="hljs-comment">*/</span><br><span class="hljs-function"><span class="hljs-keyword">inline</span> <span class="hljs-type">double</span> <span class="hljs-title">timeDifference</span><span class="hljs-params">(Timestamp high, Timestamp low)</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-type">int64_t</span> diff = high.<span class="hljs-built_in">microSecondsSinceEpoch</span>() - low.<span class="hljs-built_in">microSecondsSinceEpoch</span>();<br>    <span class="hljs-keyword">return</span> <span class="hljs-built_in">static_cast</span>&lt;<span class="hljs-type">double</span>&gt;(diff) / Timestamp::kMicroSecondsPerSecond;<br>&#125;<br><br><span class="hljs-comment">/**</span><br><span class="hljs-comment">* Add @c seconds to given timestamp.</span><br><span class="hljs-comment">* @param timestamp given basic timestamp</span><br><span class="hljs-comment">* @param seconds given seconds to be added to timestamp</span><br><span class="hljs-comment">* @return timestamp + seconds as Timestamp</span><br><span class="hljs-comment">*/</span><br><span class="hljs-function"><span class="hljs-keyword">inline</span> Timestamp <span class="hljs-title">addTime</span><span class="hljs-params">(Timestamp timestamp, <span class="hljs-type">double</span> seconds)</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-type">int64_t</span> delta = <span class="hljs-built_in">static_cast</span>&lt;<span class="hljs-type">int64_t</span>&gt;(seconds * Timestamp::kMicroSecondsPerSecond);<br>    <span class="hljs-keyword">return</span> <span class="hljs-built_in">Timestamp</span>(timestamp.<span class="hljs-built_in">microSecondsSinceEpoch</span>() + delta);<br>&#125;<br></code></pre></td></tr></table></figure>
+<ol type="1">
+<li><code>operator&lt;()</code>
+除了比较2个时间戳大小关系（代表的先后顺序），也是实现等价关系判断的重要条件；</li>
+<li><code>timeDifference()</code>计算2个时间戳差值，精确到1usec，用小数表示，而整数部分表示1sec；</li>
+<li><code>addTime()</code> 利用一个基准时间戳timestamp +
+时间段seconds(秒数)，得到新的Timestamp对象。</li>
+</ol>
+<h3 id="单元测试">单元测试</h3>
+<p>单元测试测什么？muduo是以class为单位，根据提供给用户的功能点进行测试。有些进行的是覆盖测试。</p>
+<p>Timestamp主要功能点：</p>
+<ol type="1">
+<li>构造对象：默认对象，无效对象；</li>
+<li>值语义，即引用传递、值传递对象；</li>
+<li><code>now()</code>获取当前时间；</li>
+<li><code>microSecondsSinceEpoch()</code>获取微秒数，<code>secondsSinceEpoch()</code>获取秒数；</li>
+<li><code>valid()</code>判断对象是否有效；</li>
+<li><code>fromUnixTime()</code> 将Epoch时间转换为Timestamp对象；</li>
+<li><code>toString()</code> 将时间戳转换为string类型；</li>
+<li><code>toFormattedString()</code>
+将时间戳转换为格式化字符串string类型；</li>
+</ol>
+<p>辅助函数主要功能点：</p>
+<ol type="1">
+<li><code>operator&lt;()</code> 比较2个Timestamp对象大小；</li>
+<li><code>timeDifference()</code>计算2个Timestamp对象差值；</li>
+<li><code>ddTime()</code> 将一个Timestamp加上指定时间；</li>
+</ol>
+<p>由于<code>toString()</code>和
+<code>toFormattedString()</code>可以输出类的信息，因此可以作为测试时判断的依据。</p>
+<!-- Timestamp的单元测试，可以这样设计：
+
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-comment">// Timestamp_unittest.cc</span><br><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-function">Timestamp <span class="hljs-title">now</span><span class="hljs-params">(Timestamp::now())</span></span>;<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;%s\n&quot;</span>, now.<span class="hljs-built_in">toString</span>().<span class="hljs-built_in">c_str</span>()); <span class="hljs-comment">// 测试now() + copy ctor</span><br>    <span class="hljs-built_in">passByValue</span>(now); <span class="hljs-comment">// 测试值传递</span><br>    <span class="hljs-built_in">passByConstReference</span>(now); <span class="hljs-comment">// 测试引用传递</span><br>    <span class="hljs-built_in">benchmark</span>(); <br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">passByValue</span><span class="hljs-params">(Timestamp x)</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;%s\n&quot;</span>, x.<span class="hljs-built_in">toString</span>().<span class="hljs-built_in">c_str</span>());<br>&#125;<br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">passByConstReference</span><span class="hljs-params">(<span class="hljs-type">const</span> Timestamp&amp; x)</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;%s\n&quot;</span>, x.<span class="hljs-built_in">toString</span>().<span class="hljs-built_in">c_str</span>());<br>&#125;<br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">benchmark</span><span class="hljs-params">()</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-type">const</span> <span class="hljs-type">int</span> kNumber = <span class="hljs-number">1000</span>*<span class="hljs-number">1000</span>;<br><br>    std::vector&lt;Timestamp&gt; stamps;<br>    stamps.<span class="hljs-built_in">reserve</span>(kNumber);<br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; kNumber; ++i) &#123;<br>        stamps.<span class="hljs-built_in">push_back</span>(Timestamp::<span class="hljs-built_in">now</span>());<br>    &#125;<br><br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;%s\n&quot;</span>, stamps.<span class="hljs-built_in">front</span>().<span class="hljs-built_in">toString</span>().<span class="hljs-built_in">c_str</span>());<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;%s\n&quot;</span>, stamps.<span class="hljs-built_in">back</span>().<span class="hljs-built_in">toString</span>().<span class="hljs-built_in">c_str</span>());<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;%f\n&quot;</span>, muduo::<span class="hljs-built_in">timeDifference</span>(stamps.<span class="hljs-built_in">back</span>(), stamps.<span class="hljs-built_in">front</span>()));<br><br>    <span class="hljs-type">int</span> increments[<span class="hljs-number">100</span>] = &#123; <span class="hljs-number">0</span> &#125;;<br>    <span class="hljs-type">int64_t</span> start = stamps.<span class="hljs-built_in">front</span>().<span class="hljs-built_in">microSecondsSinceEpoch</span>();<br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; kNumber; ++i) &#123;<br>        <span class="hljs-type">int64_t</span> next = stamps[i].<span class="hljs-built_in">microSecondsSinceEpoch</span>();<br>        <span class="hljs-type">int64_t</span> inc = next - start;<br>        start = next;<br>        <span class="hljs-keyword">if</span> (inc &lt; <span class="hljs-number">0</span>)<br>        &#123;<br>            <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;reverse!\n&quot;</span>);<br>        &#125;<br>        <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (inc &lt; <span class="hljs-number">100</span>)<br>        &#123;<br>            ++increments[inc];<br>        &#125;<br>        <span class="hljs-keyword">else</span><br>        &#123;<br>            <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;big gap %d\n&quot;</span>, <span class="hljs-built_in">static_cast</span>&lt;<span class="hljs-type">int</span>&gt;(inc));<br>        &#125;<br>    &#125;<br><br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">100</span>; ++i) &#123;<br>        <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;%2d: %d\n&quot;</span>, i, increments[i]);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>运行结果：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br></pre></td><td class="code"><pre><code class="hljs shell">1645946164.776317<br>1645946164.776317<br>1645946164.776317<br>1645946164.777235<br>1645946164.981893<br>0.204658<br>big gap 109<br>big gap 193<br>big gap 162<br>big gap 158<br>big gap 35248<br>big gap 7007<br>big gap 142<br>big gap 6098<br>big gap 2142<br>big gap 12422<br>big gap 262<br>big gap 12291<br>big gap 12078<br>big gap 222<br>big gap 12069<br>big gap 229<br>0: 901839<br>1: 97441<br>2: 83<br>3: 191<br>4: 175<br>5: 13<br>6: 47<br>7: 22<br>8: 10<br>9: 6<br>10: 7<br>11: 10<br>12: 4<br>13: 12<br>14: 4<br>15: 4<br>16: 5<br>17: 10<br>18: 2<br>19: 2<br>20: 1<br>21: 0<br>22: 2<br>...<br>``` --&gt;<br><span class="hljs-meta prompt_"></span><br><span class="hljs-meta prompt_">#</span><span class="language-bash"><span class="hljs-comment">## 小结</span></span><br><br>1. 有些重要函数功能点，并未测试到，比如`toFormattedString()`；<br>2. 针对特定函数，设计的测试用例并不全面，比如并没有永非法的时间戳数值（如&lt;0），来验证生成的`Timestamp`有效性。<br><span class="hljs-meta prompt_"></span><br><span class="hljs-meta prompt_">#</span><span class="language-bash"><span class="hljs-comment"># 重要知识点</span></span><br><span class="hljs-meta prompt_"></span><br><span class="hljs-meta prompt_">#</span><span class="language-bash"><span class="hljs-comment">## 模板boost::less_than_comparable</span></span><br><br>要求实现`&lt;`，可自动实现`&gt;`，`&lt;=`，`&gt;=`。<br><span class="hljs-meta prompt_"></span><br><span class="hljs-meta prompt_">#</span><span class="language-bash"><span class="hljs-comment">## 编译时断言BOOST_STATIC_ASSERT</span></span><br><br>相当于C++11里面的static_assert，可以在编译时进行断言。<br><br>```C++<br>BOOST_STATIC_ASSERT(sizeof(Timestamp) == sizeof(int64_t)); // 断言Timestamp大小等于int64_t（64位）<br></code></pre></td></tr></table></figure>
+<h3 id="跨平台打印prid64">跨平台打印PRId64</h3>
+<p><code>int64_t</code>
+表示64位整数，在32位系统总是<code>long long int</code>，在64位系统中是<code>long int</code>，所以打印<code>int64_t</code>的格式化方法：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;%ld&quot;</span>, value);  <span class="hljs-comment">// 64bit OS</span><br><span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;%lld&quot;</span>, value); <span class="hljs-comment">// 32bit OS</span><br></code></pre></td></tr></table></figure>
+<p>可以看到，转义字符是不一样的，也就是说这种写法不跨平台。</p>
+<p>跨平台的方法是：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-meta">#<span class="hljs-keyword">define</span> __STDC_FORMAT_MACROS</span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;inttypes.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">undef</span> __STDC_FORMAT_MACROS</span><br><span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;%&quot;</span> PRId64 <span class="hljs-string">&quot;\n&quot;</span>, value);<br></code></pre></td></tr></table></figure>
+<p>这样，32位系统、64位系统是通用的。</p>
+<p>为什么需要包含<code>__STDC_FORMAT_MACROS</code>？
+因为开启<code>PRId64</code>宏，默认要开启宏<code>__cplusplus</code>或者<code>__STDC_FORMAT_MACROS</code>。在C语言中，没有定义<code>__cplusplus</code>，就必须定义<code>__STDC_FORMAT_MACROS</code>。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/C/" class="category-chain-item">C++</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/C/muduo/" class="category-chain-item">muduo</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/C/">#C++</a>
+      
+        <a href="/tags/muduo%E5%BA%93/">#muduo库</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>muduo库-时间戳类Timestamp</div>
+      <div>https://gstarmin.github.io/2023/06/21/muduo库-时间戳类Timestamp/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Starmin</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年6月21日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/06/21/muduo%E5%BA%93-%E5%8E%9F%E5%AD%90%E7%B1%BBAtomicIntegerT-T/" title="muduo库-原子类AtomicIntegerT&lt;T&gt;">
+                        <span class="hidden-mobile">muduo库-原子类AtomicIntegerT&lt;T&gt;</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

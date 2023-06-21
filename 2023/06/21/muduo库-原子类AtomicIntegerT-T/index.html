@@ -16,23 +16,23 @@
   <meta name="author" content="Starmin">
   <meta name="keywords" content="">
   
-    <meta name="description" content="KMP算法模板 KMP算法的原理以及图解见如何更好地理解和掌握 KMP 算法? 下面给出KMP算法的模板： 1234567891011121314151617181920212223242526272829303132333435363738&#x2F;&#x2F; KMP算法&#x2F;&#x2F; 匹配成功返回匹配的起始位置，失败返回-1&#x2F;&#x2F; haystack为主串，needle为模式串int KMP(string haystack">
+    <meta name="description" content="muduo库-原子类AtomicIntegerT C++中的原子操作有两种实现方式：  C++11以后，提供st::atomic可以实现T类型数据的原子操作，主要包括：初始化、读取值、写值、自增自减（i.e. 前置或后置++）等。 C++11以前的版本，需要用GCC编译器提供的原子操作接口，实现原子操作。  AtomicIntegerT模板类 muduo产生与C++11流行之前，因此用了第二种方案">
 <meta property="og:type" content="article">
-<meta property="og:title" content="KMP算法模板">
-<meta property="og:url" content="https://gstarmin.github.io/2023/06/08/KMP%E7%AE%97%E6%B3%95/">
+<meta property="og:title" content="muduo库-原子类AtomicIntegerT&lt;T&gt;">
+<meta property="og:url" content="https://gstarmin.github.io/2023/06/21/muduo%E5%BA%93-%E5%8E%9F%E5%AD%90%E7%B1%BBAtomicIntegerT-T/">
 <meta property="og:site_name" content="私人杂货铺">
-<meta property="og:description" content="KMP算法模板 KMP算法的原理以及图解见如何更好地理解和掌握 KMP 算法? 下面给出KMP算法的模板： 1234567891011121314151617181920212223242526272829303132333435363738&#x2F;&#x2F; KMP算法&#x2F;&#x2F; 匹配成功返回匹配的起始位置，失败返回-1&#x2F;&#x2F; haystack为主串，needle为模式串int KMP(string haystack">
+<meta property="og:description" content="muduo库-原子类AtomicIntegerT C++中的原子操作有两种实现方式：  C++11以后，提供st::atomic可以实现T类型数据的原子操作，主要包括：初始化、读取值、写值、自增自减（i.e. 前置或后置++）等。 C++11以前的版本，需要用GCC编译器提供的原子操作接口，实现原子操作。  AtomicIntegerT模板类 muduo产生与C++11流行之前，因此用了第二种方案">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2023-06-08T13:16:09.000Z">
-<meta property="article:modified_time" content="2023-06-08T13:16:09.000Z">
+<meta property="article:published_time" content="2023-06-21T13:18:33.000Z">
+<meta property="article:modified_time" content="2023-06-21T13:18:33.000Z">
 <meta property="article:author" content="Starmin">
-<meta property="article:tag" content="数据结构与算法">
-<meta property="article:tag" content="leetcode">
+<meta property="article:tag" content="C++">
+<meta property="article:tag" content="muduo库">
 <meta name="twitter:card" content="summary_large_image">
   
   
   
-  <title>KMP算法模板 - 私人杂货铺</title>
+  <title>muduo库-原子类AtomicIntegerT&lt;T&gt; - 私人杂货铺</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -269,7 +269,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="KMP算法模板"></span>
+            <span id="subtitle" data-typed-text="muduo库-原子类AtomicIntegerT&lt;T&gt;"></span>
           
         </div>
 
@@ -280,8 +280,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2023-06-08 21:16" pubdate>
-          2023年6月8日 晚上
+        <time datetime="2023-06-21 21:18" pubdate>
+          2023年6月21日 晚上
         </time>
       </span>
     
@@ -292,7 +292,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          571 字
+          2.7k 字
         
       </span>
     
@@ -303,7 +303,7 @@
         
         
         
-          6 分钟
+          28 分钟
         
       </span>
     
@@ -341,17 +341,45 @@
         <div id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">KMP算法模板</h1>
+            <h1 style="display: none">muduo库-原子类AtomicIntegerT&lt;T&gt;</h1>
             
             
               <div class="markdown-body">
                 
-                <h1 id="kmp算法模板">KMP算法模板</h1>
-<p>KMP算法的原理以及图解见<a
-target="_blank" rel="noopener" href="https://www.zhihu.com/question/21923021/answer/281346746">如何更好地理解和掌握
-KMP 算法?</a></p>
-<p>下面给出KMP算法的模板：</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-comment">// KMP算法</span><br><span class="hljs-comment">// 匹配成功返回匹配的起始位置，失败返回-1</span><br><span class="hljs-comment">// haystack为主串，needle为模式串</span><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">KMP</span><span class="hljs-params">(string haystack, string needle)</span> </span><br><span class="hljs-function">    </span>&#123;<br>        <span class="hljs-type">int</span> len1 = haystack.<span class="hljs-built_in">size</span>(), len2 = needle.<span class="hljs-built_in">size</span>();<br>        <span class="hljs-type">int</span> i = <span class="hljs-number">0</span>, j = <span class="hljs-number">-1</span>;<br>        <span class="hljs-function">vector&lt;<span class="hljs-type">int</span>&gt; <span class="hljs-title">next</span><span class="hljs-params">(len2 + <span class="hljs-number">1</span>)</span></span>;<br>        next[<span class="hljs-number">0</span>] = <span class="hljs-number">-1</span>;<br>        <span class="hljs-keyword">while</span>(i &lt; len2)<br>        &#123;<br>            <span class="hljs-keyword">if</span>(j == <span class="hljs-number">-1</span> || needle[i] == needle[j])<br>            &#123;<br>                ++i;<br>                ++j;<br>                next[i] = j;<br>            &#125;<br>            <span class="hljs-keyword">else</span>    <br>                j = next[j];  <br>                <br>        &#125;<br>        i = <span class="hljs-number">0</span>;<br>        j = <span class="hljs-number">0</span>;<br>        <span class="hljs-keyword">while</span>(i &lt; len1 &amp;&amp; j &lt; len2)<br>        &#123;<br>            <span class="hljs-keyword">if</span>(j == <span class="hljs-number">-1</span> || haystack[i] == needle[j])<br>            &#123;<br>                ++i;<br>                ++j;<br>            &#125;<br>            <span class="hljs-keyword">else</span><br>                j = next[j];<br>        &#125;<br>        <span class="hljs-keyword">if</span>(j == len2)<br>            <span class="hljs-keyword">return</span> i - j;<br>        <span class="hljs-keyword">else</span><br>            <span class="hljs-keyword">return</span> <span class="hljs-number">-1</span>;<br>    &#125;<br></code></pre></td></tr></table></figure>
+                <h1
+id="muduo库-原子类atomicintegert">muduo库-原子类AtomicIntegerT<T></h1>
+<p>C++中的原子操作有两种实现方式：</p>
+<ol type="1">
+<li>C++11以后，提供st::atomic可以实现T类型数据的原子操作，主要包括：初始化、读取值、写值、自增自减（i.e.
+前置或后置++）等。</li>
+<li>C++11以前的版本，需要用GCC编译器提供的原子操作接口，实现原子操作。</li>
+</ol>
+<h2 id="atomicintegert模板类">AtomicIntegerT模板类</h2>
+<p>muduo产生与C++11流行之前，因此用了第二种方案。实际上，Linux下面，C++11中的原子操作实现，也是用的第一种方案实现的。</p>
+<p>自定义AtomicIntegerT模板：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-comment">/* GCC atomic operation see</span><br><span class="hljs-comment">* https://www.cnblogs.com/the-tops/p/6347584.html</span><br><span class="hljs-comment">* https://gcc.gnu.org/wiki/Atomic/GCCMM/AtomicSync</span><br><span class="hljs-comment">*/</span><br><span class="hljs-keyword">template</span>&lt;<span class="hljs-keyword">typename</span> T&gt;<br><span class="hljs-keyword">class</span> <span class="hljs-title class_">AtomicIntegerT</span> : noncopyable<br>&#123;<br><span class="hljs-keyword">public</span>:<br>    <span class="hljs-built_in">AtomicIntegerT</span>()<br>    :<span class="hljs-built_in">value_</span>(<span class="hljs-number">0</span>)<br>    &#123; &#125;<br><br>    <span class="hljs-function">T <span class="hljs-title">get</span><span class="hljs-params">()</span></span><br><span class="hljs-function">    </span>&#123;<br>        <span class="hljs-comment">// CAS(compare and swap)</span><br>        <span class="hljs-comment">// in gcc &gt;= 4.7: __atomic_load_n(&amp;value, __ATOMIC_SEQ_CST)</span><br>        <span class="hljs-keyword">return</span> __sync_val_compare_and_swap(&amp;value_, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>);<br>    &#125;<br>    <span class="hljs-comment">// 先fetch获取值（value_），然后再add加x</span><br>    <span class="hljs-function">T <span class="hljs-title">getAndAdd</span><span class="hljs-params">(T x)</span></span><br><span class="hljs-function">    </span>&#123;<br>        <span class="hljs-comment">// in gcc &gt;= 4.7: __atomic_fetch_add(&amp;value_, x, __ATOMIC_SEQ_CST)</span><br>        <span class="hljs-keyword">return</span> __sync_fetch_and_add(&amp;value_, x);<br>    &#125;<br>    <span class="hljs-comment">// getAndAdd()中已经用原子操作改变了value_值，这里是通过值传递方式返回 old value_ + x</span><br>    <span class="hljs-function">T <span class="hljs-title">addAndGet</span><span class="hljs-params">(T x)</span></span><br><span class="hljs-function">    </span>&#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-built_in">getAndAdd</span>(x) + x;<br>    &#125;<br>    <span class="hljs-comment">// 前缀式递增，相当于++value_</span><br>    <span class="hljs-function">T <span class="hljs-title">incrementAndGet</span><span class="hljs-params">()</span></span><br><span class="hljs-function">    </span>&#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-built_in">addAndGet</span>(<span class="hljs-number">1</span>);<br>    &#125;<br>    <span class="hljs-comment">// 前缀式递减，相当于--value_</span><br>    <span class="hljs-function">T <span class="hljs-title">decrementAndGet</span><span class="hljs-params">()</span></span><br><span class="hljs-function">    </span>&#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-built_in">addAndGet</span>(<span class="hljs-number">-1</span>);<br>    &#125;<br>    <span class="hljs-comment">// 求和，相当于value_ = value_ + x</span><br>    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">add</span><span class="hljs-params">(T x)</span></span><br><span class="hljs-function">    </span>&#123;<br>        <span class="hljs-built_in">getAndAdd</span>(x);<br>    &#125;<br>    <span class="hljs-comment">// 单纯递增，不关心返回值</span><br>    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">increment</span><span class="hljs-params">()</span></span><br><span class="hljs-function">    </span>&#123;<br>        <span class="hljs-built_in">incrementAndGet</span>();<br>    &#125;<br>    <span class="hljs-comment">// 单纯递减，不关心返回值</span><br>    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">decrement</span><span class="hljs-params">()</span></span><br><span class="hljs-function">    </span>&#123;<br>        <span class="hljs-built_in">decrementAndGet</span>();<br>    &#125;<br>    <span class="hljs-comment">// 先fetch old value_，然后set value_ = newValue</span><br>    <span class="hljs-function">T <span class="hljs-title">getAndSet</span><span class="hljs-params">(T newValue)</span></span><br><span class="hljs-function">    </span>&#123;<br>        <span class="hljs-comment">// in gcc &gt;= 4.7: __atomic_exchange_n(&amp;value_, newValue, __ATOMIC_SEQ_CST)</span><br>        <span class="hljs-keyword">return</span> __sync_lock_test_and_set(&amp;value_, newValue);<br>    &#125;<br><br><span class="hljs-keyword">private</span>:<br>    <span class="hljs-keyword">volatile</span> T value_;<br>&#125;;<br></code></pre></td></tr></table></figure>
+<p>为了使用方便，同时避免重复命名、实例化、甚至编译，使用AtomicIntegerT包装int32_t,
+int64_t，然后重定义，我们在.h文件中声明这2个</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-comment">// namespace muduo::detail</span><br><span class="hljs-keyword">typedef</span> detail::AtomicIntegerT&lt;<span class="hljs-type">int32_t</span>&gt; AtomicInt32;<br><span class="hljs-keyword">typedef</span> detail::AtomicIntegerT&lt;<span class="hljs-type">int64_t</span>&gt; AtomicInt64;<br></code></pre></td></tr></table></figure>
+<h2 id="单元测试">单元测试</h2>
+<p>主要针对AtomicInt64、AtomicInt32
+这2个常用的、具体的类型，进行测试。</p>
+<p><strong>方法</strong>:通过构造实例对象后，调用成员函数get()、getAndAdd()、addAndGet()、incrementAndGet()、decrementAndGet()，对原子对象进行修改，然后根据返回值判断值是否为预期值。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-comment">// AtomicInt64 的测试</span><br>&#123;<br>    AtomicInt64 a0;<br>    <span class="hljs-built_in">assert</span>(a0.<span class="hljs-built_in">get</span>() == <span class="hljs-number">0</span>);<br>    <span class="hljs-built_in">assert</span>(a0.<span class="hljs-built_in">getAndAdd</span>(<span class="hljs-number">1</span>) == <span class="hljs-number">0</span>);<br>    <span class="hljs-built_in">assert</span>(a0.<span class="hljs-built_in">get</span>() == <span class="hljs-number">1</span>);<br>    <span class="hljs-built_in">assert</span>(a0.<span class="hljs-built_in">addAndGet</span>(<span class="hljs-number">2</span>) == <span class="hljs-number">3</span>);<br>    <span class="hljs-built_in">assert</span>(a0.<span class="hljs-built_in">get</span>() == <span class="hljs-number">3</span>);<br>    <span class="hljs-built_in">assert</span>(a0.<span class="hljs-built_in">incrementAndGet</span>() == <span class="hljs-number">4</span>);<br>    <span class="hljs-built_in">assert</span>(a0.<span class="hljs-built_in">get</span>() == <span class="hljs-number">4</span>);<br>    a0.<span class="hljs-built_in">increment</span>();<br>    <span class="hljs-built_in">assert</span>(a0.<span class="hljs-built_in">get</span>() == <span class="hljs-number">5</span>);<br>    <span class="hljs-built_in">assert</span>(a0.<span class="hljs-built_in">addAndGet</span>(<span class="hljs-number">-3</span>) == <span class="hljs-number">2</span>);<br>    <span class="hljs-built_in">assert</span>(a0.<span class="hljs-built_in">getAndSet</span>(<span class="hljs-number">100</span>) == <span class="hljs-number">2</span>);<br>    <span class="hljs-built_in">assert</span>(a0.<span class="hljs-built_in">get</span>() == <span class="hljs-number">100</span>);<br>&#125;<br><br><span class="hljs-comment">// AtomicInt32 的测试类同，只需要修改a0的类型为AtomicInt32即可，具体代码略</span><br>... <br></code></pre></td></tr></table></figure>
+<h2 id="相关知识点">相关知识点</h2>
+<h3 id="gcc原子操作">GCC原子操作</h3>
+<p>GCC提供了一套原子操作的接口，可以实现原子操作。这些接口都是以__sync开头的，如__sync_fetch_and_add()，__sync_val_compare_and_swap()等。</p>
+<p><strong>原子自增操作</strong>:</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs C++">type __sync_fetch_and_add(type *ptr, type value)<br></code></pre></td></tr></table></figure>
+<p><strong>原子赋值操作</strong>:</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs C++">type __sync_lock_test_and_set(type *ptr, type value)<br></code></pre></td></tr></table></figure>
+<p>使用这些原子操作时，编译时需要加<code>-march=cpu-type</code>（CPU体系结构=CPU类型，可以指定为native）</p>
+<h3 id="volatile关键字">volatile关键字</h3>
+<p>确保本条指令不会因为编译器的优化而省略，而且要求每次从内存直接读值，而不是读高速cache中的备份。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-keyword">volatile</span> T value_;<br></code></pre></td></tr></table></figure>
+<p>本文参考自：<a
+target="_blank" rel="noopener" href="https://www.cnblogs.com/fortunely/p/15943322.html">muduo笔记
+原子类AtomicIntegerT<T></a></p>
 
                 
               </div>
@@ -370,8 +398,15 @@ KMP 算法?</a></p>
     
       <span class="category-chain">
         
-  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" class="category-chain-item">数据结构与算法</a>
+  <a href="/categories/C/" class="category-chain-item">C++</a>
   
+  
+    <span>></span>
+    
+  <a href="/categories/C/muduo/" class="category-chain-item">muduo</a>
+  
+  
+
   
 
       </span>
@@ -385,9 +420,9 @@ KMP 算法?</a></p>
     <div class="post-meta">
       <i class="iconfont icon-tags"></i>
       
-        <a href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/">#数据结构与算法</a>
+        <a href="/tags/C/">#C++</a>
       
-        <a href="/tags/leetcode/">#leetcode</a>
+        <a href="/tags/muduo%E5%BA%93/">#muduo库</a>
       
     </div>
   
@@ -399,8 +434,8 @@ KMP 算法?</a></p>
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>KMP算法模板</div>
-      <div>https://gstarmin.github.io/2023/06/08/KMP算法/</div>
+      <div>muduo库-原子类AtomicIntegerT&lt;T&gt;</div>
+      <div>https://gstarmin.github.io/2023/06/21/muduo库-原子类AtomicIntegerT-T/</div>
     </div>
     <div class="license-meta">
       
@@ -412,7 +447,7 @@ KMP 算法?</a></p>
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2023年6月8日</div>
+          <div>2023年6月21日</div>
         </div>
       
       
@@ -444,9 +479,9 @@ KMP 算法?</a></p>
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2023/06/21/muduo%E5%BA%93-%E6%A0%87%E8%AE%B0%E7%B1%BBcopyable-noncopyable/" title="muduo库-标记类copyable noncopyable">
+                      <a href="/2023/06/21/muduo%E5%BA%93-%E6%97%B6%E9%97%B4%E6%88%B3%E7%B1%BBTimestamp/" title="muduo库-时间戳类Timestamp">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">muduo库-标记类copyable noncopyable</span>
+                        <span class="hidden-mobile">muduo库-时间戳类Timestamp</span>
                         <span class="visible-mobile">上一篇</span>
                       </a>
                     
@@ -454,8 +489,8 @@ KMP 算法?</a></p>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2023/06/05/WSL%E4%B8%8B%E6%B7%BB%E5%8A%A0%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8/" title="WSL下添加系统调用">
-                        <span class="hidden-mobile">WSL下添加系统调用</span>
+                      <a href="/2023/06/21/muduo%E5%BA%93-%E6%A0%87%E8%AE%B0%E7%B1%BBcopyable-noncopyable/" title="muduo库-标记类copyable noncopyable">
+                        <span class="hidden-mobile">muduo库-标记类copyable noncopyable</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
