@@ -4,6 +4,33 @@
   
   
   <entry>
+    <title>KMP算法模板</title>
+    <link href="/2023/06/08/KMP%E7%AE%97%E6%B3%95/"/>
+    <url>/2023/06/08/KMP%E7%AE%97%E6%B3%95/</url>
+    
+    <content type="html"><![CDATA[<h1 id="kmp算法模板">KMP算法模板</h1><p>KMP算法的原理以及图解见<ahref="https://www.zhihu.com/question/21923021/answer/281346746">如何更好地理解和掌握KMP 算法?</a></p><p>下面给出KMP算法的模板：</p><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-comment">// KMP算法</span><br><span class="hljs-comment">// 匹配成功返回匹配的起始位置，失败返回-1</span><br><span class="hljs-comment">// haystack为主串，needle为模式串</span><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">KMP</span><span class="hljs-params">(string haystack, string needle)</span> </span><br><span class="hljs-function">    </span>&#123;<br>        <span class="hljs-type">int</span> len1 = haystack.<span class="hljs-built_in">size</span>(), len2 = needle.<span class="hljs-built_in">size</span>();<br>        <span class="hljs-type">int</span> i = <span class="hljs-number">0</span>, j = <span class="hljs-number">-1</span>;<br>        <span class="hljs-function">vector&lt;<span class="hljs-type">int</span>&gt; <span class="hljs-title">next</span><span class="hljs-params">(len2 + <span class="hljs-number">1</span>)</span></span>;<br>        next[<span class="hljs-number">0</span>] = <span class="hljs-number">-1</span>;<br>        <span class="hljs-keyword">while</span>(i &lt; len2)<br>        &#123;<br>            <span class="hljs-keyword">if</span>(j == <span class="hljs-number">-1</span> || needle[i] == needle[j])<br>            &#123;<br>                ++i;<br>                ++j;<br>                next[i] = j;<br>            &#125;<br>            <span class="hljs-keyword">else</span>    <br>                j = next[j];  <br>                <br>        &#125;<br>        i = <span class="hljs-number">0</span>;<br>        j = <span class="hljs-number">0</span>;<br>        <span class="hljs-keyword">while</span>(i &lt; len1 &amp;&amp; j &lt; len2)<br>        &#123;<br>            <span class="hljs-keyword">if</span>(j == <span class="hljs-number">-1</span> || haystack[i] == needle[j])<br>            &#123;<br>                ++i;<br>                ++j;<br>            &#125;<br>            <span class="hljs-keyword">else</span><br>                j = next[j];<br>        &#125;<br>        <span class="hljs-keyword">if</span>(j == len2)<br>            <span class="hljs-keyword">return</span> i - j;<br>        <span class="hljs-keyword">else</span><br>            <span class="hljs-keyword">return</span> <span class="hljs-number">-1</span>;<br>    &#125;<br></code></pre></td></tr></table></figure>]]></content>
+    
+    
+    <categories>
+      
+      <category>数据结构与算法</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>数据结构与算法</tag>
+      
+      <tag>leetcode</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>WSL下添加系统调用</title>
     <link href="/2023/06/05/WSL%E4%B8%8B%E6%B7%BB%E5%8A%A0%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8/"/>
     <url>/2023/06/05/WSL%E4%B8%8B%E6%B7%BB%E5%8A%A0%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8/</url>
