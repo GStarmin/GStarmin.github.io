@@ -297,6 +297,76 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h1 class="index-header">
         
+        <a href="/2023/06/26/muduo%E5%BA%93-ThreadPool%E7%B1%BB/" target="_self">
+          muduo库-ThreadPool类
+        </a>
+      </h1>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2023/06/26/muduo%E5%BA%93-ThreadPool%E7%B1%BB/" target="_self">
+        <div>
+          muduo库-ThreadPool类 线程池模型 模型图如下：  这个是通用线程池，双端队列存放的是多个可调用对象（即用户任务），而非函数指针，因此可以通过std::bind配接器传参。双端队列queue_，有时也称为工作队列。 工作原理：首先创建并启动一组线程，称为线程池threads_，由用户指定其大小maxQueueSize_，每个元素对对应一个线程。每个线程函数都是一样的，在其中会运行一个
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2023-06-26 19:48" pubdate>
+              2023-06-26
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/C/" class="category-chain-item">C++</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/C/muduo/" class="category-chain-item">muduo</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/C/">#C++</a>
+            
+              <a href="/tags/muduo/">#muduo</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
         <a href="/2023/06/26/muduo%E5%BA%93-%E7%BA%BF%E7%A8%8B%E5%90%8C%E6%AD%A5CountDownLatch/" target="_self">
           muduo库-线程同步CountDownLatch
         </a>
@@ -898,46 +968,6 @@
               <a href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/">#数据结构与算法</a>
             
               <a href="/tags/leetcode/">#leetcode</a>
-            
-          </div>
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2023/06/05/WSL%E4%B8%8B%E6%B7%BB%E5%8A%A0%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8/" target="_self">
-          WSL下添加系统调用
-        </a>
-      </h1>
-
-      
-      <a class="index-excerpt index-excerpt__noimg" href="/2023/06/05/WSL%E4%B8%8B%E6%B7%BB%E5%8A%A0%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8/" target="_self">
-        <div>
-          WSL下添加系统调用 由于WSL的内核是在原版基础之上有做修改的，所以要先去下载内核的源码。https://github.com/microsoft/WSL2-Linux-Kernel. 查看当前系统内核版本 1uname -r 然后去源码中找到对应的版本并下载，下载完成后解压。 12tar -zvxf linux-msft-wsl-5.15.90.1.tar.gzcd WSL2-Linux-Ke
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2023-06-05 22:48" pubdate>
-              2023-06-05
-            </time>
-          </div>
-        
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/Linux/">#Linux</a>
             
           </div>
         
