@@ -16,25 +16,28 @@
   <meta name="author" content="Starmin">
   <meta name="keywords" content="">
   
-    <meta name="description" content="muduo库-线程同步CountDownLatch 多线程同步中的问题 多线程环境中，常有这样一种同步情况：一个线程等待其他所有线程完成指定工作。比如，在开启一个新线程后，虽然已经启动线程函数，很可能还有一些准备工作需要完成（如更新当前线程id，名称等信息），这样，调用线程（创建线程的线程）并不能马上投入工作，立即向新线程传递数据，可能造成未定义行为，如调用线程的某段代码依赖于子线程id。 在mu">
+    <meta name="description" content="muduo库-线程同步CountDownLatch&#x2F;Condition 多线程同步中的问题 多线程环境中，常有这样一种同步情况：一个线程等待其他所有线程完成指定工作。比如，在开启一个新线程后，虽然已经启动线程函数，很可能还有一些准备工作需要完成（如更新当前线程id，名称等信息），这样，调用线程（创建线程的线程）并不能马上投入工作，立即向新线程传递数据，可能造成未定义行为，如调用线程的某段代码依赖于">
 <meta property="og:type" content="article">
-<meta property="og:title" content="muduo库-线程同步CountDownLatch">
-<meta property="og:url" content="https://gstarmin.github.io/2023/06/26/muduo%E5%BA%93-%E7%BA%BF%E7%A8%8B%E5%90%8C%E6%AD%A5CountDownLatch/">
+<meta property="og:title" content="muduo库-线程同步CountDownLatch&#x2F;Condition">
+<meta property="og:url" content="https://gstarmin.github.io/2023/06/26/muduo%E5%BA%93-%E7%BA%BF%E7%A8%8B%E5%90%8C%E6%AD%A5CountDownLatch-Condition/">
 <meta property="og:site_name" content="私人杂货铺">
-<meta property="og:description" content="muduo库-线程同步CountDownLatch 多线程同步中的问题 多线程环境中，常有这样一种同步情况：一个线程等待其他所有线程完成指定工作。比如，在开启一个新线程后，虽然已经启动线程函数，很可能还有一些准备工作需要完成（如更新当前线程id，名称等信息），这样，调用线程（创建线程的线程）并不能马上投入工作，立即向新线程传递数据，可能造成未定义行为，如调用线程的某段代码依赖于子线程id。 在mu">
+<meta property="og:description" content="muduo库-线程同步CountDownLatch&#x2F;Condition 多线程同步中的问题 多线程环境中，常有这样一种同步情况：一个线程等待其他所有线程完成指定工作。比如，在开启一个新线程后，虽然已经启动线程函数，很可能还有一些准备工作需要完成（如更新当前线程id，名称等信息），这样，调用线程（创建线程的线程）并不能马上投入工作，立即向新线程传递数据，可能造成未定义行为，如调用线程的某段代码依赖于">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gstarmin.github.io/img/muduo/CountDownLatch/Condition类图.png">
+<meta property="og:image" content="https://gstarmin.github.io/img/muduo/CountDownLatch/Condition结构图.png">
 <meta property="og:image" content="https://gstarmin.github.io/img/muduo/CountDownLatch/CountDownLatch类图.png">
+<meta property="og:image" content="https://gstarmin.github.io/img/muduo/CountDownLatch/CountDownLatch结构图.png">
 <meta property="article:published_time" content="2023-06-26T08:54:32.000Z">
 <meta property="article:modified_time" content="2023-06-26T08:54:32.000Z">
 <meta property="article:author" content="Starmin">
 <meta property="article:tag" content="C++">
 <meta property="article:tag" content="muduo">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://gstarmin.github.io/img/muduo/CountDownLatch/CountDownLatch类图.png">
+<meta name="twitter:image" content="https://gstarmin.github.io/img/muduo/CountDownLatch/Condition类图.png">
   
   
   
-  <title>muduo库-线程同步CountDownLatch - 私人杂货铺</title>
+  <title>muduo库-线程同步CountDownLatch/Condition - 私人杂货铺</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -271,7 +274,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="muduo库-线程同步CountDownLatch"></span>
+            <span id="subtitle" data-typed-text="muduo库-线程同步CountDownLatch/Condition"></span>
           
         </div>
 
@@ -294,7 +297,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          1.6k 字
+          1.8k 字
         
       </span>
     
@@ -305,7 +308,7 @@
         
         
         
-          16 分钟
+          19 分钟
         
       </span>
     
@@ -343,21 +346,28 @@
         <div id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">muduo库-线程同步CountDownLatch</h1>
+            <h1 style="display: none">muduo库-线程同步CountDownLatch/Condition</h1>
             
             
               <div class="markdown-body">
                 
                 <h1
-id="muduo库-线程同步countdownlatch">muduo库-线程同步CountDownLatch</h1>
+id="muduo库-线程同步countdownlatchcondition">muduo库-线程同步CountDownLatch/Condition</h1>
 <h2 id="多线程同步中的问题">多线程同步中的问题</h2>
 <p>多线程环境中，常有这样一种同步情况：一个线程等待其他所有线程完成指定工作。比如，在开启一个新线程后，虽然已经启动线程函数，很可能还有一些准备工作需要完成（如更新当前线程id，名称等信息），这样，调用线程（创建线程的线程）并不能马上投入工作，立即向新线程传递数据，可能造成未定义行为，如调用线程的某段代码依赖于子线程id。</p>
 <p>在muduo库中使用<code>CountDownLatch</code>类来解决这个问题。</p>
+<h2 id="condition">Condition</h2>
+<p><code>Condition</code>类图：</p>
+<p><img src="/img/muduo/CountDownLatch/Condition类图.png" srcset="/img/loading.gif" lazyload /></p>
+<p><code>Condition</code>类是muduo库中对系统线程条件变量类函数进行的封装；往往跟<code>mutexlock</code>配合使用，但也不控制其对象的生存期。</p>
+<p><img src="/img/muduo/CountDownLatch/Condition结构图.png" srcset="/img/loading.gif" lazyload /></p>
+<p>整个condition类主要为方便用户使用，封装<code>pthread_cond_signal为notify()</code>，封装<code>pthread_cond_broadcast</code>为<code>notifyAll()</code>;封装<code>pthread_cond_wait</code>为<code>wait()</code>；封装<code>pthread_cond_timedwait</code>为<code>waitForSeconds()</code>;</p>
 <h2 id="countdownlatch">CountDownLatch</h2>
 <p><code>CountDownLatch</code> 也被称为门阀 、计数器 或者
-闭锁。用于多个线程之间的同步，特别是一个线程等待另一个或多个线程。</p>
-<p><code>CountDownLatch</code>内部持有一个向下计数的计数器<code>count_</code>，构造时给定一个初值，代表需要等待的线程数。每个线程完成一个任务，<code>count_</code>减1，当<code>count_</code>值减到0时，代表所有线程已经完成了所有任务，在<code>CountDownLatch</code>上等待的线程就可以继续执行了。</p>
+闭锁。用于多个线程之间的同步，特别是一个线程等待另一个或多个线程。<code>CountDownLatch</code>类图如下：</p>
 <p><img src="/img/muduo/CountDownLatch/CountDownLatch类图.png" srcset="/img/loading.gif" lazyload /></p>
+<p><code>CountDownLatch</code>内部持有一个向下计数的计数器<code>count_</code>，构造时给定一个初值，代表需要等待的线程数。每个线程完成一个任务，<code>count_</code>减1，当<code>count_</code>值减到0时，代表所有线程已经完成了所有任务，在<code>CountDownLatch</code>上等待的线程就可以继续执行了。</p>
+<p><img src="/img/muduo/CountDownLatch/CountDownLatch结构图.png" srcset="/img/loading.gif" lazyload /></p>
 <h3 id="countdownlatch的接口">CountDownLatch的接口</h3>
 <p>需要等待其他线程完成任务的线程，调用<code>wait()</code>，等待<code>count_</code>变为0；</p>
 <p>任务线程，如果完成了任务，就调用<code>countDown()</code>，将<code>count_</code>计数值<code>-1</code>，值减到<code>0</code>时，会唤醒所有等待线程继续执行；</p>
@@ -422,8 +432,8 @@ target="_blank" rel="noopener" href="https://www.cnblogs.com/fortunely/p/1594481
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>muduo库-线程同步CountDownLatch</div>
-      <div>https://gstarmin.github.io/2023/06/26/muduo库-线程同步CountDownLatch/</div>
+      <div>muduo库-线程同步CountDownLatch/Condition</div>
+      <div>https://gstarmin.github.io/2023/06/26/muduo库-线程同步CountDownLatch-Condition/</div>
     </div>
     <div class="license-meta">
       
