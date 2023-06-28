@@ -297,6 +297,76 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h1 class="index-header">
         
+        <a href="/2023/06/28/muduo%E5%BA%93-ThreadLocalSingleton%E7%B1%BB/" target="_self">
+          muduo库-ThreadLocalSingleton类
+        </a>
+      </h1>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2023/06/28/muduo%E5%BA%93-ThreadLocalSingleton%E7%B1%BB/" target="_self">
+        <div>
+          muduo库-ThreadLocalSingleton类 ThreadLocalSingleton类图如下：  ThreadLocalSingleton 类封装为了线程本地存储单例类。在 Signleton 中提到过，常见的单例模式设计分为四种：  懒汉式 双检锁 饿汉式 局部静态式  ThreadLocalSingleton 类则采用了懒汉式的构建方法，而且由于是线程本地存储，则无需互斥锁来保证
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2023-06-28 21:37" pubdate>
+              2023-06-28
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/C/" class="category-chain-item">C++</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/C/muduo/" class="category-chain-item">muduo</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/C/">#C++</a>
+            
+              <a href="/tags/muduo/">#muduo</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
         <a href="/2023/06/27/muduo%E5%BA%93-Threadlocal%E7%B1%BB/" target="_self">
           muduo库-Threadlocal类
         </a>
@@ -375,7 +445,7 @@
       
       <a class="index-excerpt index-excerpt__noimg" href="/2023/06/27/muduo%E5%BA%93-Singleton%E7%B1%BB/" target="_self">
         <div>
-          muduo库-Singleton类 Singleton类是一个单例模式的实现，它的结构如下：  muduo的单例模式采用模板类实现，它内部维护一个模板参数的指针，可以生成任何一个模板参数的单例。凭借SFINAE技术muduo库可以检测模板参数如果是类的话，并且该类注册了一个no_destroy()方法，那么muduo库不会去自动销毁它。否则muduo库会在init时，利用pthread_once(
+          muduo库-Singleton类 Singleton类的实现 常见的单例模式实现主要分为以下几种： 懒汉式 懒汉式要求先声明单例对象，然后在调用时才完成实例化操作。 123456789101112131415161718192021class Signleton &#123;public:  static Signleton* getInstance() &#123;    if (instan
         </div>
       </a>
 
@@ -905,76 +975,6 @@
               <a href="/tags/C/">#C++</a>
             
               <a href="/tags/Effective-C/">#Effective C++</a>
-            
-          </div>
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2023/06/21/muduo%E5%BA%93-%E6%97%B6%E9%97%B4%E6%88%B3%E7%B1%BBTimestamp/" target="_self">
-          muduo库-时间戳类Timestamp
-        </a>
-      </h1>
-
-      
-      <a class="index-excerpt index-excerpt__noimg" href="/2023/06/21/muduo%E5%BA%93-%E6%97%B6%E9%97%B4%E6%88%B3%E7%B1%BBTimestamp/" target="_self">
-        <div>
-          muduo库-时间戳类Timestamp 如何度量程序在某一时刻的时间？ 通常，我们用时刻来表示，比如"2023-06-26 23:43:00.000000"，这种方式便于人查看，但不便于程序中的比较和计算。比如有2个时刻A和B，计算哪个时刻在前，哪个在后，或者要计算时刻A和B的时间差时，这种字符串表示方式就很麻烦。 我们想到将字符串形式的时刻，用自纪元时间（Epoch时间，1970-01-01
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2023-06-21 22:05" pubdate>
-              2023-06-21
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3 d-flex align-items-center">
-            <i class="iconfont icon-category"></i>
-            
-
-<span class="category-chains">
-  
-  
-    
-      <span class="category-chain">
-        
-  <a href="/categories/C/" class="category-chain-item">C++</a>
-  
-  
-    <span>></span>
-    
-  <a href="/categories/C/muduo/" class="category-chain-item">muduo</a>
-  
-  
-
-  
-
-      </span>
-    
-  
-</span>
-
-          </div>
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/C/">#C++</a>
-            
-              <a href="/tags/muduo/">#muduo</a>
             
           </div>
         
