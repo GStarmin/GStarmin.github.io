@@ -1,0 +1,1040 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Starmin">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="muduo库-日志类 muduo库中的日志为诊断日志，用于将代码运行时的重要信息进行保存，方便故障诊断和追踪。日志通常分为如下两种：  同步日志：当需要写出一条日志消息时，只有等到这条日志消息完全写出时才能执行后续的程序，其问题在于可能会阻塞在磁盘写操作上； 异步日志：当需要写日志消息时，只是将日志消息进行存储，当积累到一定量时或者达到时间间隔后，由后台线程自动将存储的所有日志进行数据；  综上所">
+<meta property="og:type" content="article">
+<meta property="og:title" content="muduo库-日志类">
+<meta property="og:url" content="https://gstarmin.github.io/2023/06/29/muduo%E5%BA%93-%E6%97%A5%E5%BF%97%E7%B1%BB/">
+<meta property="og:site_name" content="私人杂货铺">
+<meta property="og:description" content="muduo库-日志类 muduo库中的日志为诊断日志，用于将代码运行时的重要信息进行保存，方便故障诊断和追踪。日志通常分为如下两种：  同步日志：当需要写出一条日志消息时，只有等到这条日志消息完全写出时才能执行后续的程序，其问题在于可能会阻塞在磁盘写操作上； 异步日志：当需要写日志消息时，只是将日志消息进行存储，当积累到一定量时或者达到时间间隔后，由后台线程自动将存储的所有日志进行数据；  综上所">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gstarmin.github.io/img/muduo/日志类/多缓冲技术.png">
+<meta property="og:image" content="https://gstarmin.github.io/img/muduo/日志类/多缓冲技术-1.png">
+<meta property="og:image" content="https://gstarmin.github.io/img/muduo/日志类/后端缓冲区队列.png">
+<meta property="og:image" content="https://gstarmin.github.io/img/muduo/日志类/SIZE大小.png">
+<meta property="og:image" content="https://gstarmin.github.io/img/muduo/日志类/输入类型调用链.png">
+<meta property="og:image" content="https://gstarmin.github.io/img/muduo/日志类/前端日志时序图.png">
+<meta property="article:published_time" content="2023-06-29T14:25:23.000Z">
+<meta property="article:modified_time" content="2023-06-29T14:25:23.000Z">
+<meta property="article:author" content="Starmin">
+<meta property="article:tag" content="C++">
+<meta property="article:tag" content="muduo">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://gstarmin.github.io/img/muduo/日志类/多缓冲技术.png">
+  
+  
+  
+  <title>muduo库-日志类 - 私人杂货铺</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"gstarmin.github.io","root":"/","version":"1.9.3","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 5.4.2"><style>.mjpage .MJX-monospace {
+  font-family: monospace;
+}
+
+.mjpage .MJX-sans-serif {
+  font-family: sans-serif;
+}
+
+.mjpage {
+  display: inline;
+  font-style: normal;
+  font-weight: normal;
+  line-height: normal;
+  font-size: 100%;
+  font-size-adjust: none;
+  text-indent: 0;
+  text-align: left;
+  text-transform: none;
+  letter-spacing: normal;
+  word-spacing: normal;
+  word-wrap: normal;
+  white-space: nowrap;
+  float: none;
+  direction: ltr;
+  max-width: none;
+  max-height: none;
+  min-width: 0;
+  min-height: 0;
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+
+.mjpage * {
+  transition: none;
+  -webkit-transition: none;
+  -moz-transition: none;
+  -ms-transition: none;
+  -o-transition: none;
+}
+
+.mjx-svg-href {
+  fill: blue;
+  stroke: blue;
+}
+
+.MathJax_SVG_LineBox {
+  display: table !important;
+}
+
+.MathJax_SVG_LineBox span {
+  display: table-cell !important;
+  width: 10000em !important;
+  min-width: 0;
+  max-width: none;
+  padding: 0;
+  border: 0;
+  margin: 0;
+}
+
+.mjpage__block {
+  text-align: center;
+  margin: 1em 0em;
+  position: relative;
+  display: block !important;
+  text-indent: 0;
+  max-width: none;
+  max-height: none;
+  min-width: 0;
+  min-height: 0;
+  width: 100%;
+}
+</style></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Starmin</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="muduo库-日志类"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-06-29 22:25" pubdate>
+          2023年6月29日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          6.6k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          66 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">muduo库-日志类</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="muduo库-日志类">muduo库-日志类</h1>
+<p>muduo库中的日志为诊断日志，用于将代码运行时的重要信息进行保存，方便故障诊断和追踪。日志通常分为如下两种：</p>
+<ul>
+<li><strong>同步日志</strong>：当需要写出一条日志消息时，只有等到这条日志消息完全写出时才能执行后续的程序，其问题在于可能会阻塞在磁盘写操作上；</li>
+<li><strong>异步日志</strong>：当需要写日志消息时，只是将日志消息进行存储，当积累到一定量时或者达到时间间隔后，由后台线程自动将存储的所有日志进行数据；</li>
+</ul>
+<p>综上所述，异步日志的好处是前台线程不会阻塞在写日志上，后台线程真正写日志时，日志消息往往已经积累了很多，此时只需一次
+IO 操作，从而减少了 IO 函数的调用次数，提高了效率。</p>
+<p>而一个日志库大体可以分为前端和后端两部分：</p>
+<ul>
+<li>前端：生成日志消息到缓冲区</li>
+<li>后端：将缓冲区中的日志消息输出到本地文件</li>
+</ul>
+<p>日志的前端与后端就是一个典型的 "多生产者——单消费者" 问题：</p>
+<ul>
+<li>对于生产者而言，要尽可能坐到低延迟、低 CPU 开销、无阻塞；</li>
+<li>对于消费者而言，要做到足够大的吞吐量，并占用少的资源；</li>
+</ul>
+<p>对于日志消息而言，要做到以下几点：</p>
+<ol type="1">
+<li>每条日志消息占一行，且格式明确，便于 awk、grep 工具分析；</li>
+<li>打印线程ID、日志级别、源文件、行号；</li>
+<li>时间戳精确到微秒；</li>
+<li>对于分布式系统而言，使用 GMT 时区；</li>
+</ol>
+<h2 id="日志框架设计思路">日志框架设计思路</h2>
+<p>每一次日志操作，都进行三个步骤：</p>
+<ol type="1">
+<li>打开文件</li>
+<li>写文件</li>
+<li>关闭文件</li>
+</ol>
+<p>但是，当写入日志的频率较高时，磁盘 IO
+占用较高。尽管在多线程文件操作中是线程安全的，但是多个线程写入日志的顺序确难以保证。</p>
+<p>为此，可以在应用程序启动之初打开全局文件一次，后续每次日志操作，只需写入文件即可。</p>
+<p>由于文件操作默认是存在缓冲区的，只有当缓冲区存满后，才将缓冲区的内容输出到文件中。相较于频繁的打开文件，此方案减少了打开文件、关闭文件的次数，效率得到了提升。</p>
+<blockquote>
+<p>C++ 中的 ostream 并非线程安全，而 C 中的 fwrite 则是线程安全的。</p>
+</blockquote>
+<p>为了进一步提高效率，尽可能地减少磁盘 IO
+的操作。可以使用一个线程安全队列，一边负责写日志消息，一边负责取日志消息。当所取日志条数或总长度达到一定数量时，我们才写入一次磁盘，以此来降低磁盘
+IO 的操作次数。</p>
+<p>除此之外，多个线程还可以共用一个日志前端，使用多缓冲技术。例如 muduo
+库所采用的双缓冲技术，前端负责向 Buffer 中填入数据，后端则负责将 Buffer
+中的数据取出来写入到文件。</p>
+<p>如图所示，准备两块缓冲区 Buffer A 和 Buffer B，前端负责往 Buffer A
+中写入日志消息，后端负责将 Buffer B 中的日志消息写入文件：</p>
+<p><img src="/img/muduo/日志类/多缓冲技术.png" srcset="/img/loading.gif" lazyload /></p>
+<p>当 Buffer A 写满之后，交换 A 和 B，让后端将 Buffer A
+中的日志消息写入文件，而前端则往 Buffer B
+中写入新的日志消息，如此反复。</p>
+<p><img src="/img/muduo/日志类/多缓冲技术-1.png" srcset="/img/loading.gif" lazyload /></p>
+<p>在大部分的时间中，前端线程和后端线程不会操作同一个缓冲区，这也就意味着前端线程的操作，不需要等待后端线程缓慢的写文件操作，因为不需要锁定临界区。</p>
+<blockquote>
+<p>前端线程和后端线程仅仅只在交换缓冲区时会存在线程同步问题，因此只需要在交换缓冲区时使用互斥锁来保护临界区即可，这个时间极其短暂，这也就是提高吞吐量的关键所在。</p>
+</blockquote>
+<p>同时，后端线程将缓冲区中的日志消息写入到文件系统中的频率，完全由自己的写入策略来决定，避免了每条新的日志消息都唤醒后端线程。</p>
+<p>换言之，前端线程不是将一条条日志消息分别传送给后端线程，而是将多条消息组成一个大的
+Buffer 传递给后端进行处理，相当于批量处理，减少了线程唤醒的频率和 IO
+操作次数，降低开销。</p>
+<p>在 Muduo
+的实现中，它在后端设置了一个已满缓冲区的队列，用于缓冲一个周期内临时要写的日志消息：</p>
+<p><img src="/img/muduo/日志类/后端缓冲区队列.png" srcset="/img/loading.gif" lazyload /></p>
+<h2 id="logstream">LogStream</h2>
+<p><code>FixedBuffer</code> 类是作为 <code>LogStream</code>
+类类型的缓冲区对象，其是一个模板类，传入一个非类型参数 <code>SIZE</code>
+用来表示缓冲区的大小，其示意图如图所示：</p>
+<p><img src="/img/muduo/日志类/SIZE大小.png" srcset="/img/loading.gif" lazyload /></p>
+<p>如图所示，其在栈上维护一段大小为 <code>SIZE</code>
+的内存区域，<code>length</code> 为已写入数据的长度，而
+<code>avail</code> 为剩余可用的数据长度。</p>
+<p><code>SmallBuffer</code> 的默认大小为 4KB，为前端的
+<code>LogStream</code> 所持有。而 <code>LargeBuffer</code> 的默认大小为
+4MB，为后端 的 <code>AsyncLogging</code> 所持有。</p>
+<p>对于 <code>LogStream</code> 类类型来说，它将要输出的信息加载到
+<code>FixedBuffer</code> 的缓冲区中，等待后续的处理。它通过重载
+<code>&lt;&lt;</code>
+运算符来输出基本的数据类型到缓冲区。各种输入类型的调用链如下所示：</p>
+<p><img src="/img/muduo/日志类/输入类型调用链.png" srcset="/img/loading.gif" lazyload /></p>
+<blockquote>
+<p>注意：LogStream 不是线程安全的，因此对于每个 log
+消息应当构造一个临时的 LogStream，用完之后随即销毁。</p>
+</blockquote>
+<p>在该类中，设计了大量的运算符重载函数，其效率要优于
+<code>iostream</code> 和 <code>stdio</code>，使用的思想源于 Matthew
+Wilson 的 “带符号整形数据的除法与余数”
+算法实现。其巧妙之处在于，用一个对称的 <code>digits</code>
+数组搞定了负数转换的边界条件(二进制补码的正负数表示范围不对称):</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-type">const</span> <span class="hljs-type">char</span> digits[] = <span class="hljs-string">&quot;9876543210123456789&quot;</span>;<br></code></pre></td></tr></table></figure>
+<p>此外，由于 <code>LogStream</code> 本身并不支持格式化，因此设计 Fmt
+类类型将数值类型数据转化为一个长度不超过 32 位的字符对象
+Fmt，并重载了支持 Fmt 输出到 <code>LogStream</code> 的
+<code>&lt;&lt;</code> 操作符模板函数。</p>
+<h2 id="logging">Logging</h2>
+<p>在 <code>Logger</code> 类中定义了枚举变量 <code>LogLevel</code>
+来作为日志等级：</p>
+<p>表格如下所示：</p>
+<table>
+<thead>
+<tr class="header">
+<th>日志等级</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>TRACE</td>
+<td>跟踪：指明程序的运行轨迹，比 DEBUG 级别的粒度更细</td>
+</tr>
+<tr class="even">
+<td>DEBUG</td>
+<td>调试：指明细致的事件信息，对调试应用最有用</td>
+</tr>
+<tr class="odd">
+<td>INFO</td>
+<td>信息：指明描述信息，从粗粒度上描述了应用的运行过程</td>
+</tr>
+<tr class="even">
+<td>WARN</td>
+<td>警告：指明潜在的有害状况</td>
+</tr>
+<tr class="odd">
+<td>ERROR</td>
+<td>错误：指明错误事件，但应用可能还能继续运行</td>
+</tr>
+<tr class="even">
+<td>FATAL</td>
+<td>致命：指明非常严重的可能导致应用终止执行的错误事件</td>
+</tr>
+</tbody>
+</table>
+<p>如果日志设置为 <span class="math inline">\(L\)</span>，一个日志级别为
+<span class="math inline">\(P\)</span> 的输出日志只有满足 <span
+class="math inline">\(P≥L\)</span>时日志才会输出。</p>
+<p>具体的输出关系见下表，其中横向表头为日志级别，纵向表头为输出级别：</p>
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th>TRACE</th>
+<th>DEBUG</th>
+<th>INFO</th>
+<th>WARN</th>
+<th>ERROR</th>
+<th>FATAL</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>TRACE</td>
+<td>✔️</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td>DEBUG</td>
+<td>✔️</td>
+<td>✔️</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>INFO</td>
+<td>✔️</td>
+<td>✔️</td>
+<td>✔️</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td>WARN</td>
+<td>✔️</td>
+<td>✔️</td>
+<td>✔️</td>
+<td>✔️</td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>ERROR</td>
+<td>✔️</td>
+<td>✔️</td>
+<td>✔️</td>
+<td>✔️</td>
+<td>✔️</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>FATAL</td>
+<td>✔️</td>
+<td>✔️</td>
+<td>✔️</td>
+<td>✔️</td>
+<td>✔️</td>
+<td>✔️</td>
+</tr>
+</tbody>
+</table>
+<p><code>Logger</code> 类使用了桥接模式，其具体实现交给内嵌类 Impl
+来完成，它主要负责整合日志信息，主要包括：日期、时间、微秒、线程、日志级别、日志正文、源文件名、行号。其通过成员变量
+<code>stream_</code>将日志输出到缓冲区中：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-string">日期</span>      <span class="hljs-string">时间</span>     <span class="hljs-string">微秒</span>     <span class="hljs-string">线程</span>  <span class="hljs-string">级别</span>  <span class="hljs-string">正文</span>     <span class="hljs-string">源文件名:</span>       <span class="hljs-string">行号</span><br><span class="hljs-number">20220306</span> <span class="hljs-number">09</span><span class="hljs-string">:15:44.681220Z</span> <span class="hljs-number">4013 </span><span class="hljs-string">WARN</span>  <span class="hljs-string">Hello</span> <span class="hljs-bullet">-</span> <span class="hljs-string">Logging_test.cpp:75</span><br></code></pre></td></tr></table></figure>
+<p>除此之外，内嵌类 <code>SourceFile</code>
+的目的是为了在编译期计算源文件的名称。</p>
+<p><code>Logger</code> 内部有两个成员变量 <code>OutputFunc</code> 和
+<code>FlushFunc</code>，均为函数指针，分别指向输出函数和刷新函数，默认的输出函数使用线程安全的
+<code>fwrite()</code> 函数，默认的刷新函数使用
+<code>fflush()</code>。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">defaultOutput</span><span class="hljs-params">(<span class="hljs-type">const</span> <span class="hljs-type">char</span>* msg, <span class="hljs-type">int</span> len)</span> </span>&#123;<br>  <span class="hljs-type">size_t</span> n = <span class="hljs-built_in">fwrite</span>(msg, <span class="hljs-number">1</span>, len, stdout);<br>  (<span class="hljs-type">void</span>)n;<br>&#125;<br> <br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">defaultFlush</span><span class="hljs-params">()</span> </span>&#123;<br>  <span class="hljs-built_in">fflush</span>(stdout);<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>同时，通过全局变量 <code>g_output</code> 和 <code>g_flush</code>
+来控制输出函数和刷新函数，使用 <code>g_logTimeZone</code>
+来设置时区：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs cpp">Logger::OutputFunc g_output = defaultOutput;<br>Logger::FlushFunc g_flush = defaultFlush;<br>TimeZone g_logTimeZone;<br></code></pre></td></tr></table></figure>
+<p>文件内部定义了多个宏来便于调用 <code>Logger</code>
+将日志追加到缓冲区中，如果当前日志消息等级低于
+<code>g_logLevel</code>，就不会进行任何操作，几乎 0 操作，这是通过宏中的
+<code>if</code> 语句实现的。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-meta">#<span class="hljs-keyword">define</span> LOG_TRACE <span class="hljs-keyword">if</span> (muduo::Logger::logLevel() &lt;= muduo::Logger::TRACE) \</span><br><span class="hljs-meta">  muduo::Logger(__FILE__, __LINE__, muduo::Logger::TRACE, __func__).stream()</span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> LOG_DEBUG <span class="hljs-keyword">if</span> (muduo::Logger::logLevel() &lt;= muduo::Logger::DEBUG) \</span><br><span class="hljs-meta">  muduo::Logger(__FILE__, __LINE__, muduo::Logger::DEBUG, __func__).stream()</span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> LOG_INFO <span class="hljs-keyword">if</span> (muduo::Logger::logLevel() &lt;= muduo::Logger::INFO) \</span><br><span class="hljs-meta">  muduo::Logger(__FILE__, __LINE__).stream()</span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> LOG_WARN muduo::Logger(__FILE__, __LINE__, muduo::Logger::WARN).stream()</span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> LOG_ERROR muduo::Logger(__FILE__, __LINE__, muduo::Logger::ERROR).stream()</span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> LOG_FATAL muduo::Logger(__FILE__, __LINE__, muduo::Logger::FATAL).stream()</span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> LOG_SYSERR muduo::Logger(__FILE__, __LINE__, false).stream()</span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> LOG_SYSFATAL muduo::Logger(__FILE__, __LINE__, true).stream()</span><br></code></pre></td></tr></table></figure>
+<p>在 <code>Logger</code> 的析构函数中，先由 <code>impl_</code>
+往缓冲区后添加后缀，即文件名和行数以及换行符，然后调用
+<code>g_output</code> 将缓冲区内容输出到指定的文件流。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs cpp">Logger::~<span class="hljs-built_in">Logger</span>() &#123;<br>  impl_.<span class="hljs-built_in">finish</span>();<br>  <span class="hljs-function"><span class="hljs-type">const</span> LogStream::Buffer&amp; <span class="hljs-title">buf</span><span class="hljs-params">(stream().buffer())</span></span>;<br>  <span class="hljs-built_in">g_output</span>(buf.<span class="hljs-built_in">data</span>(), buf.<span class="hljs-built_in">length</span>());<br>  <span class="hljs-keyword">if</span> (impl_.level_ == FATAL) &#123;<br>    <span class="hljs-built_in">g_flush</span>();<br>    <span class="hljs-built_in">abort</span>();<br>  &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>前端日志的时序图如:</p>
+<p><img src="/img/muduo/日志类/前端日志时序图.png" srcset="/img/loading.gif" lazyload /></p>
+<h2 id="日志类">日志类</h2>
+<p><code>LogFile</code>
+主要负责对日志文件的操作，包括日志文件的滚动和写入，其构造函数如下：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs cpp">LogFile::<span class="hljs-built_in">LogFile</span>(<span class="hljs-type">const</span> string&amp; basename,<br>                 <span class="hljs-type">off_t</span> rollSize,<br>                 <span class="hljs-type">bool</span> threadSafe,<br>                 <span class="hljs-type">int</span> flushInterval,<br>                 <span class="hljs-type">int</span> checkEveryN)<br>  : <span class="hljs-built_in">basename_</span>(basename),<br>    <span class="hljs-built_in">rollSize_</span>(rollSize),<br>    <span class="hljs-built_in">flushInterval_</span>(flushInterval),<br>    <span class="hljs-built_in">checkEveryN_</span>(checkEveryN),<br>    <span class="hljs-built_in">count_</span>(<span class="hljs-number">0</span>),<br>    <span class="hljs-built_in">mutex_</span>(threadSafe ? <span class="hljs-keyword">new</span> MutexLock : <span class="hljs-literal">NULL</span>),<br>    <span class="hljs-built_in">startOfPeriod_</span>(<span class="hljs-number">0</span>),  <span class="hljs-comment">// 本次写日志的起始时间</span><br>    <span class="hljs-built_in">lastRoll_</span>(<span class="hljs-number">0</span>), <span class="hljs-comment">// 上次滚动日志文件的时间</span><br>    <span class="hljs-built_in">lastFlush_</span>(<span class="hljs-number">0</span>) &#123; <span class="hljs-comment">// 上次刷新日志文件的时间</span><br>  <span class="hljs-built_in">assert</span>(basename.<span class="hljs-built_in">find</span>(<span class="hljs-string">&#x27;/&#x27;</span>) == string::npos);<br>  <span class="hljs-built_in">rollFile</span>();<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>变量 <code>threadSafe</code> 主要用于控制日志后端的线程安全，默认为
+<code>true</code>。当只有一个后端线程来处理日志消息时，则无需线程安全。<code>rollSize</code>
+表示一次最大刷新的字节数，flushInterval
+表示刷新的时间间隔，单位为毫秒。</p>
+<p><code>checkEveryN</code> 表示写数据的次数限制，默认为
+1024。<code>count_</code> 用来计数当前写数据的次数，如果超过
+<code>checkEveryN</code> 则清除以重新计数。</p>
+<p><code>mutex_</code>
+根据是否需要开启线程安全来决定是否需要初始化互斥锁指针。</p>
+<p>当写数据的次数超过指定的写数据限制时，需要写入新的日志文件，这是通过
+<code>rollFile()</code> 来实现的：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">LogFile::rollFile</span><span class="hljs-params">()</span> </span>&#123;<br>  <span class="hljs-type">time_t</span> now = <span class="hljs-number">0</span>;<br>  string filename = <span class="hljs-built_in">getLogFileName</span>(basename_, &amp;now);<br>  <span class="hljs-type">time_t</span> start = now / kRollPerSeconds_ * kRollPerSeconds_;<br> <br>  <span class="hljs-keyword">if</span> (now &gt; lastRoll_) &#123;<br>    lastRoll_ = now;<br>    lastFlush_ = now;<br>    startOfPeriod_ = start;<br>    file_.<span class="hljs-built_in">reset</span>(<span class="hljs-keyword">new</span> FileUtil::<span class="hljs-built_in">AppendFile</span>(filename));<br>    <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;<br>  &#125;<br>  <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>其创建并打开一个新的日志文件，然后更改 <code>unique_ptr</code>
+所指向的文件对象。</p>
+<p>为了避免频繁的创建新的文件，该函数确保上次滚动事件到现在如果不足 1
+秒，就不会发生滚动：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">LogFile::append_unlocked</span><span class="hljs-params">(<span class="hljs-type">const</span> <span class="hljs-type">char</span>* logline, <span class="hljs-type">int</span> len)</span> </span>&#123;<br>  file_-&gt;<span class="hljs-built_in">append</span>(logline, len);<br>  <span class="hljs-keyword">if</span> (file_-&gt;<span class="hljs-built_in">writtenBytes</span>() &gt; rollSize_) &#123;<br>    <span class="hljs-built_in">rollFile</span>();<br>  &#125; <span class="hljs-keyword">else</span> &#123;<br>    ++count_;<br>    <span class="hljs-keyword">if</span> (count_ &gt;= checkEveryN_) &#123;<br>      count_ = <span class="hljs-number">0</span>;<br>      <span class="hljs-type">time_t</span> now = ::<span class="hljs-built_in">time</span>(<span class="hljs-literal">NULL</span>);<br>      <span class="hljs-type">time_t</span> thisPeriod_ = now / kRollPerSeconds_ * kRollPerSeconds_;<br>      <span class="hljs-keyword">if</span> (thisPeriod_ != startOfPeriod_) &#123;<br>        <span class="hljs-built_in">rollFile</span>();<br>      &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (now - lastFlush_ &gt; flushInterval_) &#123;<br>        lastFlush_ = now;<br>        file_-&gt;<span class="hljs-built_in">flush</span>();<br>      &#125;<br>    &#125;<br>  &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>日志名的生成是通过如下函数实现的：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-function">string <span class="hljs-title">LogFile::getLogFileName</span><span class="hljs-params">(<span class="hljs-type">const</span> string&amp; basename, <span class="hljs-type">time_t</span>* now)</span> </span>&#123;<br>  string filename;<br>  filename.<span class="hljs-built_in">reserve</span>(basename.<span class="hljs-built_in">size</span>() + <span class="hljs-number">64</span>);<br>  filename = basename;<br>  <span class="hljs-type">char</span> timebuf[<span class="hljs-number">32</span>];<br>  <span class="hljs-keyword">struct</span> <span class="hljs-title class_">tm</span> tm;<br>  *now = <span class="hljs-built_in">time</span>(<span class="hljs-literal">NULL</span>);<br>  <span class="hljs-built_in">gmtime_r</span>(now, &amp;tm);<br>  <span class="hljs-built_in">strftime</span>(timebuf, <span class="hljs-keyword">sizeof</span> timebuf, <span class="hljs-string">&quot;.%Y%m%d-%H%M%S.&quot;</span>, &amp;tm);<br>  filename += timebuf;<br>  filename += ProcessInfo::<span class="hljs-built_in">hostname</span>();<br>  <span class="hljs-type">char</span> pidbuf[<span class="hljs-number">32</span>];<br>  <span class="hljs-built_in">snprintf</span>(pidbuf, <span class="hljs-keyword">sizeof</span> pidbuf, <span class="hljs-string">&quot;.%d&quot;</span>, ProcessInfo::<span class="hljs-built_in">pid</span>());<br>  filename += pidbuf;<br>  filename += <span class="hljs-string">&quot;.log&quot;</span>;<br>  <span class="hljs-keyword">return</span> filename;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>日志的文件名是通过
+<code>[基础名].[当前时间].[主机名].[进程号].log</code> 来构成的。</p>
+<p><code>LogFile</code> 通过 <code>append()</code>
+方法将日志写入文件，它实质上调用的是 <code>append_unlocked()</code>
+方法，同时根据是否开启线程安全来决定是否需要添加互斥锁来保护临界区。</p>
+<p>同样地，刷新操作也是根据是否启用线程安全来决定是否添加互斥锁保护临界区，其内部调用的是
+<code>AppendFile::flush()</code> 方法。</p>
+<h2 id="总结">总结</h2>
+<p>参考:</p>
+<ul>
+<li><a
+target="_blank" rel="noopener" href="https://www.cnblogs.com/tuilk/p/16793625.html">Muduo库之异步日志</a></li>
+</ul>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/C/" class="category-chain-item">C++</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/C/muduo/" class="category-chain-item">muduo</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/C/">#C++</a>
+      
+        <a href="/tags/muduo/">#muduo</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>muduo库-日志类</div>
+      <div>https://gstarmin.github.io/2023/06/29/muduo库-日志类/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Starmin</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年6月29日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/06/28/muduo%E5%BA%93-ThreadLocalSingleton%E7%B1%BB/" title="muduo库-ThreadLocalSingleton类">
+                        <span class="hidden-mobile">muduo库-ThreadLocalSingleton类</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
