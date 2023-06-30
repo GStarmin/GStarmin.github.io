@@ -448,9 +448,9 @@ Buffer 传递给后端进行处理，相当于批量处理，减少了线程唤�
 <code>&lt;&lt;</code>
 运算符来输出基本的数据类型到缓冲区。各种输入类型的调用链如下所示：</p>
 <p><img src="/img/muduo/日志类/输入类型调用链.png" srcset="/img/loading.gif" lazyload /></p>
-<div class="admonition attention">
+<div class="admonition note">
 <p class="admonition-title">
-attention
+note
 </p>
 <p>
 LogStream 不是线程安全的，因此对于每个 log 消息应当构造一个临时的
