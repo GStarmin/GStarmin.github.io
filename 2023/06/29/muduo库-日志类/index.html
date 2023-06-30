@@ -395,9 +395,14 @@ IO 操作，从而减少了 IO 函数的调用次数，提高了效率。</p>
 占用较高。尽管在多线程文件操作中是线程安全的，但是多个线程写入日志的顺序确难以保证。</p>
 <p>为此，可以在应用程序启动之初打开全局文件一次，后续每次日志操作，只需写入文件即可。</p>
 <p>由于文件操作默认是存在缓冲区的，只有当缓冲区存满后，才将缓冲区的内容输出到文件中。相较于频繁的打开文件，此方案减少了打开文件、关闭文件的次数，效率得到了提升。</p>
-<blockquote>
-<p>C++ 中的 ostream 并非线程安全，而 C 中的 fwrite 则是线程安全的。</p>
-</blockquote>
+<div class="admonition note">
+<p class="admonition-title">
+note
+</p>
+<p>
+C++ 中的 ostream 并非线程安全，而 C 中的 fwrite 则是线程安全的。
+</p>
+</div>
 <p>为了进一步提高效率，尽可能地减少磁盘 IO
 的操作。可以使用一个线程安全队列，一边负责写日志消息，一边负责取日志消息。当所取日志条数或总长度达到一定数量时，我们才写入一次磁盘，以此来降低磁盘
 IO 的操作次数。</p>
@@ -412,9 +417,14 @@ IO 的操作次数。</p>
 中写入新的日志消息，如此反复。</p>
 <p><img src="/img/muduo/日志类/多缓冲技术-1.png" srcset="/img/loading.gif" lazyload /></p>
 <p>在大部分的时间中，前端线程和后端线程不会操作同一个缓冲区，这也就意味着前端线程的操作，不需要等待后端线程缓慢的写文件操作，因为不需要锁定临界区。</p>
-<blockquote>
-<p>前端线程和后端线程仅仅只在交换缓冲区时会存在线程同步问题，因此只需要在交换缓冲区时使用互斥锁来保护临界区即可，这个时间极其短暂，这也就是提高吞吐量的关键所在。</p>
-</blockquote>
+<div class="admonition note">
+<p class="admonition-title">
+note
+</p>
+<p>
+前端线程和后端线程仅仅只在交换缓冲区时会存在线程同步问题，因此只需要在交换缓冲区时使用互斥锁来保护临界区即可，这个时间极其短暂，这也就是提高吞吐量的关键所在。
+</p>
+</div>
 <p>同时，后端线程将缓冲区中的日志消息写入到文件系统中的频率，完全由自己的写入策略来决定，避免了每条新的日志消息都唤醒后端线程。</p>
 <p>换言之，前端线程不是将一条条日志消息分别传送给后端线程，而是将多条消息组成一个大的
 Buffer 传递给后端进行处理，相当于批量处理，减少了线程唤醒的频率和 IO
@@ -438,10 +448,15 @@ Buffer 传递给后端进行处理，相当于批量处理，减少了线程唤�
 <code>&lt;&lt;</code>
 运算符来输出基本的数据类型到缓冲区。各种输入类型的调用链如下所示：</p>
 <p><img src="/img/muduo/日志类/输入类型调用链.png" srcset="/img/loading.gif" lazyload /></p>
-<blockquote>
-<p>注意：LogStream 不是线程安全的，因此对于每个 log
-消息应当构造一个临时的 LogStream，用完之后随即销毁。</p>
-</blockquote>
+<div class="admonition attention">
+<p class="admonition-title">
+attention
+</p>
+<p>
+LogStream 不是线程安全的，因此对于每个 log 消息应当构造一个临时的
+LogStream，用完之后随即销毁。
+</p>
+</div>
 <p>在该类中，设计了大量的运算符重载函数，其效率要优于
 <code>iostream</code> 和 <code>stdio</code>，使用的思想源于 Matthew
 Wilson 的 “带符号整形数据的除法与余数”
@@ -653,10 +668,6 @@ AsyncLogging::append() 方法将日志消息传递给后端：</p>
 <h2 id="总结">总结</h2>
 <p>转载自 <a
 target="_blank" rel="noopener" href="https://www.cnblogs.com/tuilk/p/16793625.html">Muduo库之异步日志</a></p>
-<!-- !!! note Hexo-admonition 插件使用示例
-    这是基于 hexo-admonition 插件渲染的一条提示信息。类型为 note，并设置了自定义标题。
-
-    提示内容开头留 4 个空格，可以有多行，最后用空行结束此标记。 -->
 
                 
               </div>
