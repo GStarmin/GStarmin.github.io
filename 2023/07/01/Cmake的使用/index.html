@@ -1,0 +1,878 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Starmin">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="Cmake的使用 CMake是一个跨平台的安装(编译)工具,可以用简单的语句来描述所有平台的安装(编译过程)。他能够输出各种各样的makefile或者project文件,能测试编译器所支持的C++特性,类似UNIX下的automake。 编译一个独立的cpp文件 文件结构如下： 123singleFile&#x2F;| -- CMakeLists.txt| -- helloWorld.cpp CMakeLi">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Cmake的使用">
+<meta property="og:url" content="https://gstarmin.github.io/2023/07/01/Cmake%E7%9A%84%E4%BD%BF%E7%94%A8/">
+<meta property="og:site_name" content="私人杂货铺">
+<meta property="og:description" content="Cmake的使用 CMake是一个跨平台的安装(编译)工具,可以用简单的语句来描述所有平台的安装(编译过程)。他能够输出各种各样的makefile或者project文件,能测试编译器所支持的C++特性,类似UNIX下的automake。 编译一个独立的cpp文件 文件结构如下： 123singleFile&#x2F;| -- CMakeLists.txt| -- helloWorld.cpp CMakeLi">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gstarmin.github.io/img/CMake/单个文件cmake命令.png">
+<meta property="og:image" content="https://gstarmin.github.io/img/CMake/单个文件make命令.png">
+<meta property="og:image" content="https://gstarmin.github.io/img/CMake/单个文件-build文件夹cmake命令.png">
+<meta property="og:image" content="https://gstarmin.github.io/img/CMake/单个文件-build文件夹make命令.png">
+<meta property="og:image" content="https://gstarmin.github.io/img/CMake/多文件-build文件夹cmake命令.png">
+<meta property="og:image" content="https://gstarmin.github.io/img/CMake/多文件-build文件夹make命令.png">
+<meta property="og:image" content="https://gstarmin.github.io/img/CMake/生成so文件.png">
+<meta property="og:image" content="https://gstarmin.github.io/img/CMake/lib-build文件夹cmake.png">
+<meta property="og:image" content="https://gstarmin.github.io/img/CMake/lib-build文件夹make.png">
+<meta property="article:published_time" content="2023-07-01T13:24:32.000Z">
+<meta property="article:modified_time" content="2023-07-01T13:24:32.000Z">
+<meta property="article:author" content="Starmin">
+<meta property="article:tag" content="C++">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://gstarmin.github.io/img/CMake/单个文件cmake命令.png">
+  
+  
+  
+  <title>Cmake的使用 - 私人杂货铺</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"gstarmin.github.io","root":"/","version":"1.9.3","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 5.4.2"><style>.mjpage .MJX-monospace {
+  font-family: monospace;
+}
+
+.mjpage .MJX-sans-serif {
+  font-family: sans-serif;
+}
+
+.mjpage {
+  display: inline;
+  font-style: normal;
+  font-weight: normal;
+  line-height: normal;
+  font-size: 100%;
+  font-size-adjust: none;
+  text-indent: 0;
+  text-align: left;
+  text-transform: none;
+  letter-spacing: normal;
+  word-spacing: normal;
+  word-wrap: normal;
+  white-space: nowrap;
+  float: none;
+  direction: ltr;
+  max-width: none;
+  max-height: none;
+  min-width: 0;
+  min-height: 0;
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+
+.mjpage * {
+  transition: none;
+  -webkit-transition: none;
+  -moz-transition: none;
+  -ms-transition: none;
+  -o-transition: none;
+}
+
+.mjx-svg-href {
+  fill: blue;
+  stroke: blue;
+}
+
+.MathJax_SVG_LineBox {
+  display: table !important;
+}
+
+.MathJax_SVG_LineBox span {
+  display: table-cell !important;
+  width: 10000em !important;
+  min-width: 0;
+  max-width: none;
+  padding: 0;
+  border: 0;
+  margin: 0;
+}
+
+.mjpage__block {
+  text-align: center;
+  margin: 1em 0em;
+  position: relative;
+  display: block !important;
+  text-indent: 0;
+  max-width: none;
+  max-height: none;
+  min-width: 0;
+  min-height: 0;
+  width: 100%;
+}
+</style></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Starmin</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Cmake的使用"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-07-01 21:24" pubdate>
+          2023年7月1日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          4.2k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          42 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Cmake的使用</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="cmake的使用">Cmake的使用</h1>
+<p>CMake是一个跨平台的安装(编译)工具,可以用简单的语句来描述所有平台的安装(编译过程)。他能够输出各种各样的makefile或者project文件,能测试编译器所支持的C++特性,类似UNIX下的automake。</p>
+<h2 id="编译一个独立的cpp文件">编译一个独立的cpp文件</h2>
+<p>文件结构如下：</p>
+<figure class="highlight 1c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs 1c">singleFile/<br><span class="hljs-string">| -- CMakeLists.txt</span><br><span class="hljs-string">| -- helloWorld.cpp</span><br></code></pre></td></tr></table></figure>
+<p>CMakeLists.txt的文件为：</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs cmake"><span class="hljs-keyword">PROJECT</span> (<span class="hljs-keyword">TEST</span>)<br><span class="hljs-keyword">cmake_minimum_required</span>(VERSION <span class="hljs-number">3.12</span>) <span class="hljs-comment"># camke版本号</span><br><span class="hljs-keyword">AUX_SOURCE_DIRECTORY</span>(. SRC_LIST) <span class="hljs-comment"># 将./下的所有*.cpp加入到SRC_LIST中</span><br><span class="hljs-keyword">ADD_EXECUTABLE</span>(hello <span class="hljs-variable">$&#123;SRC_LIST&#125;</span>)<br></code></pre></td></tr></table></figure>
+<p>在singleFile文件夹下执行命令：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">cmake ./<br></code></pre></td></tr></table></figure>
+<p>可以看到编译生成的文件已经在当前目录下生成了：</p>
+<p><img src="/img/CMake/单个文件cmake命令.png" srcset="/img/loading.gif" lazyload /></p>
+<p>然后执行命令：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">make<br></code></pre></td></tr></table></figure>
+<p>就可以生成我们程序的可执行文件了：</p>
+<p><img src="/img/CMake/单个文件make命令.png" srcset="/img/loading.gif" lazyload /></p>
+<p>但是这样会有一个问题，就是编译生成的文件都在当前目录下，这样会导致文件夹很乱，所以我们可以创建一个build文件夹，那么文件结构就变为如下所示：</p>
+<figure class="highlight 1c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs 1c">singleFile/<br><span class="hljs-string">| -- CMakeLists.txt</span><br><span class="hljs-string">| -- build/</span><br><span class="hljs-string">| -- helloWorld.cpp</span><br></code></pre></td></tr></table></figure>
+<p>然后在singleFile/build文件夹下执行命令：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">cmake ..<br></code></pre></td></tr></table></figure>
+<p>可以看到编译生成的文件全部都在build文件夹里生成了</p>
+<p><img src="/img/CMake/单个文件-build文件夹cmake命令.png" srcset="/img/loading.gif" lazyload /></p>
+<div class="admonition note">
+<p class="admonition-title">
+note
+</p>
+<p>
+这里需要注意的是，build文件夹的位置是可以改变的，甚至其名字也可以改，但是习惯上使用build作为文件夹的名字，示例里cmake命令后面的参数是两个点，是因为CMakelists.txt文件在上一级目录，所以需要用两个点来表示上一级目录,如果将build文件夹放在其他的地方，那么需要保证执行<code>cmake</code>命令的之后后边跟的路径是CMakeLists.txt文件所在的路径。
+</p>
+</div>
+<p>然后执行命令：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">make<br></code></pre></td></tr></table></figure>
+<p>就可以生成我们程序的可执行文件了：</p>
+<p><img src="/img/CMake/单个文件-build文件夹make命令.png" srcset="/img/loading.gif" lazyload /></p>
+<h2 id="编译多个cpp文件">编译多个cpp文件</h2>
+<p>文件结构如下：</p>
+<figure class="highlight ada"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs ada">multiFile/<br>| <span class="hljs-comment">-- CMakeList.txt </span><br>| <span class="hljs-comment">-- main.cpp</span><br>| <span class="hljs-comment">-- build/</span><br>| <span class="hljs-comment">-- src/ </span><br>    <span class="hljs-comment">-- CMakeList.txt  </span><br>    <span class="hljs-comment">-- test.h</span><br>    <span class="hljs-comment">-- test.cpp</span><br></code></pre></td></tr></table></figure>
+<p><code>main.cpp</code>,
+<code>test.cpp</code>,以及<code>test.h</code>文件的内容如下：</p>
+<p>test.h:</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">// test.h</span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span><span class="hljs-string">&lt;iostream&gt;</span></span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Test</span>&#123;<br><span class="hljs-keyword">public</span>:<br>    <span class="hljs-built_in">Test</span>();<br>    ~<span class="hljs-built_in">Test</span>();<br>    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">print</span><span class="hljs-params">()</span></span>;<br>&#125;;<br></code></pre></td></tr></table></figure>
+<p>test.cpp:</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-meta">#<span class="hljs-keyword">include</span><span class="hljs-string">&quot;test.h&quot;</span></span><br><br>Test::<span class="hljs-built_in">Test</span>()<br>&#123;<br>&#125;<br><br>Test::~<span class="hljs-built_in">Test</span>()<br>&#123;<br>&#125;<br><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">Test::print</span><span class="hljs-params">()</span></span><br><span class="hljs-function"></span>&#123;<br>    std::cout &lt;&lt; <span class="hljs-string">&quot;Hello World!&quot;</span> &lt;&lt; std::endl;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>main.cpp:</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">// main.cpp</span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span><span class="hljs-string">&lt;iostream&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span><span class="hljs-string">&quot;src/test.h&quot;</span></span><br><span class="hljs-keyword">using</span> std::cout;<br><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span><br><span class="hljs-function"></span>&#123;<br><br>    Test test;<br>    test.<span class="hljs-built_in">print</span>();<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>根目录下CMakeLists.txt文件为：</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs cmake"><span class="hljs-keyword">PROJECT</span>(main)<br><span class="hljs-keyword">CMAKE_MINIMUM_REQUIRED</span>(VERSION <span class="hljs-number">3.12</span>)<br><span class="hljs-keyword">ADD_SUBDIRECTORY</span>(src)<br><span class="hljs-keyword">AUX_SOURCE_DIRECTORY</span>(. DIR_SRCS)<br><span class="hljs-keyword">ADD_EXECUTABLE</span>(main <span class="hljs-variable">$&#123;DIR_SRCS&#125;</span>)<br><span class="hljs-keyword">TARGET_LINK_LIBRARIES</span>(main <span class="hljs-keyword">TEST</span>)<br></code></pre></td></tr></table></figure>
+<p>src文件夹下的CMakeLists.txt文件为：</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs cmake"><span class="hljs-keyword">AUX_SOURCE_DIRECTORY</span>(. DIR_TEST_SRC)<br><span class="hljs-comment"># generate *.so</span><br><span class="hljs-keyword">ADD_LIBRARY</span>(<span class="hljs-keyword">TEST</span> SHARED <span class="hljs-variable">$&#123;DIR_TEST_SRC&#125;</span>)<br></code></pre></td></tr></table></figure>
+<p>在multiFile/build文件夹下执行命令：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">cmake ..<br></code></pre></td></tr></table></figure>
+<p>如下图所示：</p>
+<p><img src="/img/CMake/多文件-build文件夹cmake命令.png" srcset="/img/loading.gif" lazyload /></p>
+<p>与编译单个文件时一样，执行<code>make</code>命令就可以生成可执行文件了：</p>
+<p><img src="/img/CMake/多文件-build文件夹make命令.png" srcset="/img/loading.gif" lazyload /></p>
+<p>同时可以看到在"multiFile/build/src"文件夹下生成了.so文件</p>
+<p><img src="/img/CMake/生成so文件.png" srcset="/img/loading.gif" lazyload /></p>
+<h2 id="调用-.so-.h文件结构">调用 *.so, *.h，文件结构:</h2>
+<figure class="highlight ada"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs ada">libTest/<br>| <span class="hljs-comment">-- build/</span><br>| <span class="hljs-comment">-- include/</span><br>    <span class="hljs-comment">--  test.h</span><br>| <span class="hljs-comment">-- libs/</span><br>    <span class="hljs-comment">-- libTEST.so</span><br>| <span class="hljs-comment">-- CMakeLists.txt</span><br>| <span class="hljs-comment">-- main.cpp</span><br></code></pre></td></tr></table></figure>
+<p>这里的<code>libTEST.so</code>文件是上面使用<code>cmake</code>命令生成的.so文件，<code>test.h</code>是之前的<code>test.h</code>文件，<code>main.cpp</code>文件的内容如下：</p>
+<p>CMakeLists.txt的文件为：</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs cmake"><span class="hljs-keyword">PROJECT</span>(main)<br><span class="hljs-keyword">CMAKE_MINIMUM_REQUIRED</span>(VERSION <span class="hljs-number">3.12</span>)<br><span class="hljs-keyword">INCLUDE_DIRECTORIES</span>(./<span class="hljs-keyword">include</span>)<br><span class="hljs-keyword">AUX_SOURCE_DIRECTORY</span>(. DIR_SRCS)<br><span class="hljs-keyword">ADD_EXECUTABLE</span>(main <span class="hljs-variable">$&#123;DIR_SRCS&#125;</span>)<br><span class="hljs-comment"># 绝对路径添加 *.so</span><br><span class="hljs-keyword">TARGET_LINK_LIBRARIES</span>(main /home/starmin/Code/testCode/cmakeTest/libTest/libs/libTEST.so)<br></code></pre></td></tr></table></figure>
+<div class="admonition attention">
+<p class="admonition-title">
+attention
+</p>
+<p>
+这里需要注意的是，<code>TARGET_LINK_LIBRARIES</code>后面的<code>libTEST.so</code>路径必须绝对路径,如果想要使用相对路径，需要设置链接库搜索目录（见下文<strong>设置链接库搜索目录</strong>）
+</p>
+</div>
+<p>在build文件夹下执行<code>cmake</code>命令：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">cmake ..<br></code></pre></td></tr></table></figure>
+<p><img src="/img/CMake/lib-build文件夹cmake.png" srcset="/img/loading.gif" lazyload /></p>
+<p>然后执行<code>make</code>命令：</p>
+<p><img src="/img/CMake/lib-build文件夹make.png" srcset="/img/loading.gif" lazyload /></p>
+<h2 id="cmakelists.txt的常用选项">CMakelists.txt的常用选项</h2>
+<p>上面是CMake最基本的集中使用方法，还有一些CMake常用的选项见下文</p>
+<h3 id="指定cmake的最小版本">指定cmake的最小版本</h3>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs cmake"><span class="hljs-keyword">CMAKE_MINIMUM_REQUIRED</span>(VERSION <span class="hljs-number">3.12</span>)    <span class="hljs-comment"># 指定cmake的最小版本</span><br></code></pre></td></tr></table></figure>
+<h3 id="定义工程名称">定义工程名称</h3>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs cmake"><span class="hljs-keyword">PROJECT</span>(main)   <span class="hljs-comment"># 定义工程名称</span><br></code></pre></td></tr></table></figure>
+<h3 id="显示定义变量">显示定义变量</h3>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs cmake"><span class="hljs-keyword">set</span>(var [value]) <span class="hljs-comment"># 显示定义变量</span><br></code></pre></td></tr></table></figure>
+<p>例如：</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs cmake"><span class="hljs-comment"># 第一种用法，生成代码文件列表</span><br><span class="hljs-comment"># 先直接设置SRC_LIST的值</span><br><span class="hljs-keyword">set</span>(SRC_LIST add.h add.cpp)<br><span class="hljs-comment"># 然后再在SRC_LIST中追加main.cpp </span><br><span class="hljs-keyword">set</span>(SRC_LIST <span class="hljs-variable">$&#123;SRC_LIST&#125;</span> main.cpp)<br><br><span class="hljs-comment"># 第二中用法，设置库生成目录或者可执行文件生成目录</span><br><span class="hljs-keyword">set</span>( LIBRARY_OUTPUT_PATH <span class="hljs-variable">$&#123;PROJECT_SOURCE_DIR&#125;</span>/lib/linux) <br><span class="hljs-keyword">set</span>( EXECUTABLE_OUTPUT_PATH <span class="hljs-variable">$&#123;PROJECT_SOURCE_DIR&#125;</span>/bin)<br></code></pre></td></tr></table></figure>
+<h3 id="编译链接库可执行程序">编译链接库/可执行程序</h3>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs cmake"><span class="hljs-comment"># 编译静态库</span><br><span class="hljs-keyword">add_library</span>(库名称 STATIC 代码文件名称) <br><br><span class="hljs-comment"># 编译动态库</span><br><span class="hljs-keyword">add_library</span>(库名称 SHARED 代码文件名称) <br><br><span class="hljs-comment"># 编译可执行程序</span><br><span class="hljs-keyword">add_executable</span>(可执行程序名 代码文件名称)<br></code></pre></td></tr></table></figure>
+<p>例如：</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs cmake"><span class="hljs-comment"># 编译静态库</span><br><span class="hljs-keyword">add_library</span>(add STATIC add.h add.cpp)<br><span class="hljs-keyword">add_library</span>(add STATIC <span class="hljs-variable">$&#123;ADD_SRC&#125;</span> <span class="hljs-variable">$&#123;ADD_HDR&#125;</span>)<br><br><span class="hljs-comment"># 编译动态库</span><br><span class="hljs-keyword">add_library</span>(add  SHARED add.h add.cpp) <br><span class="hljs-keyword">add_library</span>(add SHARED  <span class="hljs-variable">$&#123;ADD_SRC&#125;</span> <span class="hljs-variable">$&#123;ADD_HDR&#125;</span>)<br><br><span class="hljs-comment"># 编译可执行程序</span><br><span class="hljs-keyword">add_executable</span>(main add.h add.cpp mai.cpp)<br><span class="hljs-keyword">add_executable</span>(main <span class="hljs-variable">$&#123;MAIN_SRC&#125;</span> <span class="hljs-variable">$&#123;MAIN_HDR&#125;</span>)<br></code></pre></td></tr></table></figure>
+<h3
+id="指定静态库或者动态库编译输出目录">指定静态库或者动态库编译输出目录</h3>
+<p>例如将当前编译的静态库或者动态库输出到当前项目文件夹lib子目录下</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs cmake"><span class="hljs-keyword">set</span>(LIBRARY_OUTPUT_PATH  <span class="hljs-variable">$&#123;PROJECT_SOURCE_DIR&#125;</span>/lib)<br></code></pre></td></tr></table></figure>
+<h3 id="指定可执行程序编译输出目录">指定可执行程序编译输出目录</h3>
+<p>例如将当前可执行程序输出到当前项目文件夹的bin子目录下</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs cmake"><span class="hljs-comment">#设定可执行二进制文件的目录</span><br><span class="hljs-keyword">set</span>( EXECUTABLE_OUTPUT_PATH <span class="hljs-variable">$&#123;PROJECT_SOURCE_DIR&#125;</span>/bin)<br></code></pre></td></tr></table></figure>
+<h3 id="设置链接库搜索目录">设置链接库搜索目录</h3>
+<p>例如将链接库搜索目录设置为当前项目文件夹下lib/linux文件夹</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs cmake"><span class="hljs-keyword">link_directories</span>( <span class="hljs-variable">$&#123;PROJECT_SOURCE_DIR&#125;</span>/lib/linux)<br></code></pre></td></tr></table></figure>
+<h3 id="设置包含目录">设置包含目录</h3>
+<p>例如将包含目录设置为当前项目文件夹下include文件夹</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs cmake"><span class="hljs-keyword">INCLUDE_DIRECTORIES</span>(<span class="hljs-variable">$&#123;PROJECT_SOURCE_DIR&#125;</span>/<span class="hljs-keyword">include</span>)<br></code></pre></td></tr></table></figure>
+<h3 id="设置宏定义">设置宏定义</h3>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs cmake"><span class="hljs-comment">#预定义宏</span><br><span class="hljs-keyword">add_definitions</span>(-D宏名称)<br></code></pre></td></tr></table></figure>
+<p>例如：</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs cmake"><span class="hljs-keyword">add_definitions</span>(-DWINDOWS)<br><span class="hljs-keyword">add_definitions</span>(-DLINUX)<br></code></pre></td></tr></table></figure>
+<h3 id="静态链接库">静态链接库</h3>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs cmake"><span class="hljs-keyword">TARGET_LINK_LIBRARIES</span>(main <span class="hljs-keyword">TEST</span>.so)    <span class="hljs-comment"># 链接库</span><br></code></pre></td></tr></table></figure>
+<h3 id="添加子文件夹">添加子文件夹</h3>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs cmake"><span class="hljs-keyword">add_subdirectory</span>(src)<br></code></pre></td></tr></table></figure>
+<div class="admonition note">
+<p class="admonition-title">
+note
+</p>
+<p>
+该语句会在执行完当前文件夹CMakeLists.txt之后执行src子目录下的CMakeLists.txt
+</p>
+</div>
+<h3 id="add_subdirectory">ADD_SUBDIRECTORY</h3>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs cmake"><span class="hljs-keyword">ADD_SUBDIRECTORY</span>(src)   <span class="hljs-comment"># 添加子目录</span><br></code></pre></td></tr></table></figure>
+<h3 id="源文件名赋值给变量">源文件名赋值给变量</h3>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs cmake"><span class="hljs-keyword">AUX_SOURCE_DIRECTORY</span>(. DIR_SRCS)   <span class="hljs-comment"># 将当前目录下的所有源文件名赋值给变量DIR_SRCS</span><br></code></pre></td></tr></table></figure>
+<p>参考：</p>
+<ul>
+<li><a
+target="_blank" rel="noopener" href="https://segmentfault.com/a/1190000021336082">CMake--使用教程基础篇</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/315768216">cmake常用命令的一些整理</a></li>
+</ul>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/C/">#C++</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Cmake的使用</div>
+      <div>https://gstarmin.github.io/2023/07/01/Cmake的使用/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Starmin</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年7月1日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/06/29/muduo%E5%BA%93-%E6%97%A5%E5%BF%97%E7%B1%BB/" title="muduo库-日志类">
+                        <span class="hidden-mobile">muduo库-日志类</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

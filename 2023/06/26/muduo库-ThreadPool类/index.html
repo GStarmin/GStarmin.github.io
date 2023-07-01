@@ -299,7 +299,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          5.6k 字
+          5.7k 字
         
       </span>
     
@@ -310,7 +310,7 @@
         
         
         
-          56 分钟
+          57 分钟
         
       </span>
     
@@ -404,6 +404,14 @@ f，然后通过线程池接口，将f加入双端队列末尾。当线程池有
 run()没有任何返回值，用户只能自行设计用户任务函数及参数，通过参数状态取得结果。
 当然，还有另外的办法就是，让run()返回一个std::future<return_type>，通过future异步获取结果。</p></li>
 </ol>
+<h2 id="线程池大小的选择">线程池大小的选择</h2>
+<p>若池中执行任务时，密集计算所占用的时间比重为<span
+class="math inline">\(P(0&lt;P&lt;=1)1\)</span>,而系统一共有<span
+class="math inline">\(C\)</span>个CPU，为了让<span
+class="math inline">\(C\)</span>个CPU都能得到充分利用而不过载，线程池大小的经验公式为：<span
+class="math inline">\(T=C/P\)</span>,即<span
+class="math inline">\(T*P=C\)</span>(让CPU刚好跑满)</p>
+<h2 id="总结">总结</h2>
 <p>参考：</p>
 <ul>
 <li><a
