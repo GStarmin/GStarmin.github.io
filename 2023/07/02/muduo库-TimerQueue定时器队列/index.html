@@ -1,0 +1,896 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Starmin">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="muduo库-TimerQueue定时器队列 网络编程中，有一类非常重要的事件，跟IO事件没有直接联系，而是内部产生的事件，即定时事件。 muduo网络库中的定时功能是如何实现的呢？ 传统的Reactor通过控制select和poll的等待时间，来实现定时，而Linux中，可以用timerfd来实现。前面讲过，timerfd是Linux特有的定时器，能有效融入select&#x2F;poll&#x2F;epoll框架">
+<meta property="og:type" content="article">
+<meta property="og:title" content="muduo库-TimerQueue定时器队列">
+<meta property="og:url" content="https://gstarmin.github.io/2023/07/02/muduo%E5%BA%93-TimerQueue%E5%AE%9A%E6%97%B6%E5%99%A8%E9%98%9F%E5%88%97/">
+<meta property="og:site_name" content="私人杂货铺">
+<meta property="og:description" content="muduo库-TimerQueue定时器队列 网络编程中，有一类非常重要的事件，跟IO事件没有直接联系，而是内部产生的事件，即定时事件。 muduo网络库中的定时功能是如何实现的呢？ 传统的Reactor通过控制select和poll的等待时间，来实现定时，而Linux中，可以用timerfd来实现。前面讲过，timerfd是Linux特有的定时器，能有效融入select&#x2F;poll&#x2F;epoll框架">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gstarmin.github.io/img/muduo/定时器/定时器时序图.png">
+<meta property="article:published_time" content="2023-07-02T08:47:06.000Z">
+<meta property="article:modified_time" content="2023-07-02T08:47:06.000Z">
+<meta property="article:author" content="Starmin">
+<meta property="article:tag" content="C++">
+<meta property="article:tag" content="muduo">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://gstarmin.github.io/img/muduo/定时器/定时器时序图.png">
+  
+  
+  
+  <title>muduo库-TimerQueue定时器队列 - 私人杂货铺</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"gstarmin.github.io","root":"/","version":"1.9.3","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 5.4.2"><style>.mjpage .MJX-monospace {
+  font-family: monospace;
+}
+
+.mjpage .MJX-sans-serif {
+  font-family: sans-serif;
+}
+
+.mjpage {
+  display: inline;
+  font-style: normal;
+  font-weight: normal;
+  line-height: normal;
+  font-size: 100%;
+  font-size-adjust: none;
+  text-indent: 0;
+  text-align: left;
+  text-transform: none;
+  letter-spacing: normal;
+  word-spacing: normal;
+  word-wrap: normal;
+  white-space: nowrap;
+  float: none;
+  direction: ltr;
+  max-width: none;
+  max-height: none;
+  min-width: 0;
+  min-height: 0;
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+
+.mjpage * {
+  transition: none;
+  -webkit-transition: none;
+  -moz-transition: none;
+  -ms-transition: none;
+  -o-transition: none;
+}
+
+.mjx-svg-href {
+  fill: blue;
+  stroke: blue;
+}
+
+.MathJax_SVG_LineBox {
+  display: table !important;
+}
+
+.MathJax_SVG_LineBox span {
+  display: table-cell !important;
+  width: 10000em !important;
+  min-width: 0;
+  max-width: none;
+  padding: 0;
+  border: 0;
+  margin: 0;
+}
+
+.mjpage__block {
+  text-align: center;
+  margin: 1em 0em;
+  position: relative;
+  display: block !important;
+  text-indent: 0;
+  max-width: none;
+  max-height: none;
+  min-width: 0;
+  min-height: 0;
+  width: 100%;
+}
+</style></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Starmin</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="muduo库-TimerQueue定时器队列"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-07-02 16:47" pubdate>
+          2023年7月2日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          16k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          163 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">muduo库-TimerQueue定时器队列</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="muduo库-timerqueue定时器队列">muduo库-TimerQueue定时器队列</h1>
+<p>网络编程中，有一类非常重要的事件，跟IO事件没有直接联系，而是内部产生的事件，即定时事件。</p>
+<p>muduo网络库中的定时功能是如何实现的呢？
+传统的Reactor通过控制select和poll的等待时间，来实现定时，而Linux中，可以用timerfd来实现。前面讲过，timerfd是Linux特有的定时器，能有效融入select/poll/epoll框架，来做超时事件处理。</p>
+<h2 id="timerfd简要介绍">timerfd简要介绍</h2>
+<p>timerfd的特点是有一个与之关联fd，可绑定Channel，交由Poller监听感兴趣的事件（读、写等）。</p>
+<p>timerfd 3个接口：
+timerfd_create，timerfd_settime，timerfd_gettime。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;sys/timerfd.h&gt;</span></span><br><br><span class="hljs-comment">/* 创建一个定时器对象, 返回与之关联的fd</span><br><span class="hljs-comment">* clockid 可指定为CLOCK_REALTIME（系统范围时钟）或CLOCK_MONOTONIC（不可设置的时钟，不能手动修改）</span><br><span class="hljs-comment">* flags 可指定为TFD_NONBLOCK（为fd设置O_NONBLOCK），TFD_CLOEXEC（为fd设置close-on-exec）</span><br><span class="hljs-comment">*/</span><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">timerfd_create</span><span class="hljs-params">(<span class="hljs-type">int</span> clockid, <span class="hljs-type">int</span> flags)</span></span>;<br><br><span class="hljs-comment">/* 启动或停止绑定到fd的定时器</span><br><span class="hljs-comment"> * flags 指定0：启动一个相对定时器，由new_value-&gt;it_value指定相对定时值；TFD_TIMER_ABSTIME启动一个绝对定时器，由new_value-&gt;it_value指定定时值</span><br><span class="hljs-comment"> * old_value 保存旧定时值</span><br><span class="hljs-comment"> */</span><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">timerfd_settime</span><span class="hljs-params">(<span class="hljs-type">int</span> fd, <span class="hljs-type">int</span> flags, <span class="hljs-type">const</span> <span class="hljs-keyword">struct</span> itimerspec *new_value, <span class="hljs-keyword">struct</span> itimerspec *old_value)</span></span>;<br><br><span class="hljs-comment">/* 获取fd对应定时器的当前时间值  */</span><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">timerfd_gettime</span><span class="hljs-params">(<span class="hljs-type">int</span> fd, <span class="hljs-keyword">struct</span> itimerspec *curr_value)</span></span>;<br></code></pre></td></tr></table></figure>
+<h2 id="定时功能相关类">定时功能相关类</h2>
+<p>muduo库中，定时相关功能由3个class实现：TimerID、Timer、TimerQueue。用户可见的只有TimerId。</p>
+<p>Timestamp类是时间戳类，用来保存超时时刻（精确到1us），保存的是UTC时间，即从
+Unix Epoch（1970-01-01 00:00:00）到指定时间的微秒数。</p>
+<p>Timer类对应一个超时任务，保存了超时时刻Timestamp，超时回调函数，以及超时任务类型（一次
+or 周期）。</p>
+<p>TimerId类用于保存Timer对象，以及独一无二的id。</p>
+<p>TimerQueue类用于设置所有超时任务（Timer），需要高效组织尚未到期的Timer，快速查找已到期Timer，以及高效添加和删除Timer。TimerQueue用std::set存储
+，set会对Timer按到期时间先后顺序进行二叉搜索树排序，时间复杂度O(logN)。</p>
+<p>TimerQueue的定时接口并不是直接暴露给库的使用者的，而是通过EventLoop的runAfter和runEvery来运行用户任务的。其中，runAfter延迟固定秒数后运行一次指定用户任务；runEvery延迟固定秒数后运行用户任务，后续以指定周期运行用户任务。</p>
+<p>TimerQueue回调用户代码onTimer()的时序：</p>
+<p><img src="/img/muduo/定时器/定时器时序图.png" srcset="/img/loading.gif" lazyload /></p>
+<p>时序图里的TimerQueue获取超时Timer（getExpired()）后，User及onTimer()是指用户自定义的超时处理函数，并非库本身的。</p>
+<p>与普通Channel事件一样，超时任务TimerQueue也会使用一个Channel，专门用于绑定timerfd，交由Poller监听，发生可读事件（代表超时）后加入激活通道列表，然后EventLoop::loop()逐个Channel调用对应的回调，从而处理超时事件。</p>
+<p>注意：一个EventLoop只持有一个TimerQueue对象，而TimerQueue通过std::set持有多个Timer对象，但只会设置一个Channel。</p>
+<h2 id="timer类">Timer类</h2>
+<p>Timer类代表一个超时任务，但并不直接绑定Channel。Timer主要包含超时时刻（expiration_），超时回调（callback_），周期时间值（interval_），全局唯一id（sequence_）。</p>
+<p>其声明如下：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">/**</span><br><span class="hljs-comment">* 用于定时事件的内部类</span><br><span class="hljs-comment">*/</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Timer</span> : noncopyable<br>&#123;<br><span class="hljs-keyword">public</span>:<br>    <span class="hljs-built_in">Timer</span>(TimerCallback cb, Timestamp when, <span class="hljs-type">double</span> interval)<br>    : <span class="hljs-built_in">callback_</span>(std::<span class="hljs-built_in">move</span>(cb)),<br>    <span class="hljs-built_in">expiration_</span>(when),<br>    <span class="hljs-built_in">interval_</span>(interval),<br>    <span class="hljs-built_in">repeat_</span>(interval &gt; <span class="hljs-number">0.0</span>),<br>    <span class="hljs-built_in">sequence_</span>(s_numCreated_.<span class="hljs-built_in">incrementAndGet</span>())<br>    &#123; &#125;<br>    <span class="hljs-comment">/* 运行超时回调函数 */</span><br>    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">run</span><span class="hljs-params">()</span> <span class="hljs-type">const</span></span><br><span class="hljs-function">    </span>&#123;<br>        <span class="hljs-built_in">callback_</span>();<br>    &#125;<br>    <span class="hljs-comment">/* 返回超时时刻 */</span><br>    <span class="hljs-function">Timestamp <span class="hljs-title">expiration</span><span class="hljs-params">()</span> <span class="hljs-type">const</span> </span>&#123; <span class="hljs-keyword">return</span> expiration_; &#125;<br>    <span class="hljs-comment">/* 周期重复标志 */</span><br>    <span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">repeat</span><span class="hljs-params">()</span> <span class="hljs-type">const</span> </span>&#123; <span class="hljs-keyword">return</span> repeat_; &#125;<br>    <span class="hljs-comment">/* 全局唯一序列号, 用来表示当前Timer对象 */</span><br>    <span class="hljs-function"><span class="hljs-type">int64_t</span> <span class="hljs-title">sequence</span><span class="hljs-params">()</span> <span class="hljs-type">const</span> </span>&#123; <span class="hljs-keyword">return</span> sequence_; &#125;<br>    <span class="hljs-comment">/* 重启定时器, 只对周期Timer有效(repeat_为true) */</span><br>    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">restart</span><span class="hljs-params">(Timestamp now)</span></span>;<br>    <span class="hljs-comment">/* 当前创建的Timer对象个数, 每新建一个Timer对象就会自增1 */</span><br>    <span class="hljs-function"><span class="hljs-type">static</span> <span class="hljs-type">int64_t</span> <span class="hljs-title">numCreated</span><span class="hljs-params">()</span> </span>&#123; <span class="hljs-keyword">return</span> s_numCreated_.<span class="hljs-built_in">get</span>(); &#125;<br><br><span class="hljs-keyword">private</span>:<br>    <span class="hljs-type">const</span> TimerCallback callback_; <span class="hljs-comment">/* 超时回调 */</span><br>    Timestamp expiration_;         <span class="hljs-comment">/* 超时时刻 */</span><br>    <span class="hljs-type">const</span> <span class="hljs-type">double</span> interval_;        <span class="hljs-comment">/* 周期时间, 单位秒, 可用来结合基础时刻expiration_, 计算新的时刻 */</span><br>    <span class="hljs-type">const</span> <span class="hljs-type">bool</span> repeat_;            <span class="hljs-comment">/* 重复标记. true: 周期Timer; false: 一次Timer */</span><br>    <span class="hljs-type">const</span> <span class="hljs-type">int64_t</span> sequence_;       <span class="hljs-comment">/* 全局唯一序列号 */</span><br><br>    <span class="hljs-comment">// global increasing number, atomic. help to identify different Timer</span><br>    <span class="hljs-type">static</span> AtomicInt64 s_numCreated_; <span class="hljs-comment">/* 类变量, 创建Timer对象的个数, 用来实现全局唯一序列号 */</span><br>&#125;;<br></code></pre></td></tr></table></figure>
+<p>每当创建一个新Timer对象时，原子变量s_numCreated_就会自增1，作为全剧唯一序列号sequence_，用来标识该Timer对象。</p>
+<h3 id="周期timer">周期Timer</h3>
+<p>创建Timer时，超时时刻when决定了回调超时事件时间点，而interval决定了Timer是一次性的，还是周期性的。如果是周期性的，会在TimerQueue::reset中，调用Timer::restart，在当前时间点基础上，重启定时器。</p>
+<h3 id="restart函数">restart函数</h3>
+<p>restart重启Timer，根据Timer是否为周期类型，分为两种情况：</p>
+<ol type="1">
+<li>周期Timer，restart将重置超时时刻expiration_为当前时间 +
+周期间隔时间；</li>
+<li>非周期Timer，即一次性Timer，将restart将expiration_置为无效时间（默认自UTC
+Epoch以来的微妙数为0）；</li>
+</ol>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">Timer::restart</span><span class="hljs-params">(Timestamp now)</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-keyword">if</span> (repeat_)<br>    &#123;<br>        expiration_ = <span class="hljs-built_in">addTime</span>(now, interval_);<br>    &#125;<br>    <span class="hljs-keyword">else</span><br>    &#123;<br>        expiration_ = Timestamp::<span class="hljs-built_in">invalid</span>();<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<h2 id="timerid类">TimerId类</h2>
+<p>TimerId来主要用来作为Timer的唯一标识，用于取消（canceling）Timer。</p>
+<p>TimerId类声明如下：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">/**</span><br><span class="hljs-comment">* An opaque identifier, for canceling Timer.</span><br><span class="hljs-comment">*/</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">TimerId</span> : <span class="hljs-keyword">public</span> muduo::copyable<br>&#123;<br><span class="hljs-keyword">public</span>:<br>    <span class="hljs-built_in">TimerId</span>()<br>    : <span class="hljs-built_in">timer_</span>(<span class="hljs-literal">NULL</span>),<br>    <span class="hljs-built_in">sequence_</span>(<span class="hljs-number">0</span>)<br>    &#123; &#125;<br><br>    <span class="hljs-built_in">TimerId</span>(Timer* timer, <span class="hljs-type">int64_t</span> seq)<br>    : <span class="hljs-built_in">timer_</span>(timer),<br>    <span class="hljs-built_in">sequence_</span>(seq)<br>    &#123; &#125;<br><br>    <span class="hljs-comment">// default copy-ctor, dtor and assignment are okay</span><br><br>    <span class="hljs-keyword">friend</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">TimerQueue</span>;<br><br><span class="hljs-keyword">private</span>:<br>    Timer* timer_;<br>    <span class="hljs-type">int64_t</span> sequence_;<br>&#125;;<br></code></pre></td></tr></table></figure>
+<p>注意：TimerId并不直接生成Timer序列号sequence_，这是由Timer来生成的，通过构造函数传递给TimerId。而生成Timer标识的方式，在Timer类介绍中也提到过，只需要创建一个Timer对象即可，然后通过Timer::sequence()方法就可以取得该序列号。</p>
+<h2 id="timerqueue类">TimerQueue类</h2>
+<p>定时器队列TimerQueue是定时功能的核心，由所在EventLoop持有，绑定一个Channel，同时维护多个定时任务（Timer）。为用户（EventLoop）提供添加定时器（addTimer）、取消定时器（cancel）接口。</p>
+<p><strong>同样是定时，TimerQueue与Timer有什么区别？</strong></p>
+<p>TimerQueue包含2个Timer集合：</p>
+<ol type="1">
+<li>timers_定时器集合：包含用户添加的所有Timer对象，std::set会用AVL搜索树，对集合元素按时间戳（Timestamp）从小到大顺序；</li>
+<li>activeTimers_激活定时器集合：包含激活的Timer对象，与timers_包含的Timer对象相同，个数也相同，std::set会根据Timer*指针大小，对元素进行排序；</li>
+<li>cancelingTimers_取消定时器集合：包含所有取消的Timer对象，与activeTimers_相对。</li>
+</ol>
+<p>注意：timers_和activeTimers_的类型并不相同，只是包含的Timer*相同。cancelingTimers_和activeTimers_的类型相同。</p>
+<p>这也是TimerQueue并非Timer的原因，<strong>TimerQueue是一个Timer集合，根据其时间戳大小进行排序，更像是一个队列，先到期的先触发超时事件。因此，可称为Timer队列，即TimerQueue</strong>。</p>
+<p>调用TimerQueue::addTimer的，只有EventLoop中这3个函数：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">/**</span><br><span class="hljs-comment">* 定时功能，由用户指定绝对时间</span><br><span class="hljs-comment">* @details 每为定时器队列timerQueue添加一个Timer,</span><br><span class="hljs-comment">* timerQueue内部就会新建一个Timer对象, TimerId就保含了这个对象的唯一标识(序列号)</span><br><span class="hljs-comment">* @param time 时间戳对象, 单位1us</span><br><span class="hljs-comment">* @param cb 超时回调函数. 当前时间超过time代表时间时, EventLoop就会调用cb</span><br><span class="hljs-comment">* @return 一个绑定timerQueue内部新增的Timer对象的TimerId对象, 用来唯一标识该Timer对象</span><br><span class="hljs-comment">*/</span><br><span class="hljs-function">TimerId <span class="hljs-title">EventLoop::runAt</span><span class="hljs-params">(Timestamp time, TimerCallback cb)</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-keyword">return</span> timerQueue_-&gt;<span class="hljs-built_in">addTimer</span>(std::<span class="hljs-built_in">move</span>(cb), time, <span class="hljs-number">0.0</span>);<br>&#125;<br><br><span class="hljs-comment">/**</span><br><span class="hljs-comment">* 定时功能, 由用户相对时间, 通过runAt实现</span><br><span class="hljs-comment">* @param delay 相对时间, 单位s, 精度1us(小数)</span><br><span class="hljs-comment">* @param cb 超时回调</span><br><span class="hljs-comment">*/</span><br><span class="hljs-function">TimerId <span class="hljs-title">EventLoop::runAfter</span><span class="hljs-params">(<span class="hljs-type">double</span> delay, TimerCallback cb)</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-function">Timestamp <span class="hljs-title">time</span><span class="hljs-params">(addTime(Timestamp::now(), delay))</span></span>;<br>    <span class="hljs-keyword">return</span> <span class="hljs-built_in">runAt</span>(time, std::<span class="hljs-built_in">move</span>(cb));<br>&#125;<br><br><span class="hljs-comment">/**</span><br><span class="hljs-comment">* 定时功能, 由用户指定周期, 重复运行</span><br><span class="hljs-comment">* @param interval 运行周期, 单位s, 精度1us(小数)</span><br><span class="hljs-comment">* @param cb 超时回调</span><br><span class="hljs-comment">* @return 一个绑定timerQueue内部新增的Timer对象的TimerId对象, 用来唯一标识该Timer对象</span><br><span class="hljs-comment">*/</span><br><span class="hljs-function">TimerId <span class="hljs-title">EventLoop::runEvery</span><span class="hljs-params">(<span class="hljs-type">double</span> interval, TimerCallback cb)</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-function">Timestamp <span class="hljs-title">time</span><span class="hljs-params">(addTime(Timestamp::now(), interval))</span></span>;<br>    <span class="hljs-keyword">return</span> timerQueue_-&gt;<span class="hljs-built_in">addTimer</span>(std::<span class="hljs-built_in">move</span>(cb), time, interval);<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>下面是TimerQueue中，3个集合相关的类型及成员定义：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-keyword">typedef</span> std::pair&lt;Timestamp, Timer*&gt; Entry;<br><span class="hljs-keyword">typedef</span> std::set&lt;Entry&gt; TimerList;<br><span class="hljs-keyword">typedef</span> std::pair&lt;Timer*, <span class="hljs-type">int64_t</span>&gt; ActiveTimer;<br><span class="hljs-keyword">typedef</span> std::set&lt;ActiveTimer&gt; ActiveTimerSet;<br><br><span class="hljs-comment">// Timer list sorted by expiration</span><br><span class="hljs-comment">/* 用户添加的所有Timer对象集合</span><br><span class="hljs-comment"> * 需要为set元素比较实现operator&lt; */</span><br>TimerList timers_;<br><br><span class="hljs-comment">// for cancel()</span><br>ActiveTimerSet activeTimers_;<br><span class="hljs-type">bool</span> callingExpiredTimers_; <span class="hljs-comment">/* atomic */</span><br>ActiveTimerSet cancelingTimers_;<br></code></pre></td></tr></table></figure>
+<p>下面是TimerQueue中，3个集合相关的类型及成员定义：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-keyword">typedef</span> std::pair&lt;Timestamp, Timer*&gt; Entry;<br><span class="hljs-keyword">typedef</span> std::set&lt;Entry&gt; TimerList;<br><span class="hljs-keyword">typedef</span> std::pair&lt;Timer*, <span class="hljs-type">int64_t</span>&gt; ActiveTimer;<br><span class="hljs-keyword">typedef</span> std::set&lt;ActiveTimer&gt; ActiveTimerSet;<br><br><span class="hljs-comment">// Timer list sorted by expiration</span><br><span class="hljs-comment">/* 用户添加的所有Timer对象集合</span><br><span class="hljs-comment"> * 需要为set元素比较实现operator&lt; */</span><br>TimerList timers_;<br><br><span class="hljs-comment">// for cancel()</span><br>ActiveTimerSet activeTimers_;<br><span class="hljs-type">bool</span> callingExpiredTimers_; <span class="hljs-comment">/* atomic */</span><br>ActiveTimerSet cancelingTimers_;<br></code></pre></td></tr></table></figure>
+<h3 id="timerqueue声明">TimerQueue声明</h3>
+<p>除了前面提到的3个集合相关类型及成员，其他成员函数和变量声明如下：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">/**</span><br><span class="hljs-comment">* 定时器队列.</span><br><span class="hljs-comment">* 不能保证回调能及时调用.</span><br><span class="hljs-comment">*</span><br><span class="hljs-comment">* 只能在所在loop线程中运行, 因此线程安全是非必须的</span><br><span class="hljs-comment">*/</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">TimerQueue</span> : noncopyable<br>&#123;<br><span class="hljs-keyword">public</span>:<br>    <span class="hljs-function"><span class="hljs-keyword">explicit</span> <span class="hljs-title">TimerQueue</span><span class="hljs-params">(EventLoop* loop)</span></span>;<br>    ~<span class="hljs-built_in">TimerQueue</span>();<br>    <span class="hljs-comment">/*</span><br><span class="hljs-comment">     * 添加一个定时器.</span><br><span class="hljs-comment">     * 运行到指定时间， 调度相应的回调函数.</span><br><span class="hljs-comment">     * 如果interval参数 &gt; 0.0, 就周期重复运行.</span><br><span class="hljs-comment">     * 必须线程安全: 可能会由其他线程调用</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-function">TimerId <span class="hljs-title">addTimer</span><span class="hljs-params">(TimerCallback cb, Timestamp when, <span class="hljs-type">double</span> interval)</span></span>;<br>    <span class="hljs-comment">/* 取消指定TimerId的定时器 */</span><br>    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">cancel</span><span class="hljs-params">(TimerId)</span></span>;<br><br><span class="hljs-keyword">private</span>:<br>    ...<br>    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">addTimerInLoop</span><span class="hljs-params">(Timer* timer)</span></span>;<br>    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">cancelInLoop</span><span class="hljs-params">(TimerId timerId)</span></span>;<br>    <span class="hljs-comment">// called when timerfd alarms</span><br>    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">handleRead</span><span class="hljs-params">()</span></span>;<br>    <span class="hljs-comment">// move out all expired timers</span><br>    <span class="hljs-function">std::vector&lt;Entry&gt; <span class="hljs-title">getExpired</span><span class="hljs-params">(Timestamp now)</span></span>;<br>    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">reset</span><span class="hljs-params">(<span class="hljs-type">const</span> std::vector&lt;Entry&gt;&amp; expired, Timestamp now)</span></span>;<br><br>    <span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">insert</span><span class="hljs-params">(Timer* timer)</span></span>;<br><br>    EventLoop* loop_;<br>    <span class="hljs-type">const</span> <span class="hljs-type">int</span> timerfd_;<br>    Channel timerfdChannel_; <span class="hljs-comment">// watch readable event of timerfd</span><br>    ...<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>TimerQueue所属EventLoop对象，通过一个EventLoop*来传递，注意这是一个raw
+pointer，而非smart
+pointer。EventLoop对象与TimerQueue对象生命周期相同，而且只会通过EventLoop对象来调用TimerQueue对象方法，因此不存在与之相关的内存泄漏或非法访问的问题。</p>
+<h3 id="timerqueue构造函数">TimerQueue构造函数</h3>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs cpp">TimerQueue::<span class="hljs-built_in">TimerQueue</span>(EventLoop *loop)<br>: <span class="hljs-built_in">loop_</span>(loop),<br><span class="hljs-built_in">timerfd_</span>(<span class="hljs-built_in">createTimerfd</span>()),<br><span class="hljs-built_in">timerfdChannel_</span>(loop, timerfd_),<br><span class="hljs-built_in">timers_</span>(),<br><span class="hljs-built_in">callingExpiredTimers_</span>(<span class="hljs-literal">false</span>)<br>&#123;<br>    timerfdChannel_.<span class="hljs-built_in">setReadCallback</span>(std::<span class="hljs-built_in">bind</span>(&amp;TimerQueue::handleRead, <span class="hljs-keyword">this</span>));<br>    <span class="hljs-comment">// we are always reading the timerfd, we disrm it with timerfd_settime.</span><br>    timerfdChannel_.<span class="hljs-built_in">enableReading</span>();<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>构造TimerQueue对象时，就会绑定TimerQueue所属EventLoop，即创建TimerQueue的EventLoop对象。
+另外，调用Channel::enableReading()，会将通道事件加入Poller的监听通道列表中。</p>
+<p>交给Poller监听的timerfd，是由createTimerfd创建的：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">createTimerfd</span><span class="hljs-params">()</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-comment">// create timers that notify via fd</span><br>    <span class="hljs-type">int</span> timerfd = ::<span class="hljs-built_in">timerfd_create</span>(CLOCK_MONOTONIC, TFD_NONBLOCK | TFD_CLOEXEC);<br>    <span class="hljs-keyword">if</span> (timerfd &lt; <span class="hljs-number">0</span>)<br>    &#123;<br>        LOG_SYSFATAL &lt;&lt; <span class="hljs-string">&quot;Failed in timerfd_create&quot;</span>;<br>    &#125;<br>    <span class="hljs-keyword">return</span> timerfd;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>构造TimerQueue对象时，就会绑定TimerQueue所属EventLoop，即创建TimerQueue的EventLoop对象。
+另外，调用Channel::enableReading()，会将通道事件加入Poller的监听通道列表中。</p>
+<p>交给Poller监听的timerfd，是由createTimerfd创建的：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">createTimerfd</span><span class="hljs-params">()</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-comment">// create timers that notify via fd</span><br>    <span class="hljs-type">int</span> timerfd = ::<span class="hljs-built_in">timerfd_create</span>(CLOCK_MONOTONIC, TFD_NONBLOCK | TFD_CLOEXEC);<br>    <span class="hljs-keyword">if</span> (timerfd &lt; <span class="hljs-number">0</span>)<br>    &#123;<br>        LOG_SYSFATAL &lt;&lt; <span class="hljs-string">&quot;Failed in timerfd_create&quot;</span>;<br>    &#125;<br>    <span class="hljs-keyword">return</span> timerfd;<br>&#125;<br></code></pre></td></tr></table></figure>
+<h3 id="timerqueue构造函数-1">TimerQueue构造函数</h3>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs cpp">TimerQueue::<span class="hljs-built_in">TimerQueue</span>(EventLoop *loop)<br>: <span class="hljs-built_in">loop_</span>(loop),<br><span class="hljs-built_in">timerfd_</span>(<span class="hljs-built_in">createTimerfd</span>()),<br><span class="hljs-built_in">timerfdChannel_</span>(loop, timerfd_),<br><span class="hljs-built_in">timers_</span>(),<br><span class="hljs-built_in">callingExpiredTimers_</span>(<span class="hljs-literal">false</span>)<br>&#123;<br>    timerfdChannel_.<span class="hljs-built_in">setReadCallback</span>(std::<span class="hljs-built_in">bind</span>(&amp;TimerQueue::handleRead, <span class="hljs-keyword">this</span>));<br>    <span class="hljs-comment">// we are always reading the timerfd, we disrm it with timerfd_settime.</span><br>    timerfdChannel_.<span class="hljs-built_in">enableReading</span>();<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>构造TimerQueue对象时，就会绑定TimerQueue所属EventLoop，即创建TimerQueue的EventLoop对象。
+另外，调用Channel::enableReading()，会将通道事件加入Poller的监听通道列表中。</p>
+<p>交给Poller监听的timerfd，是由createTimerfd创建的：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">createTimerfd</span><span class="hljs-params">()</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-comment">// create timers that notify via fd</span><br>    <span class="hljs-type">int</span> timerfd = ::<span class="hljs-built_in">timerfd_create</span>(CLOCK_MONOTONIC, TFD_NONBLOCK | TFD_CLOEXEC);<br>    <span class="hljs-keyword">if</span> (timerfd &lt; <span class="hljs-number">0</span>)<br>    &#123;<br>        LOG_SYSFATAL &lt;&lt; <span class="hljs-string">&quot;Failed in timerfd_create&quot;</span>;<br>    &#125;<br>    <span class="hljs-keyword">return</span> timerfd;<br>&#125;<br></code></pre></td></tr></table></figure>
+<h3 id="timerqueue析构">TimerQueue析构</h3>
+<p>析构有2点需要注意：</p>
+<ol type="1">
+<li>在remove绑定的通道前，要先disableAll停止监听所有通道事件；</li>
+<li>timers_中Timer对象是在TimerQueue::addTimer中new出来的，需要手动delete；</li>
+</ol>
+<!-- 另外，对注释"do not remove channel, since we're in EventLoop::dtor();"并不明白是何用意。 -->
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs cpp">TimerQueue::~<span class="hljs-built_in">TimerQueue</span>()<br>&#123;<br>    <span class="hljs-comment">// 关闭所有(通道)事件, Poller不再监听该通道</span><br>    timerfdChannel_.<span class="hljs-built_in">disableAll</span>();<br>    <span class="hljs-comment">// 如果正在处理该通道, 会从激活的通道列表中移除, 同时Poller不再监听该通道</span><br>    timerfdChannel_.<span class="hljs-built_in">remove</span>();<br>    <span class="hljs-comment">// 关闭通道对应timerfd</span><br>    ::<span class="hljs-built_in">close</span>(timerfd_);<br><br>    <span class="hljs-comment">// do not remove channel, since we&#x27;re in EventLoop::dtor();</span><br><br>    <span class="hljs-comment">// TimerQueue::addTimer中new出来的Timer对象, 需要手动delete</span><br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">const</span> Entry&amp; timer : timers_)<br>    &#123;<br>        <span class="hljs-keyword">delete</span> timer.second;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<h3 id="timerqueue重要接口">TimerQueue重要接口</h3>
+<h4 id="addtimer-添加定时器">addTimer 添加定时器</h4>
+<p>注意到addTimer
+会在构造一个Timer对象后，将其添加到timers_的工作转交给addTimerInLoop完成了。这是为什么？</p>
+<p>因为调用EventLoop::runAt/runEvery的线程，可能并非TimerQueue的loop线程，而修改TimerQueue数据成员时，必须在所属loop线程中进行，因此需要通过loop_-&gt;runInLoop将工作转交给所属loop线程。
+runInLoop：如果当前线程是所属loop线程，则直接运行函数；如果不是，就排队到所属loop线程末尾，等待运行。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">/**</span><br><span class="hljs-comment">* 添加一个定时器.</span><br><span class="hljs-comment">* @details 运行到指定时间点when, 调度相应的回调函数cb.</span><br><span class="hljs-comment">* 如果interval参数 &gt; 0.0, 就周期重复运行.</span><br><span class="hljs-comment">* 可能会由其他线程调用, 需要让对TimerQueue数据成员有修改的部分, 在所属loop所在线程中运行.</span><br><span class="hljs-comment">* @param cb 超时回调函数</span><br><span class="hljs-comment">* @param when 触发超时的时间点</span><br><span class="hljs-comment">* @param interval 循环周期. &gt; 0.0 代表周期定时器; 否则, 代表一次性定时器</span><br><span class="hljs-comment">* @return 返回添加的Timer对应TimerId, 用来标识该Timer对象</span><br><span class="hljs-comment">*/</span><br><span class="hljs-function">TimerId <span class="hljs-title">TimerQueue::addTimer</span><span class="hljs-params">(TimerCallback cb, Timestamp when, <span class="hljs-type">double</span> interval)</span></span><br><span class="hljs-function"></span>&#123;<br>    Timer* timer = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Timer</span>(std::<span class="hljs-built_in">move</span>(cb), when, interval);<br>    loop_-&gt;<span class="hljs-built_in">runInLoop</span>(std::<span class="hljs-built_in">bind</span>(&amp;TimerQueue::addTimerInLoop, <span class="hljs-keyword">this</span>, timer)); <span class="hljs-comment">// 转交所属loop线程运行</span><br>    <span class="hljs-keyword">return</span> <span class="hljs-built_in">TimerId</span>(timer, timer-&gt;<span class="hljs-built_in">sequence</span>());<br>&#125;<br><br><span class="hljs-comment">/**</span><br><span class="hljs-comment">* 在loop线程中添加一个定时器.</span><br><span class="hljs-comment">* @details addTimerInLoop 必须在所属loop线程中运行</span><br><span class="hljs-comment">*/</span><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">TimerQueue::addTimerInLoop</span><span class="hljs-params">(Timer *timer)</span></span><br><span class="hljs-function"></span>&#123;<br>    loop_-&gt;<span class="hljs-built_in">assertInLoopThread</span>();<br>    <span class="hljs-type">bool</span> earliestChanged = <span class="hljs-built_in">insert</span>(timer);<br><br>    <span class="hljs-keyword">if</span> (earliestChanged)<br>    &#123;<br>        <span class="hljs-built_in">resetTimerfd</span>(timerfd_, timer-&gt;<span class="hljs-built_in">expiration</span>());<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>addTimerInLoop的主要工作由2个函数来完成：insert，resetTimerfd。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">/**</span><br><span class="hljs-comment">* 插入一个timer指向的定时器</span><br><span class="hljs-comment">* @details timers_是std::set&lt;std::pair&lt;Timestamp, Timer*&gt;&gt;类型, 容器会自动对元素进行排序,</span><br><span class="hljs-comment">* 默认先按pair.first即Timestamp进行排序, 其次是pair.second(.first相同情况下才比较second),</span><br><span class="hljs-comment">* 这样第一个元素就是时间戳最小的元素.</span><br><span class="hljs-comment">* @return 定时器timer当前是否已经超时</span><br><span class="hljs-comment">* - true timers_为空或已经超时</span><br><span class="hljs-comment">* - false timers_非空, 且最近的一个定时器尚未超时</span><br><span class="hljs-comment">*/</span><br><span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">TimerQueue::insert</span><span class="hljs-params">(Timer *timer)</span></span><br><span class="hljs-function"></span>&#123;<br>    loop_-&gt;<span class="hljs-built_in">assertInLoopThread</span>();<br>    <span class="hljs-built_in">assert</span>(timers_.<span class="hljs-built_in">size</span>() == activeTimers_.<span class="hljs-built_in">size</span>());<br>    <span class="hljs-type">bool</span> earliestChanged = <span class="hljs-literal">false</span>;<br>    Timestamp when = timer-&gt;<span class="hljs-built_in">expiration</span>(); <span class="hljs-comment">// 超时时刻</span><br>    TimerList::iterator it = timers_.<span class="hljs-built_in">begin</span>();<br>    <span class="hljs-keyword">if</span> (it == timers_.<span class="hljs-built_in">end</span>() || when &lt; it-&gt;first)<br>    &#123; <span class="hljs-comment">// 定时器集合为空 或者 新添加的timer已经超时(因为it指向的Timer超时时刻是距离当前最近的)</span><br>        earliestChanged = <span class="hljs-literal">true</span>; <span class="hljs-comment">// timer已经超时</span><br>    &#125;<br><br>    <span class="hljs-comment">// 同时往timers_和activeTimers_集合中, 添加timer</span><br>    <span class="hljs-comment">// 注意: timers_和activeTimers_元素类型不同, 但所包含的Timer是相同的, 个数也相同</span><br><br>    &#123; <span class="hljs-comment">// ensure insert new timer to timers_ successfully</span><br>        std::pair&lt;TimerList::iterator, <span class="hljs-type">bool</span>&gt; result<br>        = timers_.<span class="hljs-built_in">insert</span>(<span class="hljs-built_in">Entry</span>(when, timer));<br>        <span class="hljs-built_in">assert</span>(result.second); (<span class="hljs-type">void</span>)result;<br>    &#125;<br><br>    &#123; <span class="hljs-comment">// ensure insert new timer to activeTimers_ successfully</span><br>        std::pair&lt;ActiveTimerSet::iterator, <span class="hljs-type">bool</span>&gt; result<br>        = activeTimers_.<span class="hljs-built_in">insert</span>(<span class="hljs-built_in">ActiveTimer</span>(timer, timer-&gt;<span class="hljs-built_in">sequence</span>()));<br>        <span class="hljs-built_in">assert</span>(result.second); (<span class="hljs-type">void</span>)result;<br>    &#125;<br><br>    <span class="hljs-built_in">assert</span>(timers_.<span class="hljs-built_in">size</span>() == activeTimers_.<span class="hljs-built_in">size</span>());<br>    <span class="hljs-keyword">return</span> earliestChanged;<br>&#125;<br></code></pre></td></tr></table></figure>
+<h3 id="cancel-取消定时器">cancel 取消定时器</h3>
+<p>一个已超时的定时器，会通过TimerQueue::getExpired自动清除，但一个尚未到期的定时器如何取消？</p>
+<p>可以通过调用TimerQueue::cancel。类似于addTimer，cancel也可能在别的线程被调用，因此需要将其转交给cancelInLoop执行。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">/**</span><br><span class="hljs-comment">* 取消一个定时器, 函数可能在别的线程调用</span><br><span class="hljs-comment">* @param timerId 每个定时器都有一个唯一的TimerId作为标识</span><br><span class="hljs-comment">*/</span><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">TimerQueue::cancel</span><span class="hljs-params">(TimerId timerId)</span></span><br><span class="hljs-function"></span>&#123;<br>    loop_-&gt;<span class="hljs-built_in">runInLoop</span>(<br>            std::<span class="hljs-built_in">bind</span>(&amp;TimerQueue::cancelInLoop, <span class="hljs-keyword">this</span>, timerId));<br>&#125;<br><br><span class="hljs-comment">/**</span><br><span class="hljs-comment">* 在所属loop线程中, 取消一个定时器</span><br><span class="hljs-comment">* @details 同时擦出timers_, activeTimers_中包含的Timer对象, timerId用来查找该Timer对象.</span><br><span class="hljs-comment">* @param timerId 待取消Timer的唯一Id标识</span><br><span class="hljs-comment">*/</span><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">TimerQueue::cancelInLoop</span><span class="hljs-params">(TimerId timerId)</span></span><br><span class="hljs-function"></span>&#123;<br>    loop_-&gt;<span class="hljs-built_in">assertInLoopThread</span>(); <span class="hljs-comment">// 确保当前线程是所属loop线程</span><br>    <span class="hljs-built_in">assert</span>(timers_.<span class="hljs-built_in">size</span>() == activeTimers_.<span class="hljs-built_in">size</span>());<br>    <span class="hljs-function">ActiveTimer <span class="hljs-title">timer</span><span class="hljs-params">(timerId.timer_, timerId.sequence_)</span></span>;<br>    ActiveTimerSet::const_iterator it = activeTimers_.<span class="hljs-built_in">find</span>(timer);<br>    <span class="hljs-keyword">if</span> (it != activeTimers_.<span class="hljs-built_in">end</span>())<br>    &#123;<br>        <span class="hljs-comment">// 注意timers_和activeTimers_的Timer指针指向相同对象, 只能delete一次</span><br>        <span class="hljs-type">size_t</span> n = timers_.<span class="hljs-built_in">erase</span>(<span class="hljs-built_in">Entry</span>(it-&gt;first-&gt;<span class="hljs-built_in">expiration</span>(), it-&gt;first));<br>        <span class="hljs-built_in">assert</span>(n == <span class="hljs-number">1</span>); (<span class="hljs-type">void</span>)n;<br>        <span class="hljs-keyword">delete</span> it-&gt;first; <span class="hljs-comment">// <span class="hljs-doctag">FIXME:</span> no delete please</span><br>        activeTimers_.<span class="hljs-built_in">erase</span>(it);<br>    &#125;<br>    <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (callingExpiredTimers_)<br>    &#123; <span class="hljs-comment">// 如果正在处理超时定时器</span><br>        cancelingTimers_.<span class="hljs-built_in">insert</span>(timer);<br>    &#125;<br>    <span class="hljs-built_in">assert</span>(timers_.<span class="hljs-built_in">size</span>() == activeTimers_.<span class="hljs-built_in">size</span>());<br>&#125;<br></code></pre></td></tr></table></figure>
+<h3
+id="handleread处理timerqueue上所有超时任务">handleRead处理TimerQueue上所有超时任务</h3>
+<p>handleRead有几个要点：</p>
+<ul>
+<li>必须在所在loop线程运行；</li>
+<li>可能不止一个定时任务超时，可用getExpired()获取；</li>
+<li>所有超时任务执行完后，重置周期定时任务，释放一次性定时任务；</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">/**</span><br><span class="hljs-comment">* 处理读事件, 只能是所属loop线程调用</span><br><span class="hljs-comment">* @details 当PollPoller监听到超时发生时, 将channel加入激活通道列表, loop中回调</span><br><span class="hljs-comment">* 事件处理函数, TimerQueue::handleRead.</span><br><span class="hljs-comment">* 发生超时事件时, 可能会有多个超时任务超时, 需要通过getExpired一次性全部获取, 然后逐个执行回调.</span><br><span class="hljs-comment">* @note timerfd只会发生读事件.</span><br><span class="hljs-comment">*/</span><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">TimerQueue::handleRead</span><span class="hljs-params">()</span></span><br><span class="hljs-function"></span>&#123;<br>    loop_-&gt;<span class="hljs-built_in">assertInLoopThread</span>();<br>    <span class="hljs-function">Timestamp <span class="hljs-title">now</span><span class="hljs-params">(Timestamp::now())</span></span>;<br>    <span class="hljs-built_in">readTimerfd</span>(timerfd_, now);<br><br>    std::vector&lt;Entry&gt; expired = <span class="hljs-built_in">getExpired</span>(now); <span class="hljs-comment">// 获取所有超时任务</span><br><br>    <span class="hljs-comment">// 正在调用超时任务回调时, 先清除取消的超时任务cancelingTimers_, 再逐个执行超时回调.</span><br>    <span class="hljs-comment">// 可由getExpired()获取的所有超时任务.</span><br>    callingExpiredTimers_ = <span class="hljs-literal">true</span>;<br>    cancelingTimers_.<span class="hljs-built_in">clear</span>();<br>    <span class="hljs-comment">// safe to callback outside critical section</span><br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">const</span> Entry&amp; it : expired)<br>    &#123;<br>        it.second-&gt;<span class="hljs-built_in">run</span>(); <span class="hljs-comment">// 通过Timer::run()回调超时处理函数</span><br>    &#125;<br>    callingExpiredTimers_ = <span class="hljs-literal">false</span>;<br>    <span class="hljs-comment">// 重置所有已超时任务</span><br>    <span class="hljs-built_in">reset</span>(expired, now);<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>getExpired以参数时间点now为界限，查找set
+timers_中所有超时定时任务（Timer）。set会对timers_元素进行排序，std::set::lower_bound()会找到第一个时间点
+&lt; now时间点的定时任务。</p>
+<p>getExpired调用reset重置所有超时的周期定时任务，释放超时的一次性任务。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">/**</span><br><span class="hljs-comment">* 定时任务超时时, 从set timers_中取出所有的超时任务, 以vector形式返回给调用者</span><br><span class="hljs-comment">* @note 注意从set timers_要和从set activeTimers_同步取出超时任务, 两者保留的定时任务是相同的</span><br><span class="hljs-comment">* @param now 当前时间点, 用来判断从set中的定时器是否超时</span><br><span class="hljs-comment">* @return set timers_中超时的定时器</span><br><span class="hljs-comment">*/</span><br><span class="hljs-function">std::vector&lt;TimerQueue::Entry&gt; <span class="hljs-title">TimerQueue::getExpired</span><span class="hljs-params">(Timestamp now)</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-built_in">assert</span>(timers_.<span class="hljs-built_in">size</span>() == activeTimers_.<span class="hljs-built_in">size</span>());<br>    std::vector&lt;Entry&gt; expired;<br>    <span class="hljs-function">Entry <span class="hljs-title">sentry</span><span class="hljs-params">(now, <span class="hljs-keyword">reinterpret_cast</span>&lt;Timer*&gt;(UINTPTR_MAX))</span></span>;<br>    <span class="hljs-comment">// end.key &gt;= sentry.key, Entry.key is pair&lt;Timestamp, Timer*&gt;</span><br>    <span class="hljs-comment">// in that end.key.second &lt; sentry.key.second(MAX PTR)</span><br>    <span class="hljs-comment">// =&gt; end.key == sentry.key is impossible</span><br>    <span class="hljs-comment">// =&gt; end.key &gt; sentry.key</span><br>    TimerList::iterator end = timers_.<span class="hljs-built_in">lower_bound</span>(sentry);<br>    <span class="hljs-built_in">assert</span>(end == timers_.<span class="hljs-built_in">end</span>() || now &lt; end-&gt;first);<br>    std::<span class="hljs-built_in">copy</span>(timers_.<span class="hljs-built_in">begin</span>(), end, <span class="hljs-built_in">back_inserter</span>(expired));<br>    timers_.<span class="hljs-built_in">erase</span>(timers_.<span class="hljs-built_in">begin</span>(), end);<br><br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">const</span> Entry&amp; it : expired)<br>    &#123;<br>        <span class="hljs-function">ActiveTimer <span class="hljs-title">timer</span><span class="hljs-params">(it.second, it.second-&gt;sequence())</span></span>;<br>        <span class="hljs-type">size_t</span> n = activeTimers_.<span class="hljs-built_in">erase</span>(timer);<br>        <span class="hljs-built_in">assert</span>(n == <span class="hljs-number">1</span>); (<span class="hljs-type">void</span>)n;<br>    &#125;<br><br>    <span class="hljs-built_in">assert</span>(timers_.<span class="hljs-built_in">size</span>() == activeTimers_.<span class="hljs-built_in">size</span>());<br>    <span class="hljs-keyword">return</span> expired;<br>&#125;<br><br><span class="hljs-comment">/**</span><br><span class="hljs-comment">* 根据指定时间now重置所有超时任务, 只对周期定时任务有效</span><br><span class="hljs-comment">* @param expired 所有超时任务</span><br><span class="hljs-comment">* @param now 指定的reset基准时间点, 新的超时时间点以此为基准</span><br><span class="hljs-comment">*/</span><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">TimerQueue::reset</span><span class="hljs-params">(<span class="hljs-type">const</span> std::vector&lt;Entry&gt; &amp;expired, Timestamp now)</span></span><br><span class="hljs-function"></span>&#123;<br>    Timestamp nextExpire;<br><br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">const</span> Entry&amp; it : expired)<br>    &#123;<br>        <span class="hljs-function">ActiveTimer <span class="hljs-title">timer</span><span class="hljs-params">(it.second, it.second-&gt;sequence())</span></span>;<br>        <span class="hljs-comment">// 只重置周期定时任务和没有取消的定时任务, 释放一次性超时的定时任务</span><br>        <span class="hljs-keyword">if</span> (it.second-&gt;<span class="hljs-built_in">repeat</span>()<br>        &amp;&amp; cancelingTimers_.<span class="hljs-built_in">find</span>(timer) == cancelingTimers_.<span class="hljs-built_in">end</span>())<br>        &#123;<br>            it.second-&gt;<span class="hljs-built_in">restart</span>(now);<br>            <span class="hljs-built_in">insert</span>(it.second);<br>        &#125;<br>        <span class="hljs-keyword">else</span><br>        &#123;<br>            <span class="hljs-comment">// FIXME move to a free list</span><br>            <span class="hljs-keyword">delete</span> it.second; <span class="hljs-comment">// <span class="hljs-doctag">FIXME:</span> no delete please</span><br>        &#125;<br>    &#125;<br><br>    <span class="hljs-comment">// 根据最近的尚未达到的超时任务, 重置timerfd下一次超时时间</span><br>    <span class="hljs-keyword">if</span> (!timers_.<span class="hljs-built_in">empty</span>())<br>    &#123;<br>        nextExpire = timers_.<span class="hljs-built_in">begin</span>()-&gt;second-&gt;<span class="hljs-built_in">expiration</span>();<br>    &#125;<br><br>    <span class="hljs-keyword">if</span> (nextExpire.<span class="hljs-built_in">valid</span>())<br>    &#123;<br>        <span class="hljs-built_in">resetTimerfd</span>(timerfd_, nextExpire);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<h2 id="参考">参考</h2>
+<p>转载自<a
+target="_blank" rel="noopener" href="https://www.cnblogs.com/fortunely/p/16001655.html">muduo笔记
+网络库（四）TimerQueue定时器队列</a></p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/C/" class="category-chain-item">C++</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/C/muduo/" class="category-chain-item">muduo</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/C/">#C++</a>
+      
+        <a href="/tags/muduo/">#muduo</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>muduo库-TimerQueue定时器队列</div>
+      <div>https://gstarmin.github.io/2023/07/02/muduo库-TimerQueue定时器队列/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Starmin</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年7月2日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/07/02/muduo%E5%BA%93-%E4%BA%8B%E4%BB%B6%E9%80%9A%E9%81%93Channel/" title="muduo库-事件通道Channel">
+                        <span class="hidden-mobile">muduo库-事件通道Channel</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
