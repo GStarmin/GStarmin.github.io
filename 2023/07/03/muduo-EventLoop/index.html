@@ -1,0 +1,973 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Starmin">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="muduo-事件驱动EventLoop 之前说过，muduo网络库处理事件是Reactor模式，one loop per thread，一个线程一个事件循环。这个循环称为EventLoop，这种以事件为驱动的编程模式，称为事件驱动模式。 这种事件驱动模型要求所有任务是非阻塞的，其典型特点是： 如果一个任务需要很长时间才能完成，或者中间可能导致阻塞，就需要对任务进行分段，将其设置为非阻塞的，每次监听">
+<meta property="og:type" content="article">
+<meta property="og:title" content="muduo-事件驱动EventLoop">
+<meta property="og:url" content="https://gstarmin.github.io/2023/07/03/muduo-EventLoop/">
+<meta property="og:site_name" content="私人杂货铺">
+<meta property="og:description" content="muduo-事件驱动EventLoop 之前说过，muduo网络库处理事件是Reactor模式，one loop per thread，一个线程一个事件循环。这个循环称为EventLoop，这种以事件为驱动的编程模式，称为事件驱动模式。 这种事件驱动模型要求所有任务是非阻塞的，其典型特点是： 如果一个任务需要很长时间才能完成，或者中间可能导致阻塞，就需要对任务进行分段，将其设置为非阻塞的，每次监听">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gstarmin.github.io/img/muduo/eventloop/eventloop事件驱动类图.png">
+<meta property="og:image" content="https://gstarmin.github.io/img/muduo/eventloop/has-a.png">
+<meta property="og:image" content="https://gstarmin.github.io/img/muduo/eventloop/contain-a.png">
+<meta property="article:published_time" content="2023-07-03T13:22:57.000Z">
+<meta property="article:modified_time" content="2023-07-03T13:22:57.000Z">
+<meta property="article:author" content="Starmin">
+<meta property="article:tag" content="C++">
+<meta property="article:tag" content="muduo">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://gstarmin.github.io/img/muduo/eventloop/eventloop事件驱动类图.png">
+  
+  
+  
+  <title>muduo-事件驱动EventLoop - 私人杂货铺</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"gstarmin.github.io","root":"/","version":"1.9.3","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 5.4.2"><style>.mjpage .MJX-monospace {
+  font-family: monospace;
+}
+
+.mjpage .MJX-sans-serif {
+  font-family: sans-serif;
+}
+
+.mjpage {
+  display: inline;
+  font-style: normal;
+  font-weight: normal;
+  line-height: normal;
+  font-size: 100%;
+  font-size-adjust: none;
+  text-indent: 0;
+  text-align: left;
+  text-transform: none;
+  letter-spacing: normal;
+  word-spacing: normal;
+  word-wrap: normal;
+  white-space: nowrap;
+  float: none;
+  direction: ltr;
+  max-width: none;
+  max-height: none;
+  min-width: 0;
+  min-height: 0;
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+
+.mjpage * {
+  transition: none;
+  -webkit-transition: none;
+  -moz-transition: none;
+  -ms-transition: none;
+  -o-transition: none;
+}
+
+.mjx-svg-href {
+  fill: blue;
+  stroke: blue;
+}
+
+.MathJax_SVG_LineBox {
+  display: table !important;
+}
+
+.MathJax_SVG_LineBox span {
+  display: table-cell !important;
+  width: 10000em !important;
+  min-width: 0;
+  max-width: none;
+  padding: 0;
+  border: 0;
+  margin: 0;
+}
+
+.mjpage__block {
+  text-align: center;
+  margin: 1em 0em;
+  position: relative;
+  display: block !important;
+  text-indent: 0;
+  max-width: none;
+  max-height: none;
+  min-width: 0;
+  min-height: 0;
+  width: 100%;
+}
+</style></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Starmin</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="muduo-事件驱动EventLoop"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-07-03 21:22" pubdate>
+          2023年7月3日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          18k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          182 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">muduo-事件驱动EventLoop</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="muduo-事件驱动eventloop">muduo-事件驱动EventLoop</h1>
+<p>之前说过，muduo网络库处理事件是Reactor模式，one loop per
+thread，一个线程一个事件循环。这个循环称为EventLoop，这种以事件为驱动的编程模式，称为事件驱动模式。</p>
+<p>这种事件驱动模型要求所有任务是非阻塞的，其典型特点是：
+如果一个任务需要很长时间才能完成，或者中间可能导致阻塞，就需要对任务进行分段，将其设置为非阻塞的，每次监听到前次任务完成，触发事件回调，从而接着完成后续任务。例如，要发送一个大文件，可以先发送一段，完成后，在写完成事件回调中又发送下一段，这样每次都发生一段，从而完成整个文件发送。</p>
+<p>EventLoop是实现事件驱动模型的关键之一。核心是为线程提供运行循环，不断监听事件、处理事件，为用户提供在loop循环中运行的接口。</p>
+<p>EventLoop事件驱动相关类图关系如下：</p>
+<p><img src="/img/muduo/eventloop/eventloop事件驱动类图.png" srcset="/img/loading.gif" lazyload /></p>
+<p>上面的类图中有两种不同的关系表示：</p>
+<p>聚合关系：has-a，表示拥有的关系，两种生命周期没有必然关联，可以独立存在。</p>
+<p><img src="/img/muduo/eventloop/has-a.png" srcset="/img/loading.gif" lazyload /></p>
+<p>组合关系：contain-a，表包含的关系，是一种强聚合关系，强调整体与部分，生命周期一致。</p>
+<p><img src="/img/muduo/eventloop/contain-a.png" srcset="/img/loading.gif" lazyload /></p>
+<h2 id="eventloop类">EventLoop类</h2>
+<p>EventLoop是一个接口类，不宜暴露太多内部细节给客户，接口及其使用应尽量简洁。EventLoop的主要职责是：</p>
+<ol type="1">
+<li>提供定时执行用户指定任务的方法，支持一次性、周期执行用户任务；</li>
+<li>提供一个运行循环，每当Poller监听到有通道对应事件发生时，会将通道加入激活通道列表，运行循环要不断从取出激活通道，然后调用事件回调处理事件；</li>
+<li><strong>每个EventLoop对应一个线程，不允许一对多或者多对一</strong>，提供判断当前线程是否为创建EventLoop对象的线程的方法；</li>
+<li>允许在其他线程中调用EventLoop的public接口，但同时要确保线程安全；</li>
+</ol>
+<p>EventLoop类声明：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">/**</span><br><span class="hljs-comment">* Reactor模式， 每个线程最多一个EventLoop (One loop per thread).</span><br><span class="hljs-comment">* 接口类, 不要暴露太多细节给客户</span><br><span class="hljs-comment">*/</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">EventLoop</span> : <span class="hljs-keyword">public</span> noncopyable<br>&#123;<br><span class="hljs-keyword">public</span>:<br>    <span class="hljs-keyword">typedef</span> std::function&lt;<span class="hljs-type">void</span>()&gt; Functor;<br><br>    <span class="hljs-built_in">EventLoop</span>();<br>    ~<span class="hljs-built_in">EventLoop</span>(); <span class="hljs-comment">// force out-line dtor, for std::unique_ptr members.</span><br><br>    <span class="hljs-comment">/* loop循环, 运行一个死循环.</span><br><span class="hljs-comment">     * 必须在当前对象的创建线程中运行.</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">loop</span><span class="hljs-params">()</span></span>;<br><br>    <span class="hljs-comment">/*</span><br><span class="hljs-comment">     * 退出loop循环.</span><br><span class="hljs-comment">     * 如果通过原始指针(raw pointer)调用, 不是100%线程安全;</span><br><span class="hljs-comment">     * 为了100%安全, 最好通过shared_ptr&lt;EventLoop&gt;调用</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">quit</span><span class="hljs-params">()</span></span>;<br><br>    <span class="hljs-comment">/*</span><br><span class="hljs-comment">     * Poller::poll()返回的时间, 通常意味着有数据达到.</span><br><span class="hljs-comment">     * 对于PollPoller, 是调用完poll(); 对于EPollPoller, 是调用完epoll_wait()</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-function">Timestamp <span class="hljs-title">pollReturnTime</span><span class="hljs-params">()</span> <span class="hljs-type">const</span> </span>&#123; <span class="hljs-keyword">return</span> pollReturnTime_; &#125;<br><br>    <span class="hljs-comment">/* 获取loop循环次数 */</span><br>    <span class="hljs-function"><span class="hljs-type">int64_t</span> <span class="hljs-title">iterator</span><span class="hljs-params">()</span> <span class="hljs-type">const</span> </span>&#123; <span class="hljs-keyword">return</span> iteration_; &#125;<br><br>    <span class="hljs-comment">/*</span><br><span class="hljs-comment">     * 在loop线程中, 立即运行回调cb.</span><br><span class="hljs-comment">     * 如果没在loop线程, 就会唤醒loop, (排队)运行回调cb.</span><br><span class="hljs-comment">     * 如果用户在同一个loop线程, cb会在该函数内运行; 否则， 会在loop线程中排队运行.</span><br><span class="hljs-comment">     * 因此, 在其他线程中调用该函数是安全的.</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">runInLoop</span><span class="hljs-params">(Functor cb)</span></span>;<br><br>    <span class="hljs-comment">/* 排队回调cb进loop线程.</span><br><span class="hljs-comment">     * 回调cb在loop中完成polling后运行.</span><br><span class="hljs-comment">     * 从其他线程调用是安全的.</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">queueInLoop</span><span class="hljs-params">(Functor cb)</span></span>;<br><br>    <span class="hljs-comment">/* 排队的回调cb个数 */</span><br>    <span class="hljs-function"><span class="hljs-type">size_t</span> <span class="hljs-title">queueSize</span><span class="hljs-params">()</span> <span class="hljs-type">const</span></span>;<br><br>    <span class="hljs-comment">// timers</span><br><br>    <span class="hljs-comment">/*</span><br><span class="hljs-comment">     * 在指定时间点运行回调cb.</span><br><span class="hljs-comment">     * 从其他线程调用安全.</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-function">TimerId <span class="hljs-title">runAt</span><span class="hljs-params">(Timestamp time, TimerCallback cb)</span></span>;<br><br>    <span class="hljs-comment">/*</span><br><span class="hljs-comment">     * 在当前时间点+delay延时后运行回调cb.</span><br><span class="hljs-comment">     * 从其他线程调用安全.</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-function">TimerId <span class="hljs-title">runAfter</span><span class="hljs-params">(<span class="hljs-type">double</span> delay, TimerCallback cb)</span></span>;<br><br>    <span class="hljs-comment">/*</span><br><span class="hljs-comment">     * 每隔interval sec周期运行回调cb.</span><br><span class="hljs-comment">     * 从其他线程调用安全.</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-function">TimerId <span class="hljs-title">runEvery</span><span class="hljs-params">(<span class="hljs-type">double</span> interval, TimerCallback cb)</span></span>;<br><br>    <span class="hljs-comment">/*</span><br><span class="hljs-comment">     * 取消定时器, timerId唯一标识定时器Timer</span><br><span class="hljs-comment">     * 从其他线程调用安全.</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">cancel</span><span class="hljs-params">(TimerId timerId)</span></span>;<br><br>    <span class="hljs-comment">// internal usage</span><br><br>    <span class="hljs-comment">/* 唤醒loop线程, 没有事件就绪时, loop线程可能阻塞在poll()/epoll_wait() */</span><br>    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">wakeup</span><span class="hljs-params">()</span></span>;<br>    <span class="hljs-comment">/* 更新Poller监听的channel, 只能在channel所属loop线程中调用 */</span><br>    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">updateChannel</span><span class="hljs-params">(Channel* channel)</span></span>;<br>    <span class="hljs-comment">/* 移除Poller监听的channel, 只能在channel所属loop线程中调用 */</span><br>    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">removeChannel</span><span class="hljs-params">(Channel* channel)</span></span>;<br>    <span class="hljs-comment">/* 判断Poller是否正在监听channel, 只能在channel所属loop线程中调用 */</span><br>    <span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">hasChannel</span><span class="hljs-params">(Channel* channel)</span></span>;<br><br>    <span class="hljs-comment">// pid_t threadId() const &#123; return threadId_; &#125;</span><br>    <span class="hljs-comment">/* 断言当前线程是创建当前对象的线程, 如果不是就终止程序(LOG_FATAL) */</span><br>    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">assertInLoopThread</span><span class="hljs-params">()</span></span>;<br>    <span class="hljs-comment">/* 判断前线程是否创建当前对象的线程.</span><br><span class="hljs-comment">     * threadId_是创建当前EventLoop对象时, 记录的线程tid</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">isInLoopThread</span><span class="hljs-params">()</span> <span class="hljs-type">const</span></span>;<br>    <span class="hljs-comment">/*</span><br><span class="hljs-comment">     * 判断是否有待调用的回调函数(pending functor).</span><br><span class="hljs-comment">     * 由其他线程调用runAt/runAfter/runEvery, 会导致回调入队列待调用.</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">callingPendingFunctors</span><span class="hljs-params">()</span> <span class="hljs-type">const</span></span><br><span class="hljs-function">    </span>&#123; <span class="hljs-keyword">return</span> callingPendingFunctors_; &#125;<br><br>    <span class="hljs-comment">/*</span><br><span class="hljs-comment">     * 判断loop线程是否正在处理事件, 执行事件回调.</span><br><span class="hljs-comment">     * loop线程正在遍历,执行激活channels时, eventHandling_会置位; 其余时候, 会清除.</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">eventHandling</span><span class="hljs-params">()</span> <span class="hljs-type">const</span></span><br><span class="hljs-function">    </span>&#123; <span class="hljs-keyword">return</span> eventHandling_; &#125;<br>    <span class="hljs-comment">/* context_ 用于应用程序传参, 由网络库用户定义数据 */</span><br>    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">setContext</span><span class="hljs-params">(<span class="hljs-type">const</span> boost::any&amp; context)</span></span><br><span class="hljs-function">    </span>&#123; context_ = context; &#125;<br>    <span class="hljs-function"><span class="hljs-type">const</span> boost::any&amp; <span class="hljs-title">getContext</span><span class="hljs-params">()</span> <span class="hljs-type">const</span></span><br><span class="hljs-function">    </span>&#123; <span class="hljs-keyword">return</span> context_; &#125;<br>    <span class="hljs-function">boost::any* <span class="hljs-title">getMutableContext</span><span class="hljs-params">()</span></span><br><span class="hljs-function">    </span>&#123; <span class="hljs-keyword">return</span> &amp;context_; &#125;<br><br>    <span class="hljs-comment">/* 获取当前线程的EventLoop对象指针 */</span><br>    <span class="hljs-function"><span class="hljs-type">static</span> EventLoop* <span class="hljs-title">getEventLoopOfCurrentThread</span><span class="hljs-params">()</span></span>;<br><br><span class="hljs-keyword">private</span>:<br>    <span class="hljs-comment">/* 终止程序(LOG_FATAL), 当前线程不是创建当前EventLoop对象的线程时,</span><br><span class="hljs-comment">     * 由assertInLoopThread()调用  */</span><br>    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">abortNotInLoopThread</span><span class="hljs-params">()</span></span>;<br>    <span class="hljs-comment">/* 唤醒所属loop线程, 也是wakeupFd_的事件回调 */</span><br>    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">handleRead</span><span class="hljs-params">()</span></span>; <span class="hljs-comment">// waked up</span><br>    <span class="hljs-comment">/* 处理pending函数 */</span><br>    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">doPendingFunctors</span><span class="hljs-params">()</span></span>;<br>    <span class="hljs-comment">/* 打印激活通道的事件信息, 用于debug */</span><br>    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">printActiveChannels</span><span class="hljs-params">()</span> <span class="hljs-type">const</span></span>; <span class="hljs-comment">// DEBUG</span><br><br>    <span class="hljs-keyword">typedef</span> std::vector&lt;Channel*&gt; ChannelList;<br><br>    <span class="hljs-type">bool</span> looping_;                <span class="hljs-comment">/* atomic, true表示loop循环执行中 */</span><br>    std::atomic&lt;<span class="hljs-type">bool</span>&gt; quit_;      <span class="hljs-comment">/* loop循环退出条件 */</span><br>    <span class="hljs-type">bool</span> eventHandling_;          <span class="hljs-comment">/* atomic, true表示loop循环正在处理事件回调 */</span><br>    <span class="hljs-type">bool</span> callingPendingFunctors_; <span class="hljs-comment">/* atomic, true表示loop循环正在调用pending函数 */</span><br>    <span class="hljs-type">int64_t</span> iteration_;           <span class="hljs-comment">/* loop迭代次数 */</span><br>    <span class="hljs-type">const</span> <span class="hljs-type">pid_t</span> threadId_;                   <span class="hljs-comment">/* 线程id, 对象构造时初始化 */</span><br>    Timestamp pollReturnTime_;               <span class="hljs-comment">/* poll()返回时间点 */</span><br>    std::unique_ptr&lt;Poller&gt; poller_;         <span class="hljs-comment">/* 轮询器, 用于监听事件 */</span><br>    std::unique_ptr&lt;TimerQueue&gt; timerQueue_; <span class="hljs-comment">/* 定时器队列 */</span><br>    <span class="hljs-type">int</span> wakeupFd_;                           <span class="hljs-comment">/* 唤醒loop线程的eventfd */</span><br>    <span class="hljs-comment">/* 用于唤醒loop线程的channel.</span><br><span class="hljs-comment">     * 不像TimerQueue是内部类, 不应该暴露Channel给客户. */</span><br>    std::unique_ptr&lt;Channel&gt; wakeupChannel_;<br>    boost::any context_;            <span class="hljs-comment">/* 用于应用程序通过当前对象传参的变量, 由用户定义数据 */</span><br><br>    <span class="hljs-comment">/* 临时辅助变量 */</span><br>    ChannelList activeChannels_;    <span class="hljs-comment">/* 激活事件的通道列表 */</span><br>    Channel* currentActiveChannel_; <span class="hljs-comment">/* 当前激活的通道, 即正在调用事件回调的通道 */</span><br><br>    <span class="hljs-keyword">mutable</span> MutexLock mutex_;<br>    <span class="hljs-comment">/* 待调用函数列表, 存放不在loop线程的其他线程调用 runAt/runAfter/runEvery, 而要运行的函数 */</span><br>    <span class="hljs-function">std::vector&lt;Functor&gt; pendingFunctors_ <span class="hljs-title">GUARDED_BY</span><span class="hljs-params">(mutex_)</span></span>;<br>&#125;;<br></code></pre></td></tr></table></figure>
+<p>EventLoop不可拷贝，因为与之关联的不仅对象本身，还有线程以及thread
+local数据等资源。其功能主要分为下面这几大类：</p>
+<ol type="1">
+<li>提供运行循环；</li>
+<li>运行定时任务，一次性 or 周期；</li>
+<li>处理激活通道事件；</li>
+<li>线程安全。</li>
+</ol>
+<ul>
+<li>对于1,loop()提供运行循环，quit()退出循环，iterator()查询循环次数，wakeup()用于唤醒loop线程，handleRead()读取唤醒消息;</li>
+<li>对于2,runInLoop()在loop线程中“立即”运行一次用户任务，runAt()/runAfter()添加一次性定时任务，runEvery()添加周期定时任务，doPendingFunctors()回调所有的pending函数，vector
+pendingFunctors_用于排队待处理函数到loop线程执行，queueSize()获取该vector大小；cancel()取消定时任务。</li>
+<li>对于3,updateChannel()/removeChannel()/hasChannel()用于通道更新/移除/判断，vector
+activeChannels_存储当前所有激活的通道，currentActiveChannel_存储当前正在处理的激活通道；</li>
+<li>对于4，isInLoopThread()/assertInLoopThread()判断/断言
+当前线程是创建当前EventLoop对象的线程，互斥锁mutex_用来做互斥访问需要保护数据。</li>
+</ul>
+<p>值得一提的是，boost::any类型的成员context_用来给用户提供利用EventLoop传数据的方式，相当于C里面的void*，用户可利用boost::any_cast进行转型。</p>
+<h3 id="eventloop构造函数与析构函数">EventLoop构造函数与析构函数</h3>
+<p>构造函数要点：</p>
+<ul>
+<li>检查当前线程是否已经创建了EventLoop对象，遇到错误就终止程序（LOG_FATAL）；</li>
+<li>记住本对象所属线程id（threadId_）；</li>
+</ul>
+<p>析构函数要点：</p>
+<ul>
+<li>清除当前线程EventLoop指针，便于下次再创建EventLoop对象。</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs cpp">__thread EventLoop* t_loopInThisThread = <span class="hljs-number">0</span>; <span class="hljs-comment">// thread local变量, 指向当前线程创建的EventLoop对象</span><br><br>EventLoop::<span class="hljs-built_in">EventLoop</span>()<br>: <span class="hljs-built_in">looping_</span>(<span class="hljs-literal">false</span>),<br><span class="hljs-built_in">threadId_</span>(CurrentThread::<span class="hljs-built_in">tid</span>()),<br>&#123;<br>    LOG_DEBUG &lt;&lt; <span class="hljs-string">&quot;EventLoop create &quot;</span> &lt;&lt; <span class="hljs-keyword">this</span> &lt;&lt; <span class="hljs-string">&quot; in thread &quot;</span> &lt;&lt; threadId_;<br>    <span class="hljs-keyword">if</span> (t_loopInThisThread) <span class="hljs-comment">// 当前线程已经包含了EventLoop对象</span><br>    &#123;<br>        LOG_FATAL &lt;&lt; <span class="hljs-string">&quot;Another EventLoop &quot;</span> &lt;&lt; t_loopInThisThread<br>        &lt;&lt; <span class="hljs-string">&quot; exists in this thread &quot;</span> &lt;&lt; threadId_;<br>    &#125;<br>    <span class="hljs-keyword">else</span> <span class="hljs-comment">// 当前线程尚未包含EventLoop对象</span><br>    &#123;<br>        t_loopInThisThread = <span class="hljs-keyword">this</span>;<br>    &#125;<br>&#125;<br><br>EventLoop::~<span class="hljs-built_in">EventLoop</span>()<br>&#123;<br>    LOG_DEBUG &lt;&lt; <span class="hljs-string">&quot;EventLoop &quot;</span> &lt;&lt; <span class="hljs-keyword">this</span> &lt;&lt; <span class="hljs-string">&quot; of thread &quot;</span> &lt;&lt; threadId_<br>    &lt;&lt; <span class="hljs-string">&quot; destructs in thread &quot;</span> &lt;&lt; CurrentThread::<span class="hljs-built_in">tid</span>();<br>    t_loopInThisThread = <span class="hljs-literal">NULL</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<div class="admonition attention">
+<p class="admonition-title">
+attention
+</p>
+<p>
+再次强调，一个线程只能有一个EventLoop对象。
+</p>
+</div>
+<p>这里通过thread
+local变量t_loopInThisThread指向创建的EventLoop对象，来确保每个线程只有一个EventLoop对象。同一个线程内，可通过static函数getEventLoopOfCurrentThread，返回该EventLoop对象指针。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-function">EventLoop *<span class="hljs-title">EventLoop::getEventLoopOfCurrentThread</span><span class="hljs-params">()</span> <span class="hljs-comment">// static</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-keyword">return</span> t_loopInThisThread;<br>&#125;<br></code></pre></td></tr></table></figure>
+<h3 id="assertinloopthread">assertInLoopThread</h3>
+<p>有些成员函数只能在EventLoop对象所在线程调用,EventLoop提供了isInLoopThread()、assertInLoopThread()，分别用于判断、断言
+当前线程为创建EventLoop对象线程。</p>
+<p>当assertInLoopThread()断言失败时，调用abortNotInLoopThread()终止程序（LOG_FATAL）。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">EventLoop::assertInLoopThread</span><span class="hljs-params">()</span> <span class="hljs-comment">// 断言当前线程（tid()）是调用当前EventLoop对象的持有者线程（threadId_）</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-keyword">if</span> (!<span class="hljs-built_in">isInLoopThread</span>())<br>    &#123;<br>        <span class="hljs-built_in">abortNotInLoopThread</span>();      <span class="hljs-comment">// 断言失败则终止程序</span><br>    &#125;<br>&#125;<br><br><span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">EventLoop::isInLoopThread</span><span class="hljs-params">()</span> <span class="hljs-type">const</span> <span class="hljs-comment">// 判断当前线程是否为当前EventLoop对象的持有者线程</span></span><br><span class="hljs-function"></span>&#123; <span class="hljs-keyword">return</span> threadId_ == CurrentThread::<span class="hljs-built_in">tid</span>(); &#125;<br><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">EventLoop::abortNotInLoopThread</span><span class="hljs-params">()</span> <span class="hljs-comment">// LOG_FATAL 终止程序</span></span><br><span class="hljs-function"></span>&#123;<br>    LOG_FATAL &lt;&lt; <span class="hljs-string">&quot;EventLoop::abortNotInLoopThread - EventLoop &quot;</span> &lt;&lt; <span class="hljs-keyword">this</span><br>    &lt;&lt; <span class="hljs-string">&quot; was created in threadId_ = &quot;</span> &lt;&lt; threadId_<br>    &lt;&lt; <span class="hljs-string">&quot;, current thread id = &quot;</span> &lt;&lt; CurrentThread::<span class="hljs-built_in">tid</span>();<br>&#125;<br></code></pre></td></tr></table></figure>
+<h3 id="loop循环">loop循环</h3>
+<p>提供运行循环，不断监听事件、处理事件。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">/**</span><br><span class="hljs-comment">*  真正的工作循环.</span><br><span class="hljs-comment">*  获得所有当前激活事件的通道，用Poller-&gt;poll()填到activeChannels_,</span><br><span class="hljs-comment">*  然后调用Channel::handleEvent()处理每个激活通道.</span><br><span class="hljs-comment">*</span><br><span class="hljs-comment">*  最后排队运行所有pending函数, 通常是其他线程通过loop来调用运行用户任务</span><br><span class="hljs-comment">*/</span><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">EventLoop::loop</span><span class="hljs-params">()</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-built_in">assert</span>(!looping_);    <span class="hljs-comment">// to avoid reduplicate loop</span><br>    <span class="hljs-built_in">assertInLoopThread</span>(); <span class="hljs-comment">// to avoid new EventLoop() and loop() are not one thread</span><br>    looping_ = <span class="hljs-literal">true</span>;<br>    quit_ = <span class="hljs-literal">false</span>; <span class="hljs-comment">// <span class="hljs-doctag">FIXME:</span> what if someone calls quit() before loop() ?</span><br>    LOG_TRACE &lt;&lt; <span class="hljs-string">&quot;EventLoop &quot;</span> &lt;&lt; <span class="hljs-keyword">this</span> &lt;&lt; <span class="hljs-string">&quot; start looping&quot;</span>;<br><br>    <span class="hljs-keyword">while</span> (!quit_)<br>    &#123;<br>        activeChannels_.<span class="hljs-built_in">clear</span>(); <span class="hljs-comment">// 清除激活事件的通道列表</span><br>        <span class="hljs-comment">// 监听所有通道, 可能阻塞线程, 所有激活事件对应通道会填入activeChannels_</span><br>        pollReturnTime_ = poller_-&gt;<span class="hljs-built_in">poll</span>(kPollTimeMs, &amp;activeChannels_);<br>        ++iteration_; <span class="hljs-comment">// 循环次数+1</span><br>        <span class="hljs-keyword">if</span> (Logger::<span class="hljs-built_in">logLevel</span>() &lt;= Logger::TRACE)<br>        &#123;<br>            <span class="hljs-built_in">printActiveChannels</span>();<br>        &#125;<br>        <span class="hljs-comment">// TODO sort channel by priority</span><br>        <span class="hljs-comment">// 处理所有激活事件</span><br><br>        eventHandling_ = <span class="hljs-literal">true</span>;<br>        <span class="hljs-keyword">for</span> (Channel* channel : activeChannels_)<br>        &#123;<br>            currentActiveChannel_ = channel;<br>            <span class="hljs-comment">// 通过Channel::handleEvent回调事件处理函数</span><br>            currentActiveChannel_-&gt;<span class="hljs-built_in">handleEvent</span>(pollReturnTime_);<br>        &#125;<br>        currentActiveChannel_ = <span class="hljs-literal">NULL</span>;<br>        eventHandling_ = <span class="hljs-literal">false</span>;<br><br>        <span class="hljs-comment">// 运行pending函数, 由其他线程请求调用的用户任务</span><br>        <span class="hljs-built_in">doPendingFunctors</span>();<br>    &#125;<br><br>    LOG_TRACE &lt;&lt; <span class="hljs-string">&quot;EventLoop &quot;</span> &lt;&lt; <span class="hljs-keyword">this</span> &lt;&lt; <span class="hljs-string">&quot; stop looping&quot;</span>;<br>    looping_ = <span class="hljs-literal">false</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>loop线程运行事件回调的关键是，用Poller::poll()将激活事件的通道填入通道列表activeChannels_，然后逐一调用每个通道的handleEvent，从而调用为Channel注册的事件回调来处理事件。</p>
+<h3 id="添加更新删除通道">添加、更新、删除通道</h3>
+<p>loop循环用来处理激活事件，用户可以用updateChannel/removeChannel
+更新/移除 Poller 监听的通道。</p>
+<p>Poller类详见<a
+href="https://gstarmin.github.io/2023/07/02/muduo%E5%BA%93-I-O%E5%A4%8D%E7%94%A8/">muduo库-I/O复用</a></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">/**</span><br><span class="hljs-comment">* 根据具体poller对象, 来更新通道.</span><br><span class="hljs-comment">* 会修改poller对象监听的通道数组.</span><br><span class="hljs-comment">* @note 必须在channel所属loop线程运行</span><br><span class="hljs-comment">*/</span><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">EventLoop::updateChannel</span><span class="hljs-params">(Channel *channel)</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-built_in">assert</span>(channel-&gt;<span class="hljs-built_in">ownerLoop</span>() == <span class="hljs-keyword">this</span>);<br>    <span class="hljs-built_in">assertInLoopThread</span>();<br>    poller_-&gt;<span class="hljs-built_in">updateChannel</span>(channel);<br>&#125;<br><br><span class="hljs-comment">/**</span><br><span class="hljs-comment">* 根据具体poller对象, 来删除通道.</span><br><span class="hljs-comment">* 会删除poller对象监听的通道数组.</span><br><span class="hljs-comment">* @note 如果待移除通道正在激活事件队列, 应该先从激活事件队列中移除</span><br><span class="hljs-comment">*/</span><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">EventLoop::removeChannel</span><span class="hljs-params">(Channel *channel)</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-built_in">assert</span>(channel-&gt;<span class="hljs-built_in">ownerLoop</span>() == <span class="hljs-keyword">this</span>);<br>    <span class="hljs-built_in">assertInLoopThread</span>();<br>    <span class="hljs-keyword">if</span> (eventHandling_)<br>    &#123;<br>        <span class="hljs-built_in">assert</span>(currentActiveChannel_ == channel ||<br>        std::<span class="hljs-built_in">find</span>(activeChannels_.<span class="hljs-built_in">begin</span>(), activeChannels_.<span class="hljs-built_in">end</span>(), channel) == activeChannels_.<span class="hljs-built_in">end</span>());<br>    &#125;<br>    poller_-&gt;<span class="hljs-built_in">removeChannel</span>(channel);<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>另外，可用hasChannel来判断Poller是否正在监听channel。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">/**</span><br><span class="hljs-comment">* 判断poller是否正在监听通道channel</span><br><span class="hljs-comment">* @note 必须在channel所属loop线程运行</span><br><span class="hljs-comment">*/</span><br><span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">EventLoop::hasChannel</span><span class="hljs-params">(Channel *channel)</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-built_in">assert</span>(channel-&gt;<span class="hljs-built_in">ownerLoop</span>() == <span class="hljs-keyword">this</span>);<br>    <span class="hljs-built_in">assertInLoopThread</span>();<br>    <span class="hljs-keyword">return</span> poller_-&gt;<span class="hljs-built_in">hasChannel</span>(channel);<br>&#125;<br></code></pre></td></tr></table></figure>
+<h3 id="定时任务">定时任务</h3>
+<p>EventLoop提供了runAt、runAfter、runEvery三个函数，用于在指定时间点、延迟时间、周期性时间运行用户任务。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">/**</span><br><span class="hljs-comment">* 定时功能，由用户指定绝对时间</span><br><span class="hljs-comment">* @details 每为定时器队列timerQueue添加一个Timer,</span><br><span class="hljs-comment">* timerQueue内部就会新建一个Timer对象, TimerId就保含了这个对象的唯一标识(序列号)</span><br><span class="hljs-comment">* @param time 时间戳对象, 单位1us</span><br><span class="hljs-comment">* @param cb 超时回调函数. 当前时间超过time代表时间时, EventLoop就会调用cb</span><br><span class="hljs-comment">* @return 一个绑定timerQueue内部新增的Timer对象的TimerId对象, 用来唯一标识该Timer对象</span><br><span class="hljs-comment">*/</span><br><span class="hljs-function">TimerId <span class="hljs-title">EventLoop::runAt</span><span class="hljs-params">(Timestamp time, TimerCallback cb)</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-keyword">return</span> timerQueue_-&gt;<span class="hljs-built_in">addTimer</span>(std::<span class="hljs-built_in">move</span>(cb), time, <span class="hljs-number">0.0</span>);<br>&#125;<br><br><span class="hljs-comment">/**</span><br><span class="hljs-comment">* 定时功能, 由用户相对时间, 通过runAt实现</span><br><span class="hljs-comment">* @param delay 相对时间, 单位s, 精度1us(小数)</span><br><span class="hljs-comment">* @param cb 超时回调</span><br><span class="hljs-comment">*/</span><br><span class="hljs-function">TimerId <span class="hljs-title">EventLoop::runAfter</span><span class="hljs-params">(<span class="hljs-type">double</span> delay, TimerCallback cb)</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-function">Timestamp <span class="hljs-title">time</span><span class="hljs-params">(addTime(Timestamp::now(), delay))</span></span>;<br>    <span class="hljs-keyword">return</span> <span class="hljs-built_in">runAt</span>(time, std::<span class="hljs-built_in">move</span>(cb));<br>&#125;<br><br><span class="hljs-comment">/**</span><br><span class="hljs-comment">* 定时功能, 由用户指定周期, 重复运行</span><br><span class="hljs-comment">* @param interval 运行周期, 单位s, 精度1us(小数)</span><br><span class="hljs-comment">* @param cb 超时回调</span><br><span class="hljs-comment">* @return 一个绑定timerQueue内部新增的Timer对象的TimerId对象, 用来唯一标识该Timer对象</span><br><span class="hljs-comment">*/</span><br><span class="hljs-function">TimerId <span class="hljs-title">EventLoop::runEvery</span><span class="hljs-params">(<span class="hljs-type">double</span> interval, TimerCallback cb)</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-function">Timestamp <span class="hljs-title">time</span><span class="hljs-params">(addTime(Timestamp::now(), interval))</span></span>;<br>    <span class="hljs-keyword">return</span> timerQueue_-&gt;<span class="hljs-built_in">addTimer</span>(std::<span class="hljs-built_in">move</span>(cb), time, interval);<br>&#125;<br><br><span class="hljs-comment">/**</span><br><span class="hljs-comment">* 取消指定定时器</span><br><span class="hljs-comment">* @param timerId Timer id, 唯一对应一个Timer对象</span><br><span class="hljs-comment">*/</span><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">EventLoop::cancel</span><span class="hljs-params">(TimerId timerId)</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-keyword">return</span> timerQueue_-&gt;<span class="hljs-built_in">cancel</span>(timerId);<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>用户运行一个loop线程，并添加定时任务示例：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">threadFunc</span><span class="hljs-params">()</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-built_in">assert</span>(EventLoop::<span class="hljs-built_in">getEventLoopOfCurrentThread</span>() == <span class="hljs-literal">NULL</span>);  <span class="hljs-comment">// 断言当前线程没有创建EventLoop对象</span><br>    EventLoop loop; <span class="hljs-comment">// 创建EventLoop对象</span><br>    <span class="hljs-built_in">assert</span>(EventLoop::<span class="hljs-built_in">getEventLoopOfCurrentThread</span>() == &amp;loop); <span class="hljs-comment">// 断言当前线程创建了EventLoop对象</span><br>    loop.<span class="hljs-built_in">runAfter</span>(<span class="hljs-number">1.0</span>, callback); <span class="hljs-comment">// 1sec后运行callback</span><br>    loop.<span class="hljs-built_in">loop</span>(); <span class="hljs-comment">// 启动loop循环</span><br>&#125;<br></code></pre></td></tr></table></figure>
+<h3
+id="runinloop与queueinloop执行用户任务">runInLoop与queueInLoop执行用户任务</h3>
+<p>同样是运行用户任务函数，runInLoop和queueInLoop都可以被多个线程执行，分为2种情况：1）如果当前线程是创建当前EventLoop对象的线程，那么立即执行用户任务；2）如果不是，那么在loop循环中排队执行（本次循环末尾），实际上这点也是由queueInLoop完成的。</p>
+<p>queueInLoop只做了runInLoop的第2）种情况的工作，也就是只会在loop循环中排队执行用户任务。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">/**</span><br><span class="hljs-comment">* 执行用户任务</span><br><span class="hljs-comment">* @param cb 用户任务函数</span><br><span class="hljs-comment">* @note 可以被多个线程执行：</span><br><span class="hljs-comment">* 如果当前线程是创建当前EventLoop对象的线程，直接执行；</span><br><span class="hljs-comment">* 否则，用户任务函数入队列pendingFunctors_成为一个pending functor，在loop循环中排队执行</span><br><span class="hljs-comment">*/</span><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">EventLoop::runInLoop</span><span class="hljs-params">(Functor cb)</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-keyword">if</span> (<span class="hljs-built_in">isInLoopThread</span>())<br>    &#123;<br>        <span class="hljs-built_in">cb</span>();<br>    &#125;<br>    <span class="hljs-keyword">else</span><br>    &#123;<br>        <span class="hljs-built_in">queueInLoop</span>(std::<span class="hljs-built_in">move</span>(cb));<br>    &#125;<br>&#125;<br><br><span class="hljs-comment">/**</span><br><span class="hljs-comment">* 排队进入pendingFunctors_，等待执行</span><br><span class="hljs-comment">* @param cb 用户任务函数</span><br><span class="hljs-comment">* @note 如果当前线程不是创建当前EventLoop对象的线程 或者正在调用pending functor，</span><br><span class="hljs-comment">* 就唤醒loop线程，避免loop线程阻塞.</span><br><span class="hljs-comment">*/</span><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">EventLoop::queueInLoop</span><span class="hljs-params">(Functor cb)</span></span><br><span class="hljs-function"></span>&#123;<br>    &#123;<br>        <span class="hljs-function">MutexLockGuard <span class="hljs-title">lock</span><span class="hljs-params">(mutex_)</span></span>;<br>        pendingFunctors_.<span class="hljs-built_in">push_back</span>(std::<span class="hljs-built_in">move</span>(cb));<br>    &#125;<br><br>    <span class="hljs-keyword">if</span> (!<span class="hljs-built_in">isInLoopThread</span>() || callingPendingFunctors_)<br>    &#123;<br>        <span class="hljs-built_in">wakeup</span>();<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p><strong>为什么要对pendingFunctors_加锁？</strong></p>
+<p>因为queueInLoop可以被多个线程访问，意味着pendingFunctors_也能被多个线程访问，加锁确保线程安全。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">/**</span><br><span class="hljs-comment">* 执行用户任务</span><br><span class="hljs-comment">* @param cb 用户任务函数</span><br><span class="hljs-comment">* @note 可以被多个线程执行：</span><br><span class="hljs-comment">* 如果当前线程是创建当前EventLoop对象的线程，直接执行；</span><br><span class="hljs-comment">* 否则，用户任务函数入队列pendingFunctors_成为一个pending functor，在loop循环中排队执行</span><br><span class="hljs-comment">*/</span><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">EventLoop::runInLoop</span><span class="hljs-params">(Functor cb)</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-keyword">if</span> (<span class="hljs-built_in">isInLoopThread</span>())<br>    &#123;<br>        <span class="hljs-built_in">cb</span>();<br>    &#125;<br>    <span class="hljs-keyword">else</span><br>    &#123;<br>        <span class="hljs-built_in">queueInLoop</span>(std::<span class="hljs-built_in">move</span>(cb));<br>    &#125;<br>&#125;<br><br><span class="hljs-comment">/**</span><br><span class="hljs-comment">* 排队进入pendingFunctors_，等待执行</span><br><span class="hljs-comment">* @param cb 用户任务函数</span><br><span class="hljs-comment">* @note 如果当前线程不是创建当前EventLoop对象的线程 或者正在调用pending functor，</span><br><span class="hljs-comment">* 就唤醒loop线程，避免loop线程阻塞.</span><br><span class="hljs-comment">*/</span><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">EventLoop::queueInLoop</span><span class="hljs-params">(Functor cb)</span></span><br><span class="hljs-function"></span>&#123;<br>    &#123;<br>        <span class="hljs-function">MutexLockGuard <span class="hljs-title">lock</span><span class="hljs-params">(mutex_)</span></span>;<br>        pendingFunctors_.<span class="hljs-built_in">push_back</span>(std::<span class="hljs-built_in">move</span>(cb));<br>    &#125;<br><br>    <span class="hljs-keyword">if</span> (!<span class="hljs-built_in">isInLoopThread</span>() || callingPendingFunctors_)<br>    &#123;<br>        <span class="hljs-built_in">wakeup</span>();<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>这里有几个问题：</p>
+<ul>
+<li>为什么要唤醒 EventLoop？</li>
+<li>wakeup 是怎么实现的?</li>
+<li>pendingFunctors_是如何被消费的?</li>
+</ul>
+<p><strong>为什么要唤醒 EventLoop</strong>:</p>
+<p>我们首先调用了 pendingFunctors_.push_back(cb), 将该函数放在
+pendingFunctors_中。EventLoop::loop 的每一轮循环在最后会调用
+doPendingFunctors 依次执行这些函数。</p>
+<p>而 EventLoop 的唤醒是通过 Poller::poll()中调用poll()/epoll_wait()
+实现的，如果此时该 EventLoop 中迟迟没有事件触发，那么
+poll()/epoll_wait() 一直就会阻塞。
+这样会导致，pendingFunctors_中的任务迟迟不能被执行了。</p>
+<p>所以必须要唤醒 EventLoop
+，从而让pendingFunctors_中的任务尽快被执行。</p>
+<p><strong>wakeup 是怎么实现的</strong>:</p>
+<p>muduo 这里采用了对 eventfd 的读写来实现对 EventLoop 的唤醒。</p>
+<p>在 EventLoop 建立之后，就创建一个 eventfd，并将其可读事件注册到
+EventLoop 中。</p>
+<p>wakeup() 的过程本质上是对这个 eventfd 进行写操作，以触发该 eventfd
+的可读事件。这样就起到了唤醒 EventLoop 的作用。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">EventLoop::wakeup</span><span class="hljs-params">()</span></span><br><span class="hljs-function"></span>&#123;<br>  <span class="hljs-type">uint64_t</span> one = <span class="hljs-number">1</span>;<br>  sockets::<span class="hljs-built_in">write</span>(wakeupFd_, &amp;one, <span class="hljs-keyword">sizeof</span> one);<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>很多库为了兼容 macOS，往往使用 pipe 来实现这个功能。muduo 采用了
+eventfd，性能更好些，但代价是不能支持 macOS 了。但是muduo
+似乎从一开始的定位就只支持 Linux。</p>
+<p><strong>pendingFunctors_是如何被消费的</strong>：</p>
+<p>下面讲下 doPendingFunctors 的实现，muduo
+是如何处理这些待处理的函数的，以及中间用了哪些优化操作。</p>
+<p>代码如下所示：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">EventLoop::doPendingFunctors</span><span class="hljs-params">()</span></span><br><span class="hljs-function"></span>&#123;<br>  std::vector&lt;Functor&gt; functors;<br><br>  callingPendingFunctors_ = <span class="hljs-literal">true</span>;<br><br>  &#123;<br>  <span class="hljs-function">MutexLockGuard <span class="hljs-title">lock</span><span class="hljs-params">(mutex_)</span></span>;<br>  functors.<span class="hljs-built_in">swap</span>(pendingFunctors_);<br>  &#125;<br><br>  <span class="hljs-keyword">for</span> (<span class="hljs-type">size_t</span> i = <span class="hljs-number">0</span>; i &lt; functors.<span class="hljs-built_in">size</span>(); ++i)<br>  &#123;<br>    functors[i]();<br>  &#125;<br>  callingPendingFunctors_ = <span class="hljs-literal">false</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>从代码可以看到，函数非常简单。大概只有十行代码，但是这十行代码中却有两个非常巧妙的地方。</p>
+<ol type="1">
+<li>callingPendingFunctors_的作用</li>
+</ol>
+<p>从代码可以看出，如果 callingPendingFunctors_为
+false，则说明此时尚未开始执行 doPendingFunctors 函数。</p>
+<p>这个有什么作用呢，我们需要结合下 queueInLoop 中，对是否执行 wakeup()
+的判断</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-keyword">if</span> (!<span class="hljs-built_in">isInLoopThread</span>() || callingPendingFunctors_)<br>&#123;<br>  <span class="hljs-built_in">wakeup</span>();<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>这里还需要结合下 EventLoop 循环的实现，其中 doPendingFunctors() 是
+每轮循环的最后一步处理。</p>
+<p>如果调用 queueInLoop 和 EventLoop 在同一个线程，且
+callingPendingFunctors_为 false 时，则说明：此时尚未执行到
+doPendingFunctors()。</p>
+<p>那么此时即使不用 wakeup，也可以在之后照旧执行 doPendingFunctors()
+了。</p>
+<p>这么做的好处非常明显，可以减少对 eventfd 的 IO 读写。</p>
+<ol start="2" type="1">
+<li>锁范围的减小</li>
+</ol>
+<p>在此函数中，有一段特别的代码：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs cpp">std::vector&lt;Functor&gt; functors;<br>&#123;<br>  <span class="hljs-function">MutexLockGuard <span class="hljs-title">lock</span><span class="hljs-params">(mutex_)</span></span>;<br>  functors.<span class="hljs-built_in">swap</span>(pendingFunctors_);<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>这个作用是 pendingFunctors_和 functors 的内容进行交换，实际上就是此时
+functors 持有了 pendingFunctors_的内容，而
+pendingFunctors_被清空了。</p>
+<p>这个好处是什么呢？ 如果不这么做，直接遍历 pendingFunctors_,
+然后处理对应的函数。这样的话，锁会一直等到所有函数处理完才会被释放。在此期间，queueInLoop
+将不可用。</p>
+<p>而以上的写法，可以极大减小锁范围，整个锁的持有时间就是 swap
+那一下的时间。待处理函数执行的时候，其他线程还是可以继续调用
+queueInLoop。</p>
+<h4 id="eventfd唤醒线程">eventfd唤醒线程</h4>
+<p>eventfd是Linux（Linux
+2.6以后）特有的，专用于事件通知的机制，类似于管道（pipe）、域套接字（UNIX
+Domain Socket）。</p>
+<p>创建eventfd 函数原型：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;sys/eventfd.h&gt;</span></span><br><span class="hljs-comment">/* 创建一个文件描述符(event fd), 用于事件通知 </span><br><span class="hljs-comment"> *  initval 计数初值</span><br><span class="hljs-comment"> * flags 标志位, 如果没用到可设为0, 也可以用以下选项 按位或 取值: </span><br><span class="hljs-comment"> *     EFD_CLOEXEC 为新建的fd设置close-on-exec(FD_CLOEXEC), 等效于以O_CLOEXEC方式open(2)</span><br><span class="hljs-comment"> *     EFD_NONBLOCK 等效于fcntl(2)设置O_NONBLOCK</span><br><span class="hljs-comment"> *     EFD_SEMAPHORE 将eventfd当信号量一样调用, read 将导致计数-1, write 将导致计数+1; 如果没指定该标志, read将返回8byte计数值, 且计数值归0, write将计数值+指定值.</span><br><span class="hljs-comment"> * 返回 新建的fd, 用于事件通知, 绑定到一个eventfd对象; 失败, 返回-1</span><br><span class="hljs-comment"> */</span><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">eventfd</span><span class="hljs-params">(<span class="hljs-type">unsigned</span> <span class="hljs-type">int</span> initval, <span class="hljs-type">int</span> flags)</span></span>;<br></code></pre></td></tr></table></figure>
+<p>创建完event fd后，可用read()读取event
+fd，如果fd是阻塞的，read可能阻塞线程；如果event
+fd设置了EFD_NONBLOCK，read返回EAGIAN错误。直到另外一个线程对event
+fd进行write。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">// 为wakeupChannel_设置读回调</span><br>wakeupChannel_-&gt;<span class="hljs-built_in">setReadCallback</span>(std::<span class="hljs-built_in">bind</span>(&amp;EventLoop::handleRead, <span class="hljs-keyword">this</span>));<br><span class="hljs-comment">// we are always reading the wakeupfd</span><br><span class="hljs-comment">// 使能wakeupChannel_读事件</span><br>wakeupChannel_-&gt;<span class="hljs-built_in">enableReading</span>();<br></code></pre></td></tr></table></figure>
+<p>eventfd使用示例：</p>
+<p>线程1阻塞等待，线程2唤醒线程1。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdlib.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;sys/eventfd.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;unistd.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;pthread.h&gt;</span></span><br><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> __STDC_FORMAT_MACROS <span class="hljs-comment">// for 跨平台打印</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;inttypes.h&gt;</span></span><br><br><span class="hljs-function"><span class="hljs-type">void</span>* <span class="hljs-title">thread_func1</span><span class="hljs-params">(<span class="hljs-type">void</span>* arg)</span> <span class="hljs-comment">/* 等待线程 */</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-type">int</span> wakeupfd = *(<span class="hljs-type">int</span>*)arg;<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;thread_func1 start\n&quot;</span>);<br>    <span class="hljs-type">uint64_t</span> rdata;<br>    <span class="hljs-type">int</span> ret = <span class="hljs-built_in">read</span>(wakeupfd, &amp;rdata, <span class="hljs-built_in">sizeof</span>(rdata));<br>    <span class="hljs-keyword">if</span> (ret &lt; <span class="hljs-number">0</span>) &#123;<br>        <span class="hljs-built_in">perror</span>(<span class="hljs-string">&quot;thread_func1 read error&quot;</span>);<br>        <span class="hljs-built_in">pthread_exit</span>(<span class="hljs-literal">NULL</span>);<br>    &#125;<br>    <br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;thread_func1 success to be waked up, rdata = %&quot;</span> PRId64 <span class="hljs-string">&quot;\n&quot;</span>, rdata);<br>&#125;<br><br><span class="hljs-function"><span class="hljs-type">void</span>* <span class="hljs-title">thread_func2</span><span class="hljs-params">(<span class="hljs-type">void</span>* arg)</span> <span class="hljs-comment">/* 唤醒线程 */</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-type">int</span> wakeupfd = *(<span class="hljs-type">int</span>*)arg;<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;thread_func2 ready to sleep 1 sec\n&quot;</span>);<br>    <span class="hljs-built_in">sleep</span>(<span class="hljs-number">1</span>);<br>    <span class="hljs-type">uint64_t</span> wdata = <span class="hljs-number">10</span>;<br>    <span class="hljs-type">int</span> ret = <span class="hljs-built_in">write</span>(wakeupfd, &amp;wdata, <span class="hljs-built_in">sizeof</span>(wdata));<br>    <span class="hljs-keyword">if</span> (ret &lt; <span class="hljs-number">0</span>) &#123;<br>        <span class="hljs-built_in">perror</span>(<span class="hljs-string">&quot;thread_func2 write error&quot;</span>);<br>        <span class="hljs-built_in">pthread_exit</span>(<span class="hljs-literal">NULL</span>);<br>    &#125;<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;thread_func2 success to wake up another thread, wdata = %&quot;</span> PRId64 <span class="hljs-string">&quot;\n&quot;</span>, wdata);<br>&#125;<br><br><span class="hljs-comment">/* 创建2个线程，thread_func1阻塞等待eventfd，thread_func2唤醒等等eventfd的线程 */</span><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-type">int</span> evfd = <span class="hljs-built_in">eventfd</span>(<span class="hljs-number">0</span>, <span class="hljs-number">0</span>);<br>    <span class="hljs-keyword">if</span> (evfd &lt; <span class="hljs-number">0</span>) &#123;<br>        <span class="hljs-built_in">perror</span>(<span class="hljs-string">&quot;eventfd error&quot;</span>);<br>        <span class="hljs-built_in">exit</span>(<span class="hljs-number">1</span>);<br>    &#125;<br>    <span class="hljs-type">pthread_t</span> th1, th2;<br>    <span class="hljs-built_in">pthread_create</span>(&amp;th1, <span class="hljs-literal">NULL</span>, thread_func1, (<span class="hljs-type">void</span>*)&amp;evfd);<br>    <span class="hljs-built_in">pthread_create</span>(&amp;th2, <span class="hljs-literal">NULL</span>, thread_func2, (<span class="hljs-type">void</span>*)&amp;evfd);<br>    <span class="hljs-built_in">pthread_join</span>(th1, <span class="hljs-literal">NULL</span>);<br>    <span class="hljs-built_in">pthread_join</span>(th2, <span class="hljs-literal">NULL</span>);<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<h3
+id="eventloop使用eventfd唤醒loop线程">EventLoop使用eventfd唤醒loop线程</h3>
+<ol type="1">
+<li>创建event fd</li>
+</ol>
+<p>构造函数中，wakeupFd_ 初值为createEventfd()</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">createEventfd</span><span class="hljs-params">()</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-type">int</span> evtfd = ::<span class="hljs-built_in">eventfd</span>(<span class="hljs-number">0</span>, EFD_NONBLOCK | EFD_CLOEXEC);<br>    <span class="hljs-keyword">if</span> (evtfd &lt; <span class="hljs-number">0</span>)<br>    &#123;<br>        LOG_SYSERR &lt;&lt; <span class="hljs-string">&quot;Failed in eventfd&quot;</span>;<br>        <span class="hljs-built_in">abort</span>();<br>    &#125;<br>    <span class="hljs-keyword">return</span> evtfd;<br>&#125;<br></code></pre></td></tr></table></figure>
+<ol start="2" type="1">
+<li>绑定event fd与唤醒通道wakeupChannel_,利用event
+fd构造一个Channel对象后，传递给wakeupChannel_，便于Poller监听、事件回调</li>
+</ol>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">// 为wakeupChannel_设置读回调</span><br>wakeupChannel_-&gt;<span class="hljs-built_in">setReadCallback</span>(std::<span class="hljs-built_in">bind</span>(&amp;EventLoop::handleRead, <span class="hljs-keyword">this</span>));<br><span class="hljs-comment">// we are always reading the wakeupfd</span><br><span class="hljs-comment">// 使能wakeupChannel_读事件</span><br>wakeupChannel_-&gt;<span class="hljs-built_in">enableReading</span>();<br></code></pre></td></tr></table></figure>
+<ol start="3" type="1">
+<li>启动loop循环，可能阻塞在poll()/epoll_wait()</li>
+<li>其他线程通过queueInLoop()调用wakeup()，唤醒阻塞的loop线程</li>
+</ol>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">/**</span><br><span class="hljs-comment">* 其他线程唤醒等待在wakeupFd_上的线程, 产生读就绪事件.</span><br><span class="hljs-comment">* @note write将添加8byte数据到内部计数器. 被唤醒线程必须调用read读取8byte数据.</span><br><span class="hljs-comment">*/</span><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">EventLoop::wakeup</span><span class="hljs-params">()</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-type">uint64_t</span> one = <span class="hljs-number">1</span>;<br>    <span class="hljs-type">ssize_t</span> n = sockets::<span class="hljs-built_in">write</span>(wakeupFd_, &amp;one, <span class="hljs-built_in">sizeof</span>(one));<br>    <span class="hljs-keyword">if</span> (n != <span class="hljs-built_in">sizeof</span>(one))<br>    &#123;<br>        LOG_ERROR &lt;&lt; <span class="hljs-string">&quot;EventLoop::wakeup() writes &quot;</span> &lt;&lt; n &lt;&lt; <span class="hljs-string">&quot; bytes instead of 8&quot;</span>;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<ol start="5" type="1">
+<li>loop线程被唤醒后，读取event fd</li>
+</ol>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">/**</span><br><span class="hljs-comment">* 处理wakeupChannel_读事件</span><br><span class="hljs-comment">* @note read wakeupfd_</span><br><span class="hljs-comment">*/</span><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">EventLoop::handleRead</span><span class="hljs-params">()</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-type">uint64_t</span> one = <span class="hljs-number">1</span>;<br>    <span class="hljs-type">ssize_t</span> n = sockets::<span class="hljs-built_in">read</span>(wakeupFd_, &amp;one, <span class="hljs-built_in">sizeof</span>(one));<br>    <span class="hljs-keyword">if</span> (n != <span class="hljs-built_in">sizeof</span>(one))<br>    &#123;<br>        LOG_ERROR &lt;&lt; <span class="hljs-string">&quot;EventLoop::handleRead() reads &quot;</span> &lt;&lt; n &lt;&lt; <span class="hljs-string">&quot; bytes instead of 8&quot;</span>;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<h2 id="参考">参考</h2>
+<ul>
+<li><a
+target="_blank" rel="noopener" href="https://www.cnblogs.com/fortunely/p/16127237.html">muduo笔记
+网络库（五）事件循环EventLoop</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.cyhone.com/articles/analysis-of-muduo/">muduo
+源码剖析</a></li>
+</ul>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/C/" class="category-chain-item">C++</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/C/muduo/" class="category-chain-item">muduo</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/C/">#C++</a>
+      
+        <a href="/tags/muduo/">#muduo</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>muduo-事件驱动EventLoop</div>
+      <div>https://gstarmin.github.io/2023/07/03/muduo-EventLoop/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Starmin</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年7月3日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/07/02/muduo%E5%BA%93-TimerQueue%E5%AE%9A%E6%97%B6%E5%99%A8%E9%98%9F%E5%88%97/" title="muduo库-TimerQueue定时器队列">
+                        <span class="hidden-mobile">muduo库-TimerQueue定时器队列</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
