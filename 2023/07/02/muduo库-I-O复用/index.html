@@ -24,7 +24,7 @@
 <meta property="og:description" content="muduo库-I&#x2F;O复用 I&#x2F;O复用使得程序能同时监听多个文件描述符，能有效提高程序性能。Linux下，实现I&#x2F;O复用的系统调用主要有3个：  select poll epoll  muduo采用了2和3，分别用PollPoller&#x2F;EPollPoller对poll&#x2F;epoll进行了封装，基类Poller主要用于提供统一的接口。 Poller类 先来看看基类Poller定义： 1234567891">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2023-07-02T07:10:42.000Z">
-<meta property="article:modified_time" content="2023-07-02T07:10:42.000Z">
+<meta property="article:modified_time" content="2023-07-03T12:10:42.000Z">
 <meta property="article:author" content="Starmin">
 <meta property="article:tag" content="C++">
 <meta property="article:tag" content="muduo">
@@ -296,7 +296,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          4.4k 字
+          4.5k 字
         
       </span>
     
@@ -307,7 +307,7 @@
         
         
         
-          45 分钟
+          46 分钟
         
       </span>
     
@@ -361,7 +361,7 @@
 <h2 id="poller类">Poller类</h2>
 <p>先来看看基类Poller定义：</p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">/**</span><br><span class="hljs-comment">* IO Multiplexing Interface</span><br><span class="hljs-comment">* Support poll(2), epoll(7)</span><br><span class="hljs-comment">*</span><br><span class="hljs-comment">* Only owner EventLoop IO thread can invoke it, so thread safe is not necessary.</span><br><span class="hljs-comment">*/</span><br><span class="hljs-comment">/**</span><br><span class="hljs-comment">* IO复用接口</span><br><span class="hljs-comment">* 禁止编译器生成copy构造函数和copy assignment</span><br><span class="hljs-comment">* 支持poll(2), epoll(7)</span><br><span class="hljs-comment">*/</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Poller</span> : noncopyable<br>&#123;<br><span class="hljs-keyword">public</span>:<br>    <span class="hljs-keyword">typedef</span> std::vector&lt;Channel*&gt; ChannelList;<br>    <span class="hljs-function"><span class="hljs-keyword">explicit</span> <span class="hljs-title">Poller</span><span class="hljs-params">(EventLoop* loop)</span></span>;<br>    <span class="hljs-keyword">virtual</span> ~<span class="hljs-built_in">Poller</span>();<br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * Polls the I/O events.</span><br><span class="hljs-comment">     * Must be called in the loop thread.</span><br><span class="hljs-comment">     * poll(2) for PollPoller, epoll_wait(2) for EPollPoller</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-comment">/*</span><br><span class="hljs-comment">     * 监听函数，根据激活的通道列表，监听指定fd的相应事件</span><br><span class="hljs-comment">     * 对于PollPoller会调用epoll_wait(2), 对于EPollPoller会调用poll(2)</span><br><span class="hljs-comment">     *</span><br><span class="hljs-comment">     * 返回调用完epoll_wait/poll的当前时间（Timestamp对象）</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-function"><span class="hljs-keyword">virtual</span> Timestamp <span class="hljs-title">poll</span><span class="hljs-params">(<span class="hljs-type">int</span> timeoutMs, ChannelList* activeChannels)</span> </span>= <span class="hljs-number">0</span>;<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * Update channel listened</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-comment">/* 更新监听通道的事件 */</span><br>    <span class="hljs-function"><span class="hljs-keyword">virtual</span> <span class="hljs-type">void</span> <span class="hljs-title">updateChannel</span><span class="hljs-params">(Channel* channel)</span> </span>= <span class="hljs-number">0</span>;<br>    <span class="hljs-comment">/* 删除监听通道 */</span><br>    <span class="hljs-function"><span class="hljs-keyword">virtual</span> <span class="hljs-type">void</span> <span class="hljs-title">removeChannel</span><span class="hljs-params">(Channel* channel)</span> </span>= <span class="hljs-number">0</span>;<br>    <span class="hljs-comment">/* 判断当前Poller对象是否持有指定通道 */</span><br>    <span class="hljs-function"><span class="hljs-keyword">virtual</span> <span class="hljs-type">bool</span> <span class="hljs-title">hasChannel</span><span class="hljs-params">(Channel* channel)</span> <span class="hljs-type">const</span></span>;<br><br>    <span class="hljs-comment">/* 默认创建Poller对象的类函数 */</span><br>    <span class="hljs-function"><span class="hljs-type">static</span> Poller* <span class="hljs-title">newDefaultPoller</span><span class="hljs-params">(EventLoop* loop)</span></span>;<br>    <span class="hljs-comment">/*</span><br><span class="hljs-comment">     * 断言所属EventLoop为当前线程.</span><br><span class="hljs-comment">     * 如果断言失败，将终止程序（LOG_FATAL）</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">assertInLoopThread</span><span class="hljs-params">()</span> <span class="hljs-type">const</span></span><br><span class="hljs-function">    </span>&#123;<br>        ownerLoop_-&gt;<span class="hljs-built_in">assertInLoopThread</span>();<br>    &#125;<br><span class="hljs-keyword">protected</span>:<br>    <span class="hljs-comment">/*</span><br><span class="hljs-comment">     * 该类型保存fd和需要监听的events，以及各种事件回调函数（可读/可写/错误/关闭等）</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-keyword">typedef</span> std::map&lt;<span class="hljs-type">int</span>, Channel*&gt; ChannelMap;<br>    <span class="hljs-comment">// Poller don&#x27;t own the Channel, so the channel must be unregister(EventLoop::removeChannel) before its dtor.</span><br>    <span class="hljs-comment">// std::map used for speeding up to find out a channel by fd</span><br>    <span class="hljs-comment">/* 保存所有事件的Channel，一个Channel绑定一个fd */</span><br>    ChannelMap channels_;<br><br><span class="hljs-keyword">private</span>:<br>    <span class="hljs-comment">/*</span><br><span class="hljs-comment">     * 事件驱动循环, 用于调用poll监听fd事件</span><br><span class="hljs-comment">     */</span><br>    EventLoop* ownerLoop_;<br>&#125;;<br></code></pre></td></tr></table></figure>
-<p>只有拥有EventLoop的IO线程，才能调用EventLoop所拥有的Poller对象的接口，因此考虑Poller的线程安全不是必要的。</p>
+<p>每个EventLoop类都有一个Poller派生类的实例化对象，该对象的所有操作都在同一个IO线程完成的，不存在多线程抢占的问题，只有拥有EventLoop的IO线程，才能调用EventLoop所拥有的Poller对象的接口。因此只需要判断当前执行线程是否在EventLoop对象的创建线程即可，所以考虑Poller的线程安全不是必要的。</p>
 <p>一个Channel对应一个fd（文件描述符），一个fd有三种事件状态：空事件（kNoneEvent），读事件（kReadEvent，即POLLIN
 |
 POLLPRI），写事件（kWriteEvent，即POLLOUT）。只有后2个，poll/epoll才会进行监听。</p>
@@ -454,6 +454,11 @@ target="_blank" rel="noopener" href="https://www.cnblogs.com/fortunely/p/1599762
           <div>2023年7月2日</div>
         </div>
       
+      
+        <div class="license-meta-item license-meta-date">
+          <div>更新于</div>
+          <div>2023年7月3日</div>
+        </div>
       
       
         <div class="license-meta-item">

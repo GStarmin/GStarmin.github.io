@@ -379,7 +379,7 @@
       
       <a class="index-excerpt index-excerpt__noimg" href="/2023/07/02/muduo%E5%BA%93-%E4%BA%8B%E4%BB%B6%E9%80%9A%E9%81%93Channel/" target="_self">
         <div>
-          muduo库-事件通道Channel 之前说过，Poller的存在是为了监听事件，那么具体监听什么事件呢？ 这就需要用到Channel类。一个Channel对象绑定了一个fd（文件描述符），可以用来监听发生在fd上的事件，事件包括空事件（不监听）、可读事件、写完成事件。当fd上被监听事件就绪时，对应Channel对象就会被Poller放入激活队列（activeChannels_），进而在loop循
+          muduo库-事件通道Channel 之前说过，Poller的存在是为了监听事件，那么具体监听什么事件呢？ 这就需要用到Channel类，它是muduo库负责注册读写事件的类，并保存了fd读写事件发生时调用的回调函数，如果poll/epoll有读写事件发生则将这些事件添加到对应的通道中。一个通道对应唯一EventLoop，一个EventLoop可以有多个通道。 一个通道对应唯一EventLoop，
         </div>
       </a>
 
