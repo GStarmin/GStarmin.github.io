@@ -375,7 +375,14 @@ or 周期）。</p>
 <p><img src="/img/muduo/定时器/定时器时序图.png" srcset="/img/loading.gif" lazyload /></p>
 <p>时序图里的TimerQueue获取超时Timer（getExpired()）后，User及onTimer()是指用户自定义的超时处理函数，并非库本身的。</p>
 <p>与普通Channel事件一样，超时任务TimerQueue也会使用一个Channel，专门用于绑定timerfd，交由Poller监听，发生可读事件（代表超时）后加入激活通道列表，然后EventLoop::loop()逐个Channel调用对应的回调，从而处理超时事件。</p>
-<p>注意：一个EventLoop只持有一个TimerQueue对象，而TimerQueue通过std::set持有多个Timer对象，但只会设置一个Channel。</p>
+<div class="admonition note">
+<p class="admonition-title">
+note
+</p>
+<p>
+一个EventLoop只持有一个TimerQueue对象，而TimerQueue通过std::set持有多个Timer对象，但只会设置一个Channel。
+</p>
+</div>
 <h2 id="timer类">Timer类</h2>
 <p>Timer类代表一个超时任务，但并不直接绑定Channel。Timer主要包含超时时刻（expiration_），超时回调（callback_），周期时间值（interval_），全局唯一id（sequence_）。</p>
 <p>其声明如下：</p>
