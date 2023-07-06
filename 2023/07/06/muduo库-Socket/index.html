@@ -1,0 +1,842 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Starmin">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="muduo库-Socket Socket类 Socket类是socket 文件描述符（sock fd）的一个轻量级封装，提供操作底层sock fd的常用方法。采用RTII方式管理sock fd，但本身并不创建sock fd，也不打开它，只负责关闭。 提供的public方法主要包括：获取tcp协议栈信息（tcp_info）；绑定ip地址（bind）；监听套接字（listen）；接收连接请求（acce">
+<meta property="og:type" content="article">
+<meta property="og:title" content="muduo库-Socket">
+<meta property="og:url" content="https://gstarmin.github.io/2023/07/06/muduo%E5%BA%93-Socket/">
+<meta property="og:site_name" content="私人杂货铺">
+<meta property="og:description" content="muduo库-Socket Socket类 Socket类是socket 文件描述符（sock fd）的一个轻量级封装，提供操作底层sock fd的常用方法。采用RTII方式管理sock fd，但本身并不创建sock fd，也不打开它，只负责关闭。 提供的public方法主要包括：获取tcp协议栈信息（tcp_info）；绑定ip地址（bind）；监听套接字（listen）；接收连接请求（acce">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-07-06T14:03:34.000Z">
+<meta property="article:modified_time" content="2023-07-06T14:03:34.000Z">
+<meta property="article:author" content="Starmin">
+<meta property="article:tag" content="C++">
+<meta property="article:tag" content="muduo">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>muduo库-Socket - 私人杂货铺</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"gstarmin.github.io","root":"/","version":"1.9.3","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 5.4.2"><style>.mjpage .MJX-monospace {
+  font-family: monospace;
+}
+
+.mjpage .MJX-sans-serif {
+  font-family: sans-serif;
+}
+
+.mjpage {
+  display: inline;
+  font-style: normal;
+  font-weight: normal;
+  line-height: normal;
+  font-size: 100%;
+  font-size-adjust: none;
+  text-indent: 0;
+  text-align: left;
+  text-transform: none;
+  letter-spacing: normal;
+  word-spacing: normal;
+  word-wrap: normal;
+  white-space: nowrap;
+  float: none;
+  direction: ltr;
+  max-width: none;
+  max-height: none;
+  min-width: 0;
+  min-height: 0;
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+
+.mjpage * {
+  transition: none;
+  -webkit-transition: none;
+  -moz-transition: none;
+  -ms-transition: none;
+  -o-transition: none;
+}
+
+.mjx-svg-href {
+  fill: blue;
+  stroke: blue;
+}
+
+.MathJax_SVG_LineBox {
+  display: table !important;
+}
+
+.MathJax_SVG_LineBox span {
+  display: table-cell !important;
+  width: 10000em !important;
+  min-width: 0;
+  max-width: none;
+  padding: 0;
+  border: 0;
+  margin: 0;
+}
+
+.mjpage__block {
+  text-align: center;
+  margin: 1em 0em;
+  position: relative;
+  display: block !important;
+  text-indent: 0;
+  max-width: none;
+  max-height: none;
+  min-width: 0;
+  min-height: 0;
+  width: 100%;
+}
+</style></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Starmin</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="muduo库-Socket"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-07-06 22:03" pubdate>
+          2023年7月6日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          9.3k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          94 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">muduo库-Socket</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="muduo库-socket">muduo库-Socket</h1>
+<h2 id="socket类">Socket类</h2>
+<p>Socket类是socket 文件描述符（sock
+fd）的一个轻量级封装，提供操作底层sock
+fd的常用方法。采用RTII方式管理sock fd，但本身并不创建sock
+fd，也不打开它，只负责关闭。</p>
+<p>提供的public方法主要包括：获取tcp协议栈信息（tcp_info）；绑定ip地址（bind）；监听套接字（listen）；接收连接请求（accept）；关闭连接写方向（shutdown），等等。</p>
+<div class="admonition note">
+<p class="admonition-title">
+note
+</p>
+<p>
+Socket并不提供close sock
+fd的public方法，因为析构时，调用close关闭套接字。
+</p>
+</div>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">/**</span><br><span class="hljs-comment">* socket fd 包装类</span><br><span class="hljs-comment">*　RAII机制管理socket fd: 对close socket fd负责, 但不包括open/create.</span><br><span class="hljs-comment">* 监听socket, 常用于server socket.</span><br><span class="hljs-comment">*/</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Socket</span> : noncopyable<br>&#123;<br><span class="hljs-keyword">public</span>:<br>    <span class="hljs-function"><span class="hljs-keyword">explicit</span> <span class="hljs-title">Socket</span><span class="hljs-params">(<span class="hljs-type">int</span> sockfd)</span></span><br><span class="hljs-function">    : sockfd_(sockfd)</span><br><span class="hljs-function">    &#123;</span> &#125;<br><br>    <span class="hljs-comment">// Socket(Socket&amp;&amp;) // move ctor in c++11</span><br>    ~<span class="hljs-built_in">Socket</span>();<br><br>    <span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">fd</span><span class="hljs-params">()</span> <span class="hljs-type">const</span> </span>&#123; <span class="hljs-keyword">return</span> sockfd_; &#125;<br>    <span class="hljs-comment">/* 获取tcp信息, 存放到tcp_info结构 */</span><br>    <span class="hljs-comment">// return true if success.</span><br>    <span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">getTcpInfo</span><span class="hljs-params">(<span class="hljs-keyword">struct</span> tcp_info*)</span> <span class="hljs-type">const</span></span>;<br>    <span class="hljs-comment">/* 获取tcp信息字符串形式(NUL结尾), 存放到字符串数组buf[len] */</span><br>    <span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">getTcpInfoString</span><span class="hljs-params">(<span class="hljs-type">char</span>* buf, <span class="hljs-type">int</span> len)</span> <span class="hljs-type">const</span></span>;<br><br>    <span class="hljs-comment">/* 绑定socket fd与本地ip地址,端口, 核心调用bind(2).</span><br><span class="hljs-comment">     * 失败则终止程序</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-comment">// abort if address in use</span><br>    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">bindAddress</span><span class="hljs-params">(<span class="hljs-type">const</span> InetAddress&amp; addr)</span></span>;<br>    <span class="hljs-comment">/* 监听socket fd, 核心调用listen(2).</span><br><span class="hljs-comment">     * 失败则终止程序</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-comment">// abort if address in use</span><br>    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">listen</span><span class="hljs-params">()</span></span>;<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 接受连接请求, 返回conn fd(连接文件描述符). 核心调用accept(2).</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * On success, returns a non-negative integer that is</span><br><span class="hljs-comment">     * a descriptor for the accepted socket, which has been</span><br><span class="hljs-comment">     * set to non-blocking and close-on-exec. *peeraddr is assigned.</span><br><span class="hljs-comment">     * On error, -1 is returned, and *peeraddr is untouched.</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">accept</span><span class="hljs-params">(InetAddress* peeraddr)</span></span>;<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 关闭连接写方向</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">shutdownWrite</span><span class="hljs-params">()</span></span>;<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * Enable/disable TCP_NODELAY</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">setTcpNoDelay</span><span class="hljs-params">(<span class="hljs-type">bool</span> on)</span></span>;<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * Enable/disable SO_REUSEADDR</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">setReuseAddr</span><span class="hljs-params">(<span class="hljs-type">bool</span> on)</span></span>;<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * Enable/disable SO_REUSEPORT</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">setReusePort</span><span class="hljs-params">(<span class="hljs-type">bool</span> on)</span></span>;<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * Enable/disable SO_KEEPALIVE</span><br><span class="hljs-comment">     * @param on</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">setKeepAlive</span><span class="hljs-params">(<span class="hljs-type">bool</span> on)</span></span>;<br><br><span class="hljs-keyword">private</span>:<br>    <span class="hljs-type">const</span> <span class="hljs-type">int</span> sockfd_;<br>&#125;;<br></code></pre></td></tr></table></figure>
+<p>其实现主要转交给SocketsOps包装库函数后的包装函数。</p>
+<h3 id="socket的构造与析构">Socket的构造与析构</h3>
+<p>Socket构造和析构很简单：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-function"><span class="hljs-keyword">explicit</span> <span class="hljs-title">Socket</span><span class="hljs-params">(<span class="hljs-type">int</span> sockfd)</span></span><br><span class="hljs-function">: sockfd_(sockfd)</span><br><span class="hljs-function">&#123;</span> &#125;<br><br>Socket::~<span class="hljs-built_in">Socket</span>()<br>&#123;<br>    sockets::<span class="hljs-built_in">close</span>(sockfd_);<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>Socket类不创建sockfd，其含义取决于构造Socket对象的调用者。如果是由调用socket(2)创建的sockfd，那就是本地套接字；如果是由accept(2)返回的sockfd，那就是accepted
+socket，代表一个连接。</p>
+<p>例如，Acceptor持有的Socket对象，是由socket(2)创建的，代表一个套接字；
+TcpConnection只有一个Socket对象，是由TcpServer在新建TcpConnection对象时传入，而由Acceptor::handleRead()中通过Socket::accept()创建的sockfd参数的实参。</p>
+<h3 id="socket获取tcp协议栈信息">Socket获取Tcp协议栈信息</h3>
+<p>利用getsockopt + TCP_INFO选项，获取tcp协议栈信息。</p>
+<ul>
+<li><p>方法一：getTcpInfo
+获取tcp协议栈信息，存放到tcp_info结构对象;</p></li>
+<li><p>方法二：getTcpInfoString
+获取tcp协议栈字符串形式，存放到数组buf[len]；</p></li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">/**</span><br><span class="hljs-comment">* 获取TcpInfo(Tcp信息), 存放到tcp_info结构对象tcpi中.</span><br><span class="hljs-comment">* @details 调用getsockopt获取TcpInfo, 对应opt name为TCP_INFO.</span><br><span class="hljs-comment">* @param tcpi [in] 指向tcp_info结构, 用来存放TcpInfo</span><br><span class="hljs-comment">* @return 获取TcpInfo结果</span><br><span class="hljs-comment">* - true 获取成功</span><br><span class="hljs-comment">* - false 获取失败</span><br><span class="hljs-comment">*/</span><br><span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">Socket::getTcpInfo</span><span class="hljs-params">(<span class="hljs-keyword">struct</span> tcp_info *tcpi)</span> <span class="hljs-type">const</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-type">socklen_t</span> len = <span class="hljs-built_in">sizeof</span>(*tcpi);<br>    <span class="hljs-built_in">memZero</span>(tcpi, len);<br>    <span class="hljs-keyword">return</span> ::<span class="hljs-built_in">getsockopt</span>(sockfd_, SOL_TCP, TCP_INFO, tcpi, &amp;len) == <span class="hljs-number">0</span>;<br>&#125;<br><br><span class="hljs-comment">/**</span><br><span class="hljs-comment">* 将从getTcpInfo得到的TcpInfo转换为字符串, 存放到长度为len的buf中.</span><br><span class="hljs-comment">* @param buf 存放TcpInfo字符串的缓存</span><br><span class="hljs-comment">* @param len 缓存buf的长度, 单位是字节数</span><br><span class="hljs-comment">* @return 调用结果</span><br><span class="hljs-comment">* - true 返回存放到buf的TcpInfo有效</span><br><span class="hljs-comment">* - false 调用getsockopt()出错</span><br><span class="hljs-comment">* @see</span><br><span class="hljs-comment">* https://blog.csdn.net/zhangskd/article/details/8561950</span><br><span class="hljs-comment">*/</span><br><span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">Socket::getTcpInfoString</span><span class="hljs-params">(<span class="hljs-type">char</span>* buf, <span class="hljs-type">int</span> len)</span> <span class="hljs-type">const</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-keyword">struct</span> <span class="hljs-title class_">tcp_info</span> tcpi;<br>    <span class="hljs-type">bool</span> ok = <span class="hljs-built_in">getTcpInfo</span>(&amp;tcpi);<br>    <span class="hljs-keyword">if</span> (ok)<br>    &#123;<br>        <span class="hljs-built_in">snprintf</span>(buf, <span class="hljs-built_in">static_cast</span>&lt;<span class="hljs-type">size_t</span>&gt;(len), <span class="hljs-string">&quot;unrecovered=%u &quot;</span><br>                           <span class="hljs-string">&quot;rto=%u ato=%u snd_mss=%u rcv_mss=%u &quot;</span><br>                           <span class="hljs-string">&quot;lost=%u retrans=%u rtt=%u rttvar=%u &quot;</span><br>                           <span class="hljs-string">&quot;sshthresh=%u cwnd=%u total_retrans=%u&quot;</span>,<br>                 tcpi.tcpi_retransmits,  <span class="hljs-comment">// 重传数, 当前待重传的包数, 重传完成后清零 //　Number of unrecovered [RTO] timeouts</span><br>                 tcpi.tcpi_rto,          <span class="hljs-comment">// 重传超时时间(usec)　// Retransmit timeout in usec</span><br>                 tcpi.tcpi_ato,          <span class="hljs-comment">// 延时确认的估值(usec) // Predicted tick of soft clock in usec</span><br>                 tcpi.tcpi_snd_mss,      <span class="hljs-comment">// 发送端MSS(最大报文段长度)</span><br>                 tcpi.tcpi_rcv_mss,      <span class="hljs-comment">// 接收端MSS(最大报文段长度)</span><br>                 tcpi.tcpi_lost,         <span class="hljs-comment">// 丢失且未恢复的数据段数 // Lost packets</span><br>                 tcpi.tcpi_retrans,      <span class="hljs-comment">// 重传且未确认的数据段数 // Retransmitted packets out</span><br>                 tcpi.tcpi_rtt,          <span class="hljs-comment">// 平滑的RTT(usec)　//　Smoothed round trip time in usec</span><br>                 tcpi.tcpi_rttvar,       <span class="hljs-comment">// 1/4 mdev (usec) // Medium deviation</span><br>                 tcpi.tcpi_snd_ssthresh, <span class="hljs-comment">// 慢启动阈值</span><br>                 tcpi.tcpi_snd_cwnd,     <span class="hljs-comment">// 拥塞窗口</span><br>                 tcpi.tcpi_total_retrans <span class="hljs-comment">// 本连接的总重传个数  // Total retransmits for entire connection</span><br>                           );<br>    &#125;<br>    <span class="hljs-keyword">return</span> ok;<br>&#125;<br></code></pre></td></tr></table></figure>
+<h3 id="其他常用接口">其他常用接口</h3>
+<p>比如bindAddress、listen、accept等，与基础网络编程接口bind、listen、accept类似，不过由SocketOps进行轻度包裹。</p>
+<p>值得一提的是setTcpNoDelay()，用于设置TCP_NODELAY选项，以禁用Nagle算法，从而不会等到收到ACK才进行下一次数据发送，而是tcp协议栈缓冲存中有数据就立即发送。适用于对性能要求较高的情况。</p>
+<h2 id="inetaddress类">InetAddress类</h2>
+<p>InetAddress类对地址信息进行了包装，是sockaddr_in的包装类。</p>
+<p><strong>既然是表示ip地址，可以直接用sockaddr_in，为什么要用InetAddress重新包装一下？</strong></p>
+<p>因为表示IPv4地址的sockaddr_in是C语言数据类型，并不包含对数据类型的操作，另外，支持IPv6的地址结构是sockaddr_in6。
+如果直接使用C风格的sockaddr_in，那么其他类要用来表示地址，不得不使用大量底层C接口。而使用C++
+类InetAddress包装sockaddr_in/sockaddr_in6，提供必要的C++接口，可以有效解决参数兼容问题。</p>
+<p>InetAddress 声明如下：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">/**</span><br><span class="hljs-comment">* sockaddr_in包装类.</span><br><span class="hljs-comment">*</span><br><span class="hljs-comment">* POD(Plain Old Data) 接口类, 便于Ｃ++和Ｃ之间数据类型的兼容性.</span><br><span class="hljs-comment">*/</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">InetAddress</span> : <span class="hljs-keyword">public</span> muduo::copyable<br>&#123;<br><span class="hljs-keyword">public</span>:<br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 用给定端口号构造一个端(ip + port).</span><br><span class="hljs-comment">     * 常用于TcpServer, 监听本地地址.</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-function"><span class="hljs-keyword">explicit</span> <span class="hljs-title">InetAddress</span><span class="hljs-params">(<span class="hljs-type">uint16_t</span> portArg = <span class="hljs-number">0</span>, <span class="hljs-type">bool</span> loopbackOnly = <span class="hljs-literal">false</span>, <span class="hljs-type">bool</span> ipv6 = <span class="hljs-literal">false</span>)</span></span>;<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 构建一个InetAddress对象, 用于将一个port + 字符串形式的ip地址转化为InetAddress对象.</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-built_in">InetAddress</span>(StringArg ip, <span class="hljs-type">uint16_t</span> portArg, <span class="hljs-type">bool</span> ipv6 = <span class="hljs-literal">false</span>);<br><br>    <span class="hljs-function"><span class="hljs-keyword">explicit</span> <span class="hljs-title">InetAddress</span><span class="hljs-params">(<span class="hljs-type">const</span> <span class="hljs-keyword">struct</span> sockaddr_in&amp; addr)</span></span><br><span class="hljs-function">            : addr_(addr)</span><br><span class="hljs-function">    &#123;</span> &#125;<br><br>    <span class="hljs-function"><span class="hljs-keyword">explicit</span> <span class="hljs-title">InetAddress</span><span class="hljs-params">(<span class="hljs-type">const</span> <span class="hljs-keyword">struct</span> sockaddr_in6&amp; addr)</span></span><br><span class="hljs-function">            : addr6_(addr)</span><br><span class="hljs-function">    &#123;</span> &#125;<br><br>    <span class="hljs-comment">/* 获取协议族类型 */</span><br>    <span class="hljs-function"><span class="hljs-type">sa_family_t</span> <span class="hljs-title">family</span><span class="hljs-params">()</span> <span class="hljs-type">const</span> </span>&#123; <span class="hljs-keyword">return</span> addr_.sin_family; &#125;<br>    <span class="hljs-comment">/* 获取ip地址字符串形式.</span><br><span class="hljs-comment">     * 对于ipv4, 为点分十进制; 对于ipv6, 为冒号十六进制. */</span><br>    <span class="hljs-function">string <span class="hljs-title">toIp</span><span class="hljs-params">()</span> <span class="hljs-type">const</span></span>;<br>    <span class="hljs-comment">/* 获取ip地址+port字符串形式. */</span><br>    <span class="hljs-function">string <span class="hljs-title">toIpPort</span><span class="hljs-params">()</span> <span class="hljs-type">const</span></span>;<br>    <span class="hljs-comment">/* 获取端口号(主机端) */</span><br>    <span class="hljs-function"><span class="hljs-type">uint16_t</span> <span class="hljs-title">port</span><span class="hljs-params">()</span> <span class="hljs-type">const</span></span>;<br><br>    <span class="hljs-comment">// default copy/assignment are Okay</span><br><br>    <span class="hljs-type">const</span> <span class="hljs-keyword">struct</span> <span class="hljs-title class_">sockaddr</span>* <span class="hljs-built_in">getSockAddr</span>() <span class="hljs-type">const</span> &#123; <span class="hljs-keyword">return</span> sockets::<span class="hljs-built_in">sockaddr_cast</span>(&amp;addr6_); &#125;<br>    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">setSockAddrInet6</span><span class="hljs-params">(<span class="hljs-type">const</span> <span class="hljs-keyword">struct</span> sockaddr_in6&amp; addr6)</span> </span>&#123; addr6_ = addr6; &#125;<br><br>    <span class="hljs-comment">/* 获取ipv4地址网络端(大端) */</span><br>    <span class="hljs-function"><span class="hljs-type">uint32_t</span> <span class="hljs-title">ipv4NetEndian</span><span class="hljs-params">()</span> <span class="hljs-type">const</span></span>;<br>    <span class="hljs-comment">/* 获取端口号网络端(大端) */</span><br>    <span class="hljs-function"><span class="hljs-type">uint16_t</span> <span class="hljs-title">portNetEndian</span><span class="hljs-params">()</span> <span class="hljs-type">const</span> </span>&#123; <span class="hljs-keyword">return</span> addr_.sin_port; &#125;<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 将hostname转换为IP地址, 存放到result, 而不改变port或sin_family.</span><br><span class="hljs-comment">     * 线程安全.</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-function"><span class="hljs-type">static</span> <span class="hljs-type">bool</span> <span class="hljs-title">resolve</span><span class="hljs-params">(StringArg hostname, InetAddress* result)</span></span>;<br><br>    <span class="hljs-comment">/* 设置IPv6 ScopeID(域ID) */</span><br>    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">setScopedId</span><span class="hljs-params">(<span class="hljs-type">uint32_t</span> scope_id)</span></span>;<br><br><span class="hljs-keyword">private</span>:<br>    <span class="hljs-keyword">union</span><br>    &#123;<br>        <span class="hljs-keyword">struct</span> <span class="hljs-title class_">sockaddr_in</span> addr_;<br>        <span class="hljs-keyword">struct</span> <span class="hljs-title class_">sockaddr_in6</span> addr6_;<br>    &#125;;<br>&#125;;<br></code></pre></td></tr></table></figure>
+<p>InetAddress是值语义的，便于在传递时拷贝。数据成员是一个union，对于IPv4，使用addr_；对于IPv6，则使用addr6_。</p>
+<p>5个静态断言（static_assert）确保数据成员大小及联合体内部位段偏移，因为后面会直接将sockaddr_in6转换为sockaddr_in。</p>
+<h3 id="inetaddress构造">InetAddress构造</h3>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-type">static</span> <span class="hljs-type">const</span> <span class="hljs-type">in_addr_t</span> kInaddrAny = INADDR_ANY;<br><span class="hljs-type">static</span> <span class="hljs-type">const</span> <span class="hljs-type">in_addr_t</span> kInaddrLoopback = INADDR_LOOPBACK;<br><br><span class="hljs-comment">/**</span><br><span class="hljs-comment">* 构造InetAddress对象</span><br><span class="hljs-comment">* @param portArg 端口号</span><br><span class="hljs-comment">* @param loopbackOnly　决定是否为回环地址</span><br><span class="hljs-comment">* @param ipv6　决定是否为ipv6地址</span><br><span class="hljs-comment">* @note 注意addr_/addr6_中存放的是网络字节序</span><br><span class="hljs-comment">*/</span><br>InetAddress::<span class="hljs-built_in">InetAddress</span>(<span class="hljs-type">uint16_t</span> portArg, <span class="hljs-type">bool</span> loopbackOnly, <span class="hljs-type">bool</span> ipv6)<br>&#123;<br>    <span class="hljs-comment">// 确保addr6_/addr_ 在InetAddress class内存中的偏移</span><br>    <span class="hljs-built_in">static_assert</span>(<span class="hljs-built_in">offsetof</span>(InetAddress, addr6_) == <span class="hljs-number">0</span>, <span class="hljs-string">&quot;addr6_ offset 0&quot;</span>);<br>    <span class="hljs-built_in">static_assert</span>(<span class="hljs-built_in">offsetof</span>(InetAddress, addr_) == <span class="hljs-number">0</span>, <span class="hljs-string">&quot;addr_ offset 0&quot;</span>);<br>    <span class="hljs-keyword">if</span> (ipv6)<br>    &#123; <span class="hljs-comment">// ipv6地址</span><br>        <span class="hljs-built_in">memZero</span>(&amp;addr6_, <span class="hljs-built_in">sizeof</span>(addr6_));<br>        addr6_.sin6_family = AF_INET6;<br>        <span class="hljs-comment">// in6addr_loopback: 回环地址; in6addr_any： 任意地址</span><br>        in6_addr ip = loopbackOnly ? in6addr_loopback : in6addr_any;<br>        addr6_.sin6_addr = ip; <span class="hljs-comment">// ip地址</span><br>        addr6_.sin6_port = sockets::<span class="hljs-built_in">hostToNetwork16</span>(portArg); <span class="hljs-comment">// 端口号</span><br>    &#125;<br>    <span class="hljs-keyword">else</span><br>    &#123; <span class="hljs-comment">// ipv4地址</span><br>        <span class="hljs-built_in">memZero</span>(&amp;addr_, <span class="hljs-built_in">sizeof</span>(addr_));<br>        addr_.sin_family = AF_INET;<br>        <span class="hljs-comment">// kInaddrLoopback: 回环地址; kInaddrAny： 任意地址</span><br>        <span class="hljs-type">in_addr_t</span> ip = loopbackOnly ? kInaddrLoopback : kInaddrAny;<br>        addr_.sin_addr.s_addr = sockets::<span class="hljs-built_in">hostToNetwork32</span>(ip); <span class="hljs-comment">// ip地址</span><br>        addr_.sin_port = sockets::<span class="hljs-built_in">hostToNetwork16</span>(portArg);   <span class="hljs-comment">// 端口号</span><br>    &#125;<br>&#125;<br><br><span class="hljs-comment">/*</span><br><span class="hljs-comment">* 根据ip地址字符串形式 + 端口号, 构造InetAddress对象</span><br><span class="hljs-comment">* IPv6: 2409:8a4c:662f:2900:9b2:63:9618:56c0</span><br><span class="hljs-comment">* IPv4: 127.0.0.1</span><br><span class="hljs-comment">*/</span><br>InetAddress::<span class="hljs-built_in">InetAddress</span>(StringArg ip, <span class="hljs-type">uint16_t</span> portArg, <span class="hljs-type">bool</span> ipv6)<br>&#123;<br>    <span class="hljs-keyword">if</span> (ipv6 || <span class="hljs-built_in">strchr</span>(ip.<span class="hljs-built_in">c_str</span>(), <span class="hljs-string">&#x27;:&#x27;</span>))<br>    &#123; <span class="hljs-comment">// 指定为ipv6地址类型, 或ip地址字符串中包含&#x27;:&#x27;</span><br>        <span class="hljs-built_in">memZero</span>(&amp;addr6_, <span class="hljs-built_in">sizeof</span>(addr6_));<br>        sockets::<span class="hljs-built_in">fromIpPort</span>(ip.<span class="hljs-built_in">c_str</span>(), portArg, &amp;addr6_); <span class="hljs-comment">// 将冒号16进制表示的ip地址+port, 转化为addr6_结构</span><br>    &#125;<br>    <span class="hljs-keyword">else</span><br>    &#123;<br>        <span class="hljs-built_in">memZero</span>(&amp;addr_, <span class="hljs-built_in">sizeof</span>(addr_));<br>        sockets::<span class="hljs-built_in">fromIpPort</span>(ip.<span class="hljs-built_in">c_str</span>(), portArg, &amp;addr_); <span class="hljs-comment">// 将冒号16进制表示的ip地址+port, 转化为addr6_结构</span><br>    &#125;<br>&#125;<br><br><span class="hljs-comment">/* 根据sockaddr_in构造InetAddress对象 */</span><br><span class="hljs-function"><span class="hljs-keyword">explicit</span> <span class="hljs-title">InetAddress</span><span class="hljs-params">(<span class="hljs-type">const</span> <span class="hljs-keyword">struct</span> sockaddr_in&amp; addr)</span></span><br><span class="hljs-function">        : addr_(addr)</span><br><span class="hljs-function">&#123;</span> &#125;<br><br><span class="hljs-comment">/* 根据sockaddr_in6构造InetAddress对象 */</span><br><span class="hljs-function"><span class="hljs-keyword">explicit</span> <span class="hljs-title">InetAddress</span><span class="hljs-params">(<span class="hljs-type">const</span> <span class="hljs-keyword">struct</span> sockaddr_in6&amp; addr)</span></span><br><span class="hljs-function">        : addr6_(addr)</span><br><span class="hljs-function">&#123;</span> &#125;<br></code></pre></td></tr></table></figure>
+<h3 id="将ip地址信息转换为字符串">将IP地址信息转换为字符串</h3>
+<p>将IP地址、端口号转换为字符串形式，这种打印log、debug的时候，是需要常用的方法，可以调用toIp(),
+toIpPort()。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">/**</span><br><span class="hljs-comment">* 当对象ip地址转换为字符串, 如果是IPv4, 就转换为点分十进制; 如果是IPv6, 就转换为冒号十六进制.</span><br><span class="hljs-comment">*/</span><br><span class="hljs-function">string <span class="hljs-title">InetAddress::toIp</span><span class="hljs-params">()</span> <span class="hljs-type">const</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-type">char</span> buf[<span class="hljs-number">64</span>] = <span class="hljs-string">&quot;&quot;</span>;<br>    sockets::<span class="hljs-built_in">toIp</span>(buf, <span class="hljs-built_in">sizeof</span>(buf), <span class="hljs-built_in">getSockAddr</span>());<br>    <span class="hljs-keyword">return</span> buf;<br>&#125;<br><br><span class="hljs-comment">/**</span><br><span class="hljs-comment">* 当对象ip地址＆port信息 转换为字符串, 如果是IPv4, 就转换为点分十进制; 如果是IPv6, 就转换为冒号十六进制.</span><br><span class="hljs-comment">*/</span><br><span class="hljs-function">string <span class="hljs-title">InetAddress::toIpPort</span><span class="hljs-params">()</span> <span class="hljs-type">const</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-type">char</span> buf[<span class="hljs-number">64</span>] = <span class="hljs-string">&quot;&quot;</span>;<br>    sockets::<span class="hljs-built_in">toIpPort</span>(buf, <span class="hljs-built_in">sizeof</span>(buf), <span class="hljs-built_in">getSockAddr</span>());<br>    <span class="hljs-keyword">return</span> buf;<br>&#125;<br></code></pre></td></tr></table></figure>
+<h3
+id="将主机名或ipv4地址转换为inetaddress结构对象">将主机名或IPv4地址转换为InetAddress结构对象</h3>
+<p>可以用InetAddress::resolve</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">/* 转换用的临时缓存. 因为占用空间比较大, 不用函数栈; 又要确保线程安全, 有可能经常调用, 因此用thread local 变量 */</span><br><span class="hljs-type">static</span> __thread <span class="hljs-type">char</span> t_resolveBuffer[<span class="hljs-number">64</span> * <span class="hljs-number">1024</span>]; <span class="hljs-comment">// 64KB = 64*1024</span><br><br><span class="hljs-comment">/**</span><br><span class="hljs-comment">* hostname转换为InetAddress</span><br><span class="hljs-comment">* @param hostname 主机名, 可以是本地主机名, 如&quot;localhost&quot;; 也可以是远程域名, 如&quot;google.com&quot;, &quot;192.168.0.10&quot;,</span><br><span class="hljs-comment">* @param out[out] 指向一个InetAddress对象, 存放地址信息</span><br><span class="hljs-comment">* @return 转换结果. true: 表示转换成功; false: 表示转换失败.</span><br><span class="hljs-comment">*/</span><br><span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">InetAddress::resolve</span><span class="hljs-params">(StringArg hostname, InetAddress *out)</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-built_in">assert</span>(out != <span class="hljs-literal">NULL</span>);<br>    <span class="hljs-keyword">struct</span> <span class="hljs-title class_">hostent</span> hent;<br>    <span class="hljs-keyword">struct</span> <span class="hljs-title class_">hostent</span>* he = <span class="hljs-literal">NULL</span>;<br>    <span class="hljs-type">int</span> herrno = <span class="hljs-number">0</span>;<br>    <span class="hljs-built_in">memZero</span>(&amp;hent, <span class="hljs-built_in">sizeof</span>(hent));<br><br><br>    <span class="hljs-comment">/* 将主机名或IPv4地址(点分十进制)转换为hostent结构 */</span><br>    <span class="hljs-type">int</span> ret = <span class="hljs-built_in">gethostbyname_r</span>(hostname.<span class="hljs-built_in">c_str</span>(), &amp;hent, t_resolveBuffer, <span class="hljs-built_in">sizeof</span>(t_resolveBuffer),<br>                              &amp;he, &amp;herrno);<br>    <span class="hljs-keyword">if</span> (ret == <span class="hljs-number">0</span> &amp;&amp; he != <span class="hljs-literal">NULL</span>)<br>    &#123;<br>        <span class="hljs-built_in">assert</span>(he-&gt;h_addrtype == AF_INET &amp;&amp; he-&gt;h_length == <span class="hljs-built_in">sizeof</span>(<span class="hljs-type">uint32_t</span>)); <span class="hljs-comment">// AF_INET: ipv4</span><br>        out-&gt;addr_.sin_addr = *<span class="hljs-built_in">reinterpret_cast</span>&lt;<span class="hljs-keyword">struct</span> in_addr*&gt;(he-&gt;h_addr);<br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;<br>    &#125;<br>    <span class="hljs-keyword">else</span><br>    &#123; <span class="hljs-comment">// error, gai_strerror(3) 能获取错误字符串信息</span><br>        <span class="hljs-keyword">if</span> (ret)<br>        &#123;<br>            LOG_SYSERR &lt;&lt; <span class="hljs-string">&quot;InetAddress::resolve&quot;</span>;<br>        &#125;<br>    &#125;<br>    <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<!-- ### SocketsOps模块
+
+SocketsOps准确来说是一个模块，而不是一个class，在sockets命名空间封装了系统底层提供的socket操作，比如socket(), bind(), listen(), accept(), connect(), close(), read(), readv(), write(), close(), shutdown()等等。
+
+包裹函数的主要意义是为函数提供基本的出错处理，避免每次调用都要重写一次异常处理，使之更容易融入程序的框架。
+
+
+我把包裹的函数分为4类：
+
+1) 基础的sock fd操作
+2) 便于交互的转换操作
+3) 地址类型转型
+4) 协议栈信息 -->
+<h2 id="参考">参考</h2>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/C/" class="category-chain-item">C++</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/C/muduo/" class="category-chain-item">muduo</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/C/">#C++</a>
+      
+        <a href="/tags/muduo/">#muduo</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>muduo库-Socket</div>
+      <div>https://gstarmin.github.io/2023/07/06/muduo库-Socket/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Starmin</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年7月6日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/07/03/muduo-EventLoop/" title="muduo-事件驱动EventLoop">
+                        <span class="hidden-mobile">muduo-事件驱动EventLoop</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
