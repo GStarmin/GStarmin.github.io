@@ -1,0 +1,906 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Starmin">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="muduo库-TCP连接  TCP连接中，两端是对等的，TCP协议也没有区分客户端（client）与服务器端（server），但互联网中通信中，往往有一端提供资源给另一端访问，我们把拥有资源的一端称为服务器端，请求资源的一端称为客户端。 对于server，会启用一个监听循环，不断接受client连接请求（三次握手），进行数据通信，通信完成以后断开连接（四次挥手）;对于client，在server启">
+<meta property="og:type" content="article">
+<meta property="og:title" content="muduo库-TCP连接">
+<meta property="og:url" content="https://gstarmin.github.io/2023/07/10/muduo%E5%BA%93-TCP%E8%BF%9E%E6%8E%A5/">
+<meta property="og:site_name" content="私人杂货铺">
+<meta property="og:description" content="muduo库-TCP连接  TCP连接中，两端是对等的，TCP协议也没有区分客户端（client）与服务器端（server），但互联网中通信中，往往有一端提供资源给另一端访问，我们把拥有资源的一端称为服务器端，请求资源的一端称为客户端。 对于server，会启用一个监听循环，不断接受client连接请求（三次握手），进行数据通信，通信完成以后断开连接（四次挥手）;对于client，在server启">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gstarmin.github.io/img/muduo/TCP连接/TCP建立连接流程.png">
+<meta property="og:image" content="https://gstarmin.github.io/img/muduo/TCP连接/TCP建立连接调用顺序.png">
+<meta property="article:published_time" content="2023-07-10T11:30:10.000Z">
+<meta property="article:modified_time" content="2023-07-10T11:30:10.000Z">
+<meta property="article:author" content="Starmin">
+<meta property="article:tag" content="C++">
+<meta property="article:tag" content="muduo">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://gstarmin.github.io/img/muduo/TCP连接/TCP建立连接流程.png">
+  
+  
+  
+  <title>muduo库-TCP连接 - 私人杂货铺</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"gstarmin.github.io","root":"/","version":"1.9.3","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 5.4.2"><style>.mjpage .MJX-monospace {
+  font-family: monospace;
+}
+
+.mjpage .MJX-sans-serif {
+  font-family: sans-serif;
+}
+
+.mjpage {
+  display: inline;
+  font-style: normal;
+  font-weight: normal;
+  line-height: normal;
+  font-size: 100%;
+  font-size-adjust: none;
+  text-indent: 0;
+  text-align: left;
+  text-transform: none;
+  letter-spacing: normal;
+  word-spacing: normal;
+  word-wrap: normal;
+  white-space: nowrap;
+  float: none;
+  direction: ltr;
+  max-width: none;
+  max-height: none;
+  min-width: 0;
+  min-height: 0;
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+
+.mjpage * {
+  transition: none;
+  -webkit-transition: none;
+  -moz-transition: none;
+  -ms-transition: none;
+  -o-transition: none;
+}
+
+.mjx-svg-href {
+  fill: blue;
+  stroke: blue;
+}
+
+.MathJax_SVG_LineBox {
+  display: table !important;
+}
+
+.MathJax_SVG_LineBox span {
+  display: table-cell !important;
+  width: 10000em !important;
+  min-width: 0;
+  max-width: none;
+  padding: 0;
+  border: 0;
+  margin: 0;
+}
+
+.mjpage__block {
+  text-align: center;
+  margin: 1em 0em;
+  position: relative;
+  display: block !important;
+  text-indent: 0;
+  max-width: none;
+  max-height: none;
+  min-width: 0;
+  min-height: 0;
+  width: 100%;
+}
+</style></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Starmin</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="muduo库-TCP连接"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-07-10 19:30" pubdate>
+          2023年7月10日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          9.7k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          97 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">muduo库-TCP连接</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="muduo库-tcp连接">muduo库-TCP连接</h1>
+<p><img src="/img/muduo/TCP连接/TCP建立连接流程.png" srcset="/img/loading.gif" lazyload /></p>
+<p>TCP连接中，两端是对等的，TCP协议也没有区分客户端（client）与服务器端（server），但互联网中通信中，往往有一端提供资源给另一端访问，我们把拥有资源的一端称为服务器端，请求资源的一端称为客户端。</p>
+<p>对于server，会启用一个监听循环，不断接受client连接请求（三次握手），进行数据通信，通信完成以后断开连接（四次挥手）;对于client，在server启用监听循环时，向server发出连接请求，接收server数据，如有必要向server发送数据，通信完成后，断开连接。连接是指物理上一端（client）到另一端（server）的通信链路，通过server端&lt;ip,
+port&gt;与客户端&lt;ip, port&gt;，来唯一标识一个TCP连接。</p>
+<div class="admonition note">
+<p class="admonition-title">
+TCP连接有长连接、短连接之分
+</p>
+<p>
+短连接：client和server建立连接后，一般只传递一次读写操作，然后由client发起close，发送FIN分节，关闭连接。短连接只完成一次read/write操作，就会自动关闭。
+</p>
+<p>
+长连接：client和server建立连接后，并不会自动关闭，后续的read/write操作会继续用这个连接。长连接没有确切时间限制，可能会长时间存在。
+</p>
+</div>
+<h2 id="tcpserver类">TcpServer类</h2>
+<p><strong>muduo使用TcpConnection类来管理TCP连接，使用接受器Acceptor来接受连接，连接器Connector发起连接</strong>。TcpServer管理accept获得TcpConnection，生命周期由用户控制。</p>
+<p>下图是TcpServer新建连接的相关函数调用顺序。当Channel::handleEvent()的触发条件是listening
+socket可读时，表明有新连接请求达到。TcpServer为新连接创建对应的TcpConnection对象。</p>
+<p><img src="/img/muduo/TCP连接/TCP建立连接调用顺序.png" srcset="/img/loading.gif" lazyload /></p>
+<h2 id="acceptor类">Acceptor类</h2>
+<p>Acceptor是TcpServer的一个内部类，主要职责是用来获得新连接的fd。Accetpor封装了服务器监听套接字fd以及相关处理方法。Acceptor类内部其实没有贡献什么核心的处理函数，主要是对其他类的方法调用进行封装。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">/**</span><br><span class="hljs-comment">* TCP连接接受器</span><br><span class="hljs-comment">* 基础调用为accept(2)/accept4(2)</span><br><span class="hljs-comment">*/</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Acceptor</span> : <span class="hljs-keyword">private</span> noncopyable<br>&#123;<br><span class="hljs-keyword">public</span>:<br>    <span class="hljs-keyword">typedef</span> std::function&lt;<span class="hljs-type">void</span>(<span class="hljs-type">int</span> sockfd, <span class="hljs-type">const</span> InetAddress &amp;)&gt; NewConnectionCallback;<br><br>    <span class="hljs-built_in">Acceptor</span>(EventLoop* loop, <span class="hljs-type">const</span> InetAddress&amp; listenAddr, <span class="hljs-type">bool</span> reuseport);<br>    ~<span class="hljs-built_in">Acceptor</span>();<br><br>    <span class="hljs-comment">/* 设置新连接回调 */</span><br>    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">setNewConnectionCallback</span><span class="hljs-params">(<span class="hljs-type">const</span> NewConnectionCallback&amp; cb)</span></span><br><span class="hljs-function">    </span>&#123; newConnectionCallback_ = cb; &#125;<br><br>    <span class="hljs-comment">/* 监听本地端口 */</span><br>    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">listen</span><span class="hljs-params">()</span></span>;<br><br>    <span class="hljs-comment">/* 判断当前是否正在监听端口 */</span><br>    <span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">listening</span><span class="hljs-params">()</span> <span class="hljs-type">const</span> </span>&#123; <span class="hljs-keyword">return</span> listening_; &#125;<br><br><span class="hljs-keyword">private</span>:<br>    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">handleRead</span><span class="hljs-params">()</span></span>;      <span class="hljs-comment">// 处理读事件</span><br><br>    EventLoop *loop_;        <span class="hljs-comment">// 所属EventLoop</span><br>    Socket acceptSocket_;    <span class="hljs-comment">// 专门用于接受连接的套接字(sock fd)</span><br>    Channel acceptChannel_;  <span class="hljs-comment">// 专门接受连接通道, 监听conn fd</span><br>    NewConnectionCallback newConnectionCallback_; <span class="hljs-comment">// 新建连接回调</span><br>    <span class="hljs-type">bool</span> listening_;         <span class="hljs-comment">// 监听状态</span><br>    <span class="hljs-type">int</span> idleFd_;             <span class="hljs-comment">// 空闲fd, 用于fd资源不够用时, 可以空一个出来作为新建连接conn fd</span><br>&#125;;<br></code></pre></td></tr></table></figure>
+<div class="admonition attention">
+<p class="admonition-title">
+如果fd资源不够用了，导致accept(2)/accept4(2)创建连接失败，比如达到系统上限，怎么办？
+</p>
+<p>
+Accetor用了这样一种技术：先申请一个空闲的fd（idleFd_），等到发生由于fd资源不够用时，就把这个备用fd暂时用于accept接收连接，然后再马上关闭，以防止不断产生可读事件（连接请求），从而回调相同的失败代码。及早建立连接后并关闭连接，让程序不会频繁响应同一个连接请求。
+</p>
+</div>
+<h3 id="acceptor封装的重要成员变量">Acceptor封装的重要成员变量</h3>
+<ul>
+<li>acceptSocket_：服务器监听套接字的文件描述符</li>
+<li>acceptChannel_：是一个Channel类，把acceptSocket_及其感兴趣事件和事件对应的处理函数都封装进去。</li>
+<li>EventLoop
+*loop：监听套接字的fd由哪个EventLoop负责循环监听以及处理相应事件，其实这个EventLoop就是main
+EventLoop。</li>
+<li>newConnectionCallback_:
+TcpServer构造函数中将TcpServer::newConnection()函数注册给了这个成员变量。这个TcpServer::newConnection函数的功能是公平的选择一个subEventLoop，并把已经接受的连接分发给这个subEventLoop。</li>
+</ul>
+<h3 id="acceptor封装的重要成员方法">Acceptor封装的重要成员方法</h3>
+<ul>
+<li>listen( )：该函数底层调用了linux的函数listen(
+)，开启对acceptSocket_的监听同时将acceptChannel及其感兴趣事件（可读事件）注册到main
+EventLoop的事件监听器上。换言之就是让main
+EventLoop事件监听器去监听acceptSocket_</li>
+<li>handleRead(
+)：这是一个私有成员方法，这个方法是要注册到acceptChannel_上的，
+同时handleRead(
+)方法内部还调用了成员变量newConnectionCallback_保存的函数。当main
+EventLoop监听到acceptChannel_上发生了可读事件时（新用户连接事件），就是调用这个handleRead(
+)方法。</li>
+</ul>
+<p>简单来说，handleRead(
+)最终实现的功能就是接受新连接，并且以负载均衡的选择方式选择一个sub
+EventLoop，并把这个新连接分发到这个subEventLoop上。</p>
+<h3 id="acceptor构造与析构">Acceptor构造与析构</h3>
+<p>Acceptor构造时，创建sockfd（套接字），待后续交给TcpServer来start监听套接字。空闲fd指向文件"/dev/null"，用来解决服务器fd资源耗尽问题。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">// Acceptor.cc</span><br>Acceptor::<span class="hljs-built_in">Acceptor</span>(EventLoop *loop, <span class="hljs-type">const</span> InetAddress &amp;listenAddr, <span class="hljs-type">bool</span> reuseport)<br>: <span class="hljs-built_in">loop_</span>(loop),<br>  <span class="hljs-built_in">acceptSocket_</span>(sockets::<span class="hljs-built_in">createNonblockingOrDie</span>(listenAddr.<span class="hljs-built_in">family</span>())),<br>  <span class="hljs-built_in">acceptChannel_</span>(loop, acceptSocket_.<span class="hljs-built_in">fd</span>()),<br>  <span class="hljs-built_in">listening_</span>(<span class="hljs-literal">false</span>),<br>  <span class="hljs-built_in">idleFd_</span>(::<span class="hljs-built_in">open</span>(<span class="hljs-string">&quot;/dev/null&quot;</span>, O_RDONLY | O_CLOEXEC)) <span class="hljs-comment">// 申请空闲fd</span><br>&#123;<br>    <span class="hljs-built_in">assert</span>(idleFd_ &gt;= <span class="hljs-number">0</span>);<br>    acceptSocket_.<span class="hljs-built_in">setReuseAddr</span>(<span class="hljs-literal">true</span>);<br>    acceptSocket_.<span class="hljs-built_in">setReusePort</span>(reuseport);<br>    acceptSocket_.<span class="hljs-built_in">bindAddress</span>(listenAddr);<br>    acceptChannel_.<span class="hljs-built_in">setReadCallback</span>(<br>            std::<span class="hljs-built_in">bind</span>(&amp;Acceptor::handleRead, <span class="hljs-keyword">this</span>));<br>&#125;<br><br>Acceptor::~<span class="hljs-built_in">Acceptor</span>()<br>&#123;<br>    acceptChannel_.<span class="hljs-built_in">disableAll</span>(); <span class="hljs-comment">// disable all event of the channel</span><br>    acceptChannel_.<span class="hljs-built_in">remove</span>(); <span class="hljs-comment">// remove the channel from poller</span><br>    ::<span class="hljs-built_in">close</span>(idleFd_);<br>&#125;<br></code></pre></td></tr></table></figure>
+<h3 id="acceptor监听">Acceptor监听</h3>
+<p>Acceptor包含2类监听：</p>
+<ol type="1">
+<li>监听套接字，即本地ip地址&amp;端口。</li>
+<li>监听通道事件，读事件。</li>
+</ol>
+<div class="admonition attention">
+<p class="admonition-title">
+为什么不在构造时，就调用listen监听sockfd呢？
+</p>
+<p>
+将非必要资源的初始化，延迟到需要时，用户可以通过调用TcpSever::start()来启动。这样，用户可以更灵活控制资源的申请和释放。
+</p>
+</div>
+<h3 id="acceptor接受连接">Acceptor接受连接</h3>
+<p>Acceptor内部有一个Channel成员，当Poller监听到有Tcp连接请求时，就通过Channel的可读事件，在loop线程，来回调Acceptor::handleRead()。从而将conn
+fd和IP地址传递给上一层TcpServer，用于创建TcpConnection对象管理Tcp连接。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">// Acceptor.cc</span><br><span class="hljs-comment">/**</span><br><span class="hljs-comment">* 处理读Channel事件, accept连接</span><br><span class="hljs-comment">* @note 先accept, 然后将相关资源通过回调交由上一层的TcpServer进行处理(管理)</span><br><span class="hljs-comment">*/</span><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">Acceptor::handleRead</span><span class="hljs-params">()</span></span><br><span class="hljs-function"></span>&#123;<br>    loop_-&gt;<span class="hljs-built_in">assertInLoopThread</span>();<br>    InetAddress peerAddr;<br>    <span class="hljs-comment">// FIXME loop until no more</span><br>    <span class="hljs-type">int</span> connfd = acceptSocket_.<span class="hljs-built_in">accept</span>(&amp;peerAddr); <span class="hljs-comment">// 获取连接fd及对端ip地址</span><br>    <span class="hljs-keyword">if</span> (connfd &gt;= <span class="hljs-number">0</span>)<br>    &#123;<br>        <span class="hljs-keyword">if</span> (newConnectionCallback_)<br>        &#123; <span class="hljs-comment">// 创建新连接回调</span><br>            <span class="hljs-built_in">newConnectionCallback_</span>(connfd, peerAddr);<br>        &#125;<br>        <span class="hljs-keyword">else</span><br>        &#123;<br>            sockets::<span class="hljs-built_in">close</span>(connfd);<br>        &#125;<br>    &#125;<br>    <span class="hljs-keyword">else</span><br>    &#123; <span class="hljs-comment">// 错误</span><br>        LOG_SYSERR &lt;&lt; <span class="hljs-string">&quot;in Acceptor::handleRead&quot;</span>;<br>        <span class="hljs-comment">/*</span><br><span class="hljs-comment">         * Read the section named &quot;The special problem of</span><br><span class="hljs-comment">         * accept()ing when you can&#x27;t&quot; in libev&#x27;s doc.</span><br><span class="hljs-comment">         * By Marc Lehmann, author of libev.</span><br><span class="hljs-comment">         *</span><br><span class="hljs-comment">         * The per-process limit of open file descriptors has been reached.</span><br><span class="hljs-comment">         */</span><br>        <span class="hljs-keyword">if</span> (errno == EMFILE)<br>        &#123; <span class="hljs-comment">// 文件描述符资源耗尽错误</span><br>            ::<span class="hljs-built_in">close</span>(idleFd_);<br>            idleFd_ = ::<span class="hljs-built_in">accept</span>(acceptSocket_.<span class="hljs-built_in">fd</span>(), <span class="hljs-literal">NULL</span>, <span class="hljs-literal">NULL</span>);<br>            ::<span class="hljs-built_in">close</span>(idleFd_);<br>            <span class="hljs-comment">// reopen /dev/null, it dose not matter whether it succeeds or fails.</span><br>            idleFd_ = ::<span class="hljs-built_in">open</span>(<span class="hljs-string">&quot;/dev/null&quot;</span>, O_RDONLY | O_CLOEXEC);<br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<h3 id="tcpserver类-1">TcpServer类</h3>
+<p>TcpServer类管理TcpConnection，供用户直接使用，生命周期由用户控制。接口如下，用户只需要设置好callback，然后调用start()即可。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">// TcpServer.h</span><br><span class="hljs-comment">/**</span><br><span class="hljs-comment">* Tcp Server, 支持单线程和thread-poll模型.</span><br><span class="hljs-comment">* 接口类, 因此不要暴露太多细节.</span><br><span class="hljs-comment">*/</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">TcpServer</span> : <span class="hljs-keyword">private</span> noncopyable<br>&#123;<br><span class="hljs-keyword">public</span>:<br>    <span class="hljs-keyword">typedef</span> std::function&lt;<span class="hljs-type">void</span> (EventLoop*)&gt; ThreadInitCallback;<br>    <span class="hljs-keyword">enum</span> <span class="hljs-title class_">Option</span><br>    <span class="hljs-keyword">enum</span> <span class="hljs-title class_">Option</span><br>    &#123;<br>        kNoReusePort, <span class="hljs-comment">// 不允许重用本地端口</span><br>        kReusePort,   <span class="hljs-comment">// 允许重用本地端口</span><br>    &#125;;<br><br><span class="hljs-comment">//    TcpServer(EventLoop* loop, const InetAddress&amp; listenAddr);</span><br>    <span class="hljs-built_in">TcpServer</span>(EventLoop* loop,<br>              <span class="hljs-type">const</span> InetAddress&amp; listenAddr,<br>              <span class="hljs-type">const</span> std::string&amp; nameArg,<br>              Option option = kNoReusePort);<br>    ~<span class="hljs-built_in">TcpServer</span>(); <span class="hljs-comment">// force out-line dtor, for std::unique_ptr members.</span><br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 如果没有监听, 就启动服务器(监听).</span><br><span class="hljs-comment">     * 多次调用没有副作用.</span><br><span class="hljs-comment">     * 线程安全.</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">start</span><span class="hljs-params">()</span></span>;<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 设置连接回调.</span><br><span class="hljs-comment">     * 非线程安全.</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">setConnectionCallback</span><span class="hljs-params">(<span class="hljs-type">const</span> ConnectionCallback&amp; cb)</span></span><br><span class="hljs-function">    </span>&#123; connectionCallback_ = cb; &#125;<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 设置消息回调.</span><br><span class="hljs-comment">     * 非线程安全.</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">setMessageCallback</span><span class="hljs-params">(<span class="hljs-type">const</span> MessageCallback &amp; cb)</span></span><br><span class="hljs-function">    </span>&#123; messageCallback_ = cb; &#125;<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 设置写完成回调.</span><br><span class="hljs-comment">     * 非线程安全.</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">setWriteCompleteCallback</span><span class="hljs-params">(<span class="hljs-type">const</span> WriteCompleteCallback&amp; cb)</span></span><br><span class="hljs-function">    </span>&#123; writeCompleteCallback_ = cb; &#125;<br></code></pre></td></tr></table></figure>
+<div class="admonition note">
+<p class="admonition-title">
+note
+</p>
+<p>
+并没有连接关闭的回调，这是由TcpServer::removeConnection()负责的，进而把工作转交给TcpConnection::connectDestroyed()，用户不可更改设置。
+</p>
+</div>
+<h3 id="tcpserver的构造与析构">TcpServer的构造与析构</h3>
+<p>TcpServer构造函数主要工作是为成员申请资源，为各回调设置回调函数</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs cpp">TcpServer::<span class="hljs-built_in">TcpServer</span>(EventLoop* loop,<br>                     <span class="hljs-type">const</span> InetAddress&amp; listenAddr,<br>                     <span class="hljs-type">const</span> std::string&amp; nameArg,<br>                     Option option)<br>: <span class="hljs-built_in">loop_</span>(<span class="hljs-built_in">CHECK_NOTNULL</span>(loop)), <span class="hljs-comment">// 确保loop非空</span><br>  <span class="hljs-built_in">ipPort_</span>(listenAddr.<span class="hljs-built_in">toIpPort</span>()),  <span class="hljs-comment">// 将Ip, port转换为字符串</span><br>  <span class="hljs-built_in">name_</span>(nameArg), <span class="hljs-comment">// 名称</span><br>  <span class="hljs-built_in">acceptor_</span>(<span class="hljs-keyword">new</span> <span class="hljs-built_in">Acceptor</span>(loop, listenAddr, option == kReusePort)),<br>  <span class="hljs-built_in">threadPool_</span>(<span class="hljs-keyword">new</span> <span class="hljs-built_in">EventLoopThreadPool</span>(loop, name_)), <span class="hljs-comment">// 初始化事件循环线程池</span><br>  <span class="hljs-built_in">connectionCallback_</span>(defaultConnectionCallback),    <span class="hljs-comment">// 连接回调为默认连接回调</span><br>  <span class="hljs-built_in">messageCallback_</span>(defaultMessageCallback),          <span class="hljs-comment">// 消息回调为默认消息回调</span><br>  <span class="hljs-built_in">nextConnId_</span>(<span class="hljs-number">1</span>)  <span class="hljs-comment">// 连接id</span><br>&#123;<br>    acceptor_-&gt;<span class="hljs-built_in">setNewConnectionCallback</span>(<br>            std::<span class="hljs-built_in">bind</span>(&amp;TcpServer::newConnection, <span class="hljs-keyword">this</span>, _1, _2)); <span class="hljs-comment">// 设置新建连接时的回调</span><br>&#125;<br></code></pre></td></tr></table></figure>
+<div class="admonition attention">
+<p class="admonition-title">
+同样是连接回调，TcpServer::newConnection()和connectionCallback_有何区别？
+</p>
+<p>
+前者是Acceptor发生连接请求事件时，回调，用来新建一个Tcp连接；后者是在TcpServer内部新建连接即调用TcpServer::newConnection()时，回调connectionCallback_。
+</p>
+</div>
+<p>TcpServer析构工作内容很简单，主要销毁ConnectionMap中所有Tcp连接，而每个Tcp连接用的是一个TcpConnection对象来管理的。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">/**</span><br><span class="hljs-comment">* 析构TcpServer对象, 销毁ConnectionMap中所有连接</span><br><span class="hljs-comment">*/</span><br>TcpServer::~<span class="hljs-built_in">TcpServer</span>()<br>&#123;<br>    loop_-&gt;<span class="hljs-built_in">assertInLoopThread</span>();<br>    LOG_TRACE &lt;&lt; <span class="hljs-string">&quot;TcpServer::~TcpServer [&quot;</span> &lt;&lt; name_ &lt;&lt; <span class="hljs-string">&quot;] destructing&quot;</span>;<br><br><br>    <span class="hljs-comment">// reset all connection of @c connections_</span><br>    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">auto</span>&amp; item : connections_)<br>    &#123;<br>        <span class="hljs-function">TcpConnectionPtr <span class="hljs-title">conn</span><span class="hljs-params">(item.second)</span></span>; <span class="hljs-comment">// shared_ptr manage TcpConnection</span><br>        item.second.<span class="hljs-built_in">reset</span>();<br>        conn-&gt;<span class="hljs-built_in">getLoop</span>()-&gt;<span class="hljs-built_in">runInLoop</span>(<br>                std::<span class="hljs-built_in">bind</span>(&amp;TcpConnection::connectDestroyed, conn));<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>TcpServer启动Tcp服务器，主要完成</p>
+<ol type="1">
+<li>线程池的启动；</li>
+<li>Acceptor监听Tcp连接请求。</li>
+</ol>
+<p>线程池需要指定其初始数量，当然，这需要在start()之前调用TcpServer::setThreadNum()设置。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">/**</span><br><span class="hljs-comment">* 启动TcpServer, 初始化线程池, 连接接受器Accept开始监听(Tcp连接请求)</span><br><span class="hljs-comment">*/</span><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">TcpServer::start</span><span class="hljs-params">()</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-keyword">if</span> (started_.<span class="hljs-built_in">getAndSet</span>(<span class="hljs-number">1</span>) == <span class="hljs-number">0</span>)<br>    &#123;<br>        threadPool_-&gt;<span class="hljs-built_in">start</span>(threadInitCallback_);<br><br><br>        <span class="hljs-built_in">assert</span>(!acceptor_-&gt;<span class="hljs-built_in">listening</span>());<br>        loop_-&gt;<span class="hljs-built_in">runInLoop</span>(<br>                std::<span class="hljs-built_in">bind</span>(&amp;Acceptor::listen, <span class="hljs-built_in">get_pointer</span>(acceptor_)));<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<div class="admonition attention">
+<p class="admonition-title">
+TcpServer如何获得新连接的connfd(accept返回值)?
+</p>
+<p>
+TcpServer内部用Acceptor，保存用户提供的Connection-Callback和MessageCallback，新建TcpConnection对象（newConn()）的时候直接传递给TcpConnection的构造函数
+</p>
+</div>
+<div class="admonition attention">
+<p class="admonition-title">
+如何创建TcpConnection对象？
+</p>
+<p>
+新连接请求到达时，Acceptor回调newConnection()，通过TcpServer::newConnection创建一个新TcpConnection对象，用于管理一个Tcp连接。&lt;/p&gt;
+<p>
+即，TcpServer::newConnection回调顺序 EventLoop =&gt; Channel =&gt;
+Acceptor =&gt; TcpServer
+</p>
+</div>
+<p>下面是用于创建TcpConnection对象的函数TcpServer::newConnectio()</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">// TcpServer.cc</span><br><span class="hljs-comment">/**</span><br><span class="hljs-comment">* 新建一个TcpConnection对象, 用于连接管理.</span><br><span class="hljs-comment">* @details 新建的TcpConnection对象会加入内部ConnectionMap.</span><br><span class="hljs-comment">* @param sockfd accept返回的连接fd (accepted socket fd)</span><br><span class="hljs-comment">* @param peerAddr 对端ip地址信息</span><br><span class="hljs-comment">* @note 必须在所属loop线程运行</span><br><span class="hljs-comment">*/</span><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">TcpServer::newConnection</span><span class="hljs-params">(<span class="hljs-type">int</span> sockfd, <span class="hljs-type">const</span> InetAddress &amp;peerAddr)</span></span><br><span class="hljs-function"></span>&#123;<br>    loop_-&gt;<span class="hljs-built_in">assertInLoopThread</span>();<br>    <span class="hljs-comment">/* 从EventLoop线程池中，取出一个EventLoop对象构造TcpConnection对象，便于均衡各EventLoop负责的连接数　*/</span><br>    EventLoop* ioLoop = threadPool_-&gt;<span class="hljs-built_in">getNextLoop</span>(); <span class="hljs-comment">// next event loop from the event loop thread pool</span><br><br>    <span class="hljs-comment">/* 设置连接对象名称, 包含基础名称+ip地址+端口号+连接Id</span><br><span class="hljs-comment">     * 因为要作为ConnectionMap的key, 要确保运行时唯一性 */</span><br>    <span class="hljs-type">char</span> buf[<span class="hljs-number">32</span>];<br>    <span class="hljs-built_in">snprintf</span>(buf, <span class="hljs-built_in">sizeof</span>(buf), <span class="hljs-string">&quot;-%s#%d&quot;</span>, ipPort_.<span class="hljs-built_in">c_str</span>(), nextConnId_);<br>    ++nextConnId_;<br>    std::string connName = name_ + buf;<br><br>    LOG_INFO &lt;&lt; <span class="hljs-string">&quot;TcpServer::newConnection [&quot;</span> &lt;&lt; name_<br>    &lt;&lt; <span class="hljs-string">&quot;] - new connection [&quot;</span> &lt;&lt; connName<br>    &lt;&lt; <span class="hljs-string">&quot;] from &quot;</span> &lt;&lt; peerAddr.<span class="hljs-built_in">toIpPort</span>();<br>    <br>    <span class="hljs-function">InetAddress <span class="hljs-title">localAddr</span><span class="hljs-params">(sockets::getLocalAddr(sockfd))</span></span>; <span class="hljs-comment">// 本地ip地址信息</span><br>    <span class="hljs-comment">// FIXME poll with zero timeout to double confirm the new connection</span><br>    <span class="hljs-comment">// FIXME use make_shared if necessary</span><br>    <span class="hljs-comment">/* 新建TcpConnection对象,　并加入ConnectionMap */</span><br>    <span class="hljs-function">TcpConnectionPtr <span class="hljs-title">conn</span><span class="hljs-params">(<span class="hljs-keyword">new</span> TcpConnection(ioLoop, connName, sockfd, localAddr, peerAddr))</span></span>;<br>    connections_[connName] = conn;<br>    <span class="hljs-comment">/* 为新建TcpConnection对象设置各种回调 */</span><br>    conn-&gt;<span class="hljs-built_in">setConnectionCallback</span>(connectionCallback_); <span class="hljs-comment">// 连接回调</span><br>    conn-&gt;<span class="hljs-built_in">setMessageCallback</span>(messageCallback_);       <span class="hljs-comment">// 消息回调</span><br>    conn-&gt;<span class="hljs-built_in">setWriteCompleteCallback</span>(writeCompleteCallback_); <span class="hljs-comment">// 写完成回调</span><br>    conn-&gt;<span class="hljs-built_in">setCloseCallback</span>( <span class="hljs-comment">// 关闭连接回调</span><br>            std::<span class="hljs-built_in">bind</span>(&amp;TcpServer::removeConnection, <span class="hljs-keyword">this</span>, _1)); <span class="hljs-comment">// <span class="hljs-doctag">FIXME:</span> unsafe</span><br>    <span class="hljs-comment">/* 确认连接是否已建立, 并初始化连接建立后的状态 */</span><br>    ioLoop-&gt;<span class="hljs-built_in">runInLoop</span>(std::<span class="hljs-built_in">bind</span>(&amp;TcpConnection::connectEstablished, conn));<br>&#125;<br></code></pre></td></tr></table></figure>
+<h3 id="section"></h3>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/C/" class="category-chain-item">C++</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/C/muduo/" class="category-chain-item">muduo</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/C/">#C++</a>
+      
+        <a href="/tags/muduo/">#muduo</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>muduo库-TCP连接</div>
+      <div>https://gstarmin.github.io/2023/07/10/muduo库-TCP连接/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Starmin</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年7月10日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/07/06/muduo%E5%BA%93-Socket/" title="muduo库-Socket">
+                        <span class="hidden-mobile">muduo库-Socket</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
