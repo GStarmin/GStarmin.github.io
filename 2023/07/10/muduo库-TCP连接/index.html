@@ -26,7 +26,7 @@
 <meta property="og:image" content="https://gstarmin.github.io/img/muduo/TCP连接/TCP建立连接流程.png">
 <meta property="og:image" content="https://gstarmin.github.io/img/muduo/TCP连接/TCP建立连接调用顺序.png">
 <meta property="article:published_time" content="2023-07-10T11:30:10.000Z">
-<meta property="article:modified_time" content="2023-07-10T11:30:10.000Z">
+<meta property="article:modified_time" content="2023-07-11T11:30:10.000Z">
 <meta property="article:author" content="Starmin">
 <meta property="article:tag" content="C++">
 <meta property="article:tag" content="muduo">
@@ -299,7 +299,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          9.7k 字
+          10k 字
         
       </span>
     
@@ -310,7 +310,7 @@
         
         
         
-          97 分钟
+          100 分钟
         
       </span>
     
@@ -482,9 +482,11 @@ TcpServer内部用Acceptor，保存用户提供的Connection-Callback和MessageC
 Acceptor =&gt; TcpServer
 </p>
 </div>
-<p>下面是用于创建TcpConnection对象的函数TcpServer::newConnectio()</p>
+<p>下面是用于创建TcpConnection对象的函数TcpServer::newConnection()</p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">// TcpServer.cc</span><br><span class="hljs-comment">/**</span><br><span class="hljs-comment">* 新建一个TcpConnection对象, 用于连接管理.</span><br><span class="hljs-comment">* @details 新建的TcpConnection对象会加入内部ConnectionMap.</span><br><span class="hljs-comment">* @param sockfd accept返回的连接fd (accepted socket fd)</span><br><span class="hljs-comment">* @param peerAddr 对端ip地址信息</span><br><span class="hljs-comment">* @note 必须在所属loop线程运行</span><br><span class="hljs-comment">*/</span><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">TcpServer::newConnection</span><span class="hljs-params">(<span class="hljs-type">int</span> sockfd, <span class="hljs-type">const</span> InetAddress &amp;peerAddr)</span></span><br><span class="hljs-function"></span>&#123;<br>    loop_-&gt;<span class="hljs-built_in">assertInLoopThread</span>();<br>    <span class="hljs-comment">/* 从EventLoop线程池中，取出一个EventLoop对象构造TcpConnection对象，便于均衡各EventLoop负责的连接数　*/</span><br>    EventLoop* ioLoop = threadPool_-&gt;<span class="hljs-built_in">getNextLoop</span>(); <span class="hljs-comment">// next event loop from the event loop thread pool</span><br><br>    <span class="hljs-comment">/* 设置连接对象名称, 包含基础名称+ip地址+端口号+连接Id</span><br><span class="hljs-comment">     * 因为要作为ConnectionMap的key, 要确保运行时唯一性 */</span><br>    <span class="hljs-type">char</span> buf[<span class="hljs-number">32</span>];<br>    <span class="hljs-built_in">snprintf</span>(buf, <span class="hljs-built_in">sizeof</span>(buf), <span class="hljs-string">&quot;-%s#%d&quot;</span>, ipPort_.<span class="hljs-built_in">c_str</span>(), nextConnId_);<br>    ++nextConnId_;<br>    std::string connName = name_ + buf;<br><br>    LOG_INFO &lt;&lt; <span class="hljs-string">&quot;TcpServer::newConnection [&quot;</span> &lt;&lt; name_<br>    &lt;&lt; <span class="hljs-string">&quot;] - new connection [&quot;</span> &lt;&lt; connName<br>    &lt;&lt; <span class="hljs-string">&quot;] from &quot;</span> &lt;&lt; peerAddr.<span class="hljs-built_in">toIpPort</span>();<br>    <br>    <span class="hljs-function">InetAddress <span class="hljs-title">localAddr</span><span class="hljs-params">(sockets::getLocalAddr(sockfd))</span></span>; <span class="hljs-comment">// 本地ip地址信息</span><br>    <span class="hljs-comment">// FIXME poll with zero timeout to double confirm the new connection</span><br>    <span class="hljs-comment">// FIXME use make_shared if necessary</span><br>    <span class="hljs-comment">/* 新建TcpConnection对象,　并加入ConnectionMap */</span><br>    <span class="hljs-function">TcpConnectionPtr <span class="hljs-title">conn</span><span class="hljs-params">(<span class="hljs-keyword">new</span> TcpConnection(ioLoop, connName, sockfd, localAddr, peerAddr))</span></span>;<br>    connections_[connName] = conn;<br>    <span class="hljs-comment">/* 为新建TcpConnection对象设置各种回调 */</span><br>    conn-&gt;<span class="hljs-built_in">setConnectionCallback</span>(connectionCallback_); <span class="hljs-comment">// 连接回调</span><br>    conn-&gt;<span class="hljs-built_in">setMessageCallback</span>(messageCallback_);       <span class="hljs-comment">// 消息回调</span><br>    conn-&gt;<span class="hljs-built_in">setWriteCompleteCallback</span>(writeCompleteCallback_); <span class="hljs-comment">// 写完成回调</span><br>    conn-&gt;<span class="hljs-built_in">setCloseCallback</span>( <span class="hljs-comment">// 关闭连接回调</span><br>            std::<span class="hljs-built_in">bind</span>(&amp;TcpServer::removeConnection, <span class="hljs-keyword">this</span>, _1)); <span class="hljs-comment">// <span class="hljs-doctag">FIXME:</span> unsafe</span><br>    <span class="hljs-comment">/* 确认连接是否已建立, 并初始化连接建立后的状态 */</span><br>    ioLoop-&gt;<span class="hljs-built_in">runInLoop</span>(std::<span class="hljs-built_in">bind</span>(&amp;TcpConnection::connectEstablished, conn));<br>&#125;<br></code></pre></td></tr></table></figure>
-<h3 id="section"></h3>
+<h2 id="tcpconnection类">TcpConnection类</h2>
+<p>这个类主要封装了一个已建立的TCP连接，以及控制该TCP连接的方法（连接建立和关闭和销毁），以及该连接发生的各种事件（读/写/错误/连接）对应的处理函数，以及这个TCP连接的服务端和客户端的套接字地址信息等。</p>
+<p>TcpConnection类是唯一默认用shared_ptr来管理的类，唯一继承自enable_shared_from_this的类。这是因为其生命周期模糊：可能在连接断开时，还有其他地方持有它的引用，贸然delete会造成空悬指针。只有确保其他地方没有持有该对象的引用的时候，才能安全地销毁对象。</p>
 
                 
               </div>
@@ -556,6 +558,11 @@ Acceptor =&gt; TcpServer
         </div>
       
       
+        <div class="license-meta-item license-meta-date">
+          <div>更新于</div>
+          <div>2023年7月11日</div>
+        </div>
+      
       
         <div class="license-meta-item">
           <div>许可协议</div>
@@ -583,6 +590,12 @@ Acceptor =&gt; TcpServer
                 <div class="post-prevnext my-3">
                   <article class="post-prev col-6">
                     
+                    
+                      <a href="/2023/07/11/Cpp11-enable-shared-from-this%E7%B1%BB/" title="C++11-enable_shared_from_this类">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">C++11-enable_shared_from_this类</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
                     
                   </article>
                   <article class="post-next col-6">

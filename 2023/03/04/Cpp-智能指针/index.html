@@ -309,7 +309,7 @@
         
         
         
-          190 分钟
+          191 分钟
         
       </span>
     
@@ -373,9 +373,14 @@ C++
 均持有一个在堆上分配 int 对象，其值均是 8，这两块堆内存均可以在
 <strong>sp1</strong> 和 <strong>sp2</strong> 释放时得到释放。这是
 <strong>std::auto_ptr</strong> 的基本用法。</p>
-<blockquote>
-<p>sp 是 smart pointer（智能指针）的简写。</p>
-</blockquote>
+<div class="admonition info">
+<p class="admonition-title">
+info
+</p>
+<p>
+sp 是 smart pointer（智能指针）的简写。
+</p>
+</div>
 <p><strong>std::auto_ptr</strong>
 真正让人容易误用的地方是其不常用的复制语义，即当复制一个
 <strong>std::auto_ptr</strong> 对象时（拷贝复制或 operator =
@@ -398,16 +403,27 @@ sp2，sp3 持有的堆对象被转移给 sp4。我们得到程序执行结果如
 库中智能指针的设计思想，引入了三种类型的智能指针，即
 <strong>std::unique_ptr</strong>、<strong>std::shared_ptr</strong> 和
 <strong>std::weak_ptr</strong>。</p>
-<blockquote>
-<p>boost 还有 scoped_ptr，C++11
+<div class="admonition info">
+<p class="admonition-title">
+info
+</p>
+<p>
+boost 还有 scoped_ptr，C++11
 并没有全部照搬，而是选择了三个最实用的指针类型。在 C++11 中可以通过
-std::unique_ptr 达到与 boost::scoped_ptr 一样的效果。</p>
-</blockquote>
-<p>所有的智能指针类（包括 std::unique_ptr）均包含于头文件 **** 中。</p>
-<blockquote>
-<p>正因为存在上述设计上的缺陷，在 C++11及后续语言规范中 std::auto_ptr
-已经被废弃，你的代码不应该再使用它。</p>
-</blockquote>
+std::unique_ptr 达到与 boost::scoped_ptr 一样的效果。
+</p>
+</div>
+<p>所有的智能指针类（包括 std::unique_ptr）均包含于头文件
+<strong>memery</strong> 中。</p>
+<div class="admonition info">
+<p class="admonition-title">
+info
+</p>
+<p>
+正因为存在上述设计上的缺陷，在 C++11及后续语言规范中 std::auto_ptr
+已经被废弃，你的代码不应该再使用它。
+</p>
+</div>
 <h4 id="stdunique_ptr">std::unique_ptr</h4>
 <p><strong>std::unique_ptr</strong>
 对其持有的堆内存具有唯一拥有权，也就是说引用计数永远是
@@ -419,12 +435,17 @@ std::unique_ptr 达到与 boost::scoped_ptr 一样的效果。</p>
 <strong>std::unique_ptr</strong> 而不是方式 1 和 2，因为形式 3
 更安全，原因 Scott Meyers 在其《Effective Modern
 C++》中已经解释过了，有兴趣的读者可以阅读此书相关章节。</p>
-<blockquote>
-<p>令很多人对 C++11 规范不满的地方是，C++11 新增了 std::make_shared()
+<div class="admonition info">
+<p class="admonition-title">
+info
+</p>
+<p>
+令很多人对 C++11 规范不满的地方是，C++11 新增了 std::make_shared()
 方法创建一个 std::shared_ptr 对象，却没有提供相应的 std::make_unique()
 方法创建一个 std::unique_ptr 对象，这个方法直到 C++14
-才被添加进来。当然，在 C++11 中你很容易实现出这样一个方法来：</p>
-</blockquote>
+才被添加进来。当然，在 C++11 中你很容易实现出这样一个方法来：
+</p>
+</div>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-function"><span class="hljs-keyword">template</span>&lt;<span class="hljs-keyword">typename</span> T, <span class="hljs-keyword">typename</span>... Ts&gt;</span><br><span class="hljs-function">std::unique_ptr&lt;T&gt; <span class="hljs-title">make_unique</span><span class="hljs-params">(Ts&amp;&amp; ...params)</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-keyword">return</span> std::<span class="hljs-built_in">unique_ptr</span>&lt;T&gt;(<span class="hljs-keyword">new</span> <span class="hljs-built_in">T</span>(std::forward&lt;Ts&gt;(params)...));<br>&#125;<br></code></pre></td></tr></table></figure>
 <p>鉴于 <strong>std::auto_ptr</strong>
 的前车之鉴，<strong>std::unique_ptr</strong>
