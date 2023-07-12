@@ -311,7 +311,7 @@
         
         
         
-          238 分钟
+          242 分钟
         
       </span>
     
@@ -526,6 +526,17 @@ fd，初始状态是kConnecting。连接可以是TcpServer或TcpClient发起。<
 </ol>
 <p>被动关闭流程见下图，图中“X”表示TcpConnection对象通常在此析构。</p>
 <p><img src="/img/muduo/TCP连接/TCP被动断开.png" srcset="/img/loading.gif" lazyload /></p>
+<div class="admonition info">
+<p class="admonition-title">
+info
+</p>
+<p>
+当连接到来，创建一个TcpConnection对象，立刻用shared_ptr来管理，引用计数为1,并在Channel中维护一个weak_ptr(tie_)，将这个shared_ptr对象赋值给tie_，由weak_ptr的特性，引用计数仍然为1
+</p>
+<p>
+当连接关闭，在handleEvent，将tie_提升，得到一个shared_ptr,这时候引用计数就变成了2，然后erase，引用计数变为1，所以TcpConnection计数变为1，并没有销毁，然后再调用closeCallback_，closeCallback_在TcpServer::newConnection()为新连接新建TcpConnection时，已设为TcpServer::removeConnection()，而removeConnection()最终会调用TcpConnection::connectDestroyed()来销毁连接资源。
+</p>
+</div>
 <h3 id="channel与断开连接">Channel与断开连接</h3>
 <p>Channel中有关闭连接的事件回调CloseCallback，由Channel::handleEvent()调用，从而触发TcpConnection::handleClose()：</p>
 <p>调用链路：</p>
