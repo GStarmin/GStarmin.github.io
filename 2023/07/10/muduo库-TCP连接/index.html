@@ -477,7 +477,8 @@ TcpServer内部用Acceptor，保存用户提供的Connection-Callback和MessageC
 如何创建TcpConnection对象？
 </p>
 <p>
-新连接请求到达时，Acceptor回调newConnection()，通过TcpServer::newConnection创建一个新TcpConnection对象，用于管理一个Tcp连接。&lt;/p&gt;
+新连接请求到达时，Acceptor回调newConnection()，通过TcpServer::newConnection创建一个新TcpConnection对象，用于管理一个Tcp连接。
+</p>
 <p>
 即，TcpServer::newConnection回调顺序 EventLoop =&gt; Channel =&gt;
 Acceptor =&gt; TcpServer
