@@ -16,19 +16,23 @@
   <meta name="author" content="Starmin">
   <meta name="keywords" content="">
   
-    <meta property="og:type" content="website">
-<meta property="og:title" content="关于">
-<meta property="og:url" content="https://gstarmin.github.io/about/">
+    <meta name="description" content="muduo库-StringPiece 在 StringPiece.h 文件中，声明了两个类类型，一个是 StringArg，另一个是 StringPiece，前者用于在传递函数参数时同时兼容 C 风格的字符串(const char*)和 C++ 风格的字符串(std::string)。而后者则可用于构建同时兼任这两种风格字符串的实例对象。 如果函数参数使用 const std::string&amp;am">
+<meta property="og:type" content="article">
+<meta property="og:title" content="muduo库-StringPiece">
+<meta property="og:url" content="https://gstarmin.github.io/2023/07/17/muduo%E5%BA%93-StringPiece/">
 <meta property="og:site_name" content="私人杂货铺">
+<meta property="og:description" content="muduo库-StringPiece 在 StringPiece.h 文件中，声明了两个类类型，一个是 StringArg，另一个是 StringPiece，前者用于在传递函数参数时同时兼容 C 风格的字符串(const char*)和 C++ 风格的字符串(std::string)。而后者则可用于构建同时兼任这两种风格字符串的实例对象。 如果函数参数使用 const std::string&amp;am">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2023-07-17T14:55:13.377Z">
-<meta property="article:modified_time" content="2023-07-17T14:55:13.377Z">
+<meta property="article:published_time" content="2023-07-17T13:19:58.000Z">
+<meta property="article:modified_time" content="2023-07-17T13:19:58.000Z">
 <meta property="article:author" content="Starmin">
+<meta property="article:tag" content="C++">
+<meta property="article:tag" content="muduo">
 <meta name="twitter:card" content="summary_large_image">
   
   
   
-  <title>关于 - 私人杂货铺</title>
+  <title>muduo库-StringPiece - 私人杂货铺</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -164,7 +168,7 @@
   <header>
     
 
-<div class="header-inner" style="height: 60vh;">
+<div class="header-inner" style="height: 70vh;">
   <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
   <div class="container">
     <a class="navbar-brand" href="/">
@@ -269,9 +273,49 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="关于"></span>
+            <span id="subtitle" data-typed-text="muduo库-StringPiece"></span>
           
         </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-07-17 21:19" pubdate>
+          2023年7月17日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          688 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          7 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
 
         
       </div>
@@ -287,76 +331,206 @@
 
   <main>
     
-      <div class="container nopadding-x-md">
-        <div id="board"
-          >
-          
-            <div class="about-avatar">
-              <img src="/img/avatar.png" srcset="/img/loading.gif" lazyload class="img-fluid" alt="avatar">
-            </div>
-          
-          <div class="container">
-            <div class="row">
-              <div class="col-12 col-md-10 m-auto">
-                
+      
 
-<div class="text-center">
-  <div class="about-info">
-    <div class="about-name">Starmin</div>
-    <div class="about-intro">一条兴趣使然的咸鱼</div>
-    <div class="about-icons">
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
       
-        
-        
-        
-        <a href=https://github.com class="
-           hint--bottom hint--rounded"
-           aria-label=GitHub
-           target="_blank"
-        >
-          <i class="iconfont icon-github-fill" aria-hidden="true"></i>
-          
-        </a>
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">muduo库-StringPiece</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="muduo库-stringpiece">muduo库-StringPiece</h1>
+<p>在 StringPiece.h 文件中，声明了两个类类型，一个是 StringArg，另一个是
+StringPiece，前者用于在传递函数参数时同时兼容 C 风格的字符串(const
+char*)和 C++
+风格的字符串(std::string)。而后者则可用于构建同时兼任这两种风格字符串的实例对象。</p>
+<p>如果函数参数使用 const std::string&amp;
+作为形参，尽管可以同时兼容两种风格的字符串，但是当传入一个很长的 char*
+时，会生成一个很大的 string 对象，其开销较大。而且使用 std::string
+时不可避免会带来很多不必要的拷贝，拷贝多了必然影响性能。因此在很多高性能
+C++ 框架的实现中，都会使用 StringPiece 作为 std::string 类型的
+wrapper，该类只持有目标字符串的指针，而避免额外的拷贝，同时也保证了兼容性。当仅仅读取字符串的值，可以使用该类型。</p>
+<p>常见的实现如下：</p>
+<ul>
+<li><a
+target="_blank" rel="noopener" href="https://github.com/vmg/pcre/blob/master/pcre_stringpiece.h.in">pcre</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://source.chromium.org/chromium/chromium/src/+/main:base/strings/string_piece.h;l=1?q=string_piece.h&amp;ss=chromium">Chromium</a></li>
+</ul>
+<p>因为 StringPiece 不控制字符串的声明周期，因此调用方要保证在
+StringPiece 的生命周期内，其指向的字符串是始终有效的。</p>
+<div class="admonition note">
+<p class="admonition-title">
+note
+</p>
+<p>
+如果想使用 StringPiece 作为 hash 的 key，需要自定义哈希函数，可以参考
+Chromium 实现。
+</p>
+</div>
+<p>由于 StringPiece 只持有目标指针，所以为 POD(Plain Old Data)
+类型，同时拥有 trival 构造函数，因此可以定义 __type_traits 以指示 STL
+采用更为高效的算法实现。</p>
+<div class="admonition info">
+<p class="admonition-title">
+trival构造函数
+</p>
+<p>
+见
+<a href="https://gstarmin.github.io/2023/07/17/Cpp-%E9%9D%9E%E5%B9%B3%E5%87%A1%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0/">C++
+非平凡构造函数</a>
+</p>
+</div>
+<p>转载自<a
+target="_blank" rel="noopener" href="https://www.cnblogs.com/tuilk/p/16791395.html">Muduo库之StringPiece、Time</a></p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
       
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
         
-        
-        
-        <a href=https://douban.com class="
-           hint--bottom hint--rounded"
-           aria-label=豆瓣
-           target="_blank"
-        >
-          <i class="iconfont icon-douban-fill" aria-hidden="true"></i>
-          
-        </a>
+  <a href="/categories/C/" class="category-chain-item">C++</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/C/muduo/" class="category-chain-item">muduo</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
       
-        
-        
-        
-        <a  class="qr-trigger
-           "
-           
-           target="_self"
-        >
-          <i class="iconfont icon-wechat-fill" aria-hidden="true"></i>
-          
-            <img class="qr-img" src="/img/favicon.png" srcset="/img/loading.gif" lazyload alt="qrcode" />
-          
-        </a>
+        <a href="/tags/C/">#C++</a>
       
+        <a href="/tags/muduo/">#muduo</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>muduo库-StringPiece</div>
+      <div>https://gstarmin.github.io/2023/07/17/muduo库-StringPiece/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Starmin</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年7月17日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/07/17/Cpp-%E9%9D%9E%E5%B9%B3%E5%87%A1%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0/" title="C++-非平凡构造函数">
+                        <span class="hidden-mobile">C++-非平凡构造函数</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
     </div>
   </div>
 </div>
 
-<article class="about-content page-content mt-5">
-  <div class="markdown-body">
-    
-
-  </div>
-
-  
-</article>
-
 
 
 
@@ -389,11 +563,8 @@
 
 
 
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+
+
     
 
     
@@ -486,6 +657,46 @@
   
 
 
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
 
 
   <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
