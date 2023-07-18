@@ -16,23 +16,22 @@
   <meta name="author" content="Starmin">
   <meta name="keywords" content="">
   
-    <meta name="description" content="muduo库-StringPiece 在 StringPiece.h 文件中，声明了两个类类型，一个是 StringArg，另一个是 StringPiece，前者用于在传递函数参数时同时兼容 C 风格的字符串(const char*)和 C++ 风格的字符串(std::string)。而后者则可用于构建同时兼任这两种风格字符串的实例对象。 如果函数参数使用 const std::string&amp;am">
+    <meta name="description" content="Cpp17-std::string_view std::string_view用法 C++ 中有两种风格的字符串，分别是C风格的字符串、std::string字符串。C风格的字符串性能更高，但是叶不方便使用。如下示例： 123456789101112131415#include &lt;iostream&gt;#include &lt;string&gt; int main()&amp;#123;">
 <meta property="og:type" content="article">
-<meta property="og:title" content="muduo库-StringPiece">
-<meta property="og:url" content="https://gstarmin.github.io/2023/07/17/muduo%E5%BA%93-StringPiece/">
+<meta property="og:title" content="Cpp17-std::string_view用法">
+<meta property="og:url" content="https://gstarmin.github.io/2023/07/17/Cpp17-std-string-view%E7%94%A8%E6%B3%95/">
 <meta property="og:site_name" content="私人杂货铺">
-<meta property="og:description" content="muduo库-StringPiece 在 StringPiece.h 文件中，声明了两个类类型，一个是 StringArg，另一个是 StringPiece，前者用于在传递函数参数时同时兼容 C 风格的字符串(const char*)和 C++ 风格的字符串(std::string)。而后者则可用于构建同时兼任这两种风格字符串的实例对象。 如果函数参数使用 const std::string&amp;am">
+<meta property="og:description" content="Cpp17-std::string_view std::string_view用法 C++ 中有两种风格的字符串，分别是C风格的字符串、std::string字符串。C风格的字符串性能更高，但是叶不方便使用。如下示例： 123456789101112131415#include &lt;iostream&gt;#include &lt;string&gt; int main()&amp;#123;">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2023-07-17T13:19:58.000Z">
-<meta property="article:modified_time" content="2023-07-17T13:19:58.000Z">
+<meta property="article:published_time" content="2023-07-17T14:22:46.000Z">
+<meta property="article:modified_time" content="2023-07-17T14:22:46.000Z">
 <meta property="article:author" content="Starmin">
 <meta property="article:tag" content="C++">
-<meta property="article:tag" content="muduo">
 <meta name="twitter:card" content="summary_large_image">
   
   
   
-  <title>muduo库-StringPiece - 私人杂货铺</title>
+  <title>Cpp17-std::string_view用法 - 私人杂货铺</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -273,7 +272,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="muduo库-StringPiece"></span>
+            <span id="subtitle" data-typed-text="Cpp17-std::string_view用法"></span>
           
         </div>
 
@@ -284,7 +283,7 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2023-07-17 21:19" pubdate>
+        <time datetime="2023-07-17 22:22" pubdate>
           2023年7月17日 晚上
         </time>
       </span>
@@ -296,7 +295,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          688 字
+          2.2k 字
         
       </span>
     
@@ -307,7 +306,7 @@
         
         
         
-          7 分钟
+          22 分钟
         
       </span>
     
@@ -345,55 +344,43 @@
         <div id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">muduo库-StringPiece</h1>
+            <h1 style="display: none">Cpp17-std::string_view用法</h1>
             
             
               <div class="markdown-body">
                 
-                <h1 id="muduo库-stringpiece">muduo库-StringPiece</h1>
-<p>在 StringPiece.h 文件中，声明了两个类类型，一个是 StringArg，另一个是
-StringPiece，前者用于在传递函数参数时同时兼容 C 风格的字符串(const
-char*)和 C++
-风格的字符串(std::string)。而后者则可用于构建同时兼任这两种风格字符串的实例对象。</p>
-<p>如果函数参数使用 const std::string&amp;
-作为形参，尽管可以同时兼容两种风格的字符串，但是当传入一个很长的 char*
-时，会生成一个很大的 string 对象，其开销较大。而且使用 std::string
-时不可避免会带来很多不必要的拷贝，拷贝多了必然影响性能。因此在很多高性能
-C++ 框架的实现中，都会使用 StringPiece 作为 std::string 类型的
-wrapper，该类只持有目标字符串的指针，而避免额外的拷贝，同时也保证了兼容性。当仅仅读取字符串的值，可以使用该类型。</p>
-<p>常见的实现如下：</p>
+                <h1 id="cpp17-stdstring_view">Cpp17-std::string_view</h1>
+<h2 id="stdstring_view用法">std::string_view用法</h2>
+<p>C++
+中有两种风格的字符串，分别是C风格的字符串、std::string字符串。C风格的字符串性能更高，但是叶不方便使用。如下示例：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;iostream&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;string&gt;</span></span><br> <br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-comment">//C风格字符串总是以null结尾</span><br>    <span class="hljs-type">char</span> cstr1[] = &#123; <span class="hljs-string">&#x27;j&#x27;</span>, <span class="hljs-string">&#x27;a&#x27;</span>, <span class="hljs-string">&#x27;m&#x27;</span>, <span class="hljs-literal">NULL</span>&#125;;<br>    <span class="hljs-type">char</span> cstr2[<span class="hljs-number">4</span>];<br>    <span class="hljs-built_in">strcpy</span>(cstr1, cstr2);<br>    std::cout &lt;&lt; cstr2 &lt;&lt; std::endl;<br> <br>    <span class="hljs-comment">//C++风格的字符串操作更方便，但是性能不如C风格字符串</span><br>    std::string str = <span class="hljs-string">&quot;jam&quot;</span>;<br>    std::string str2 = str;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>C++17中我们可以使用std::string_view来获取一个字符串的视图，字符串视图并不真正的创建或者拷贝字符串，而只是拥有一个字符串的查看功能。std::string_view比std::string的性能要高很多，因为每个std::string都独自拥有一份字符串的拷贝，而std::string_view只是记录了自己对应的字符串的指针和偏移位置。当我们在只是查看字符串的函数中可以直接使用std::string_view来代替std::string。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;iostream&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;string&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;string_view&gt;</span></span><br> <br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span><br><span class="hljs-function"></span>&#123;<br> <br>    <span class="hljs-type">const</span> <span class="hljs-type">char</span>* cstr = <span class="hljs-string">&quot;jam&quot;</span>;<br>    <span class="hljs-function">std::string_view <span class="hljs-title">stringView1</span><span class="hljs-params">(cstr)</span></span>;<br>    <span class="hljs-function">std::string_view <span class="hljs-title">stringView2</span><span class="hljs-params">(cstr, <span class="hljs-number">2</span>)</span></span>;<br>    std::cout &lt;&lt; <span class="hljs-string">&quot;stringView1: &quot;</span> &lt;&lt; stringView1 &lt;&lt; <span class="hljs-string">&quot;, stringView2: &quot;</span> &lt;&lt; stringView2 &lt;&lt; std::endl;<br> <br>    std::string str = <span class="hljs-string">&quot;jam&quot;</span>;<br>    <span class="hljs-function">std::string_view <span class="hljs-title">stringView3</span><span class="hljs-params">(str.c_str())</span></span>;<br>    <span class="hljs-function">std::string_view <span class="hljs-title">stringView4</span><span class="hljs-params">(str.c_str(), <span class="hljs-number">2</span>)</span></span>;<br>    std::cout &lt;&lt; <span class="hljs-string">&quot;stringView3: &quot;</span> &lt;&lt; stringView3 &lt;&lt; <span class="hljs-string">&quot;, stringView4: &quot;</span> &lt;&lt; stringView4 &lt;&lt; std::endl;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>输出：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell">stringView1: jam, stringView2: ja<br>stringView3: jam, stringView4: ja<br></code></pre></td></tr></table></figure>
+<p>我们可以把原始的字符串当作一条马路，而我们是在马路边的一个房子里，我们只能通过房间的窗户来观察外面的马路。这个房子就是std::string_view，你只能看到马路上的车和行人，但是你无法去修改他们，可以理解你对这个马路是只读的。正是这样std::string_view比std::string会快上很多。</p>
+<h2 id="stdstring_view容易踩坑的点">std::string_view容易踩坑的点</h2>
+<p>在Effective C++和C++ primer中都提到过，当一个函数有 std::string
+类型的参数，如果这个参数它不会被修改，那么应该以 const-reference
+的方式传递。即使用<code>const string &amp;str</code>而不是<code>string str</code>。</p>
+<p>而上面说过，使用std::string会有性能问题，因为当我们一个函数的参数为<code>const string&amp; str</code>时，如果传进来的参数是一个C风格的字符串，那么编译器会自动的创建一个std::string对象，编译器会使用这个C风格的字符串构造一个std::string,这样就会多一份std::string的构造开销。而如果我们使用std::string_view，那么就不会有这个问题，因为std::string_view只是一个指针，不会拷贝字符串。</p>
+<p>但是我们要注意，std::string_view并不是一个完全的替代std::string的类型，因为std::string_view只是一个引用，它并不拥有字符串，所以当我们使用std::string_view时，我们必须保证这个字符串的生命周期要比std::string_view的生命周期要长。</p>
+<div class="admonition attention">
+<p class="admonition-title">
+attention
+</p>
+<p>
+在使用std::string_view作为函数参数的时候，最好不要使用引用传参，因为std::string_view的本质就是一个引用，使用引用的引用并不会带来更多好处。
+</p>
+</div>
+<p>参考：</p>
 <ul>
+<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/yangxunwu1992/p/14018837.html">C++
+17 std::string_view使用介绍</a></li>
 <li><a
-target="_blank" rel="noopener" href="https://github.com/vmg/pcre/blob/master/pcre_stringpiece.h.in">pcre</a></li>
-<li><a
-target="_blank" rel="noopener" href="https://source.chromium.org/chromium/chromium/src/+/main:base/strings/string_piece.h;l=1?q=string_piece.h&amp;ss=chromium">Chromium</a></li>
+target="_blank" rel="noopener" href="https://uint128.com/2022/02/16/C-17-%E7%89%B9%E6%80%A7-%E4%BD%BF%E7%94%A8-std-string-view-%E6%97%B6%E5%B0%8F%E5%BF%83%E8%B8%A9%E5%9D%91/">C++17
+特性:使用 std::string_view 时小心踩坑</a></li>
 </ul>
-<p>因为 StringPiece 不控制字符串的声明周期，因此调用方要保证在
-StringPiece 的生命周期内，其指向的字符串是始终有效的。</p>
-<div class="admonition note">
-<p class="admonition-title">
-note
-</p>
-<p>
-如果想使用 StringPiece 作为 hash 的 key，需要自定义哈希函数，可以参考
-Chromium 实现。
-</p>
-</div>
-<p>由于 StringPiece 只持有目标指针，所以为 POD(Plain Old Data)
-类型，同时拥有 trival 构造函数，因此可以定义 __type_traits 以指示 STL
-采用更为高效的算法实现。</p>
-<div class="admonition info">
-<p class="admonition-title">
-trival构造函数
-</p>
-<p>
-见
-<a href="https://gstarmin.github.io/2023/07/17/Cpp-%E9%9D%9E%E5%B9%B3%E5%87%A1%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0/">C++
-非平凡构造函数</a>
-</p>
-</div>
-<p>转载自<a
-target="_blank" rel="noopener" href="https://www.cnblogs.com/tuilk/p/16791395.html">Muduo库之StringPiece、Time</a></p>
 
                 
               </div>
@@ -402,41 +389,11 @@ target="_blank" rel="noopener" href="https://www.cnblogs.com/tuilk/p/16791395.ht
             <div>
               <div class="post-metas my-3">
   
-    <div class="post-meta mr-3 d-flex align-items-center">
-      <i class="iconfont icon-category"></i>
-      
-
-<span class="category-chains">
-  
-  
-    
-      <span class="category-chain">
-        
-  <a href="/categories/C/" class="category-chain-item">C++</a>
-  
-  
-    <span>></span>
-    
-  <a href="/categories/C/muduo/" class="category-chain-item">muduo</a>
-  
-  
-
-  
-
-      </span>
-    
-  
-</span>
-
-    </div>
-  
   
     <div class="post-meta">
       <i class="iconfont icon-tags"></i>
       
         <a href="/tags/C/">#C++</a>
-      
-        <a href="/tags/muduo/">#muduo</a>
       
     </div>
   
@@ -448,8 +405,8 @@ target="_blank" rel="noopener" href="https://www.cnblogs.com/tuilk/p/16791395.ht
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>muduo库-StringPiece</div>
-      <div>https://gstarmin.github.io/2023/07/17/muduo库-StringPiece/</div>
+      <div>Cpp17-std::string_view用法</div>
+      <div>https://gstarmin.github.io/2023/07/17/Cpp17-std-string-view用法/</div>
     </div>
     <div class="license-meta">
       
@@ -493,18 +450,12 @@ target="_blank" rel="noopener" href="https://www.cnblogs.com/tuilk/p/16791395.ht
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2023/07/17/Cpp17-std-string-view%E7%94%A8%E6%B3%95/" title="Cpp17-std::string_view用法">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">Cpp17-std::string_view用法</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2023/07/17/Cpp-%E9%9D%9E%E5%B9%B3%E5%87%A1%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0/" title="C++-非平凡构造函数">
-                        <span class="hidden-mobile">C++-非平凡构造函数</span>
+                      <a href="/2023/07/17/muduo%E5%BA%93-StringPiece/" title="muduo库-StringPiece">
+                        <span class="hidden-mobile">muduo库-StringPiece</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
