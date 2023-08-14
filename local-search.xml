@@ -4,6 +4,31 @@
   
   
   <entry>
+    <title>cpp-string split函数</title>
+    <link href="/2023/08/14/split%E5%87%BD%E6%95%B0/"/>
+    <url>/2023/08/14/split%E5%87%BD%E6%95%B0/</url>
+    
+    <content type="html"><![CDATA[<h1 id="c-string-split函数">C++ string split函数</h1><p>C++标准库里面没有字符分割函数split,我们可以借助STL自己实现一个split函数，代码如下：</p><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">// s是需要分割的字符串, v是存放分割后的字符串的vector, c是分割符</span><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">SplitString</span><span class="hljs-params">(<span class="hljs-type">const</span> std::string&amp; s, std::vector&lt;std::string&gt;&amp; v, <span class="hljs-type">const</span> std::string&amp; c)</span></span><br><span class="hljs-function"></span>&#123;<br>  std::string::size_type pos1, pos2;<br>  pos2 = s.<span class="hljs-built_in">find</span>(c);<br>  pos1 = <span class="hljs-number">0</span>;<br>  <span class="hljs-keyword">while</span>(std::string::npos != pos2)<br>  &#123;<br>    v.<span class="hljs-built_in">push_back</span>(s.<span class="hljs-built_in">substr</span>(pos1, pos2-pos1));<br> <br>    pos1 = pos2 + c.<span class="hljs-built_in">size</span>();<br>    pos2 = s.<span class="hljs-built_in">find</span>(c, pos1);<br>  &#125;<br>  <span class="hljs-keyword">if</span>(pos1 != s.<span class="hljs-built_in">length</span>())<br>    v.<span class="hljs-built_in">push_back</span>(s.<span class="hljs-built_in">substr</span>(pos1));<br>&#125;<br></code></pre></td></tr></table></figure>]]></content>
+    
+    
+    <categories>
+      
+      <category>C++</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>C++</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>C++ 20-span容器</title>
     <link href="/2023/07/18/Cpp20-span%E5%AE%B9%E5%99%A8/"/>
     <url>/2023/07/18/Cpp20-span%E5%AE%B9%E5%99%A8/</url>
