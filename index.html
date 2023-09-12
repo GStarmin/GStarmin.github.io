@@ -301,6 +301,107 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h1 class="index-header">
         
+        <a href="/2023/09/11/Redis-%E9%AB%98%E7%BA%A7%E7%AF%87-skiplist/" target="_self">
+          Redis-高级篇-skiplist
+        </a>
+      </h1>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2023/09/11/Redis-%E9%AB%98%E7%BA%A7%E7%AF%87-skiplist/" target="_self">
+        <div>
+          redis-skiplist 为什么引出跳表  先从一个单链表来说 对于一个单链表来讲，即便链表中存储的数据是有序的，如果我们要想在其中查找某个数据，也只能从头到尾遍历链表。这样查找效率就会很低，时间复杂度会很高O(N)  痛点  解决方法：升维，也即空间换时间 优化  案例：画一个包含64个节点的链表，按前面思路，建立五级索引   是什么 跳表是可以实现二分查找的有序链表 skiplist是一种
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2023-09-11 22:46" pubdate>
+              2023-09-11
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/redis/" class="category-chain-item">redis</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/redis/">#redis</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2023/09/08/redis%E7%AC%94%E8%AE%B0/" target="_self">
+          redis笔记
+        </a>
+      </h1>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2023/09/08/redis%E7%AC%94%E8%AE%B0/" target="_self">
+        <div>
+          redis笔记 redis笔记见REDIS6_分布式存储极致性能目录 尚未完成，待续... Redlcok算法 Redlock算法是redis作者提出的一种分布式锁算法，它的思想是由多个redis（这些redis是相互独立的，不存在主从复制或集群协调机制）实现。在加锁时，客户端首先要设置一个锁的失效时间，然后对每个redis实例进行加锁，如果从大多数的redis节点都取到锁且时间不超过锁的失效时间
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2023-09-08 18:54" pubdate>
+              2023-09-08
+            </time>
+          </div>
+        
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/redis/">#redis</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
         <a href="/2023/08/21/Cpp-STL-lower-bound-upper-bound%E9%AB%98%E7%BA%A7%E7%94%A8%E6%B3%95/" target="_self">
           Cpp-STL-lower_bound和upper_bound高级用法
         </a>
@@ -777,139 +878,6 @@
               <a href="/tags/C/">#C++</a>
             
               <a href="/tags/muduo/">#muduo</a>
-            
-          </div>
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2023/07/12/Cpp-%E6%89%8B%E5%8A%A8%E5%AE%9E%E7%8E%B0%E5%A0%86/" target="_self">
-          C++-手动实现堆
-        </a>
-      </h1>
-
-      
-      <a class="index-excerpt index-excerpt__noimg" href="/2023/07/12/Cpp-%E6%89%8B%E5%8A%A8%E5%AE%9E%E7%8E%B0%E5%A0%86/" target="_self">
-        <div>
-          C++ 手动实现堆 在C++ STL中其实是有堆的实现的，C++ 中的priority_queue就是由堆实现的，但是在面试中堆排序还是非常常问的，所以还是非常有必要手动实现一下堆。 堆的定义 堆是一种特殊的完全二叉树，其满足以下两个条件：  堆中任意节点的值总是不大于（或不小于）其子节点的值。 堆总是一棵完全二叉树。  其中节点值不小于其子节点的堆称为大跟堆，节点值不大于其子节点的堆称为小跟堆。
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2023-07-12 15:36" pubdate>
-              2023-07-12
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3 d-flex align-items-center">
-            <i class="iconfont icon-category"></i>
-            
-
-<span class="category-chains">
-  
-  
-    
-      <span class="category-chain">
-        
-  <a href="/categories/C/" class="category-chain-item">C++</a>
-  
-  
-    <span>></span>
-    
-  <a href="/categories/C/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" class="category-chain-item">数据结构与算法</a>
-  
-  
-
-  
-
-      </span>
-    
-  
-</span>
-
-          </div>
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/">#数据结构与算法</a>
-            
-              <a href="/tags/leetcode/">#leetcode</a>
-            
-              <a href="/tags/C/">#C++</a>
-            
-          </div>
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2023/07/11/Cpp11-enable-shared-from-this%E7%B1%BB/" target="_self">
-          C++11-enable_shared_from_this类
-        </a>
-      </h1>
-
-      
-      <a class="index-excerpt index-excerpt__noimg" href="/2023/07/11/Cpp11-enable-shared-from-this%E7%B1%BB/" target="_self">
-        <div>
-          C++11-enable_shared_from_this类 c++11 中的 shared_from_this() 来源于 boost 中的 enable_shared_form_this 类和 shared_from_this() 函数，功能为返回一个当前类的 std::share_ptr，使用方法如下： 12345678#include&lt;memory&gt;class Test: pu
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2023-07-11 19:53" pubdate>
-              2023-07-11
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3 d-flex align-items-center">
-            <i class="iconfont icon-category"></i>
-            
-
-<span class="category-chains">
-  
-  
-    
-      <span class="category-chain">
-        
-  <a href="/categories/C/" class="category-chain-item">C++</a>
-  
-  
-
-      </span>
-    
-  
-</span>
-
-          </div>
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/C/">#C++</a>
             
           </div>
         
