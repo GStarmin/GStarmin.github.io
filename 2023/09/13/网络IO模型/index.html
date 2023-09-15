@@ -550,7 +550,7 @@ class="math inline">\(O(n)\)</span>的遍历。</li>
 <h3 id="异步io">异步IO</h3>
 <p>上面的信号驱动方式用户调用recvfrom读取数据之后，需要等待内核将数据从内核空间拷贝到用户空间，而这个过程中用户是阻塞等待的，而异步IO则是用户调用recvfrom读取数据之后，内核会将数据从内核空间拷贝到用户空间，然后内核会给用户发送一个信号，告诉用户数据已经拷贝完成，此时用户就可以去处理数据了，这个过程用户不会阻塞。</p>
 <p><img src="/img/网络IO模型/异步IO流程.png" srcset="/img/loading.gif" lazyload /></p>
-<h2 id="五个io模型对比">五个IO模型对比</h2>
+<h2 id="五个io模型对比">五个I/O模型对比</h2>
 <p><img src="/img/网络IO模型/五个IO模型对比.png" srcset="/img/loading.gif" lazyload /></p>
 
                 
