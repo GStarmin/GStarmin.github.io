@@ -29,6 +29,11 @@
 <meta property="og:image" content="https://gstarmin.github.io/img/网络IO模型/select定义以及流程.png">
 <meta property="og:image" content="https://gstarmin.github.io/img/网络IO模型/poll定义.png">
 <meta property="og:image" content="https://gstarmin.github.io/img/网络IO模型/IO多路复用对比.png">
+<meta property="og:image" content="https://gstarmin.github.io/img/网络IO模型/IO复用模型流程.png">
+<meta property="og:image" content="https://gstarmin.github.io/img/网络IO模型/基于epoll的服务器端流程.png">
+<meta property="og:image" content="https://gstarmin.github.io/img/网络IO模型/信号驱动IO流程.png">
+<meta property="og:image" content="https://gstarmin.github.io/img/网络IO模型/异步IO流程.png">
+<meta property="og:image" content="https://gstarmin.github.io/img/网络IO模型/五个IO模型对比.png">
 <meta property="article:published_time" content="2023-09-13T10:35:45.000Z">
 <meta property="article:modified_time" content="2023-09-13T10:35:45.000Z">
 <meta property="article:author" content="Starmin">
@@ -301,7 +306,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          5.6k 字
+          6.9k 字
         
       </span>
     
@@ -312,7 +317,7 @@
         
         
         
-          56 分钟
+          70 分钟
         
       </span>
     
@@ -491,6 +496,62 @@ class="math inline">\(O(n)\)</span>的遍历。</li>
 <li>利用ep_poll_callback机制来监听FD状态，无需遍历所有FD，因此性能不会随监听的FD数量增多而下降</li>
 </ul>
 <p><img src="/img/网络IO模型/IO多路复用对比.png" srcset="/img/loading.gif" lazyload /></p>
+<h3 id="epoll中的et和lt">epoll中的ET和LT</h3>
+<p>当FD有数据可读时，我们调用epoll_wait（或者select、poll）可以得到通知。但是事件通知的模式有两种：</p>
+<ul>
+<li>LevelTriggered：简称LT，也叫做水平触发。只要某个FD中有数据可读，每次调用epoll_wait都会得到通知。</li>
+<li>EdgeTriggered：简称ET，也叫做边沿触发。只有在某个FD有状态变化时，调用epoll_wait才会被通知。</li>
+</ul>
+<p>举个栗子：</p>
+<ul>
+<li>假设一个客户端socket对应的FD已经注册到了epoll实例中</li>
+<li>客户端socket发送了2kb的数据</li>
+<li>服务端调用epoll_wait，得到通知说FD就绪</li>
+<li>服务端从FD读取了1kb数据回到步骤3（再次调用epoll_wait，形成循环）</li>
+</ul>
+<p>两种不同通知方式的结果：</p>
+<ul>
+<li>如果我们采用LT模式，因为FD中仍有1kb数据，则第 3
+步依然会返回结果，并且得到通知</li>
+<li>如果我们采用ET模式，因为第 3
+步已经消费了FD可读事件，第⑤步FD状态没有变化，因此epoll_wait不会返回，数据无法读取，客户端响应超时。</li>
+</ul>
+<h3 id="基于epoll的服务器端流程">基于epoll的服务器端流程</h3>
+<p><img src="/img/网络IO模型/IO复用模型流程.png" srcset="/img/loading.gif" lazyload /></p>
+<ol type="1">
+<li>服务器启动以后，服务端会去调用epoll_create，创建一个epoll实例，epoll实例中包含两个数据
+<ul>
+<li>红黑树（初始为空）：rb_root 用来去记录需要被监听的FD</li>
+<li>链表（初始为空）：list_head，用来存放已经就绪的FD</li>
+</ul></li>
+<li>创建好了之后，会去调用epoll_ctl函数，此函数会会将需要监听的数据添加到rb_root中去，并且对当前这些存在于红黑树的节点设置回调函数，当这些被监听的数据一旦准备完成，就会被调用，而调用的结果就是将红黑树的fd添加到list_head中去(但是此时并没有完成)</li>
+<li>当第二步完成后，就会调用epoll_wait函数，这个函数会去校验是否有数据准备完毕（因为数据一旦准备就绪，就会被回调函数添加到list_head中），在等待了一段时间后(可以进行配置)，如果等够了超时时间，则返回没有数据，如果有，则进一步判断当前是什么事件，如果是建立连接时间，则调用accept()
+接受客户端socket，拿到建立连接的socket，然后建立起来连接，如果是其他事件，则把数据进行写出</li>
+</ol>
+<p><img src="/img/网络IO模型/基于epoll的服务器端流程.png" srcset="/img/loading.gif" lazyload /></p>
+<h2 id="信号驱动io">信号驱动IO</h2>
+<p>信号驱动IO是与内核建立SIGIO的信号关联并设置回调，当内核有FD就绪时，会发出SIGIO信号通知用户，期间用户应用可以执行其它业务，无需阻塞等待。</p>
+<p>阶段一：</p>
+<ul>
+<li>用户进程调用sigaction，注册信号处理函数</li>
+<li>内核返回成功，开始监听FD</li>
+<li>用户进程不阻塞等待，可以执行其它业务</li>
+<li>当内核数据就绪后，回调用户进程的SIGIO处理函数</li>
+</ul>
+<p>阶段二：</p>
+<ul>
+<li>收到SIGIO回调信号</li>
+<li>调用recvfrom，读取</li>
+<li>内核将数据拷贝到用户空间</li>
+<li>用户进程处理数据</li>
+</ul>
+<p><img src="/img/网络IO模型/信号驱动IO流程.png" srcset="/img/loading.gif" lazyload /></p>
+<p><strong>缺点</strong>：当有大量IO操作时，信号较多，SIGIO处理函数不能及时处理可能导致信号队列溢出，而且内核空间与用户空间的频繁信号交互性能也较低。</p>
+<h3 id="异步io">异步IO</h3>
+<p>上面的信号驱动方式用户调用recvfrom读取数据之后，需要等待内核将数据从内核空间拷贝到用户空间，而这个过程中用户是阻塞等待的，而异步IO则是用户调用recvfrom读取数据之后，内核会将数据从内核空间拷贝到用户空间，然后内核会给用户发送一个信号，告诉用户数据已经拷贝完成，此时用户就可以去处理数据了，这个过程用户不会阻塞。</p>
+<p><img src="/img/网络IO模型/异步IO流程.png" srcset="/img/loading.gif" lazyload /></p>
+<h2 id="五个io模型对比">五个IO模型对比</h2>
+<p><img src="/img/网络IO模型/五个IO模型对比.png" srcset="/img/loading.gif" lazyload /></p>
 
                 
               </div>
