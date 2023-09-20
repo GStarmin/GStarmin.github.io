@@ -362,7 +362,7 @@
 attention
 </p>
 <p>
-Channel类不负责fd的生存期，fd的生存期是有socket决定的，断开连接关闭描述符。
+Channel类不负责fd的生存期，fd的生存期是由socket决定的，断开连接关闭描述符。
 </p>
 </div>
 <p>Channel可以通过EventLoop，向Poller更新自己关心的（监听）事件（通过map
@@ -378,7 +378,7 @@ Poller::channels_存储）。具体来说，对于PollPoller对象，会同步�
 <p>Channel成员函数主要包括：</p>
 <ol type="1">
 <li>设置事件处理的回调函数setCallback（如setReadCallback）；</li>
-<li>使能fd关心的事件events_，可调用enable（如enableReading），该fd及关心的事件会注册到Poller中进行监听；</li>
+<li>开启fd关心的事件events_，可调用enable（如enableReading），该fd及关心的事件会注册到Poller中进行监听；</li>
 <li>关闭fd关心的事件events_，可调用disable*（如disableReading），会更新该fd在Poller中监听的事件；</li>
 <li>关闭fd关心的所有事件events_，可调用disableAll，会更新该fd在Poller中监听的事件；</li>
 <li>删除对fd的监听，会将其从Poller的ChannelMap中移除；</li>
