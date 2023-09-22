@@ -4,35 +4,6 @@
   
   
   <entry>
-    <title>muduo例子流程解析</title>
-    <link href="/2023/09/19/muduo%E4%BE%8B%E5%AD%90%E6%B5%81%E7%A8%8B%E8%A7%A3%E6%9E%90/"/>
-    <url>/2023/09/19/muduo%E4%BE%8B%E5%AD%90%E6%B5%81%E7%A8%8B%E8%A7%A3%E6%9E%90/</url>
-    
-    <content type="html"><![CDATA[<h1 id="muduo例子流程解析">muduo例子流程解析</h1><h2 id="muduo库架构">muduo库架构</h2><p>首先回顾一下muudo库的架构，如下图所示：</p><p><img src="/img/muduo/解析/muduo架构.png" /></p><p>muduo库使用了Reactor模式，所谓Reactor模式，是有一个循环的过程，监听对应事件是否触发，触发时调用对应的callback进行处理。</p><p>这里的事件在muduo中包括Socket可读写事件、定时器事件。在其他网络库中如libevent也包括了signal、用户自定义事件等。</p><p>负责事件循环的部分在muduo命名为<code>EventLoop</code>，其他库如netty、libevent也都有对应的组件。</p><p>负责监听事件是否触发的部分，在muduo中叫做Poller。muduo提供了epoll和poll两种来实现，默认是epoll实现。通过环境变量MUDUO_USE_POLL来决定是否使用poll:</p><h2 id="例子">例子</h2><p>下面用一个简单的例子来分析muduo库的基本使用以及运行流程。</p><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">onMessage</span><span class="hljs-params">(<span class="hljs-type">const</span> muduo::net::TcpConnectionPtr&amp; conn,</span></span><br><span class="hljs-params"><span class="hljs-function">                           muduo::net::Buffer* buf,</span></span><br><span class="hljs-params"><span class="hljs-function">                           muduo::Timestamp time)</span></span><br><span class="hljs-function"></span>&#123;<br>  conn-&gt;<span class="hljs-built_in">send</span>(buf);<br>&#125;<br><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span><br><span class="hljs-function"></span>&#123;<br>    muduo::net::EventLoop loop;<br>    muduo::<span class="hljs-function">net::InetAddress <span class="hljs-title">listenAddr</span><span class="hljs-params">(<span class="hljs-number">2007</span>)</span></span>;<br>    <span class="hljs-function">TcpServer <span class="hljs-title">server</span><span class="hljs-params">(&amp;loop, listenAddr)</span></span>;<br>    server.<span class="hljs-built_in">setMessageCallback</span>(onMessage);<br>    server.<span class="hljs-built_in">start</span>();<br>    loop.<span class="hljs-built_in">loop</span>();<br>&#125;<br></code></pre></td></tr></table></figure><p>这个例子是一个简单的echo服务器，当客户端发送数据时，服务器将数据原样返回。</p><p>一个典型的muduo的TcpServer工作流程如下：</p><ol type="1"><li>建立一个事件循环器EventLoop</li><li>建立对应的业务服务器TcpServer</li><li>设置TcpServer的Callback</li><li>启动server</li><li>开启事件循环</li></ol><p>陈硕认为，TCP网络编程的本质是处理三个半事件，即：</p><ol type="1"><li>连接建立事件</li><li>连接断开事件:包括主动断开和被动断开</li><li>消息到达，文件描述符可读事件</li><li>消息发送完毕，文件描述符可写事件，这个算半个事件</li></ol><h3 id="连接的建立">连接的建立</h3><p><img src="/img/muduo/解析/连接建立代码逻辑.png" /></p><p>如果使用纯Linux api编写一个简单的TCP服务器，建立连接通常需要4步：</p><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs cpp">- 创建socket: <span class="hljs-built_in">socket</span>() <span class="hljs-comment">// 调用socket函数建立监听socket</span><br>- 绑定地址: <span class="hljs-built_in">bind</span>()     <span class="hljs-comment">// 调用bind函数将socket和地址绑定</span><br>- 监听: <span class="hljs-built_in">listen</span>()       <span class="hljs-comment">// 调用listen函数监听socket</span><br>- 接受连接: <span class="hljs-built_in">accept</span>()   <span class="hljs-comment">// 调用accept函数接受连接</span><br></code></pre></td></tr></table></figure><div class="admonition attention"><p class="admonition-title">attention</p><p>注意下面所说的步骤指的是上图的<strong>代码方框编号</strong>，而且代码的方框编号不等于执行顺序。</p></div><p>在muduo中，TcpServer对象构建时，也就是图中<strong>编号1</strong>，TcpServer的属性acceptor同时也被建立,也就是图中<strong>编号5</strong>。在Acceptor的构造函数中分别<strong>调用了socket函数和bind函数</strong>完成了<strong>创建socket</strong>和<strong>绑定地址</strong>。// 这里源码中的socket和bind函数没有发现</p><p>即，当<code>TcpServer server(&amp;loop, listenAddr);</code>执行结束时，监听socket已经建立好，并已绑定到对应地址和端口了。</p><p>而<code>server.start()</code>主要做了两个工作：</p><ol type="1"><li>在监听socket上启动listen函数，也就是步骤3；</li><li>将监听socket的可读事件注册到EventLoop中。</li></ol><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">TcpServer::start</span><span class="hljs-params">()</span></span><br><span class="hljs-function"></span>&#123;<br>  <span class="hljs-keyword">if</span> (started_.<span class="hljs-built_in">getAndSet</span>(<span class="hljs-number">1</span>) == <span class="hljs-number">0</span>)<br>  &#123;<br>    threadPool_-&gt;<span class="hljs-built_in">start</span>(threadInitCallback_);<br>    <br>    <span class="hljs-built_in">assert</span>(!acceptor_-&gt;<span class="hljs-built_in">listenning</span>());<br><br>    <span class="hljs-comment">//让这个EventLoop，也就是mainloop来执行Acceptor的listen函数，开启服务端监听</span><br>    loop_-&gt;<span class="hljs-built_in">runInLoop</span>(<br>        boost::<span class="hljs-built_in">bind</span>(&amp;Acceptor::listen, <span class="hljs-built_in">get_pointer</span>(acceptor_)));<br>  &#125;<br>&#125;<br></code></pre></td></tr></table></figure>]]></content>
-    
-    
-    <categories>
-      
-      <category>C++</category>
-      
-      <category>muduo</category>
-      
-    </categories>
-    
-    
-    <tags>
-      
-      <tag>C++</tag>
-      
-      <tag>muduo</tag>
-      
-    </tags>
-    
-  </entry>
-  
-  
-  
-  <entry>
     <title>网络IO模型</title>
     <link href="/2023/09/13/%E7%BD%91%E7%BB%9CIO%E6%A8%A1%E5%9E%8B/"/>
     <url>/2023/09/13/%E7%BD%91%E7%BB%9CIO%E6%A8%A1%E5%9E%8B/</url>
