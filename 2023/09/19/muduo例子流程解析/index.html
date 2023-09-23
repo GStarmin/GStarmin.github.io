@@ -30,7 +30,7 @@
 <meta property="og:image" content="https://gstarmin.github.io/img/muduo/解析/连接被动断开.png">
 <meta property="og:image" content="https://gstarmin.github.io/img/muduo/解析/连接主动断开.png">
 <meta property="article:published_time" content="2023-09-19T11:48:02.000Z">
-<meta property="article:modified_time" content="2023-09-19T11:48:02.000Z">
+<meta property="article:modified_time" content="2023-09-23T11:48:02.000Z">
 <meta property="article:author" content="Starmin">
 <meta property="article:tag" content="C++">
 <meta property="article:tag" content="muduo">
@@ -398,12 +398,11 @@ attention
 </p>
 </div>
 <p>在muduo中，TcpServer对象构建时，也就是图中<strong>编号1</strong>，TcpServer的属性acceptor同时也被建立,也就是图中<strong>编号5</strong>。
-在Acceptor的构造函数中分别<strong>调用了socket函数和bind函数</strong>完成了<strong>创建socket</strong>和<strong>绑定地址</strong>。（在createNonblockingOrDie函数中调用了socket函数，在bindAddress中调用了bind）</p>
+在Acceptor的构造函数中分别<strong>调用了socket函数和bind函数</strong>完成了<strong>创建socket</strong>和<strong>绑定地址</strong>。（在<code>createNonblockingOrDie</code>函数中调用了socket函数，在<code>bindAddress</code>中调用了<code>bind</code>）</p>
 <p>即，当<code>TcpServer server(&amp;loop, listenAddr);</code>执行结束时，监听socket已经建立好，并已绑定到对应地址和端口了。</p>
 <p>而<code>server.start()</code>主要做了两个工作：</p>
 <ol type="1">
-<li>在监听socket上启动listen函数（调用Acceptor::listen(
-)函数），也就是步骤3；</li>
+<li>在监听socket上启动listen函数（调用<code>Acceptor::listen()</code>函数），也就是步骤3；</li>
 <li>将监听socket的可读事件注册到EventLoop中。</li>
 </ol>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">TcpServer::start</span><span class="hljs-params">()</span></span><br><span class="hljs-function"></span>&#123;<br>  <span class="hljs-keyword">if</span> (started_.<span class="hljs-built_in">getAndSet</span>(<span class="hljs-number">1</span>) == <span class="hljs-number">0</span>)<br>  &#123;<br>    threadPool_-&gt;<span class="hljs-built_in">start</span>(threadInitCallback_);<br>    <br>    <span class="hljs-built_in">assert</span>(!acceptor_-&gt;<span class="hljs-built_in">listenning</span>());<br><br>    <span class="hljs-comment">//让这个EventLoop，也就是mainloop来执行Acceptor的listen函数，开启服务端监听</span><br>    loop_-&gt;<span class="hljs-built_in">runInLoop</span>(<br>        boost::<span class="hljs-built_in">bind</span>(&amp;Acceptor::listen, <span class="hljs-built_in">get_pointer</span>(acceptor_)));<br>  &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
@@ -506,6 +505,8 @@ id="如果tcpconnection中有正在发送的数据怎么保证在触发tcpconnec
 <p>接着这个<code>shared_ptr</code>就作为<code>channel_</code>的<code>Channel::tie()</code>函数的函数参数。</p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">/*****  Channel.h   ******/</span><br>std::weak_ptr&lt;<span class="hljs-type">void</span>&gt; tie_; <br><span class="hljs-comment">/*****  Channel.cc   ******/</span><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">Channel::tie</span><span class="hljs-params">(<span class="hljs-type">const</span> shared_ptr&lt;<span class="hljs-type">void</span>&gt;&amp; obj)</span></span><br><span class="hljs-function"></span>&#123;<br>    tie_ = obj;<br>    tied_ = <span class="hljs-literal">true</span>;<br>&#125;<br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">Channel::HandlerEvent</span><span class="hljs-params">(TimeStamp receiveTime)</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-keyword">if</span>(tied_)&#123;<br>        shared_ptr&lt;<span class="hljs-type">void</span>&gt; guard = tie_.<span class="hljs-built_in">lock</span>();<br>        <span class="hljs-keyword">if</span> (guard)<br>            <span class="hljs-built_in">HandleEventWithGuard</span>(receiveTime);<br>    &#125;<br>    <span class="hljs-keyword">else</span>&#123;<br>        。。。。一般不会执行到这里其实。我实在想不到正常运行的情况下怎么会执行到这里，可能是我比较菜。<br>        <span class="hljs-built_in">HandleEventWithGuard</span>(receiveTime);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
 <p>当事件监听器返回监听结果，就要对每一个发生事件的<code>channel</code>对象调用他们的<code>HandlerEvent()</code>函数。在这个<code>HandlerEvent</code>函数中，会先把<code>tie_</code>这个<code>weak_ptr</code>提升为强共享智能指针。这个强共享智能指针会指向当前的<code>TcpConnection</code>对象。就算你外面调用删除析构了其他所有的指向该<code>TcpConnection</code>对象的智能指针。你只要<code>HandleEventWithGuard()</code>函数没执行完，你这个<code>TcpConnetion</code>对象都不会被析构释放堆内存。而<code>HandleEventWithGuard()</code>函数里面就有负责处理消息发送事件的逻辑。当<code>HandleEventWithGuard()</code>函数调用完毕，这个<code>guard</code>智能指针就会被释放。</p>
+<p>转载自<a
+target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/495016351">万字长文梳理Muduo库核心代码及优秀编程细节思想剖析</a></p>
 
                 
               </div>
@@ -576,6 +577,11 @@ id="如果tcpconnection中有正在发送的数据怎么保证在触发tcpconnec
           <div>2023年9月19日</div>
         </div>
       
+      
+        <div class="license-meta-item license-meta-date">
+          <div>更新于</div>
+          <div>2023年9月23日</div>
+        </div>
       
       
         <div class="license-meta-item">
