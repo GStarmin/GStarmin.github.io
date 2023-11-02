@@ -301,6 +301,76 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h1 class="index-header">
         
+        <a href="/2023/07/17/muduo%E5%BA%93-StringPiece/" target="_self">
+          muduo库-StringPiece
+        </a>
+      </h1>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2023/07/17/muduo%E5%BA%93-StringPiece/" target="_self">
+        <div>
+          muduo库-StringPiece 在 StringPiece.h 文件中，声明了两个类类型，一个是 StringArg，另一个是 StringPiece，前者用于在传递函数参数时同时兼容 C 风格的字符串(const char*)和 C++ 风格的字符串(std::string)。而后者则可用于构建同时兼任这两种风格字符串的实例对象。 如果函数参数使用 const std::string&am
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2023-07-17 21:19" pubdate>
+              2023-07-17
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/C/" class="category-chain-item">C++</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/C/muduo/" class="category-chain-item">muduo</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/C/">#C++</a>
+            
+              <a href="/tags/muduo/">#muduo</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
         <a href="/2023/07/17/Cpp-%E9%9D%9E%E5%B9%B3%E5%87%A1%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0/" target="_self">
           C++-非平凡构造函数
         </a>
@@ -862,76 +932,6 @@
           <div class="post-meta mr-3">
             <i class="iconfont icon-date"></i>
             <time datetime="2023-07-02 15:33" pubdate>
-              2023-07-02
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3 d-flex align-items-center">
-            <i class="iconfont icon-category"></i>
-            
-
-<span class="category-chains">
-  
-  
-    
-      <span class="category-chain">
-        
-  <a href="/categories/C/" class="category-chain-item">C++</a>
-  
-  
-    <span>></span>
-    
-  <a href="/categories/C/muduo/" class="category-chain-item">muduo</a>
-  
-  
-
-  
-
-      </span>
-    
-  
-</span>
-
-          </div>
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/C/">#C++</a>
-            
-              <a href="/tags/muduo/">#muduo</a>
-            
-          </div>
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2023/07/02/muduo%E5%BA%93-I-O%E5%A4%8D%E7%94%A8/" target="_self">
-          muduo库-I/O复用
-        </a>
-      </h1>
-
-      
-      <a class="index-excerpt index-excerpt__noimg" href="/2023/07/02/muduo%E5%BA%93-I-O%E5%A4%8D%E7%94%A8/" target="_self">
-        <div>
-          muduo库-I/O复用 I/O复用使得程序能同时监听多个文件描述符，能有效提高程序性能。Linux下，实现I/O复用的系统调用主要有3个：  select poll epoll  muduo采用了2和3，分别用PollPoller/EPollPoller对poll/epoll进行了封装，基类Poller主要用于提供统一的接口。 Poller类 先来看看基类Poller定义： 1234567891
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2023-07-02 15:10" pubdate>
               2023-07-02
             </time>
           </div>
