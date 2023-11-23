@@ -301,6 +301,146 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h1 class="index-header">
         
+        <a href="/2023/06/26/muduo%E5%BA%93-ThreadPool%E7%B1%BB/" target="_self">
+          muduo库-ThreadPool类
+        </a>
+      </h1>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2023/06/26/muduo%E5%BA%93-ThreadPool%E7%B1%BB/" target="_self">
+        <div>
+          muduo库-ThreadPool类 线程池模型 模型图如下：  这个是通用线程池，双端队列存放的是多个可调用对象（即用户任务），而非函数指针，因此可以通过std::bind配接器传参。双端队列queue_，有时也称为工作队列。 工作原理：首先创建并启动一组线程，称为线程池threads_，由用户指定其大小maxQueueSize_，每个元素对对应一个线程。每个线程函数都是一样的，在其中会运行一个
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2023-06-26 19:48" pubdate>
+              2023-06-26
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/C/" class="category-chain-item">C++</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/C/muduo/" class="category-chain-item">muduo</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/C/">#C++</a>
+            
+              <a href="/tags/muduo/">#muduo</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2023/06/26/muduo%E5%BA%93-%E7%BA%BF%E7%A8%8B%E5%90%8C%E6%AD%A5CountDownLatch-Condition/" target="_self">
+          muduo库-线程同步CountDownLatch/Condition
+        </a>
+      </h1>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2023/06/26/muduo%E5%BA%93-%E7%BA%BF%E7%A8%8B%E5%90%8C%E6%AD%A5CountDownLatch-Condition/" target="_self">
+        <div>
+          muduo库-线程同步CountDownLatch/Condition 多线程同步中的问题 多线程环境中，常有这样一种同步情况：一个线程等待其他所有线程完成指定工作。比如，在开启一个新线程后，虽然已经启动线程函数，很可能还有一些准备工作需要完成（如更新当前线程id，名称等信息），这样，调用线程（创建线程的线程）并不能马上投入工作，立即向新线程传递数据，可能造成未定义行为，如调用线程的某段代码依赖于
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2023-06-26 16:54" pubdate>
+              2023-06-26
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/C/" class="category-chain-item">C++</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/C/muduo/" class="category-chain-item">muduo</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/C/">#C++</a>
+            
+              <a href="/tags/muduo/">#muduo</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
         <a href="/2023/06/26/Cpp-lambda%E9%80%92%E5%BD%92%E8%B0%83%E7%94%A8%E7%9A%84%E9%97%AE%E9%A2%98/" target="_self">
           Cpp-lambda递归调用的问题
         </a>
@@ -839,84 +979,11 @@
     </article>
   </div>
 
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2023/06/05/WSL%E4%B8%8B%E6%B7%BB%E5%8A%A0%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8/" target="_self">
-          WSL下添加系统调用
-        </a>
-      </h1>
-
-      
-      <a class="index-excerpt index-excerpt__noimg" href="/2023/06/05/WSL%E4%B8%8B%E6%B7%BB%E5%8A%A0%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8/" target="_self">
-        <div>
-          WSL下添加系统调用 由于WSL的内核是在原版基础之上有做修改的，所以要先去下载内核的源码。https://github.com/microsoft/WSL2-Linux-Kernel. 查看当前系统内核版本 1uname -r 然后去源码中找到对应的版本并下载，下载完成后解压。 12tar -zvxf linux-msft-wsl-5.15.90.1.tar.gzcd WSL2-Linux-Ke
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2023-06-05 22:48" pubdate>
-              2023-06-05
-            </time>
-          </div>
-        
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/Linux/">#Linux</a>
-            
-          </div>
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2023/06/02/%E5%A4%A7%E6%95%B0%E6%8D%AE%E6%9C%9F%E6%9C%AB%E5%A4%8D%E4%B9%A0/" target="_self">
-          大数据期末复习
-        </a>
-      </h1>
-
-      
-      <a class="index-excerpt index-excerpt__noimg" href="/2023/06/02/%E5%A4%A7%E6%95%B0%E6%8D%AE%E6%9C%9F%E6%9C%AB%E5%A4%8D%E4%B9%A0/" target="_self">
-        <div>
-          大数据期末复习 Ch1 Intruction What is big data? Big data is used to describe a massive volume of both structured and unstructured data that is so large that it's difficult to process using traditional databa
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2023-06-02 17:38" pubdate>
-              2023-06-02
-            </time>
-          </div>
-        
-        
-        
-      </div>
-    </article>
-  </div>
-
 
 
   <nav aria-label="navigation">
     <span class="pagination" id="pagination">
-      <a class="extend prev" rel="prev" href="/page/3/#board"><i class="iconfont icon-arrowleft"></i></a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/#board">2</a><a class="page-number" href="/page/3/#board">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/#board">5</a><a class="page-number" href="/page/6/#board">6</a><span class="space">&hellip;</span><a class="page-number" href="/page/9/#board">9</a><a class="extend next" rel="next" href="/page/5/#board"><i class="iconfont icon-arrowright"></i></a>
+      <a class="extend prev" rel="prev" href="/page/3/#board"><i class="iconfont icon-arrowleft"></i></a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/#board">2</a><a class="page-number" href="/page/3/#board">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/#board">5</a><a class="page-number" href="/page/6/#board">6</a><span class="space">&hellip;</span><a class="page-number" href="/page/10/#board">10</a><a class="extend next" rel="next" href="/page/5/#board"><i class="iconfont icon-arrowright"></i></a>
     </span>
   </nav>
 
