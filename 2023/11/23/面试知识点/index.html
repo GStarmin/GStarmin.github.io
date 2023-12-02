@@ -23,6 +23,7 @@
 <meta property="og:site_name" content="私人杂货铺">
 <meta property="og:description" content="面试知识点 C++ 知识点 说⼀下你理解的 C++ 中的四种智能指针 ⾯试官你好，⾸先，说⼀下为什么要使⽤智能指针：智能指针其作⽤是管理⼀个指针，避免咋们程序员申请的空间在函数结束时忘记释放，造成内存泄漏这种情况滴发⽣。 然后使⽤智能指针可以很⼤程度上的避免这个问题，因为智能指针就是⼀个类，当超出了类的作⽤域是，类会⾃动调⽤析构函数，析构函数会⾃动释放资源。所以智能指针的作⽤原理就是在函数结束时⾃">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gstarmin.github.io/img/C++八股文/虚函数.jpg">
 <meta property="og:image" content="https://gstarmin.github.io/img/设计模式/泛化关系表示.jpg">
 <meta property="og:image" content="https://gstarmin.github.io/img/设计模式/泛化关系例子.jpg">
 <meta property="article:published_time" content="2023-11-23T02:46:05.000Z">
@@ -30,7 +31,7 @@
 <meta property="article:author" content="Starmin">
 <meta property="article:tag" content="面试">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://gstarmin.github.io/img/设计模式/泛化关系表示.jpg">
+<meta name="twitter:image" content="https://gstarmin.github.io/img/C++八股文/虚函数.jpg">
   
   
   
@@ -298,7 +299,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          14k 字
+          22k 字
         
       </span>
     
@@ -309,7 +310,7 @@
         
         
         
-          139 分钟
+          225 分钟
         
       </span>
     
@@ -597,6 +598,235 @@ explict 的，来阻⽌⼀些隐式转换的发⽣。</p>
 <p><strong>赋值运算符的重载</strong>：注意，这个类似拷⻉构造函数，将＝右边的本类对象的值复制给＝左边的对象，它不属于构造函数，＝左右两边的对象必需已经被创建。如果没有显示的写赋值运算符的重载，系统也会⽣成默认的赋值运算符，做⼀些基本的拷⻉⼯作。</p>
 <p>这里区分赋值构造函数和拷贝构造函数：</p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs cpp">A a1, A a2; a1 = a2;    <span class="hljs-comment">// 调用赋值运算符</span><br>A a3 = a1;              <span class="hljs-comment">// 调用拷贝构造函数</span><br></code></pre></td></tr></table></figure>
+<h3 id="c-的四种强制转换">C++ 的四种强制转换</h3>
+<p><strong>static_cast</strong>：明确指出类型转换，⼀般建议将隐式转换都替换成显示转换，因为没有动态类型检查，上⾏转换（派⽣类-&gt;基类）安全，下⾏转换（基类-&gt;派⽣类）
+不安全，所以主要执⾏⾮多态的转换操作；</p>
+<p><strong>dynamic_cast</strong>：专⻔⽤于派⽣类之间的转换，type-id
+必须是类指针，类引⽤或
+void*，对于下⾏转换是安全的，当类型不⼀致时，转换过来的是空指针，⽽static_cast，当类型不⼀致时，转换过来的事错误意义的指针，可能造成⾮法访问等问题。</p>
+<p><strong>const_cast</strong>：专⻔⽤于 const 属性的转换，去除 const
+性质，或增加 const 性质，
+是四个转换符中唯⼀⼀个可以操作常量的转换符。</p>
+<p><strong>reinterpret_cast</strong>：不到万不得已，不要使⽤这个转换符，⾼危操作。使⽤特点：
+从底层对数据进⾏重新解释，依赖具体的平台，可移植性差； 可以将整形转
+换为指针，也可以把指针转换为数组；可以在指针和引⽤之间进⾏肆⽆忌惮的转换。</p>
+<h3 id="指针和引的区别">指针和引⽤的区别</h3>
+<p>指针和引⽤都是⼀种内存地址的概念，区别呢，指针是⼀个实体，引⽤只是⼀个别名。在程序编译的时候，将指针和引⽤添加到符号表中。</p>
+<p>指针它指向⼀块内存，指针的内容是所指向的内存的地址，在编译的时候，则是将“指针变量名-指针变量的地址”添加到符号表中，所以说，指针包含的内容是可以改变的，允许拷⻉和赋值，有
+const 和⾮ const 区别，甚⾄可以为空，sizeof
+指针得到的是指针类型的⼤⼩。</p>
+<p>⽽对于引⽤来说，它只是⼀块内存的别名，在添加到符号表的时候，是将"引⽤变量名-引⽤对象的地址"添加到符号表中，符号表⼀经完成不能改变，所以引⽤必须⽽且只能在定义时被绑定到⼀块内存上，后续不能更改，也不能为空，也没有
+const 和⾮ const 区别。</p>
+<p>sizeof 引⽤得到代表对象的⼤⼩。⽽ sizeof
+指针得到的是指针本身的⼤⼩。另外在参数传递中，指针需要被解引⽤后才可以对对象进⾏操作，⽽直接对引⽤进⾏的修改会直接作⽤到引⽤对象上。</p>
+<p>作为参数时也不同，传指针的实质是传值，传递的值是指针指向内存的地址；传引⽤的实质是传地址，传递的是变量的地址。</p>
+<h3
+id="野wild指针与悬空dangling指针有什么区别如何避免">野(wild)指针与悬空(dangling)指针有什么区别？如何避免？</h3>
+<p><strong>野指针(wild pointer)</strong>：就是没有被初始化过的指针。⽤
+<code>gcc -Wall</code>编译, 会出现 used uninitialized 警告。</p>
+<p><strong>悬空指针</strong>：是指针最初指向的内存已经被释放了的⼀种指针。</p>
+<p>⽆论是野指针还是悬空指针，都是指向⽆效内存区域(这⾥的⽆效指的是"不安全不可控")的指针。
+访问"不安全可控"(invalid)的内存区域将导致"Undefined Behavior"。</p>
+<p><strong>如何避免使⽤野指针</strong>?在平时的编码中，养成在定义指针后且在使⽤之前完成初始化的习惯或者使⽤智能指针。</p>
+<h3 id="说下-const-修饰指针如何区分">说⼀下 const
+修饰指针如何区分？</h3>
+<p>下⾯都是合法的声明，但是含义⼤不同：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-type">const</span> <span class="hljs-type">int</span> * p1;  <span class="hljs-comment">//指向整形常量 的指针，它指向的值不能修改</span><br><span class="hljs-type">int</span> * <span class="hljs-type">const</span> p2;  <span class="hljs-comment">//指向整形的常量指针 ，它不能在指向别的变量，但指向（变量）的值可以修改。</span><br><span class="hljs-type">const</span> <span class="hljs-type">int</span> *<span class="hljs-type">const</span> p3; <span class="hljs-comment">//指向整形常量 的 常量指针 。它既不能再指向别的常量，指向的值也不能修改。</span><br></code></pre></td></tr></table></figure>
+<p>理解这些声明的技巧在于，查看关键字const右边来确定什么被声明为常量
+，如果该关键字的右边是类型，则值是常量；如果关键字的右边是指针变量，则指针本身是常量。</p>
+<p>理解这些声明的技巧在于，查看关键字const右边来确定什么被声明为常量
+，如果该关键字的右边是类型，则值是常量；如果关键字的右边是指针变量，则指针本身是常量。</p>
+<h3 id="简单说下函数指针">简单说⼀下函数指针</h3>
+<p>从定义和⽤途两⽅⾯来说⼀下⾃⼰的理解：</p>
+<p>⾸先是定义：函数指针是指向函数的指针变量。函数指针本身⾸先是⼀个指针变量，该指针变量指向⼀个具体的函数。这正如⽤指针变量可指向整型变量、字符型、数组⼀样，这⾥是指向函数。</p>
+<p>在编译时，每⼀个函数都有⼀个⼊⼝地址，该⼊⼝地址就是函数指针所指向的地址。有了指向函数的指针变量后，可⽤该指针变量调⽤函数，就如同⽤指针变量可引⽤其他类型变量⼀样，在这些概念上是⼤体⼀致的。</p>
+<p>其次是⽤途：调⽤函数和做函数的参数，⽐如回调函数。</p>
+<p>示例：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-function"><span class="hljs-type">char</span> * <span class="hljs-title">fun</span><span class="hljs-params">(<span class="hljs-type">char</span> * p)</span> </span>&#123;…&#125; <span class="hljs-comment">// 函数fun</span><br><span class="hljs-type">char</span> * (*pf)(<span class="hljs-type">char</span> * p); <span class="hljs-comment">// 函数指针pf</span><br>pf = fun;               <span class="hljs-comment">// 函数指针pf指向函数fun</span><br><span class="hljs-built_in">pf</span>(p);                  <span class="hljs-comment">// 通过函数指针pf调用函数fun</span><br></code></pre></td></tr></table></figure>
+<h3 id="堆和栈区别">堆和栈区别</h3>
+<p><strong>栈</strong>：由编译器进⾏管理，在需要时由编译器⾃动分配空间，在不需要时候⾃动回收空间，⼀般保存的是局部变量和函数参数等。</p>
+<p>连续的内存空间，在函数调⽤的时候，⾸先⼊栈的主函数的下⼀条可执⾏指令的地址，然后是函数的各个参数。</p>
+<p>⼤多数编译器中，参数是从右向左⼊栈（原因在于采⽤这种顺序，是为了让程序员在使⽤C/C++的“函数参数⻓度可变”这个特性时更⽅便。如果是从左向右压栈，第⼀个参数（即描述可变参数表各变量类型的那个参数）将被放在栈底，由于可变参的函数第⼀步就需要解析可变参数表的各参数类型，即第⼀步就需要得到上述参数，因此，将它放在栈底是很不⽅便的。）本次函数调⽤结束时，局部变量先出栈，然后是参数，最后是栈顶指针最开始存放的地址，程序由该点继续运⾏，不会产⽣碎⽚。</p>
+<p>栈是⾼地址向低地址扩展，栈底⾼地址，空间较⼩。</p>
+<p><strong>堆</strong>：由程序员管理，需要⼿动 new malloc delete free
+进⾏分配和回收，如果不进⾏回收的话，会造成内存泄漏的问题。</p>
+<p>不连续的空间，实际上系统中有⼀个空闲链表，当有程序申请的时候，系统遍历空闲链表找到第⼀个⼤于等于申请⼤⼩的空间分配给程序，⼀般在分配程序的时候，也会空间头部写⼊内存⼤⼩，⽅便
+delete
+回收空间⼤⼩。当然如果有剩余的，也会将剩余的插⼊到空闲链表中，这也是产⽣内存碎⽚的原因。</p>
+<p>堆是低地址向⾼地址扩展，空间交⼤，较为灵活。</p>
+<h3 id="函数传递参数的种式">函数传递参数的⼏种⽅式</h3>
+<p><strong>值传递</strong>：形参是实参的拷⻉，函数内部对形参的操作并不会影响到外部的实参。</p>
+<p><strong>指针传递</strong>：也是值传递的⼀种⽅式，形参是指向实参地址的指针，当对形参的指向操作时，就相当于对实参本身进⾏操作。</p>
+<p><strong>引用传递</strong>：实际上就是把引⽤对象的地址放在了开辟的栈空间中，函数内部对形参的任何操作可以直接映射到外部的实参上⾯。</p>
+<h3 id="new-delete-malloc-free-区别">new / delete ，malloc / free
+区别</h3>
+<p>都可以⽤来在堆上分配和回收空间。new / delete
+是<strong>操作符</strong>，malloc/free 是<strong>库函数</strong>。</p>
+<p><strong>执行 new
+实际上执⾏两个过程</strong>：1.分配未初始化的内存空间（malloc）；2.使⽤对象的构造函数对空间进⾏初始化；返回空间的⾸地址。如果在第⼀步分配空间中出现问题，则抛出
+std::bad_alloc
+异常，或被某个设定的异常处理函数捕获处理；如果在第⼆步构造对象时出现异常，则⾃动调⽤
+delete 释放内存。</p>
+<p><strong>执行 delete 实际上也有两个过程</strong>：1.
+使⽤析构函数对对象进⾏析构；2.回收内存空间（free）。以上也可以看出 new
+和 malloc 的区别，new 得到的是经过初始化的空间，⽽ malloc
+得到的是未初始化的空间。所以 new 是 new ⼀个类型，⽽ malloc 则是malloc
+⼀个字节⻓度的空间。delete 和 free 同理，delete
+不仅释放空间还析构对象，delete ⼀个类型，而 free
+是释放⼀个字节⻓度的空间。</p>
+<p><strong>为什么有了 malloc／free 还需要
+new／delete</strong>？因为对于⾮内部数据类型⽽⾔，光⽤ malloc／free
+⽆法满⾜动态对象的要求。对象在创建的同时需要⾃动执⾏构造函数，对象在消亡以前要⾃动执⾏析构函数。由于
+mallo／ free
+是库函数⽽不是运算符，不在编译器控制权限之内，不能够把执⾏的构造函数和析构函数的任务强加于
+malloc／free，所以有了 new／delete 操作符。</p>
+<h3 id="volatile-和-extern-关键字">volatile 和 extern 关键字</h3>
+<p><strong>volatile 三个特性</strong>:</p>
+<ul>
+<li>易变性：在汇编层⾯反映出来，就是两条语句，下⼀条语句不会直接使⽤上⼀条语句对应的
+volatile 变量的寄存器内容，⽽是重新从内存中读取。</li>
+<li>不可优化性：volatile
+告诉编译器，不要对我这个变量进⾏各种激进的优化，甚⾄将变量直接消除，保证程序员写在代码中的指令，⼀定会被执⾏。</li>
+<li>顺序性：能够保证 volatile
+变量之间的顺序性，编译器不会进⾏乱序优化。</li>
+</ul>
+<p><strong>extern</strong>:</p>
+<p>在 C 语⾔中，修饰符 extern ⽤在变量或者函数的声明前，⽤来说明
+“此变量/函数是在别处定义的，要在此处引⽤”。</p>
+<p>注意 extern 声明的位置对其作⽤域也有关系，如果是在 main
+函数中进⾏声明的，则只能在 main
+函数中调⽤，在其它函数中不能调⽤。其实要调⽤其它⽂件中的函数和变量，只需把该⽂件⽤
+#include 包含进来即可，为啥要⽤ extern？因为用 extern
+会加速程序的编译过程，这样能节省时间。</p>
+<p>在 C++ 中 extern 还有另外⼀种作⽤，⽤于指示 C 或者
+C＋＋函数的调⽤规范。⽐如在 C＋＋ 中调⽤ C 库函数，就需要在 C＋＋
+程序中⽤ extern “C”
+声明要引⽤的函数。这是给链接器⽤的，告诉链接器在链接的时候⽤C
+函数规范来链接。主要原因是 C＋＋ 和 C
+程序编译完成后在⽬标代码中命名规则不同，⽤此来解决名字匹配的问题。</p>
+<h3 id="define-和-const-的区别编译阶段安全性内存占用等">define 和 const
+的区别（编译阶段、安全性、内存占用等）</h3>
+<p>对于 define
+来说，宏定义实际上是在预编译阶段进⾏处理，没有类型，也就没有类型检查，仅仅做的是遇到宏定义进⾏字符串的展开，遇到多少次就展开多少次，⽽且这个简单的展开过程中，很容易出现边界效应，达不到预期的效果。因为
+define 宏定义仅仅是展开，因此运⾏时系统并不为宏定义分配内存，但是从汇编
+的⻆度来讲， define 却以⽴即数的⽅式保留了多份数据的拷⻉。</p>
+<p>对于 const 来说，const 是在编译期间进⾏处理的，const
+有类型，也有类型检查，程序运⾏时系统会为 const
+常量分配内存，⽽且从汇编的⻆度讲，const
+常量在出现的地⽅保留的是真正数据的内存地址，只保留了⼀份数据的拷⻉，省去了不必要的内存空间。⽽且，有时编译器不会为普通的
+const 常量分配内存，⽽是直接将 const
+常量添加到符号表中，省去了读取和写⼊内存的操作，效率更⾼。</p>
+<p>此外C++ 11 中还引入了 constexpr 的关键字（并在C++
+14中进行改进），它也用于定义常量，但它更强调在编译时期求值的常量。const
+变量可以在编译时期或运行时期进行赋值，而 constexpr
+只能在编译时期赋值。</p>
+<p><strong>const 和 constexpr 的区别</strong>？见下条</p>
+<h3 id="const-和-constexpr-的区别">const 和 constexpr 的区别</h3>
+<p>在 C++ 中，const 和 constexpr
+都用于创建常量，但它们在使用和编译时期的特性上有一些区别：</p>
+<ul>
+<li>const 可以修饰变量或者指针，表示其值不可以被修改，而 constexpr
+更强调在编译时期求值的变量</li>
+<li>const 变量可以在编译时期或运行时期进行赋值，而 constexpr
+只能在编译时期赋值。</li>
+<li>const
+变量的值在编译时期不需要确定，可以是运行时期确定的值，只要在使用前初始化即可；而constexpr
+变量的值必须在编译时期确定，其初始化必须是一个常量表达式。</li>
+<li>在修饰函数时，const
+只能用于非静态成员函数，它保证成员函数不修改任何非静态数据；而constexpr
+函数是在使用需要它的代码时，可在编译时计算其返回值的函数，当其自变量为
+constexpr 值时， constexpr 函数将生成编译时 constant（常数）。 使用非
+constexpr
+自变量调用时，或者编译时不需要其值时，它将与正则函数一样，在运行时生成一个值。
+（此双重行为使你无需编写同一函数的 constexpr 和非 constexpr
+版本。）</li>
+</ul>
+<h3 id="计算下面几个类大小">计算下面几个类大小</h3>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-keyword">class</span> <span class="hljs-title class_">A</span>&#123;&#125;; <span class="hljs-built_in">sizeof</span>(A) = <span class="hljs-number">1</span>;   <span class="hljs-comment">// 空类的大小为 1</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">A</span>&#123;<span class="hljs-function"><span class="hljs-keyword">virtual</span> <span class="hljs-type">void</span> <span class="hljs-title">fun</span><span class="hljs-params">()</span></span>&#123;&#125;&#125;; <span class="hljs-built_in">sizeof</span>(A) = <span class="hljs-number">8</span>或<span class="hljs-number">4</span>; <span class="hljs-comment">// 虚函数的存在，会使得类的大小增加，因为虚函数表的存在,注意在64位下是8，而在32位下是4</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">A</span>&#123;<span class="hljs-type">static</span> <span class="hljs-type">int</span> a;&#125; <span class="hljs-built_in">sizeof</span>(A) = <span class="hljs-number">1</span>; <span class="hljs-comment">// 静态成员变量不计算在类的大小中</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">A</span>&#123;<span class="hljs-type">int</span> a;&#125;; <span class="hljs-built_in">sizeof</span>(A) = <span class="hljs-number">4</span>; <span class="hljs-comment">// 有成员变量的类的大小为成员变量的大小</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">A</span>&#123;<span class="hljs-type">static</span> <span class="hljs-type">int</span> a; <span class="hljs-type">int</span> b;&#125;; <span class="hljs-built_in">sizeof</span>(A) = <span class="hljs-number">4</span>; <span class="hljs-comment">// 静态成员变量不计算在类的大小中</span><br></code></pre></td></tr></table></figure>
+<h3 id="面向对象的三特性并举例说明">面向对象的三⼤特性，并举例说明</h3>
+<p>C++ ⾯向对象的三⼤特征是：封装、继承、多态。</p>
+<p><strong>所谓封装</strong></p>
+<p>就是把客观事物封装成抽象的类，并且类可以把⾃⼰的数据和⽅法只让信任的类或者对象操作，对不可信的进⾏信息隐藏。⼀个类就是⼀个封装了数据以及操作这些数据的代码的逻辑实体。在⼀个对象内部，某些代码或某些数据可以是私有的，不能被外界访问。通过这种⽅式，对象对内部数据提供了不同级别的保护，以防⽌程序中⽆关的部分意外的改变或错误的使⽤了对象的私有部分。</p>
+<p><strong>所谓继承</strong></p>
+<p>是指可以让某个类型的对象获得另⼀个类型的对象的属性的⽅法。它⽀持按级分类的概念。继承是指这样⼀种能⼒：它可以使⽤现有类的所有功能，并在⽆需重新编写原来的类的情况下对这些功能进⾏扩展。通过继承创建的新类称为“⼦类”或者“派⽣类”，被继承的类称为“基类”、“⽗类”或“超类”。继承的过程，就是从⼀般到特殊的过程。要实现继承，可以通过“继承”和“组合”来实现。</p>
+<p>继承概念的实现⽅式有两类：</p>
+<p>实现继承：实现继承是指直接使⽤基类的属性和⽅法⽽⽆需额外编码的能⼒。</p>
+<p>接⼝继承：接⼝继承是指仅使⽤属性和⽅法的名称、但是⼦类必需提供实现的能⼒。</p>
+<p><strong>所谓多态</strong></p>
+<p>指的是通过一个基类指针或引用调用一个虚函数时，会根据具体对象的类型来调用该虚函数的不同实现1。在多态中，相同的操作可以作用于不同的对象，而具体执行的操作则取决于对象的类型和特性1。</p>
+<p>多态与⾮多态的实质区别就是函数地址是早绑定还是晚绑定的。如果函数的调⽤，在编译器编译期间就可以确定函数的调⽤地址，并产⽣代码，则是静态的，即地址早绑定。⽽如果函数调⽤的地址不能在编译器期间确定，需要在运⾏时才确定，这就属于晚绑定</p>
+<h3 id="多态的实现">多态的实现</h3>
+<p>多态其实⼀般就是指继承加虚函数实现的多态，对于重载来说，实际上基于的原理是，编译器为函数⽣成符号表时的不同规则，重载只是⼀种语⾔特性，与多态⽆关，与⾯向对象也⽆关，但这⼜是
+C++中增加的新规则，所以也算属于
+C++，所以如果⾮要说重载算是多态的⼀种，那就可以说：多态可以分为<strong>静态多态</strong>和<strong>动态多态</strong>。</p>
+<p><strong>静态多态其实就是重载</strong>，因为静态多态是指在编译时期就决定了调⽤哪个函数，根据参数列表来决定；</p>
+<p><strong>动态多态是指通过子类重写父类的虚函数来实现的</strong>，因为是在运⾏期间决定调⽤的函数，所以称为动态多态，⼀般情况下我们不区分这两个时所说的多态就是指动态多态。动态多态的实现与虚函数表，虚函数指针相关。</p>
+<p><strong>扩展</strong>：⼦类是否要重写⽗类的虚函数？⼦类继承⽗类时，⽗类的纯虚函数必须重写，否则⼦类也是⼀个虚类不可实例化。
+定义纯虚函数是为了实现⼀个接⼝，起到⼀个规范的作⽤，规范继承这个类的程序员必须实现这个函数。</p>
+<h3
+id="虚函数相关虚函数表虚函数指针虚函数的实现原理">虚函数相关（虚函数表，虚函数指针），虚函数的实现原理</h3>
+<p>⾸先我们来说⼀下，C++中多态的表象，在基类的函数前加上 virtual
+关键字，在派⽣类中重写该函数，运⾏时将会根据对象的实际类型来调⽤相应的函数。如果对象类型是派⽣类，就调⽤派⽣类的函数，如果是基类，就调⽤基类的函数。</p>
+<p>实际上，当⼀个类中包含虚函数时，编译器会为该类⽣成⼀个虚函数表，保存该类中虚函数的地址，同样，派⽣类继承基类，派⽣类中⾃然⼀定有虚函数，所以编译器也会为派⽣类⽣成⾃⼰的虚函数表。当我们定义⼀个派⽣类对象时，编译器检测该类型有虚函数，所以为这个派⽣类对象⽣成⼀个虚函数指针，指向该类型的虚函数表，这个虚函数指针的初始化是在构造函数中完成的。</p>
+<p>后续如果有⼀个基类类型的指针，指向派⽣类，那么当调⽤虚函数时，就会根据所指真正对象的虚函数表指针去寻找虚函数的地址，也就可以调⽤派⽣类的虚函数表中的虚函数以此实现多态。</p>
+<p><strong>补充</strong>：如果基类中没有定义成 virtual，那么进⾏ Base B;
+Derived D; Base *p = D; p-&gt;function(); 这种情况下调⽤的则是 Base 中的
+function()。因为基类和派⽣类中都没有虚函数的定义，那么编译器就会认为不⽤留给动态多态的机会，就事先进⾏函数地址的绑定（早绑定），详述过程就是，定义了⼀个派⽣类对象，⾸先要构造基类的空
+间，然后构造派⽣类的⾃身内容，形成⼀个派⽣类对象，那么在进⾏类型转换时，直接截取基类的部分的内存，编译器认为类型就是基类，那么（函数符号表［不同于虚函数表的另⼀个表］中）绑定的函数地址也就是基类中函数的地址，所以执⾏的是基类的函数。</p>
+<h3
+id="编译器处理虚函数表应该如何处理">编译器处理虚函数表应该如何处理</h3>
+<p>对于派⽣类来说，编译器建⽴虚函数表的过程其实⼀共是三个步骤：</p>
+<ol type="1">
+<li>拷⻉基类的虚函数表，如果是多继承，就拷⻉每个有虚函数基类的虚函数表</li>
+<li>当然还有⼀个基类的虚函数表和派⽣类⾃身的虚函数表共⽤了⼀个虚函数表，也称为某个基类为派⽣类的主基类</li>
+<li>查看派⽣类中是否有重写基类中的虚函数，
+如果有，就替换成已经重写的虚函数地址；查看派⽣类是否有⾃身的虚函数，如果有，就追加⾃身的虚函数到⾃身的虚函数表中。</li>
+</ol>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs cpp">Derived *pd = <span class="hljs-keyword">new</span> <span class="hljs-built_in">D</span>(); B *pb = pd; C *pc = pd;<br></code></pre></td></tr></table></figure>
+<p>其中 pb，pd，pc
+的指针位置是不同的，要注意的是派⽣类的⾃身的内容要追加在主基类的内存块后。</p>
+<figure>
+<img src="/img/C++八股文/虚函数.jpg" srcset="/img/loading.gif" lazyload alt="虚函数" />
+<figcaption aria-hidden="true">虚函数</figcaption>
+</figure>
+<h3 id="析构函数般写成虚函数的原因">析构函数⼀般写成虚函数的原因</h3>
+<p>直观的讲：是为了<strong>降低内存泄漏的可能性</strong>。举例来说就是，⼀个基类的指针指向⼀个派⽣类的对象，在使⽤完毕准备销毁时，如果基类的析构函数没有定义成虚函数，那么编译器根据指针类型就会认为当前对象的类型是基类，调⽤基类的析构函数,该对象的析构函数的函数地址早就被绑定为基类的析构函数），仅执⾏基类的析构，派⽣类的⾃身内容将⽆法被析构，造成内存泄漏。</p>
+<p>如果基类的析构函数定义成虚函数，那么编译器就可以根据实际对象，执⾏派⽣类的析构函数，再执⾏基类的析构函数，成功释放内存。</p>
+<h3
+id="构造函数为什么一般不定义为虚函数">构造函数为什么一般不定义为虚函数</h3>
+<ul>
+<li>虚函数调⽤只需要知道“部分的”信息，即只需要知道函数接⼝，⽽不需要知道对象的具体类型。但是，我们要创建⼀个对象的话，是需要知道对象的完整信息的。特别是，需要知道要创建对象的确切类型，因此，构造函数不应该被定义成虚函数；</li>
+<li>⽽且从⽬前编译器实现虚函数进⾏多态的⽅式来看，虚函数的调⽤是通过实例化之后对象的虚函数表指针来找到虚函数的地址进⾏调⽤的，如果说构造函数是虚的，那么虚函数表指针则是不存在的，⽆法找到对应的虚函数表来调⽤虚函数，那么这个调⽤实际上也是违反了先实例化后调⽤的准则。</li>
+</ul>
+<h3
+id="构造函数或析构函数中调虚函数会怎样">构造函数或析构函数中调⽤虚函数会怎样</h3>
+<p>实际上是不应该在构造函数或析构函数中调⽤虚函数的，因为这样的调⽤其实并不会带来所想要的效果。</p>
+<p>举例来说就是，有⼀个动物的基类，基类中定义了⼀个动物本身⾏为的虚函数
+action_type()，在基类的构造函数中调⽤了这个虚函数。</p>
+<p>派⽣类中重写了这个虚函数，我们期望着根据对象的真实类型不同，⽽调⽤各⾃实现的虚函数，但实际上当我们创建⼀个派⽣类对象时，⾸先会创建派⽣类的基类部分，执⾏基类的构造函数，此时，派⽣类的⾃身部分还没有被初始化，对于这种还没有初始化的东⻄，C++选择当它们还不存在作为⼀种安全的⽅法。</p>
+<p>也就是说构造派⽣类的基类部分是，编译器会认为这就是⼀个基类类型的对象，然后调⽤基类类型中的虚函数实现，并没有按照我们想要的⽅式进⾏。即对象在派⽣类构造函数执⾏前并不会成为⼀个派⽣类对象。</p>
+<p>在析构函数中也是同理，派⽣类执⾏了析构函数后，派⽣类的⾃身成员呈现未定义的状态，那么在执⾏基类的析构函数中是不可能调⽤到派⽣类重写的⽅法的。所以说，我们不应该在构在函数或析构函数中调⽤虚函数，就算调⽤⼀般也不会达到我们想要的结果。</p>
+<h3 id="析构函数的作如何起作">析构函数的作⽤，如何起作⽤？</h3>
+<p>构造函数只是起初始化值的作⽤，但实例化⼀个对象的时候，可以通过实例去传递参数，从主函数传递到其他的函数⾥⾯，这样就使其他的函数⾥⾯有值了。规则，只要你⼀实例化对象，系统⾃动回调⽤⼀个构造函数，就是你不写，编译器也⾃动调⽤⼀次。</p>
+<p>析构函数与构造函数的作⽤相反，⽤于撤销对象的⼀些特殊任务处理，可以是释放对象分配的内存空间；特点：析构函数与构造函数同名，但该函数前⾯加~。</p>
+<p>析构函数没有参数，也没有返回值，⽽且不能重载，在⼀个类中只能有⼀个析构函数。当撤销对象时，编译器也会⾃动调⽤析构函数。</p>
+<p>每⼀个类必须有⼀个析构函数，⽤户可以⾃定义析构函数，也可以是编译器⾃动⽣成默认的析构函数。⼀般析构函数定义为类的公有成员。</p>
+<h3
+id="构造函数的执顺序析构函数的执顺序">构造函数的执⾏顺序？析构函数的执⾏顺序？</h3>
+<p><strong>构造函数顺序</strong></p>
+<ul>
+<li>基类构造函数。如果有多个基类，则构造函数的调⽤顺序是某类在类派⽣表中出现的顺序，⽽不是它们在成员初始化表中的顺序。</li>
+<li>成员类对象构造函数。如果有多个成员类对象则构造函数的调⽤顺序是对象在类中被声明的顺序，⽽不是它们出现在成员初始化表中的顺序。</li>
+<li>派⽣类构造函数。</li>
+</ul>
+<p><strong>析构函数顺序</strong></p>
+<ul>
+<li>调⽤派⽣类的析构函数；</li>
+<li>调⽤成员类对象的析构函数；</li>
+<li>调⽤基类的析构函数。</li>
+</ul>
+<h3 id="纯虚函数-应于接继承和实现继承">纯虚函数
+（应⽤于接⼝继承和实现继承）</h3>
 <h2 id="uml类图">UML类图</h2>
 <p>类之间的关系通常是我们需要关心的，而我们可以通过UML类图来描述类之间的关系。UML类图中的关系有以下几种：</p>
 <h3 id="泛化关系generalization">泛化关系(generalization)</h3>
