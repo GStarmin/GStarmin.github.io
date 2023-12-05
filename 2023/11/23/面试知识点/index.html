@@ -24,6 +24,7 @@
 <meta property="og:description" content="面试知识点 C++ 知识点 说一下你理解的 C++ 中的四种智能指针 ⾯试官你好，⾸先，说一下为什么要使用智能指针：智能指针其作用是管理一个指针，避免咋们程序员申请的空间在函数结束时忘记释放，造成内存泄漏这种情况滴发生。 然后使用智能指针可以很⼤程度上的避免这个问题，因为智能指针就是一个类，当超出了类的作用域是，类会自动调用析构函数，析构函数会自动释放资源。所以智能指针的作用原理就是在函数结束时自">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://gstarmin.github.io/img/C++八股文/虚函数.jpg">
+<meta property="og:image" content="https://gstarmin.github.io/img/C++八股文/计网/osi七层协议图.gif">
 <meta property="og:image" content="https://gstarmin.github.io/img/设计模式/泛化关系表示.jpg">
 <meta property="og:image" content="https://gstarmin.github.io/img/设计模式/泛化关系例子.jpg">
 <meta property="og:image" content="https://gstarmin.github.io/img/设计模式/uml_realize.jpg">
@@ -32,7 +33,7 @@
 <meta property="og:image" content="https://gstarmin.github.io/img/设计模式/uml_association.jpg">
 <meta property="og:image" content="https://gstarmin.github.io/img/设计模式/uml_dependency.jpg">
 <meta property="article:published_time" content="2023-11-23T02:46:05.000Z">
-<meta property="article:modified_time" content="2023-12-03T01:46:05.000Z">
+<meta property="article:modified_time" content="2023-12-05T13:46:05.000Z">
 <meta property="article:author" content="Starmin">
 <meta property="article:tag" content="面试">
 <meta name="twitter:card" content="summary_large_image">
@@ -304,7 +305,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          30k 字
+          36k 字
         
       </span>
     
@@ -315,7 +316,7 @@
         
         
         
-          298 分钟
+          364 分钟
         
       </span>
     
@@ -1035,7 +1036,234 @@ lib
 </ul>
 <h3 id="什么是组合">什么是组合</h3>
 <p>⼀个类⾥⾯的数据成员是另⼀个类的对象，即内嵌其他类的对象作为⾃⼰的成员；创建组合类的对象：⾸先创建各个内嵌对象，难点在于构造函数的设计。创建对象时既要对基本类型的成员进⾏初始化，⼜要对内嵌对象进⾏初始化。</p>
-<p>创建组合类对象，构造函数的执⾏顺序：先调⽤内嵌对象的构造函数，然后按照内嵌对象成员在组合类中的定义顺序，与组合类构造函数的初始化列表顺序⽆关。然后执⾏组合类构造函数的函数体，析构函数调⽤顺序相反</p>
+<p>创建组合类对象，构造函数的执⾏顺序：先调⽤内嵌对象的构造函数，然后按照内嵌对象成员在组合类中的定义顺序，与组合类构造函数的初始化列表
+顺序⽆关。然后执⾏组合类构造函数的函数体，析构函数调⽤顺序相反</p>
+<h2 id="c-11-新特性">C++ 11 新特性</h2>
+<h3 id="空指针-nullptr">空指针 nullptr</h3>
+<p>nullptr 出现的⽬的是为了替代 NULL。</p>
+<p>在某种意义上来说，传统 C++ 会把 NULL、 0
+视为同⼀种东⻄，这取决于编译器如何定义 NULL，有些编译器会将 NULL 定 义为
+((void<em>)0)，有些则会直接将其定义为 0。C++ 不允许直接将 void </em>
+隐式转 换到其他类型，但如果 NULL 被定义为 ((void<em>)0)，那么当编译 char
+</em>ch = NULL; 时，NULL 只好被定义为 0。⽽这依然会产⽣问题，将导致了
+C++ 中重载特性 会发⽣混乱，考虑：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">func</span><span class="hljs-params">(<span class="hljs-type">int</span>)</span></span>;<br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">func</span><span class="hljs-params">(<span class="hljs-type">char</span> *)</span></span>;<br></code></pre></td></tr></table></figure>
+<p>对于这两个函数来说，如果 NULL ⼜被定义为了 0 那么 func(NULL)
+这个语句将 会去调⽤ func(int)，从⽽导致代码违反直观。</p>
+<p>为了解决这个问题，C++11 引⼊了 nullptr
+关键字，专⻔⽤来区分空指针、0。nullptr
+的类型为nullptr_t，能够隐式的转换为任何指针或成员指针的类型，也能和他们进⾏相等或者不等的⽐较。</p>
+<p>当需要使⽤ NULL 时候，养成直接使⽤ nullptr 的习惯。</p>
+<h3 id="lambda-表达式">Lambda 表达式</h3>
+<p>详见<a
+href="https://gstarmin.github.io/2023/02/24/Cpp-lambda%E7%94%A8%E6%B3%95/">Lambda表达式用法</a></p>
+<h3 id="右值引用">右值引用</h3>
+<p>详见<a
+href="https://gstarmin.github.io/2023/03/30/Cpp-%E5%8F%B3%E5%80%BC%E5%BC%95%E7%94%A8/">C++右值引用</a></p>
+<h3 id="泛化的常量表达式-constexpr">泛化的常量表达式 constexpr</h3>
+<p>constexpr
+告诉编译器这是⼀个编译期常量，甚⾄可以把⼀个函数声明为编译期常量表达式。</p>
+<p>constexpr 和 const 的区别见 C++ 部分 <a
+href="https://gstarmin.github.io/2023/11/23/%E9%9D%A2%E8%AF%95%E7%9F%A5%E8%AF%86%E7%82%B9/#const-%E5%92%8C-constexpr-%E7%9A%84%E5%8C%BA%E5%88%AB">const
+和 constexpr 的区别</a></p>
+<h3 id="初始化列表">初始化列表</h3>
+<p>接下来⼏个特性属于原有语⾔特性的使⽤性增强。这意味着这些操作原来也是可以实现的，
+不过现在语法上更加简洁。⽐如⾸先要介绍的初始化列表。</p>
+<p>⽽ C++11 提供了 initializer_list 来接受变⻓的对象初始化列表：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-keyword">class</span> <span class="hljs-title class_">A</span>&#123;<br><span class="hljs-keyword">public</span>:    <br>    <span class="hljs-built_in">A</span>(std::initializer_list&lt;<span class="hljs-type">int</span>&gt; list);<br>&#125;;<br><br>A a = &#123;<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>&#125;;<br></code></pre></td></tr></table></figure>
+<p>注意初始化列表特性只是现有语法增强，并不是提供了动态的可变参数。该列表只能静态地构造。</p>
+<h3 id="统的初始化语法">统⼀的初始化语法</h3>
+<p>不同的数据类型具有不同的初始化语法。如何初始化字符串？如何初始化数组？如何初始化多维数组？如何初始化对象？</p>
+<p>C++11给出了统⼀的初始化语法：均可使⽤“{}-初始化变量列表”：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs cpp">X x1 = X&#123;<span class="hljs-number">1</span>,<span class="hljs-number">2</span>&#125;;<br>X x2 = &#123;<span class="hljs-number">1</span>,<span class="hljs-number">2</span>&#125;;     <span class="hljs-comment">// 此处的&#x27;=&#x27;可有可⽆</span><br>X x3&#123;<span class="hljs-number">1</span>,<span class="hljs-number">2</span>&#125;;<br>X* p = <span class="hljs-keyword">new</span> X&#123;<span class="hljs-number">1</span>,<span class="hljs-number">2</span>&#125;; <br><span class="hljs-keyword">struct</span> <span class="hljs-title class_">D</span> : X &#123;    <br>    <span class="hljs-built_in">D</span>(<span class="hljs-type">int</span> x, <span class="hljs-type">int</span> y) :X&#123;x,y&#125; &#123; <span class="hljs-comment">/* … */</span> &#125;;<br>&#125;;<br><br><span class="hljs-keyword">struct</span> <span class="hljs-title class_">S</span> &#123;    <br>    <span class="hljs-type">int</span> a[<span class="hljs-number">3</span>];    <span class="hljs-comment">// 对于旧有问题的解决⽅案    </span><br>    <span class="hljs-built_in">S</span>(<span class="hljs-type">int</span> x, <span class="hljs-type">int</span> y, <span class="hljs-type">int</span> z) :a&#123;x,y,z&#125; &#123; <span class="hljs-comment">/* … */</span> &#125;;<br>&#125;;<br></code></pre></td></tr></table></figure>
+<h3 id="类型推导">类型推导</h3>
+<p>C++ 提供了 auto 和 decltype
+来静态推导类型，在我们知道类型没有问题但⼜不想完整地写出类型的时候，
+便可以使⽤静态类型推导。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-keyword">for</span>(vector&lt;<span class="hljs-type">int</span>&gt;::const_iterator it = v.<span class="hljs-built_in">begin</span>(); it != v.<span class="hljs-built_in">end</span>(); ++it);<br><span class="hljs-comment">// 可以改写为</span><br><span class="hljs-keyword">for</span>(<span class="hljs-keyword">auto</span> it = v.<span class="hljs-built_in">begin</span>(); it != v.<span class="hljs-built_in">end</span>(); ++it);<br></code></pre></td></tr></table></figure>
+<div class="admonition attention">
+<p class="admonition-title">
+attention
+</p>
+<p>
+虽然写起来和动态语⾔（如JavaScript的 var
+）很像，但C++仍然是强类型的，会执⾏静态类型检查的语⾔。
+这只是语法上的简化，并未改变C++的静态类型检查
+</p>
+</div>
+<p>decltype ⽤于获取⼀个表达式的类型，⽽不对表达式进⾏求值（类似于sizeof
+）。 decltype(e) 规则如下：</p>
+<ul>
+<li>若 e
+为⼀个⽆括号的变量、函数参数、类成员，则返回类型为该变量/参数/类成员在源程序中的声明类型;</li>
+<li>否则的话，根据表达式的值分类（value categories），设设 T 为 e
+的类型:
+<ul>
+<li>若 e 是⼀个左值（lvalue，即“可寻址值”），返回 T&amp; ；</li>
+<li>若 e 是⼀个临终值（xvalue），则返回值为 T&amp;&amp; ；</li>
+<li>若 e 是⼀个纯右值（prvalue），则返回值为 T 。</li>
+</ul></li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-function"><span class="hljs-type">const</span> std::vector&lt;<span class="hljs-type">int</span>&gt; <span class="hljs-title">v</span><span class="hljs-params">(<span class="hljs-number">1</span>)</span></span>;<br><span class="hljs-function"><span class="hljs-type">const</span> <span class="hljs-type">int</span>&amp;&amp; <span class="hljs-title">foo</span><span class="hljs-params">()</span></span>;      <span class="hljs-comment">// 返回临终值：⽣命周期已结束但内存还未拿⾛</span><br><br><span class="hljs-keyword">auto</span> a = v[<span class="hljs-number">0</span>];          <span class="hljs-comment">// a 为 int</span><br><span class="hljs-keyword">decltype</span>(v[<span class="hljs-number">0</span>]) b = <span class="hljs-number">0</span>;  <span class="hljs-comment">// b 为 const int&amp;</span><br>                       <span class="hljs-comment">// 即 vector&lt;int&gt;::operator[](size_type) const 的返回值类型</span><br><span class="hljs-keyword">auto</span> c = <span class="hljs-number">0</span>;             <span class="hljs-comment">// c, d 均为 int</span><br><span class="hljs-keyword">auto</span> d = c;<br><span class="hljs-keyword">decltype</span>(c) e;          <span class="hljs-comment">// e 为 int，即 c 的类型</span><br><span class="hljs-keyword">decltype</span>((c)) f = e;    <span class="hljs-comment">// f 为 int&amp;，因为 c 是左值</span><br><span class="hljs-keyword">decltype</span>(<span class="hljs-number">0</span>) g;          <span class="hljs-comment">// g 为 int，因为 0 是右值</span><br></code></pre></td></tr></table></figure>
+<h3 id="基于范围的for循环">基于范围的for循环</h3>
+<p>Boost
+中定义了很多"范围"，很多标准库函数都使⽤了范围⻛格的实现。这⼀概念被C++11提了出来:</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-type">int</span> arr[<span class="hljs-number">5</span>];<br>std::vector&lt;<span class="hljs-type">int</span>&gt; v; <br><span class="hljs-keyword">for</span>(<span class="hljs-type">int</span> x: arr);<br><span class="hljs-keyword">for</span>(<span class="hljs-type">const</span> <span class="hljs-type">int</span>&amp; x: arr);<br><span class="hljs-keyword">for</span>(<span class="hljs-type">int</span> x: v);<br><span class="hljs-keyword">for</span>(<span class="hljs-keyword">auto</span> &amp;x: v);<br></code></pre></td></tr></table></figure>
+<h3 id="构造函数委托">构造函数委托</h3>
+<p>在 C# 和 Java 中，⼀个构造函数可以调⽤另⼀个来实现代码复⽤，但
+C++⼀直不允许这样做.</p>
+<p>现在可以了，这使得构造函数可以在同⼀个类中⼀个构造函数调⽤另⼀个构造函数，从⽽达到简化代码的⽬的：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-keyword">class</span> <span class="hljs-title class_">myBase</span>&#123;<br>    <span class="hljs-type">int</span> number;<br>    string name;<br>    <span class="hljs-built_in">myBase</span>(<span class="hljs-type">int</span> number, string&amp; s) : <span class="hljs-built_in">number</span>(number), <span class="hljs-built_in">name</span>(s)&#123;&#125;<br><span class="hljs-keyword">public</span>:<br>    <span class="hljs-built_in">myBase</span>() : <span class="hljs-built_in">myBase</span>(<span class="hljs-number">0</span>, <span class="hljs-string">&quot;invalid&quot;</span>)&#123;&#125;<br>    <span class="hljs-built_in">myBase</span>(<span class="hljs-type">int</span> number) : <span class="hljs-built_in">myBase</span>(number, <span class="hljs-string">&quot;guest&quot;</span>)&#123;&#125;<br>    <span class="hljs-built_in">myBase</span>(string&amp; s) : <span class="hljs-built_in">myBase</span>(<span class="hljs-number">1</span>, s)&#123;<span class="hljs-built_in">PostInit</span>();&#125;<br>&#125;;<br></code></pre></td></tr></table></figure>
+<h3 id="final-和-override">final 和 override</h3>
+<p>C++ 借由虚函数实现运⾏时多态，但 C++ 的虚函数⼜很多脆弱的地⽅：</p>
+<ul>
+<li>⽆法禁⽌⼦类重写它。可能到某⼀层级时，我们不希望⼦类继续来重写当前虚函数了。</li>
+<li>容易不⼩⼼隐藏⽗类的虚函数。⽐如在重写时，不⼩⼼声明了⼀个签名不⼀致但有同样名称的新函数。</li>
+</ul>
+<p>C++11 提供了 final 来禁⽌虚函数被重写/禁⽌类被继承， override
+来显示地重写虚函数。
+这样编译器给我们不⼩⼼的⾏为提供更多有⽤的错误和警告.</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-keyword">struct</span> <span class="hljs-title class_">Base1</span> <span class="hljs-keyword">final</span> &#123; &#125;;     <br><span class="hljs-keyword">struct</span> <span class="hljs-title class_">Derived1</span> : Base1 &#123;&#125;;         <span class="hljs-comment">// 编译错：Base1不允许被继承 </span><br><br><span class="hljs-keyword">struct</span> <span class="hljs-title class_">Base2</span> &#123;    <br>    <span class="hljs-function"><span class="hljs-keyword">virtual</span> <span class="hljs-type">void</span> <span class="hljs-title">f1</span><span class="hljs-params">()</span> <span class="hljs-keyword">final</span></span>;    <br>    <span class="hljs-function"><span class="hljs-keyword">virtual</span> <span class="hljs-type">void</span> <span class="hljs-title">f2</span><span class="hljs-params">()</span></span>;<br>&#125;;<br><span class="hljs-keyword">struct</span> <span class="hljs-title class_">Derived2</span> : Base2 &#123;    <br>    <span class="hljs-function"><span class="hljs-keyword">virtual</span> <span class="hljs-type">void</span> <span class="hljs-title">f1</span><span class="hljs-params">()</span></span>;              <span class="hljs-comment">// 编译错：f1不允许重写    </span><br>    <span class="hljs-function"><span class="hljs-keyword">virtual</span> <span class="hljs-type">void</span> <span class="hljs-title">f2</span><span class="hljs-params">(<span class="hljs-type">int</span>)</span> <span class="hljs-keyword">override</span></span>;  <span class="hljs-comment">// 编译错：⽗类中没有 void f2(int)</span><br>&#125;;<br></code></pre></td></tr></table></figure>
+<h3 id="static_assert">static_assert</h3>
+<p>C++ 提供了两种⽅式来 assert ：⼀种是 assert 宏，另⼀种是预处理指令
+#error 。
+前者在运⾏期起作⽤，⽽后者是预处理期起作⽤。它们对模板都不好使，因为模板是编译期的概念。</p>
+<p>static_assert 关键字的使⽤⽅式如下:</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-keyword">template</span>&lt; <span class="hljs-keyword">class</span> <span class="hljs-title class_">T</span> &gt;<br><span class="hljs-keyword">struct</span> <span class="hljs-title class_">Check</span> &#123;  <br>    <span class="hljs-built_in">static_assert</span>( <span class="hljs-built_in">sizeof</span>(<span class="hljs-type">int</span>) &lt;= <span class="hljs-built_in">sizeof</span>(T), <span class="hljs-string">&quot;T is not big enough!&quot;</span> ) ;<br>&#125;;<br></code></pre></td></tr></table></figure>
+<h3 id="智能指针">智能指针</h3>
+<p>接下来介绍 C++11 对于 C++ 标准库的变更。C++11 把 TR1
+并⼊了进来，废弃了 C++98 中的 auto_ptr ， 同时将 shared_ptr 和 uniq_ptr
+并⼊ std 命名空间。</p>
+<p>智能指针在 [Effective C++: Item 13]
+中已经有不少讨论了。这⾥给⼀个例⼦：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span>&#123;    <br>    <span class="hljs-function">std::shared_ptr&lt;<span class="hljs-type">double</span>&gt; <span class="hljs-title">p_first</span><span class="hljs-params">(<span class="hljs-keyword">new</span> <span class="hljs-type">double</span>)</span></span>;     <br>    &#123;        <br>        std::shared_ptr&lt;<span class="hljs-type">double</span>&gt; p_copy = p_first;        <br>        *p_copy = <span class="hljs-number">21.2</span>;    <br>    &#125;  <span class="hljs-comment">// p_copy 被销毁，⾥⾯的 double 还有⼀个引⽤因此仍然保持    </span><br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;  <span class="hljs-comment">// p_first 及其⾥⾯的 double 销毁</span><br>&#125;<br></code></pre></td></tr></table></figure>
+<h3 id="正则表达式">正则表达式</h3>
+<p>这个任何⼀⻔现代的编程语⾔都会提供的特性终于进标准：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-type">const</span> <span class="hljs-type">char</span> *reg_esp = <span class="hljs-string">&quot;[ ,.\\t\\n;:]&quot;</span>;<span class="hljs-function">std::regex <span class="hljs-title">rgx</span><span class="hljs-params">(reg_esp)</span> </span>;std::cmatch match ;  <span class="hljs-type">const</span> <span class="hljs-type">char</span> *target = <span class="hljs-string">&quot;Polytechnic University of Turin &quot;</span> ; <span class="hljs-keyword">if</span>( <span class="hljs-built_in">regex_search</span>( target, match, rgx ) ) &#123;  <span class="hljs-type">const</span> <span class="hljs-type">size_t</span> n = match.<span class="hljs-built_in">size</span>();  <span class="hljs-keyword">for</span>( <span class="hljs-type">size_t</span> a = <span class="hljs-number">0</span> ; a &lt; n ; a++ ) &#123;    <span class="hljs-function">string <span class="hljs-title">str</span><span class="hljs-params">( match[a].first, match[a].second )</span> </span>;    cout &lt;&lt; str &lt;&lt; <span class="hljs-string">&quot;\n&quot;</span> ;  &#125;&#125;<br></code></pre></td></tr></table></figure>
+<h3 id="增强的元组">增强的元组</h3>
+<p>在 C++ 中本已有⼀个 pair 模板可以定义⼆元组，C++11
+更进⼀步地提供了边⻓参数的tuple 模板:</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-keyword">typedef</span> std::tuple&lt; <span class="hljs-type">int</span> , <span class="hljs-type">double</span>, string&gt; tuple_1 t1;<br><span class="hljs-function"><span class="hljs-keyword">typedef</span> std::tuple&lt; <span class="hljs-type">char</span>, <span class="hljs-type">short</span> , <span class="hljs-type">const</span> <span class="hljs-type">char</span> * &gt; tuple_2 <span class="hljs-title">t2</span> <span class="hljs-params">(<span class="hljs-string">&#x27;X&#x27;</span>, <span class="hljs-number">2</span>, <span class="hljs-string">&quot;Hola!&quot;</span>)</span></span>;<br>t1 = t2 ;       <span class="hljs-comment">// 隐式类型转换</span><br></code></pre></td></tr></table></figure>
+<h3 id="哈希表">哈希表</h3>
+<p>C++ 的 map , multimap , set , multiset 使⽤红⿊树实现，
+插⼊和查询都是 O(lgn) 的复杂度</p>
+<p>但 C++11 为这四种模板类提供了（底层哈希实现）以达到 O(1)
+的复杂度：</p>
+<table>
+<thead>
+<tr class="header">
+<th>散列表类型</th>
+<th>有无关系值</th>
+<th>接受相同键值</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>std::unordered_map</td>
+<td>是</td>
+<td>否</td>
+</tr>
+<tr class="even">
+<td>std::unordered_multimap</td>
+<td>是</td>
+<td>是</td>
+</tr>
+<tr class="odd">
+<td>std::unordered_set</td>
+<td>否</td>
+<td>否</td>
+</tr>
+<tr class="even">
+<td>std::unordered_multiset</td>
+<td>否</td>
+<td>是</td>
+</tr>
+</tbody>
+</table>
+<h2 id="计算机网络">计算机网络</h2>
+<h3 id="osi-七层协议模型">OSI 七层协议模型</h3>
+<p>OSI 模型（Open System Interconnection Model）是⼀个由 ISO
+提出得到概念模型，试图提供⼀个使各种不同的的计算机和⽹络在世界范围内实现互联的标准框架。</p>
+<p>虽然OSI参考模型在实际中的应⽤意义并不是很⼤，但是它对于理解⽹络协议内部的运作很有帮助，为我们学习⽹络协议提供了⼀个很好的参考。它将计算机⽹络体系结构划分为7层，每层都为上⼀层提供了良好的接⼝。以下将具体介绍各层结构及功能。</p>
+<figure>
+<img src="/img/C++八股文/计网/osi七层协议图.gif" srcset="/img/loading.gif" lazyload alt="OSI模型" />
+<figcaption aria-hidden="true">OSI模型</figcaption>
+</figure>
+<p>主要分为以下七层（从下⾄上）：物理层、数据链路层、⽹络层、传输层、会话层、表示层、应⽤层。</p>
+<p><strong>物理层</strong>：规定了一些<strong>机械特性，电⽓特性，功能特性</strong>，如网线、网卡标准，这⼀层传输的是
+<strong>bit 流</strong>。</p>
+<p><strong>数据链路层</strong>：定义数据的基本格式，如何传输，如何标识，在<strong>不可靠</strong>的物理介质上<strong>提供可靠的传输</strong>。该层的作⽤包括：<strong>物理地址寻址、封装成帧、流量控制、数据的检错、重发</strong>等。这⼀层中将
+bit 流封装成 <strong>frame 帧</strong>。</p>
+<p><strong>⽹络层</strong>：定义ip编址，对数据包进⾏<strong>路由选择</strong>。此外，⽹络层还可以实现<strong>拥塞控制</strong>、<strong>⽹际互连</strong>等功能。在这⼀层，数据的单位称为<strong>数据包（packet）</strong>。</p>
+<p><strong>传输层</strong>：提供<strong>端到端的、可靠的或不可靠的传输</strong>。此外，传输层还要处理端到端的<strong>差错控制</strong>和<strong>流量控制</strong>问题。在这⼀层，数据的单位称为<strong>数据段（segment）</strong>。</p>
+<p><strong>会话层</strong>：<strong>控制应用程序之间会话能力</strong>。如不同软件负责不同软件分发给不同软件。</p>
+<p><strong>表示层</strong>：数据格式标识，基本压缩加密功能</p>
+<p><strong>应⽤层</strong>：各种应用软件，包括 Web 应用。</p>
+<p>网络七层模型是一个标准，而非实现。网络四层模型由七层模型简化而来，是一个实现的应用模型。</p>
+<!-- 
+### 各层传输协议、传输单元、主要功能性设备⽐较
+
+|名称|传输协议|传输单元|主要功能设备/接口|
+|-----|-----|-----|-----|
+|物理层|IEEE 802.1A、IEEE 802.2| bit-flow 比特流|光纤，双绞线，中继器，集线器，网线接口|
+|数据链路层|ARP、MAC、FDDI、Ethernet、Arpanet、PPP、PDN|frame帧|网桥、二层交换机|
+|网络层|IP、ICMP、ARP、PPP、RARP|数据包packet|路由器、三层交换机|
+|传输层|TCP、UDP|segment/datagram|四层交换机|
+|会话层|SMTP、DNS|报文|QoS|
+|表示层|Telnet、FTP、HTTP、SNMP|报文|-|
+|应用层|FTP、HTTP、TFTP、Telnet、DNS|报文|-| -->
+<h3 id="tcp-三次握手和四次挥手的流程">TCP 三次握手和四次挥手的流程</h3>
+<h4 id="三次握手">三次握手</h4>
+<ul>
+<li>第⼀次：客户端发含SYN位，SEQ_NUM = S的包到服务器。（客 -&gt;
+SYN_SEND）</li>
+<li>第⼆次：服务器发含ACK，SYN位且ACK_NUM = S + 1，SEQ_NUM =
+P的包到客户机。（服 -&gt; SYN_RECV）</li>
+<li>第三次：客户机发送含ACK位，ACK_NUM = P + 1的包到服务器。（客 -&gt;
+ESTABLISH，服 -&gt; ESTABLISH）</li>
+</ul>
+<h4 id="四次挥手">四次挥手</h4>
+<ul>
+<li>第⼀次：客户机发含FIN位，SEQ = Q的包到服务器。（客 -&gt;
+FIN_WAIT_1）</li>
+<li>第⼆次：服务器发送含ACK且ACK_NUM = Q + 1的包到服务器。（服 -&gt;
+CLOSE_WAIT，客 -&gt; FIN_WAIT_2）</li>
+<li>此处有等待</li>
+<li>第三次：服务器发送含FIN且SEQ_NUM = R的包到客户机。（服 -&gt;
+LAST_ACK，客 -&gt; TIME_WAIT）</li>
+<li>此处有等待</li>
+<li>第四次：客户机发送最后⼀个含有ACK位且ACK_NUM = R +
+1的包到客户机。（服 -&gt; CLOSED</li>
+</ul>
+<h3
+id="为什么建立连接时候要三次握手不是两次也不是四次">为什么建立连接时候要三次握手？不是两次也不是四次？</h3>
+<p>“三次握手”的目的是“为了防止已失效的连接请求报文段突然又传送到了服务端，因而产生错误”。</p>
+<p>例子：client发出的第一个连接请求报文段并没有丢失，而是在某个网络结点长时间的滞留了，以致延误到连接释放以后的某个时间才到达server。本来这是一个早已失效的报文段。但server收到此失效的连接请求报文段后，就误认为是client再次发出的一个新的连接请求。于是就向client发出确认报文段，同意建立连接。假设不采用“三次握手”，那么只要server发出确认，新的连接就建立了。由于现在client并没有发出建立连接的请求，因此不会理睬server的确认，也不会向server发送数据。但server却以为新的运输连接已经建立，并一直等待client发来数据。这样，server的很多资源就白白浪费掉了。采用“三次握手”的办法可以防止上述现象发生。</p>
+<p>所以说两次握手不能满足需求，而三次握手已经可以满足需求，那么四次握手就是浪费了。</p>
+<p>从另一个角度看“TCP建立连接为什么是三次握手？”，这个问题的本质是,信道不可靠,
+但是通信双发需要就某个问题达成一致. 而要解决这个问题,
+无论你在消息中包含什么信息, 三次通信是理论上的最小值.
+所以<strong>三次握手不是TCP本身的要求,
+而是为了满足"在不可靠信道上可靠地传输信息"这一需求所导致的</strong>.
+请注意这里的本质需求,信道不可靠, 数据传输要可靠. 三次达到了,
+那后面你想接着握手也好, 发数据也好, 跟进行可靠信息传输的需求就没关系了.
+因此,如果信道是可靠的, 即无论什么时候发出消息, 对方一定能收到,
+或者你不关心是否要保证对方收到你的消息,
+那就能像UDP那样直接发送消息就可以了.”。</p>
+<p>参考自<a
+target="_blank" rel="noopener" href="https://www.zhihu.com/question/24853633/answer/63668444">TCP
+为什么是三次握手，而不是两次或四次？</a></p>
+<h3
+id="说一下一次完整的http请求过程包括哪些内容">说一下一次完整的HTTP请求过程包括哪些内容？</h3>
+<p>域名解析 --&gt; 发起TCP的3次握手 --&gt; 建立TCP连接后发起http请求
+--&gt; 服务器响应http请求，浏览器得到html代码 --&gt;
+浏览器解析html代码，并请求html代码中的资源（如js、css、图片等） --&gt;
+浏览器对页面进行渲染呈现给用户。</p>
+<h3 id="你知道dns是什么">你知道DNS是什么？</h3>
+<p><strong>官方解释</strong>：DNS（Domain Name
+System，域名系统），因特网上作为<strong>域名和IP地址相互映射的一个分布式数据库</strong>，能够使用户更方便的访问互联网，而不用去记住能够被机器直接读取的IP数串。</p>
+<p>通过主机名，最终得到该主机名对应的IP地址的过程叫做域名解析（或主机名解析）。</p>
+<p>通俗的讲，我们更习惯于记住一个网站的名字，比如www.baidu.com,而不是记住它的ip地址，比如：167.23.10.2。</p>
 <h2 id="uml类图">UML类图</h2>
 <p>类之间的关系通常是我们需要关心的，而我们可以通过UML类图来描述类之间的关系。UML类图中的关系有以下几种：</p>
 <h3 id="泛化关系generalization">泛化关系(generalization)</h3>
@@ -1298,7 +1526,7 @@ target="_blank" rel="noopener" href="https://blog.csdn.net/mrqiuwen/article/deta
       
         <div class="license-meta-item license-meta-date">
           <div>更新于</div>
-          <div>2023年12月3日</div>
+          <div>2023年12月5日</div>
         </div>
       
       
