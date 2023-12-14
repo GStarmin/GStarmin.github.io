@@ -28,6 +28,9 @@
 <meta property="og:image" content="https://gstarmin.github.io/img/C++八股文/计网/网络协议.png">
 <meta property="og:image" content="https://gstarmin.github.io/img/C++八股文/计网/三次握手.png">
 <meta property="og:image" content="https://gstarmin.github.io/img/C++八股文/计网/四次挥手.png">
+<meta property="og:image" content="https://gstarmin.github.io/img/C++八股文/计网/TCP四大拥塞控制算法.png">
+<meta property="og:image" content="https://gstarmin.github.io/img/C++八股文/计网/拥塞控制图.png">
+<meta property="og:image" content="https://gstarmin.github.io/img/C++八股文/计网/快速恢复算法.png">
 <meta property="og:image" content="https://gstarmin.github.io/img/设计模式/泛化关系表示.jpg">
 <meta property="og:image" content="https://gstarmin.github.io/img/设计模式/泛化关系例子.jpg">
 <meta property="og:image" content="https://gstarmin.github.io/img/设计模式/uml_realize.jpg">
@@ -308,7 +311,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          49k 字
+          53k 字
         
       </span>
     
@@ -319,7 +322,7 @@
         
         
         
-          489 分钟
+          534 分钟
         
       </span>
     
@@ -1657,7 +1660,7 @@ Linux/Unix 上可以使用系统自带的 netstats 命令来检测 SYN 攻击。
 状态，<strong>假如是客户端先发起关闭请求</strong>。四次挥手的过程如下：</p>
 <ul>
 <li><strong>第一次挥手</strong>：客户端发送一个 FIN
-报文，报文中会指定一个序列号。即发出连接释放报文段（FIN=1，序号seq=u），并停止再发送数据，主动关闭TCP连接，进入FIN_WAIT1（终止等待1）状态，等待服务端的确认。</li>
+报文，报文中会指定一个序列号。即发出连接释放报文段（FIN=1，序号seq=u），并停止再发送数据，主动关闭TCP连接，<strong>进入FIN_WAIT1</strong>（终止等待1）状态，等待服务端的确认。</li>
 <li><strong>第二次挥手</strong>：服务端收到 FIN 之后，会发送 ACK
 报文，且把客户端的序列号值 +1 作为 ACK
 报文的序列号值，表明已经收到客户端的报文了。
@@ -1707,6 +1710,199 @@ id="tcp粘包问题是什么你会如何去解决它">TCP粘包问题是什么�
 <li>尾部标记序列。通过特殊标识符表示数据包的边界，例如或者一些隐藏字符</li>
 <li>头部标记分步接收。在TCP报文的头部加上表示数据长度</li>
 <li>应用层发送数据时定长发送</li>
+</ul>
+<h3 id="对称密钥加密的优点缺点">对称密钥加密的优点缺点？</h3>
+<p>对称密钥加密（Symmetric-Key
+Encryption），加密和解密使用同一密钥。</p>
+<p><strong>优点</strong>：运算速度快</p>
+<p><strong>缺点</strong>：无法安全地将密钥传输给通信方</p>
+<h3
+id="非对称密钥加密你了解吗优缺点">非对称密钥加密你了解吗？优缺点？</h3>
+<p>非对称密钥加密，又称公开密钥加密（Public-Key
+Encryption），加密和解密使用不同的密钥。</p>
+<p>公开密钥所有人都可以获得，通信发送方获得接收方的公开密钥之后，就可以使用公开密钥进行加密，接收方收到通信内容后使用私有密钥解密。</p>
+<p>非对称密钥除了用来加密，还可以用来进行签名。因为私有密钥无法被其他人获取，因此通信发送方使用其私有密钥进行签名，通信接收方使用发送方的公开密钥对签名进行解密，就能判断这个签名是否正确。</p>
+<p><strong>优点</strong>：可以更安全地将公开密钥传输给通信发送方；</p>
+<p><strong>缺点</strong>：运算速度慢。</p>
+<h3 id="https是什么">HTTPS是什么？</h3>
+<p>HTTPS 并不是新协议，而是让 HTTP 先和 SSL（Secure Sockets
+Layer）通信，再由 SSL 和 TCP 通信，也就是说 HTTPS
+使用了隧道进行通信。通过使用 SSL，HTTPS
+具有了加密（防窃听）、认证（防伪装）和完整性保护（防篡改）。</p>
+<h3 id="http的缺点有哪些">HTTP的缺点有哪些？</h3>
+<ul>
+<li>使用明文进行通信，内容可能会被窃听；</li>
+<li>不验证通信方的身份，通信方的身份有可能遭遇伪装；</li>
+<li>无法证明报文的完整性，报文有可能遭篡改。</li>
+</ul>
+<h3
+id="https采用的加密方式有哪些是对称还是非对称">HTTPS采用的加密方式有哪些？是对称还是非对称？</h3>
+<p>PS
+采用混合的加密机制，使用非对称密钥加密用于传输对称密钥来保证传输过程的安全性，之后使用对称密钥加密进行通信来保证通信过程的效率。</p>
+<h3
+id="为什么有的时候刷新页面不需要重新建立-ssl-连接">为什么有的时候刷新页面不需要重新建立
+SSL 连接？</h3>
+<p>TCP 连接有的时候会被浏览器和服务端维持一段时间，TCP
+不需要重新建立，SSL 自然也会用之前的。</p>
+<h3
+id="ssl中的认证中的证书是什么了解过吗">SSL中的认证中的证书是什么？了解过吗？</h3>
+<p>通过使用 <strong>证书</strong> 来对通信方进行认证。</p>
+<p>数字证书认证机构（CA，Certificate
+Authority）是客户端与服务器双方都可信赖的第三方机构。</p>
+<p>服务器的运营人员向 CA 提出公开密钥的申请，CA
+在判明提出申请者的身份之后，会对已申请的公开密钥做数字签名，然后分配这个已签名的公开密钥，并将该公开密钥放入公开密钥证书后绑定在一起。</p>
+<p>进行 HTTPS
+通信时，服务器会把证书发送给客户端。客户端取得其中的公开密钥之后，先使用数字签名进行验证，如果验证通过，就可以开始通信了。</p>
+<h3
+id="http如何禁用缓存如何确认缓存">HTTP如何禁用缓存？如何确认缓存？</h3>
+<p>HTTP/1.1 通过 Cache-Control 首部字段来控制缓存。</p>
+<p><strong>禁止进行缓存</strong></p>
+<p>no-store 指令规定不能对请求或响应的任何一部分进行缓存。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">Cache-Control: no-store<br></code></pre></td></tr></table></figure>
+<p><strong>强制确认缓存</strong></p>
+<p>no-cache
+指令规定缓存服务器需要先向源服务器验证缓存资源的有效性，只有当缓存资源有效时才能使用该缓存对客户端的请求进行响应。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">Cache-Control: no-cache<br></code></pre></td></tr></table></figure>
+<h3
+id="get与post传递数据的最大长度能够达到多少呢">GET与POST传递数据的最大长度能够达到多少呢？</h3>
+<p>get
+是通过URL提交数据，因此GET可提交的数据量就跟URL所能达到的最大长度有直接关系。</p>
+<p>很多文章都说GET方式提交的数据最多只能是1024字节，而实际上，URL不存在参数上限的问题，HTTP协议规范也没有对URL长度进行限制。</p>
+<p>这个限制是特定的浏览器及服务器对它的限制，比如IE对URL长度的限制是2083字节(2K+35字节)。对于其他浏览器，如FireFox，Netscape等，则没有长度限制，这个时候其限制取决于服务器的操作系统；即如果url太长，服务器可能会因为安全方面的设置从而拒绝请求或者发生不完整的数据请求。</p>
+<p>post
+理论上讲是没有大小限制的，HTTP协议规范也没有进行大小限制，但实际上post所能传递的数据量大小取决于服务器的设置和内存大小。</p>
+<p>因为我们一般post的数据量很少超过MB的，所以我们很少能感觉的到post的数据量限制，但实际中如果你上传文件的过程中可能会发现这样一个问题，即上传个头比较大的文件到服务器时候，可能上传不上去。</p>
+<p>以php语言来说，查原因的时候你也许会看到有说PHP上传文件涉及到的参数PHP默认的上传有限定，一般这个值是2MB，更改这个值需要更改php.conf的post_max_size这个值。这就很明白的说明了这个问题了。</p>
+<h3 id="网络层常见协议可以说一下吗">网络层常见协议？可以说一下吗？</h3>
+<table style="width:100%;">
+
+<thead>
+<tr class="header">
+<th>协议</th>
+<th>名称</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>IP</td>
+<td>网际协议</td>
+<td>IP协议不但定义了数据传输时的基本单元和格式，还定义了数据报的递交方法和路由选择</td>
+</tr>
+<tr class="even">
+<td>ICMP</td>
+<td>Internet控制报文协议</td>
+<td>ICMP就是一个“错误侦测与回报机制”，其目的就是让我们能够检测网路的连线状况﹐也能确保连线的准确性，是ping和traceroute的工作协议</td>
+</tr>
+<tr class="odd">
+<td>RIP</td>
+<td>路由信息协议</td>
+<td>使用“跳数”(即metric)来衡量到达目标地址的路由距离</td>
+</tr>
+<tr class="even">
+<td>IGMP</td>
+<td>Internet组管理协议</td>
+<td>用于实现组播、广播等通信</td>
+</tr>
+</tbody>
+</table>
+<h3 id="tcp四大拥塞控制算法总结">TCP四大拥塞控制算法总结?*</h3>
+<h4 id="四大算法">四大算法</h4>
+<p>拥塞控制主要是四个算法：1）慢启动，2）拥塞避免，3）拥塞发生，4）快速恢复。这四个算法不是一天都搞出来的，这个四算法的发展经历了很多时间，到今天都还在优化中。</p>
+<p><img src="/img/C++八股文/计网/TCP四大拥塞控制算法.png" srcset="/img/loading.gif" lazyload /></p>
+<h4 id="慢热启动算法-slow-start">慢热启动算法 – Slow Start</h4>
+<p>所谓慢启动，也就是TCP连接刚建立，一点一点地提速，试探一下网络的承受能力，以免直接扰乱了网络通道的秩序。</p>
+<p>慢启动算法：</p>
+<ol type="1">
+<li>连接建好的开始先初始化拥塞窗口cwnd大小为1，表明可以传一个MSS大小的数据。</li>
+<li>每当收到一个ACK，cwnd大小加一，呈线性上升。</li>
+<li>每当过了一个往返延迟时间RTT(Round-Trip
+Time)，cwnd大小直接翻倍，乘以2，呈指数让升。</li>
+<li>还有一个ssthresh（slow start threshold），是一个上限，当cwnd &gt;=
+ssthresh时，就会进入“拥塞避免算法”（后面会说这个算法）</li>
+</ol>
+<h4 id="拥塞避免算法-congestion-avoidance">拥塞避免算法 – Congestion
+Avoidance</h4>
+<p>如同前边说的，当拥塞窗口大小cwnd大于等于慢启动阈值ssthresh后，就进入拥塞避免算法。算法如下：</p>
+<ol type="1">
+<li>收到一个ACK，则cwnd = cwnd + 1 / cwnd</li>
+<li>每当过了一个往返延迟时间RTT，cwnd大小加一。</li>
+</ol>
+<p>过了慢启动阈值后，拥塞避免算法可以避免窗口增长过快导致窗口拥塞，而是缓慢的增加调整到网络的最佳值。</p>
+<h4 id="拥塞发生状态时的算法">拥塞发生状态时的算法</h4>
+<p>一般来说，TCP拥塞控制默认认为网络丢包是由于网络拥塞导致的，所以一般的TCP拥塞控制算法以丢包为网络进入拥塞状态的信号。对于丢包有两种判定方式，一种是超时重传RTO[Retransmission
+Timeout]超时，另一个是收到三个重复确认ACK。</p>
+<p>超时重传是TCP协议保证数据可靠性的一个重要机制，其原理是在发送一个数据以后就开启一个计时器，在一定时间内如果没有得到发送数据报的ACK报文，那么就重新发送数据，直到发送成功为止。</p>
+<p>但是如果发送端接收到3个以上的重复ACK，TCP就意识到数据发生丢失，需要重传。这个机制不需要等到重传定时器超时，所以叫做<strong>快速重传</strong>，而快速重传后没有使用慢启动算法，而是拥塞避免算法，所以这又叫做快速恢复算法。</p>
+<p>超时重传RTO[Retransmission
+Timeout]超时，TCP会重传数据包。TCP认为这种情况比较糟糕，反应也比较强烈：</p>
+<ul>
+<li>由于发生丢包，将慢启动阈值ssthresh设置为当前cwnd的一半，即ssthresh =
+cwnd / 2.</li>
+<li>cwnd重置为1</li>
+<li>进入慢启动过程</li>
+</ul>
+<p>最为早期的TCP
+Tahoe算法就只使用上述处理办法，但是由于一丢包就一切重来，导致cwnd又重置为1，十分不利于网络数据的稳定传递。</p>
+<p>所以，TCP
+Reno算法进行了优化。当收到三个重复确认ACK时，TCP开启快速重传Fast
+Retransmit算法，而不用等到RTO超时再进行重传：</p>
+<ul>
+<li>cwnd大小缩小为当前的一半</li>
+<li>ssthresh设置为缩小后的cwnd大小</li>
+<li>然后进入快速恢复算法Fast Recovery</li>
+</ul>
+<p><img src="/img/C++八股文/计网/拥塞控制图.png" srcset="/img/loading.gif" lazyload /></p>
+<h4 id="快速恢复算法-fast-recovery">快速恢复算法 – Fast Recovery</h4>
+<p>TCP
+Tahoe是早期的算法，所以没有快速恢复算法，而Reno算法有。在<strong>进入快速恢复之前，cwnd和ssthresh已经被更改为原有cwnd的一半</strong>。快速恢复算法的逻辑如下：</p>
+<ul>
+<li>cwnd = cwnd + 3 MSS，加3 MSS的原因是因为收到3个重复的ACK。</li>
+<li>重传DACKs指定的数据包。</li>
+<li>如果再收到DACKs，那么cwnd大小增加一。</li>
+<li>如果收到新的ACK，表明重传的包成功了，那么退出快速恢复算法。将cwnd设置为ssthresh，然后进入拥塞避免算法。</li>
+</ul>
+<p><img src="/img/C++八股文/计网/快速恢复算法.png" srcset="/img/loading.gif" lazyload /></p>
+<h3
+id="为何快速重传是选择3次重复ack">为何快速重传是选择3次重复ACK？</h3>
+<p>主要的考虑还是要区分包的丢失是由于链路故障还是乱序等其他因素引发。</p>
+<p>两次duplicated ACK时很可能是乱序造成的！三次duplicated
+ACK时很可能是丢包造成的！四次duplicated
+ACK更更更可能是丢包造成的，但是这样的响应策略太慢。丢包肯定会造成三次duplicated
+ACK!综上是选择收到三个重复确认时窗口减半效果最好，这是实践经验。</p>
+<p>在没有fast retransmit / recovery 算法之前，重传依靠发送方的retransmit
+timeout，就是在timeout内如果没有接收到对方的ACK，默认包丢了，发送方就重传，包的丢失原因</p>
+<ol type="1">
+<li>包checksum 出错</li>
+<li>网络拥塞</li>
+<li>网络断，包括路由重收敛，但是发送方无法判断是哪一种情况，于是采用最笨的办法，就是将自己的发送速率减半，即CWND
+减为1/2，这样的方法对2是有效的，可以缓解网络拥塞，3则无所谓，反正网络断了，无论发快发慢都会被丢；但对于1来说，丢包是因为偶尔的出错引起，一丢包就对半减速不合理。</li>
+</ol>
+<p>于是有了fast retransmit
+算法，基于在反向还可以接收到ACK，可以认为网络并没有断，否则也接收不到ACK，如果在timeout
+时间内没有接收到&gt; 2 的duplicated
+ACK，则概率大事件为乱序，乱序无需重传，接收方会进行排序工作；</p>
+<p>而如果接收到三个或三个以上的duplicated
+ACK，则大概率是丢包，可以逻辑推理，发送方可以接收ACK，则网络是通的，可能是1、2造成的，先不降速，重传一次，如果接收到正确的ACK，则一切OK，流速依然（包出错被丢）。</p>
+<p>而如果依然接收到duplicated
+ACK，则认为是网络拥塞造成的，此时降速则比较合理。</p>
+<h3
+id="对于fin_wait_2close_wait状态和time_wait状态你知道多少">对于FIN_WAIT_2，CLOSE_WAIT状态和TIME_WAIT状态？你知道多少?</h3>
+<p>FIN_WAIT_2：</p>
+<ul>
+<li>半关闭状态。</li>
+<li>发送断开请求一方还有接收数据能力，但已经没有发送数据能力。</li>
+</ul>
+<p>CLOSE_WAIT状态：</p>
+<ul>
+<li>被动关闭连接一方接收到FIN包会立即回应ACK包表示已接收到断开请求。</li>
+<li>被动关闭连接一方如果还有剩余数据要发送就会进入CLOSE_WAIT状态。</li>
+</ul>
+<p>TIME_WAIT状态：</p>
+<ul>
+<li>又叫2MSL等待状态。</li>
+<li>如果客户端直接进入CLOSED状态，如果服务端没有接收到最后一次ACK包会在超时之后重新再发FIN包，此时因为客户端已经CLOSED，所以服务端就不会收到ACK而是收到RST。所以TIME_WAIT状态目的是防止最后一次握手数据没有到达对方而触发重传FIN准备的。</li>
+<li>在2MSL时间内，同一个socket不能再被使用，否则有可能会和旧连接数据混淆（如果新连接和旧连接的socket相同的话）。</li>
 </ul>
 <h2 id="uml类图">UML类图</h2>
 <p>类之间的关系通常是我们需要关心的，而我们可以通过UML类图来描述类之间的关系。UML类图中的关系有以下几种：</p>
