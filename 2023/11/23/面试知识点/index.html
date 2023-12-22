@@ -321,7 +321,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          84k 字
+          85k 字
         
       </span>
     
@@ -332,7 +332,7 @@
         
         
         
-          845 分钟
+          847 分钟
         
       </span>
     
@@ -3214,8 +3214,14 @@ src="/img/%E9%9D%A2%E8%AF%95%E7%9F%A5%E8%AF%86%E7%82%B9/202205212345108.png" src
 alt="最佳置换算法" />
 <figcaption aria-hidden="true">最佳置换算法</figcaption>
 </figure>
-<p>!!! info
-OPT算法可以通过看未来使用的页面来决定当前置换出的页面，实际中是不可能做到的，因为我们不可能知道未来会用到哪些页面。</p>
+<div class="admonition info">
+<p class="admonition-title">
+info
+</p>
+<p>
+OPT算法可以通过看未来使用的页面来决定当前置换出的页面，实际中是不可能做到的，因为我们不可能知道未来会用到哪些页面。
+</p>
+</div>
 <h4 id="先进先出置换算法fifo">先进先出置换算法(FIFO)</h4>
 <p>每次选择淘汰的页面是<strong>最早进入内存的页面</strong></p>
 <p>实现方法:把调入内存的页面根据调入的先后顺序排成一个队列，需要换出页面时选择队头。页面队列的最大长度取决于系统为进程分配了多少个内存块。</p>
@@ -3231,8 +3237,14 @@ src="/img/%E9%9D%A2%E8%AF%95%E7%9F%A5%E8%AF%86%E7%82%B9/202205212345552.png" src
 alt="FIFO-四个内存块" />
 <figcaption aria-hidden="true">FIFO-四个内存块</figcaption>
 </figure>
-<p>!!! info Belady异常
-当为进程分配的物理块数增大时，缺页次数不减反增的异常现象。</p>
+<div class="admonition info">
+<p class="admonition-title">
+Belady异常
+</p>
+<p>
+当为进程分配的物理块数增大时，缺页次数不减反增的异常现象。
+</p>
+</div>
 <p>​
 只有FIFO算法会产生Belady异常，而LRU和OPT算法永远不会出现Belady异常。另外，FIFO算法虽然实现简单，但是该算法与进程实际运行时的规律不适应，因为先进入的页面也有可能最经常被访问。因此，FIFO算法性能差</p>
 <h4 id="最近最久未使用置换算法lru">最近最久未使用置换算法(LRU)</h4>
@@ -3240,12 +3252,6 @@ alt="FIFO-四个内存块" />
 :每次淘汰的页面是<strong>最近最久未使用的页面</strong></p>
 <p>实现方法:赋予每个页面对应的页表项中，用访问字段记录该页面自上次被访问以来所经历的时间<code>t</code>(该算法的实现需要专门的硬件支持，虽然<strong>算法性能好</strong>，但是<strong>实现困难</strong>，<strong>开销大</strong>)。当需要淘汰一个页面时，选择现有页面中<code>t</code>值最大的，即最近最久未使用的页面。</p>
 <p>LRU性能较好，但<strong>需要寄存器和栈的硬件支持</strong>。<strong>LRU是堆栈类算法</strong>，理论上可以证明，堆栈类算法不可能出现Belady异常。</p>
-<figure>
-<img
-src="/img/%E9%9D%A2%E8%AF%95%E7%9F%A5%E8%AF%86%E7%82%B9/202205212345619.png" srcset="/img/loading.gif" lazyload
-alt="LRU算法" />
-<figcaption aria-hidden="true">LRU算法</figcaption>
-</figure>
 <div class="admonition info">
 <p class="admonition-title">
 info
@@ -3254,10 +3260,31 @@ info
 在手动做题时，若需要淘汰页面，可以逆向检查此时在内存中的几个页面号。在逆向扫描过程中最后一个出现的页号就是要淘汰的页面。
 </p>
 </div>
+<figure>
+<img
+src="/img/%E9%9D%A2%E8%AF%95%E7%9F%A5%E8%AF%86%E7%82%B9/202205212345619.png" srcset="/img/loading.gif" lazyload
+alt="LRU算法" />
+<figcaption aria-hidden="true">LRU算法</figcaption>
+</figure>
 <h4 id="时钟置换算法clock">时钟置换算法(CLOCK)</h4>
 <p>最佳置换算法性OPT能最好，但无法实现；先进先出置换算法实现简单，但算法性能差；最近最久未使用置换算法性能好，是最接近OPT算法性能的，但是实现起来需要专门的硬件支持，算法开销大。所以操作系统的设计者尝试了很多算法，试图<strong>用比较小的开销接近LRU的性能</strong>，这类算法都是CLOCK算法的变体，因为算法要循环扫描缓冲区像时钟一样转动。所以叫clock算法。</p>
-<p>时钟置换算法是一种<strong>性能和开销较均衡</strong>的算法，又称CLOCK算法，或最近未用算法(NRU，Not
-Recently Used).</p>
+<p>时钟置换算法是一种<strong>性能和开销较均衡</strong>的算法，又称CLOCK算法，或<strong>最近未用算法(NRU，Not
+Recently Used)</strong>.</p>
+<p>简单的CLOCK算法实现方法:为每个页面设置一个访问位，再将内存中的页面都通过链接指针链接成一个<strong>循环队列</strong>。当某页被访问时，其访问位置为1。当需要淘汰一个页面时，只需检查页的访问位。如果是0，就选择该页换出;如果是1，则将它置为0，暂不换出，继续检查下一个页面，直到找到第一个访问位是0的页面然后换出。</p>
+<div class="admonition info">
+<p class="admonition-title">
+info
+</p>
+<p>
+因为是循环队列，如果队列当前全部页面访问位都是1，那么访问一轮之后全部都为0，继续向后访问，其实就是第一个访问的页面被换出。
+</p>
+</div>
+<figure>
+<img
+src="/img/%E9%9D%A2%E8%AF%95%E7%9F%A5%E8%AF%86%E7%82%B9/202205212345526.png" srcset="/img/loading.gif" lazyload
+alt="CLOCK算法" />
+<figcaption aria-hidden="true">CLOCK算法</figcaption>
+</figure>
 <h2 id="uml类图">UML类图</h2>
 <p>类之间的关系通常是我们需要关心的，而我们可以通过UML类图来描述类之间的关系。UML类图中的关系有以下几种：</p>
 <h3 id="泛化关系generalization">泛化关系(generalization)</h3>
