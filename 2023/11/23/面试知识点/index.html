@@ -33,7 +33,6 @@
 <meta property="og:image" content="https://gstarmin.github.io/img/C++八股文/计网/快速恢复算法.png">
 <meta property="og:image" content="https://gstarmin.github.io/img/C++八股文/计网/TCP系统调用流程.png">
 <meta property="og:image" content="https://gstarmin.github.io/img/C++八股文/计网/TCP系统调用流程-1.png">
-<meta property="og:image" content="https://gstarmin.github.io/img/C++八股文/操作系统/多级反馈队列.png">
 <meta property="og:image" content="https://gstarmin.github.io/img/C++八股文/操作系统/首次适应算法.png">
 <meta property="og:image" content="https://gstarmin.github.io/img/C++八股文/操作系统/最佳适应算法.png">
 <meta property="og:image" content="https://gstarmin.github.io/img/C++八股文/操作系统/最坏适应算法.png">
@@ -2409,7 +2408,12 @@ CPU 时间分配给队首的进程。</p>
 <p>这种方式下，之前的进程只需要交换 7
 次。每个队列优先权也不同，最上面的优先权最高。因此只有上一个队列没有进程在排队，才能调度当前队列上的进程。</p>
 <p>可以将这种调度算法看成是<strong>时间片轮转调度算法和优先级调度算法的结合</strong>。</p>
-<p><img src="/img/C++八股文/操作系统/多级反馈队列.png" srcset="/img/loading.gif" lazyload /></p>
+<figure>
+<img
+src="/img/%E9%9D%A2%E8%AF%95%E7%9F%A5%E8%AF%86%E7%82%B9/202205220000527.png" srcset="/img/loading.gif" lazyload
+alt="多级反馈队列" />
+<figcaption aria-hidden="true">多级反馈队列</figcaption>
+</figure>
 <h3 id="linux下进程间通信方式">Linux下进程间通信方式？</h3>
 <ul>
 <li>管道：
@@ -2919,18 +2923,26 @@ process）。该函数被调用一次，但返回两次。两次返回的区别�
 id。将子进程id返回给父进程的理由是：因为一个进程的子进程可以多于一个，没有一个函数使一个进程可以获得其所有子进程的进程id。对子进程来说，之所以fork返回0给它，是因为它随时可以调用getpid()来获取自己的pid；也可以调用getppid()来获取父进程的id。(进程id
 0总是由交换进程使用，所以一个子进程的进程id不可能为0 )。</p>
 <p>fork之后，操作系统会复制一个与父进程完全相同的子进程，虽说是父子关系，但是在操作系统看来，他们更像兄弟关系，这2个进程共享代码空间，但是数据空间是互相独立的，子进程数据空间中的内容是父进程的完整拷贝，指令指针也完全相同，子进程拥有父进程当前运行到的位置（两进程的程序计数器pc值相同，也就是说，子进程是从fork返回处开始执行的），但有一点不同，如果fork成功，子进程中fork的返回值是0，父进程中fork的返回值是子进程的进程号，如果fork不成功，父进程会返回错误。</p>
-<p>!!! info 子进程从父进程继承的有：</p>
-<pre><code class="hljs">    1.进程的资格(真实(real)/有效(effective)/已保存(saved)用户号(UIDs)和组号(GIDs))
-    2.环境(environment)
-    3.堆栈
-    4.内存
-    5.进程组号
-
-    子进程独有：
-
-    1.进程号；
-    2.不同的父进程号(译者注：即子进程的父进程号与父进程的父进程号不同， 父进程号可由getppid函数得到)；
-    3.资源使用(resource utilizations)设定为0</code></pre>
+<div class="admonition info">
+<p class="admonition-title">
+info
+</p>
+<p>
+子进程从父进程继承的有：
+</p>
+<p>
+1.进程的资格(真实(real)/有效(effective)/已保存(saved)用户号(UIDs)和组号(GIDs))
+2.环境(environment) 3.堆栈 4.内存 5.进程组号
+</p>
+<p>
+子进程独有：
+</p>
+<p>
+1.进程号；
+2.不同的父进程号(译者注：即子进程的父进程号与父进程的父进程号不同，
+父进程号可由getppid函数得到)； 3.资源使用(resource utilizations)设定为0
+</p>
+</div>
 <h4 id="进程组">进程组</h4>
 <p>进程组就是多个进程的集合，其中肯定有一个组长，其进程PID等于进程组的PGID。只要在某个进程组中一个进程存在，该进程组就存在，这与其组长进程是否终止无关。</p>
 <h4 id="作业">作业</h4>
@@ -3097,7 +3109,7 @@ id="抖动你知道是什么吗它也叫颠簸现象">抖动你知道是什么�
 <h3
 id="从堆和栈上建立对象哪个快考察堆和栈的分配效率比较">从堆和栈上建立对象哪个快？（考察堆和栈的分配效率比较）</h3>
 <p><strong>建立对象</strong>：堆在分配和释放时都要调用函数（malloc,free)，比如分配时会到堆空间去寻找足够大小的空间（因为多次分配释放后会造成内存碎片），这些都会花费一定的时间，具体可以看看malloc和free的源代码，函数做了很多额外的工作，而栈却不需要这些。</p>
-<p>!!! info
+<p>!!! info 堆和栈对象的访问时间
 建立对象后访问时间来说，访问堆的一个具体单元，需要两次访问内存，第一次得取得指针，第二次才是真正的数据，而栈只需访问一次。另外，堆的内容被操作系统交换到外存的概率比栈大，栈一般是不会被交换出去的。</p>
 <h3 id="常见内存分配方式有哪些">常见内存分配方式有哪些？</h3>
 <p><strong>内存分配方式</strong>：</p>
