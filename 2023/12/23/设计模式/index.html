@@ -1,0 +1,998 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Starmin">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="设计模式 UML类图 类之间的关系通常是我们需要关心的，而我们可以通过UML类图来描述类之间的关系。UML类图中的关系有以下几种： 泛化关系(generalization) 类的继承结构表现在UML中为：泛化(generalize)与实现(realize)： 继承关系为 is-a的关系；两个对象之间如果可以用 is-a 来表示，就是继承关系：(..是..) eg：自行车是车、猫是动物 泛化关系用一">
+<meta property="og:type" content="article">
+<meta property="og:title" content="设计模式">
+<meta property="og:url" content="https://gstarmin.github.io/2023/12/23/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/">
+<meta property="og:site_name" content="私人杂货铺">
+<meta property="og:description" content="设计模式 UML类图 类之间的关系通常是我们需要关心的，而我们可以通过UML类图来描述类之间的关系。UML类图中的关系有以下几种： 泛化关系(generalization) 类的继承结构表现在UML中为：泛化(generalize)与实现(realize)： 继承关系为 is-a的关系；两个对象之间如果可以用 is-a 来表示，就是继承关系：(..是..) eg：自行车是车、猫是动物 泛化关系用一">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gstarmin.github.io/img/设计模式/泛化关系表示.jpg">
+<meta property="og:image" content="https://gstarmin.github.io/img/设计模式/泛化关系例子.jpg">
+<meta property="og:image" content="https://gstarmin.github.io/img/设计模式/uml_realize.jpg">
+<meta property="og:image" content="https://gstarmin.github.io/img/设计模式/uml_aggregation.jpg">
+<meta property="og:image" content="https://gstarmin.github.io/img/设计模式/uml_composition.jpg">
+<meta property="og:image" content="https://gstarmin.github.io/img/设计模式/uml_association.jpg">
+<meta property="og:image" content="https://gstarmin.github.io/img/设计模式/uml_dependency.jpg">
+<meta property="article:published_time" content="2023-12-23T06:50:01.000Z">
+<meta property="article:modified_time" content="2023-12-23T06:50:01.000Z">
+<meta property="article:author" content="Starmin">
+<meta property="article:tag" content="面试">
+<meta property="article:tag" content="设计模式">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://gstarmin.github.io/img/设计模式/泛化关系表示.jpg">
+  
+  
+  
+  <title>设计模式 - 私人杂货铺</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"gstarmin.github.io","root":"/","version":"1.9.3","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 5.4.2"><style>.mjpage .MJX-monospace {
+  font-family: monospace;
+}
+
+.mjpage .MJX-sans-serif {
+  font-family: sans-serif;
+}
+
+.mjpage {
+  display: inline;
+  font-style: normal;
+  font-weight: normal;
+  line-height: normal;
+  font-size: 100%;
+  font-size-adjust: none;
+  text-indent: 0;
+  text-align: left;
+  text-transform: none;
+  letter-spacing: normal;
+  word-spacing: normal;
+  word-wrap: normal;
+  white-space: nowrap;
+  float: none;
+  direction: ltr;
+  max-width: none;
+  max-height: none;
+  min-width: 0;
+  min-height: 0;
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+
+.mjpage * {
+  transition: none;
+  -webkit-transition: none;
+  -moz-transition: none;
+  -ms-transition: none;
+  -o-transition: none;
+}
+
+.mjx-svg-href {
+  fill: blue;
+  stroke: blue;
+}
+
+.MathJax_SVG_LineBox {
+  display: table !important;
+}
+
+.MathJax_SVG_LineBox span {
+  display: table-cell !important;
+  width: 10000em !important;
+  min-width: 0;
+  max-width: none;
+  padding: 0;
+  border: 0;
+  margin: 0;
+}
+
+.mjpage__block {
+  text-align: center;
+  margin: 1em 0em;
+  position: relative;
+  display: block !important;
+  text-indent: 0;
+  max-width: none;
+  max-height: none;
+  min-width: 0;
+  min-height: 0;
+  width: 100%;
+}
+</style></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Starmin</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="设计模式"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-12-23 14:50" pubdate>
+          2023年12月23日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          7.2k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          73 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">设计模式</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="设计模式">设计模式</h1>
+<h2 id="uml类图">UML类图</h2>
+<p>类之间的关系通常是我们需要关心的，而我们可以通过UML类图来描述类之间的关系。UML类图中的关系有以下几种：</p>
+<h3 id="泛化关系generalization">泛化关系(generalization)</h3>
+<p>类的继承结构表现在UML中为：泛化(generalize)与实现(realize)：</p>
+<p>继承关系为 is-a的关系；两个对象之间如果可以用 is-a
+来表示，就是继承关系：(..是..)</p>
+<p>eg：自行车是车、猫是动物</p>
+<p>泛化关系用一条带空心箭头的直接表示；如下图表示（A继承自B）；</p>
+<figure>
+<img src="/img/设计模式/泛化关系表示.jpg" srcset="/img/loading.gif" lazyload alt="泛化关系表示" />
+<figcaption aria-hidden="true">泛化关系表示</figcaption>
+</figure>
+<p>eg：汽车在现实中有实现，可用汽车定义具体的对象；汽车与SUV之间为泛化关系；</p>
+<figure>
+<img src="/img/设计模式/泛化关系例子.jpg" srcset="/img/loading.gif" lazyload alt="泛化关系例子" />
+<figcaption aria-hidden="true">泛化关系例子</figcaption>
+</figure>
+<h3 id="实现关系realization">实现关系(realization)</h3>
+<p>实现关系用一条带空心箭头的虚线表示；</p>
+<p>eg：”车”为一个抽象概念，在现实中并无法直接用来定义对象；只有指明具体的子类(汽车还是自行车)，才
+可以用来定义对象（”车”这个类在C++中用抽象类表示，在JAVA中有接口这个概念，更容易理解）</p>
+<figure>
+<img src="/img/设计模式/uml_realize.jpg" srcset="/img/loading.gif" lazyload alt="实现关系" />
+<figcaption aria-hidden="true">实现关系</figcaption>
+</figure>
+<p>注：最终代码中，实现关系表现为继承抽象类；</p>
+<h3 id="聚合关系aggregation">聚合关系(aggregation)</h3>
+<p>聚合关系用一条带空心菱形箭头的直线表示，如下图表示A聚合到B上，或者说B由A组成；</p>
+<figure>
+<img src="/img/设计模式/uml_aggregation.jpg" srcset="/img/loading.gif" lazyload alt="聚合关系" />
+<figcaption aria-hidden="true">聚合关系</figcaption>
+</figure>
+<p>聚合关系用于表示实体对象之间的关系，表示整体由部分构成的语义；例如一个部门由多个员工组成；</p>
+<p>与组合关系不同的是，整体和部分不是强依赖的，即使整体不存在了，部分仍然存在；例如，
+部门撤销了，人员不会消失，他们依然存在；</p>
+<h3 id="组合关系composition">组合关系(composition)</h3>
+<p>组合关系用一条带实心菱形箭头直线表示，如下图表示A组成B，或者B由A组成；</p>
+<figure>
+<img src="/img/设计模式/uml_composition.jpg" srcset="/img/loading.gif" lazyload alt="组合关系" />
+<figcaption aria-hidden="true">组合关系</figcaption>
+</figure>
+<p>与聚合关系一样，组合关系同样表示整体由部分构成的语义；比如公司由多个部门组成；</p>
+<p>但组合关系是一种强依赖的特殊聚合关系，如果整体不存在了，则部分也不存在了；例如，
+公司不存在了，部门也将不存在了；</p>
+<h3 id="关联关系association">关联关系(association)</h3>
+<p>关联关系是用一条直线表示的；它描述不同类的对象之间的结构关系；它是一种静态关系，
+通常与运行状态无关，一般由常识等因素决定的；它一般用来定义对象之间静态的、天然的结构；
+所以，关联关系是一种“强关联”的关系；</p>
+<p>比如，乘车人和车票之间就是一种关联关系；学生和学校就是一种关联关系；</p>
+<p>关联关系默认不强调方向，表示对象间相互知道；如果特别强调方向，如下图，表示A知道B，但
+B不知道A；</p>
+<figure>
+<img src="/img/设计模式/uml_association.jpg" srcset="/img/loading.gif" lazyload alt="关联关系" />
+<figcaption aria-hidden="true">关联关系</figcaption>
+</figure>
+<p>注：在最终代码中，关联对象通常是以成员变量的形式实现的；</p>
+<h3 id="依赖关系dependency">依赖关系(dependency)</h3>
+<p>依赖关系是用一套带箭头的虚线表示的；如下图表示A依赖于B；他描述一个对象在运行期间会用到另一个对象的关系；</p>
+<figure>
+<img src="/img/设计模式/uml_dependency.jpg" srcset="/img/loading.gif" lazyload alt="依赖关系" />
+<figcaption aria-hidden="true">依赖关系</figcaption>
+</figure>
+<p>与关联关系不同的是，它是一种临时性的关系，通常在运行期间产生，并且随着运行时的变化；
+依赖关系也可能发生变化；</p>
+<p>显然，依赖也有方向，双向依赖是一种非常糟糕的结构，我们总是应该保持单向依赖，杜绝双向依赖的产生；</p>
+<p>注：在最终代码中，依赖关系体现为类构造方法及类方法的传入参数，箭头的指向为调用关系；依赖关系除了临时知道对方外，还是“使用”对方的方法和属性；</p>
+<h2 id="设计模式-1">设计模式</h2>
+<p>设计模式知识见<a
+target="_blank" rel="noopener" href="https://refactoringguru.cn/design-patterns/catalog">设计模式</a></p>
+<h3 id="面向对象设计原则">面向对象设计原则</h3>
+<ol type="1">
+<li>单一职责原则（Single Responsibility Principle）
+<ul>
+<li>一个类应该仅有一个引起它变化的原因。</li>
+<li>变化的方向隐含着类的责任。</li>
+</ul></li>
+<li>里氏替换原则（Liskov Substitution Principle）
+<ul>
+<li>子类必须能够替换它们的基类(IS-A)。</li>
+<li>继承表达类型抽象。</li>
+</ul></li>
+<li>依赖倒置原则（Dependence Inversion Principle）
+<ul>
+<li>高层模块(稳定)不应该依赖于低层模块(变化)，二者都应该依赖于抽象(稳定)
+。</li>
+<li>抽象(稳定)不应该依赖于实现细节(变化)
+，实现细节应该依赖于抽象(稳定)。</li>
+</ul></li>
+<li>接口隔离原则（Interface Segregation Principle）
+<ul>
+<li>不应该强迫客户程序依赖它们不用的方法。</li>
+<li>接口应该小而完备。</li>
+</ul></li>
+<li>迪米特法则（Law Of Demeter）
+<ul>
+<li>一个对象应该对其他对象有最少的了解,低耦合，高内聚。</li>
+</ul></li>
+<li>开闭原则（Open Close Principle）
+<ul>
+<li>对扩展开放，对更改封闭。</li>
+<li>类模块应该是可扩展的，但是不可修改。</li>
+</ul></li>
+</ol>
+<h3 id="设计模式分类">设计模式分类</h3>
+<ul>
+<li>创建型模式: 这类模式提供创建对象的机制，
+能够提升已有代码的灵活性和可复用性。创建型模式包括单例模式、工厂模式、抽象工厂模式、建造者模式、原型模式</li>
+<li>结构型模式: 这类模式介绍如何将对象和类组装成较大的结构，
+并同时保持结构的灵活和高效。结构型模式包括适配器模式、装饰器模式、代理模式、外观模式、桥接模式、组合模式、享元模式</li>
+<li>行为型模式:
+这类模式负责对象间的高效沟通和职责委派。行为型模式包括策略模式、模板方法模式、观察者模式、迭代子模式、责任链模式、命令模式、备忘录模式、状态模式、访问者模式、中介者模式、解释器模式</li>
+</ul>
+<h3 id="单例模式">单例模式</h3>
+<h4
+id="单例模式中懒汉和饿汉的本质区别">单例模式中懒汉和饿汉的本质区别</h4>
+<ul>
+<li>饿汉式在进程刚开始的时候就创建了对象，若这个其构造函数需要做的事有很多，那么会导致系统在启动的时候卡顿.而懒汉式的实例对象是在第一次使用的时候才创建的,这样就避免了启动卡顿的问题。在<strong>C++中由于饿汉式的这个缺点,所以一般不使用饿汉式,而是使用懒汉式。</strong></li>
+<li>饿汉式是线程安全的,在类创建的同时就已经创建好一个静态的对象供系统使用,以后不在改变。而懒汉模式需要在实现的时候保证线程安全。</li>
+</ul>
+<h4 id="懒汉式的实现方式">懒汉式的实现方式</h4>
+<p>首先将static类型的对象<strong>改成指针</strong>，调用函数获取该指针时，首先判断指针是否为空，为空就new一个，不为空直接返回指针.我们初始化其为空，这样就需要new一个了，然后第二次调用该函数getInstance()就不为空了，然后直接返回。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-keyword">class</span> <span class="hljs-title class_">Singleton</span><br>&#123;<br><span class="hljs-keyword">public</span>:<br>    <span class="hljs-function"><span class="hljs-type">static</span> Singleton* <span class="hljs-title">getInstance</span><span class="hljs-params">()</span></span><br><span class="hljs-function">    </span>&#123;<br>        <span class="hljs-keyword">if</span>(instance == <span class="hljs-literal">nullptr</span>)&#123;<br>            instance = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Singleton</span>();<br>        &#125;<br>        <span class="hljs-keyword">return</span> instance;<span class="hljs-comment">//不为空则直接返回</span><br>    &#125;<br>    <br>    <br><span class="hljs-keyword">private</span>:<br>    <span class="hljs-type">static</span> Singleton* instance; <br>    <span class="hljs-built_in">Singleton</span>()    <br>    &#123;<br>        <br>    &#125;<br>    <span class="hljs-built_in">Singleton</span>(<span class="hljs-type">const</span> Singleton&amp;) = <span class="hljs-keyword">delete</span>;<br>    Singleton&amp; <span class="hljs-keyword">operator</span>=(<span class="hljs-type">const</span> Singleton&amp;) = <span class="hljs-keyword">delete</span>;<br><br>&#125;;<br><br>Singleton* Singleton::instance = <span class="hljs-literal">nullptr</span>;<span class="hljs-comment">//初始为空</span><br><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span>&#123;<br>    Singleton* p1 = Singleton::<span class="hljs-built_in">getInstance</span>();<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p><strong>但这个并不是线程安全的！</strong></p>
+<p>上面的实现在单线程环境下没问题,因为单线程情况下<code>getInstance()</code>不会被同时调用，只能调用完，再调用.但是在多线程条件下，该函数不是可重入函数。<strong>多线程条件下，某个线程调用该函数，没有执行完即对象instance还没被创建，另一个线程也执行该函数，发现instance为空，那也执行创建语句instance
+= new Singleton();</strong>，所以该函数不是可重入函数.</p>
+<div class="admonition info">
+<p class="admonition-title">
+info
+</p>
+<p>
+可重入函数是指能够被多个线程“同时”调用的函数,并且能保证函数结果正确不必担心数据错误的函数
+</p>
+</div>
+<p>创建instance对象其实做了三件事:</p>
+<ul>
+<li>分配内存空间</li>
+<li>构造对象</li>
+<li>给instance赋值</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-function"><span class="hljs-type">static</span> Singleton* <span class="hljs-title">getInstance</span><span class="hljs-params">()</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-keyword">if</span>(instance == <span class="hljs-literal">nullptr</span>)<br>    &#123;<br>    	<span class="hljs-comment">/*  </span><br><span class="hljs-comment">    	开辟内存</span><br><span class="hljs-comment">    	构造对象</span><br><span class="hljs-comment">    	给instance赋值</span><br><span class="hljs-comment">    	*/</span><br>        instance = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Singleton</span>();<br>    &#125;<br>    <span class="hljs-keyword">return</span> instance;<br>&#125;<br></code></pre></td></tr></table></figure>
+<ol type="1">
+<li>如前面所说,线程A把new的对象赋值给instance之前,线程B也进入了<code>getInstance()</code>函数,发现instance为空,也执行了new语句,这样就会导致两个线程创建了两个对象,这样就违背了单例.</li>
+<li>编译器为了加快代码执行速度,可能<strong>先赋值,然后再构造对象</strong>,比如对象的属性很多,构造比较久,就先给变量赋值,然后再对该变量进行初始化.这样就会导致<strong>线程A执行到第一步,给instance赋值,此时instance不为空,但是对象还没有构造出来,线程B执行到第一步,发现instance不为空,就直接返回了instance,但是此时对象还没有构造出来,这样就会导致线程B使用了一个没有构造出来的对象</strong>,这样就会导致程序崩溃.</li>
+</ol>
+<p>从上面两个角度来看,我们都需要给<code>instance = new Singleton();</code>加锁,不能让多个线程同时执行这一句.</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-function"><span class="hljs-type">static</span> Singleton* <span class="hljs-title">getInstance</span><span class="hljs-params">()</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-function">lock_guard&lt;std::mutex&gt; <span class="hljs-title">guard</span><span class="hljs-params">(mtx)</span></span>;<span class="hljs-comment">//C++11新特性，锁管理工具</span><br><br>    <span class="hljs-keyword">if</span>(instance == <span class="hljs-literal">nullptr</span>)&#123;<br>        instance = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Singleton</span>();<br>    &#125;<br>    <span class="hljs-keyword">return</span> instance;<br>&#125;<br></code></pre></td></tr></table></figure>
+<div class="admonition info">
+<p class="admonition-title">
+info
+</p>
+<p>
+std::lock_guard属于C++11特性，锁管理遵循RAII习语管理资源。RAII详见<a href="https://gstarmin.github.io/2023/06/22/RAII%E5%8E%9F%E7%90%86/">RAII原理</a>
+</p>
+</div>
+<p>但是这里又有新的问题:<strong>锁的粒度太大了</strong>,单线程环境下每次调用该函数也会执行加锁操作.所以还得修改,改成下面之后,单线程下只有第一次会加锁,第二次以后调用就不会加锁了.</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-function"><span class="hljs-type">static</span> Singleton* <span class="hljs-title">getInstance</span><span class="hljs-params">()</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-keyword">if</span>(instance == <span class="hljs-literal">nullptr</span>)<br>    &#123;<br>        <span class="hljs-function">lock_guard&lt;std::mutex&gt; <span class="hljs-title">guard</span><span class="hljs-params">(mtx)</span></span>;<span class="hljs-comment">//放到if里面</span><br>        instance = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Singleton</span>();<br>    &#125;<br>    <span class="hljs-keyword">return</span> instance;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>这种情况下,出自这个if的括号就会释放锁了，（return
+instance前面的括号）。这个也有问题，第二个线程阻塞后还是会执行new，所以需要加一个if判断。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">// 锁+双重判断</span><br><span class="hljs-function"><span class="hljs-type">static</span> Singleton* <span class="hljs-title">getInstance</span><span class="hljs-params">()</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-keyword">if</span>(instance == <span class="hljs-literal">nullptr</span>)<br>    &#123;<br>        <span class="hljs-function">lock_guard&lt;std::mutex&gt; <span class="hljs-title">guard</span><span class="hljs-params">(mtx)</span></span>;<br>        <span class="hljs-keyword">if</span>(instance == <span class="hljs-literal">nullptr</span>)			<span class="hljs-comment">//还要判断下是否为空</span><br>        &#123;<br>            instance = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Singleton</span>();<br>        &#125;<br>    &#125;<br>    <span class="hljs-keyword">return</span> instance;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>这个instance是static的，存储在全局/静态变量区——操作系统的数据段。是同一个进程，多个线程共享的数据。</p>
+<p>CPU在执行线程指令的时候，为了加快多线程的执行速度（或者说是先由编译器做的优化，然后落实到CPU上），会将这些线程共享的数据都拷贝一份到自己的线程寄存器上——我们这里就是instance对象.</p>
+<p>所以我们要加一个关键字<strong>volatile</strong>,加了之后，当instance这个共享变量改变之后，就是告诉线程该去内存上去找该变量而不是取自己的寄存器上的。因为线程A先取了该变量到自己寄存器上，然后线程B把该变量修改了（修改后它也会同步到内存里），那么线程A要是还在自己的寄存器上取该变量，那读取到的就是未更新的。</p>
+<p><strong>所以volatile适合用来修饰随时都可能被修改的变量，告诉将要读取该变量的线程不要从自己的寄存器或者cache上取该变量，而是去内存上取。</strong></p>
+<h4 id="线程安全的懒汉式单例模式">线程安全的懒汉式单例模式</h4>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-meta">#<span class="hljs-keyword">include</span><span class="hljs-string">&lt;iostream&gt;</span></span><br><span class="hljs-keyword">using</span> <span class="hljs-keyword">namespace</span> std;<br><span class="hljs-meta">#<span class="hljs-keyword">include</span><span class="hljs-string">&lt;mutex&gt;</span></span><br><br>std::mutex mtx;<span class="hljs-comment">//全局的锁</span><br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Singleton</span><br>&#123;<br><span class="hljs-keyword">public</span>:<br>    <span class="hljs-function"><span class="hljs-type">static</span> Singleton* <span class="hljs-title">getInstance</span><span class="hljs-params">()</span></span><br><span class="hljs-function">    </span>&#123;<br>        <span class="hljs-keyword">if</span>(instance == <span class="hljs-literal">nullptr</span>)<br>        &#123;<br>            <span class="hljs-function">lock_guard&lt;std::mutex&gt; <span class="hljs-title">guard</span><span class="hljs-params">(mtx)</span></span>;<span class="hljs-comment">//C++ 11新特性，所管理工具</span><br>            <span class="hljs-keyword">if</span>(instance == <span class="hljs-literal">nullptr</span>)     <span class="hljs-comment">//双重判断</span><br>            &#123;<br>                instance = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Singleton</span>();<br>            &#125;<br>            <br>        &#125;<br>        <span class="hljs-keyword">return</span> instance;<br>    &#125;<br> <br><span class="hljs-keyword">private</span>:<br>    <span class="hljs-type">static</span> Singleton* <span class="hljs-keyword">volatile</span> instance; <span class="hljs-comment">//2.定义一个唯一的类的实例对象  //加上volatile</span><br>    <span class="hljs-built_in">Singleton</span>()    <span class="hljs-comment">//1.构造函数私有化</span><br>    &#123;<br>        <span class="hljs-comment">//省略构造函数的具体实现，实际业务中会有很多功能</span><br>    &#125;<br>    <span class="hljs-built_in">Singleton</span>(<span class="hljs-type">const</span> Singleton&amp;) = <span class="hljs-keyword">delete</span>;<span class="hljs-comment">//C++11中，定义成员函数，可在后面使用 = delete修饰，表示该函数被删除，禁用；</span><br>    Singleton&amp; <span class="hljs-keyword">operator</span>=(<span class="hljs-type">const</span> Singleton&amp;) = <span class="hljs-keyword">delete</span>;<br><br>&#125;;<br><br>Singleton*<span class="hljs-keyword">volatile</span> Singleton::instance = <span class="hljs-literal">nullptr</span>; <span class="hljs-comment">//加上volatile</span><br><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span>&#123;<br>    Singleton* p1 = Singleton::<span class="hljs-built_in">getInstance</span>();<br>    <br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<h4
+id="不使用互斥锁的线程安全的懒汉式单例模式">不使用互斥锁的线程安全的懒汉式单例模式</h4>
+<p>将该对象放在函数里，成为<strong>静态局部变量</strong>。注意，静态局部变量也是在全局区（C++内存模型的叫法），和静态全局变量，全局变量一样，是在编译器就被分配了内存。</p>
+<p>但是静态局部变量的初始化是<strong>运行</strong>到该语句时，进行初始化</p>
+<div class="admonition info">
+<p class="admonition-title">
+info
+</p>
+<p>
+C和C++的处理还不一样,C语言是编译时分配内存和初始化的;C++，<strong>编译时</strong>分配内存,（<strong>运行时</strong>）首次使用时初始化。这主要是由于C++引入对象后，要进行初始化必须执行相应构造函数和析构函数，在构造函数或析构函数中经常会需要进行某些程序中需要进行的特定操作，并非简单地分配内存。所以C++标准定为全局或静态对象是有首次用到时才会进行构造。
+</p>
+</div>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">// 不适用互斥锁的单例模式</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">CSingleton</span><br>&#123;<br><span class="hljs-keyword">public</span>:<br>	<span class="hljs-function"><span class="hljs-type">static</span> CSingleton* <span class="hljs-title">getInstance</span><span class="hljs-params">()</span></span><br><span class="hljs-function">	</span>&#123;<br>		<span class="hljs-type">static</span> CSingleton single; <span class="hljs-comment">// 懒汉式单例模式，定义唯一的对象实例</span><br>		<span class="hljs-keyword">return</span> &amp;single;<br>	&#125;<br><span class="hljs-keyword">private</span>:<br>	<span class="hljs-type">static</span> CSingleton *single;<br>	<span class="hljs-built_in">CSingleton</span>() &#123; cout &lt;&lt; <span class="hljs-string">&quot;CSingleton()&quot;</span> &lt;&lt; endl; &#125;<br>	~<span class="hljs-built_in">CSingleton</span>() &#123; cout &lt;&lt; <span class="hljs-string">&quot;~CSingleton()&quot;</span> &lt;&lt; endl;&#125;<br>	<span class="hljs-built_in">CSingleton</span>(<span class="hljs-type">const</span> CSingleton&amp;);<br>&#125;;<br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span><br><span class="hljs-function"></span>&#123;<br>	CSingleton *p1 = CSingleton::<span class="hljs-built_in">getInstance</span>();<br>	<span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>也因为是调用该函数才会初始化该对象，没调用的话该对象不会调用构造函数，所以也是一个懒汉式单例模式。</p>
+<div class="admonition info">
+<p class="admonition-title">
+info
+</p>
+<p>
+在多线程情况下,<strong>函数静态局部变量的初始化，在汇编指令上已经自动添加线程互斥指令了</strong>.如果线程A调用该函数，在初始化未完成之前，线程B不会执行该初始化操作。线程A完成初始化后，已经初始化过的变量，其它线程不会再重复进行初始化操作，从而只有一个实例对象产生。
+</p>
+</div>
+<p>C++ static初始化见<a
+href="https://gstarmin.github.io/2023/11/23/Cpp-static%E5%88%9D%E5%A7%8B%E5%8C%96/">Cpp-static初始化</a></p>
+<p>以上单例内容参考自<a
+target="_blank" rel="noopener" href="https://blog.csdn.net/mrqiuwen/article/details/127624028">C++
+单例模式</a></p>
+<h3 id="建造者模式和工厂模式的区别">建造者模式和工厂模式的区别</h3>
+<p>建造者模式与工厂模式是极为相似的，总体上，建造者模式仅仅只比工厂模式多了一个“导演类”的角色。在建造者模式的类图中，假如把这个导演类看做是最终调用的客户端，那么图中剩余的部分就可以看作是一个简单的工厂模式了。</p>
+<p>与工厂模式相比，建造者模式一般用来创建<strong>更为复杂的对象</strong>，因为对象的创建过程更为复杂，因此将对象的创建过程独立出来组成一个新的类————导演类。也就是说，<strong>工厂模式是将对象的全部创建过程封装在工厂类中，由工厂类向客户端提供最终的产品；而建造者模式中，建造者类一般只提供产品类中各个组件的建造，而将具体建造过程交付给导演类</strong>。由导演类负责将各个组件按照特定的规则组建为产品，然后将组建好的产品交付给客户端。</p>
+<h3 id="为什么需要创建型模式">为什么需要创建型模式</h3>
+<p>首先，在编程中，对象的创建通常是一件比较复杂的事，因为，为了达到降低耦合的目的，我们通常采用面向抽象编程的方式，对象间的关系不会硬编码到类中，而是等到调用的时候再进行组装，这样虽然降低了对象间的耦合，提高了对象复用的可能，但在一定程度上将组装类的任务都交给了最终调用的客户端程序，大大增加了客户端程序的复杂度。采用创建类模式的优点之一就是将组装对象的过程封装到一个单独的类中，这样，既不会增加对象间的耦合，又可以最大限度的减小客户端的负担。</p>
+<p>其次，使用普通的方式创建对象，一般都是返回一个具体的对象，即所谓的面向实现编程，这与设计模式原则是相违背的。采用创建类模式则可以实现面向抽象编程。客户端要求的只是一个抽象的类型，具体返回什么样的对象，由创建者来决定。</p>
+<p>再次，可以对创建对象的过程进行优化，客户端关注的只是得到对象，对对象的创建过程则不关心，因此，创建者可以对创建的过程进行优化，例如在特定条件下，如果使用单例模式或者是使用原型模式，都可以优化系统的性能。</p>
+<!-- ### 模板方法模式
+
+**定义**：定义一个操作中算法的框架，而将一些步骤延迟到子类中，使得子类可以不改变算法的结构即可重定义该算法中的某些特定步骤。
+
+**类型**：行为类模式
+
+**类图**：
+
+![](/img/设计模式/模板方法模式类图.jpg)
+
+#### 模版方法的优点及适用场景
+
+**优点**：
+
+- 容易扩展：一般来说，抽象类中的模版方法是不易发生改变的部分，而抽象方法是容易发生变化的部分，因此通过增加实现类一般可以很容易实现功能的扩展，符合开闭原则。
+- 便于维护。对于模版方法模式来说，正是由于他们的主要逻辑相同，才使用了模版方法，假如不使用模版方法，任由这些相同的代码散乱的分布在不同的类中，维护起来是非常不方便的。
+
+**适用场景**：
+
+在多个子类拥有相同的方法，并且这些方法逻辑相同时，可以考虑使用模版方法模式。在程序的主框架相同，细节不同的场合下，也比较适合使用这种模式。 -->
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E9%9D%A2%E8%AF%95/" class="category-chain-item">面试</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E9%9D%A2%E8%AF%95/">#面试</a>
+      
+        <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/">#设计模式</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>设计模式</div>
+      <div>https://gstarmin.github.io/2023/12/23/设计模式/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Starmin</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年12月23日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/12/23/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" title="操作系统">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">操作系统</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/12/23/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" title="计算机网络">
+                        <span class="hidden-mobile">计算机网络</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
