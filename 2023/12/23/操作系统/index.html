@@ -31,8 +31,10 @@
 <meta property="og:image" content="https://gstarmin.github.io/img/C++八股文/操作系统/逻辑地址转物理地址过程.png">
 <meta property="og:image" content="https://gstarmin.github.io/img/C++八股文/操作系统/虚拟内存.png">
 <meta property="og:image" content="https://gstarmin.github.io/img/C++八股文/操作系统/内存的理解.png">
+<meta property="og:image" content="https://gstarmin.github.io/img/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/202205212345923.png">
+<meta property="og:image" content="https://gstarmin.github.io/img/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/202205212345716.png">
 <meta property="article:published_time" content="2023-12-23T06:52:50.000Z">
-<meta property="article:modified_time" content="2023-12-23T06:52:50.000Z">
+<meta property="article:modified_time" content="2023-12-23T12:12:50.000Z">
 <meta property="article:author" content="Starmin">
 <meta property="article:tag" content="面试">
 <meta property="article:tag" content="操作系统">
@@ -305,7 +307,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          25k 字
+          33k 字
         
       </span>
     
@@ -316,7 +318,7 @@
         
         
         
-          252 分钟
+          332 分钟
         
       </span>
     
@@ -1240,11 +1242,43 @@ id="从堆和栈上建立对象哪个快考察堆和栈的分配效率比较">�
 </p>
 </div>
 <h2 id="常见内存分配方式有哪些">常见内存分配方式有哪些？</h2>
-<p><strong>内存分配方式</strong>：</p>
+<h3 id="程序内存分配方式"><strong>程序内存分配方式</strong></h3>
 <ol type="1">
 <li>从<strong>静态存储区域分配</strong>。内存在程序编译的时候就已经分配好，这块内存在程序的整个运行期间都存在。例如全局变量，static变量。</li>
 <li>在<strong>栈</strong>上创建。在执行函数时，函数内局部变量的存储单元都可以在栈上创建，函数执行结束时这些存储单元自动被释放。栈内存分配运算内置于处理器的指令集中，效率很高，但是分配的内存容量有限。</li>
 <li>从堆上分配，亦称动态内存分配。程序在运行的时候用malloc或new申请任意多少的内存，程序员自己负责在何时用free或delete释放内存。动态内存的生存期由我们决定，使用非常灵活，但问题也最多。</li>
+</ol>
+<h3
+id="操作系统的内存分配方式"><strong>操作系统的内存分配方式</strong></h3>
+<h4 id="连续分配">连续分配</h4>
+<p>连续分配方式出现的时间比较早，曾广泛应用于20世纪60~70年代的OS中，但是它至今仍然在内存管理方式中占有一席之地，原因在于它实现起来比较方便，所需的硬件支持最少。连续分配方式又可细分为四种：<strong>单一连续分配、固定分区分配、动态分区分配和动态重定位分区分配</strong>。</p>
+<p>其中<strong>固定分区分配方式</strong>，因为分区固定，所以缺乏灵活性，即当程序太小时，会造成内存空间的浪费（内部碎片）；程序太大时，一个分区又不足以容纳，致使程序无法运行。但尽管如此，当一台计算机去控制多个相同对象的时候，由于这些对象内存大小相同，所以完全可以采用这种内存管理方式，而且是最高效的。这里我们可以看出存储器管理机制的多面性：即没有那种存储器管理机制是完全没有用的，在适合的场合下，一种被认为最不合理的分配方案却可能称为最高效的分配方案。一切都要从实际问题出发，进行设计。</p>
+<p>为了解决固定分区分配方式的缺乏灵活性，出现了<strong>动态分配方式</strong>。动态分配方式采用一些寻表的方式，查找能符合程序需要的空闲内存分区。但代价是增加了系统运行的开销，而且内存空闲表本身是一个文件，必然会占用一部分宝贵的内存资源，而且有些算法还会增加<strong>内存碎片</strong>。</p>
+<p><strong>可重定位分区分配</strong>通过对程序实现成定位，从而可以将内存块进行搬移，将小块拼成大块，将小空闲“紧凑”成大空闲，腾出较大的内存以容纳新的程序进程。但是拼凑过程的开销较大。</p>
+<h4 id="基本分页存储管理方式">基本分页存储管理方式</h4>
+<p>分页存储管理是将一个进程的逻辑地址空间分成若干个大小相等的片，称为页面或页，并为各页加以编号，从0开始，如第0页、第1页等。相应地，也把内存空间分成与页面相同大小的若干个存储块，称为(物理)块或页框(frame)，也同样为它们加以编号，如0#块、1#块等等。在为进程分配内存时，以块为单位将进程中的若干个页分别装入到多个可以不相邻接的物理块中。<strong>由于进程的最后一页经常装不满一块而形成了不可利用的碎片，称之为“页内碎片”。</strong></p>
+<p>在分页系统中，允许将进程的各个页离散地存储在内存不同的物理块中，但系统应能保证进程的正确运行，即能在内存中找到每个页面所对应的物理块。为此，系统又为每个进程建立了一张<strong>页面映射表</strong>，简称页表。在进程地址空间内的所有页，依次在页表中有一页表项，其中记录了相应页在内存中对应的物理块号。在配置了页表后，进程执行时，通过查找该表，即可找到每页在内存中的物理块号。可见，页表的<strong>作用是实现从页号到物理块号的地址映射（逻辑地址向物理地址的映射）</strong>。</p>
+<p>页表的功能可由一组专门的寄存器来实现。由于寄存器成本较高，且大多数现代计算机的页表又很大，使页表项总数可达几千甚至几十万个，显然这些页表项不可能都用寄存器来实现，因此，页表大多驻留在内存中。因为一个进程可以通过它的PCB来时时保存自己的状态，等到CPU要处理它的时候才将PCB交给寄存器，所以，系统中虽然可以运行多个进程，但也只需要一个页表寄存器就可以了。</p>
+<p>由于页表是存放在内存中的，这使得CPU在每存取一个数据时，都要两次访问内存。为了提高地址变换速度，在地址变化机构中增设了一个具有并行查询能力的缓冲寄存器，又称为“<strong>联想寄存器</strong>”（TLB）或<strong>快表</strong>。</p>
+<p>在单级页表的基础上，为了适应非常大的逻辑地址空间，出现了两级和多级页表，但是，他们的原理和单级页表是一样的，只不过为了适应地址变换层次的增加，需要在地址变换机构中增设外层的页表寄存器。</p>
+<h4 id="基本分段存储管理方式">基本分段存储管理方式</h4>
+<p>分段存储管理方式的目的，主要是为了满足用户（程序员）在编程和使用上多方面的要求，其中有些要求是其他几种存储管理方式所难以满足的。</p>
+<ol type="1">
+<li>方便编程：通常，用户把自己的作业按照逻辑关系划分为若干个段，每个段都是从0开始编址，并有自己的名字和长度。因此，希望要访问的逻辑地址是由段名（段号）和段内偏移量（段内地址）决定的。</li>
+<li>信息共享：分页系统中的“页”只是存放信息的物理单位（块），并无完整的意义，不便于实现共享；然而段却是信息的逻辑单位。由此可知，为了实现段的共享，希望存储器管理能与用户程序分段的组织方式相适应。</li>
+<li>信息保护：信息保护同样是对信息的逻辑单位进行保护，因此，分段管理方式能更有效和方便的实现信息保护功能。</li>
+<li>动态增长：在实际应用中，往往有些段，特别是数据段，在使用过程中会不断地增长，而事先又无法确切地知道数据段会增长到多大。前面的几种存储管理方式都难以应付这种动态增长的情况，分段存储管理方式能较好的解决这一问题。</li>
+<li>动态链接：动态链接是指在作业运行之前，并不把几个目标程序段链接起来。要运行时，先将主程序所对应的目标程序装入内存并启动运行，当运行过程中又需要调用某段时，才将该段（目标程序）调入内存并进行链接。可见，动态链接也要求以段作为管理的单位。</li>
+</ol>
+<h4 id="段页式存储管理方式">段页式存储管理方式</h4>
+<p>前面所介绍的分页和分段存储管理方式都各有优缺点。分页系统能有效地提高内存利用率，而分段系统则能很好地满足用户需求。我们希望能够把两者的优点结合，于是出现了段页式存储管理方式。</p>
+<p>段页式系统的基本原理是分段和分页原理的结合，即先将用户程序分成若干个段，再把每个段分成若干个页，并为每一个段赋予一个段名。在段页式系统中，地址结构由段号、段内页号和页内地址三部分所组成。和前两种存储管理方式相同，段页式存储管理方式同样需要增设联想寄存器（TLB）。</p>
+<h2 id="分页和分段的主要区别">分页和分段的主要区别</h2>
+<p>分页和分段系统都采用离散分配方式，且都要通过地址映射机构来实现地址变换。但在概念上两者完全不同，主要表现在3个方面：</p>
+<ol type="1">
+<li>页是信息的物理单位，分页是为实现离散分配方式，<strong>消减外部碎片</strong>，提高内存的利用率（没有外部碎片）。分页仅仅是由于系统管理的需要而不是用户的需要。段则是信息的逻辑单位，它含有一组其意义相对完整的信息。分段的目的是为了更好的满足用户的需要。</li>
+<li>页的大小固定且由系统决定，由系统把逻辑地址划分为页号和页内地址两部分，是由机器硬件实现的，因而在系统中只能有一种大小的页面；而<strong>段的长度不固定</strong>，决定于用户所编写的程序，通常由编译程序在对源程序进行编译时，根据信息的性质来划分。</li>
+<li>分页的作业地址空间是一维的，即单一的线性地址空间，程序员只需利用一个记忆符，即可表示一个地址；而分段的作业地址空间是二维的，程序员在标识一个地址时，既需给出段名，又需给出段内地址。</li>
 </ol>
 <h2 id="常见内存分配内存错误">常见内存分配内存错误</h2>
 <ol type="1">
@@ -1408,6 +1442,241 @@ alt="CLOCK算法" />
 </figure>
 <h3 id="改进型的时钟置换算法">改进型的时钟置换算法</h3>
 <p>简单的时钟置换算法仅考虑到一个页面最近是否被访问过。事实上，<strong>如果被淘汰的页面没有被修改过,就不需要执行I/O操作写回外存。只有被淘汰的页面被修改过时，才需要写回外存。</strong></p>
+<h3 id="总结">总结</h3>
+<table>
+
+<thead>
+<tr class="header">
+<th></th>
+<th>算法规则</th>
+<th>优缺点</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>OPT</td>
+<td>优先淘汰最长时间内不会被访问的页面</td>
+<td>缺页率最小，性能最好;但无法实现</td>
+</tr>
+<tr class="even">
+<td>FIFO</td>
+<td>优先淘汰最先进入内存的页面</td>
+<td>实现简单;但性能很差，可能出现Belady异常</td>
+</tr>
+<tr class="odd">
+<td>LRU</td>
+<td>优先淘汰最近最久没访问的页面</td>
+<td>性能很好;但需要硬件支持，算法开销大</td>
+</tr>
+<tr class="even">
+<td>CLOCK (NRU)</td>
+<td>循环扫描各页面
+第一轮淘汰访问位=0的，并将扫描过的页面访问位改为1。若第-轮没选中，则进行第二轮扫描。</td>
+<td>实现简单，算法开销小;但未考虑页面是否被修改过。</td>
+</tr>
+<tr class="odd">
+<td>改进型CLOCK (改进型NRU)</td>
+<td>若用(访问位，修改位)的形式表述，则 第一轮:淘汰(0,0)
+第二轮:淘汰(O,1)，并将扫描过的页面访问位都置为0 第三轮:淘汰(O, 0)
+第四轮:淘汰(0, 1)</td>
+<td>算法开销较小，性能也不错</td>
+</tr>
+</tbody>
+</table>
+<h2 id="共享是什么">共享是什么？</h2>
+<p>共享是指系统中的资源可以被多个并发进程共同使用。</p>
+<p>有两种共享方式：互斥共享和同时共享。</p>
+<p>互斥共享的资源称为临界资源，例如打印机等，在同一时刻只允许一个进程访问，需要用同步机制来实现互斥访问。</p>
+<h2 id="死锁相关问题">死锁相关问题</h2>
+<p><strong>死锁是指两个（多个）线程相互等待对方数据的过程，死锁的产生会导致程序卡死，不解锁程序将永远无法进行下去。</strong></p>
+<h3 id="产生原因">产生原因</h3>
+<p>举个例子：两个线程A和B，两个数据1和2。线程A在执行过程中，首先对资源1加锁，然后再去给资源2加锁，但是由于线程的切换，导致线程A没能给资源2加锁。线程切换到B后，线程B先对资源2加锁，然后再去给资源1加锁，由于资源1已经被线程A加锁，因此线程B无法加锁成功，当线程切换为A时，A也无法成功对资源2加锁，由此就造成了线程AB双方相互对一个已加锁资源的等待，死锁产生。</p>
+<p>理论上认为死锁产生有以下<strong>四个必要条件</strong>，缺一不可：</p>
+<ol type="1">
+<li><strong>互斥条件</strong>：进程对所需求的资源具有排他性，若有其他进程请求该资源，请求进程只能等待。</li>
+<li><strong>不剥夺条件</strong>：进程在所获得的资源未释放前，不能被其他进程强行夺走，只能自己释放。</li>
+<li><strong>请求和保持条件</strong>：进程当前所拥有的资源在进程请求其他新资源时，由该进程继续占有。</li>
+<li><strong>循环等待条件</strong>：存在一种进程资源循环等待链，链中每个进程已获得的资源同时被链中下一个进程所请求。</li>
+</ol>
+<h3 id="死锁演示">死锁演示</h3>
+<p>通过代码的形式进行演示，需要两个线程和两个互斥量。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;iostream&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;vector&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;list&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;thread&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;mutex&gt;</span>  <span class="hljs-comment">//引入互斥量头文件</span></span><br><span class="hljs-keyword">using</span> <span class="hljs-keyword">namespace</span> std;<br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">A</span> &#123;<br><span class="hljs-keyword">public</span>:<br>	<span class="hljs-comment">//插入消息，模拟消息不断产生</span><br>	<span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">insertMsg</span><span class="hljs-params">()</span> </span>&#123;<br>		<span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">100</span>; i++) &#123;<br>			cout &lt;&lt; <span class="hljs-string">&quot;插入一条消息:&quot;</span> &lt;&lt; i &lt;&lt; endl;<br>			my_mutex1.<span class="hljs-built_in">lock</span>(); <span class="hljs-comment">//语句1</span><br>			my_mutex2.<span class="hljs-built_in">lock</span>(); <span class="hljs-comment">//语句2</span><br>			Msg.<span class="hljs-built_in">push_back</span>(i);<br>			my_mutex2.<span class="hljs-built_in">unlock</span>();<br>			my_mutex1.<span class="hljs-built_in">unlock</span>();<br>		&#125;<br>	&#125;<br>	<span class="hljs-comment">//读取消息</span><br>	<span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">readMsg</span><span class="hljs-params">()</span> </span>&#123;<br>		<span class="hljs-type">int</span> MsgCom;<br>		<span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">100</span>; i++) &#123;<br>			MsgCom = <span class="hljs-built_in">MsgLULProc</span>(i);<br>			<span class="hljs-keyword">if</span> (<span class="hljs-built_in">MsgLULProc</span>(MsgCom)) &#123;<br>				<span class="hljs-comment">//读出消息了</span><br>				cout &lt;&lt; <span class="hljs-string">&quot;消息已读出&quot;</span> &lt;&lt; MsgCom &lt;&lt; endl;<br>			&#125;<br>			<span class="hljs-keyword">else</span> &#123;<br>				<span class="hljs-comment">//消息暂时为空</span><br>				cout &lt;&lt; <span class="hljs-string">&quot;消息为空&quot;</span> &lt;&lt; endl;<br>			&#125;<br>		&#125;<br>	&#125;<br>	<span class="hljs-comment">//加解锁代码</span><br>	<span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">MsgLULProc</span><span class="hljs-params">(<span class="hljs-type">int</span> &amp;command)</span> </span>&#123;<br>		<span class="hljs-type">int</span> curMsg;<br>		my_mutex2.<span class="hljs-built_in">lock</span>();   <span class="hljs-comment">//语句3</span><br>		my_mutex1.<span class="hljs-built_in">lock</span>();   <span class="hljs-comment">//语句4</span><br>		<span class="hljs-keyword">if</span> (!Msg.<span class="hljs-built_in">empty</span>()) &#123;<br>			<span class="hljs-comment">//读取消息，读完删除</span><br>			command = Msg.<span class="hljs-built_in">front</span>();<br>			Msg.<span class="hljs-built_in">pop_front</span>();<br>			<br>			my_mutex1.<span class="hljs-built_in">unlock</span>();<br>			my_mutex2.<span class="hljs-built_in">unlock</span>();<br>			<span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;<br>		&#125;<br>		my_mutex1.<span class="hljs-built_in">unlock</span>();<br>		my_mutex2.<span class="hljs-built_in">unlock</span>();<br>		<span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;<br>	&#125;<br><span class="hljs-keyword">private</span>:<br>	std::list&lt;<span class="hljs-type">int</span>&gt; Msg;  <span class="hljs-comment">//消息变量</span><br>	std::mutex my_mutex1; <span class="hljs-comment">//互斥量对象1</span><br>	std::mutex my_mutex2; <span class="hljs-comment">//互斥量对象2</span><br>&#125;;<br><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span> </span>&#123;<br>	A a;<br>	<span class="hljs-comment">//创建一个插入消息线程</span><br>	<span class="hljs-function">std::thread <span class="hljs-title">insertTd</span><span class="hljs-params">(&amp;A::insertMsg, &amp;a)</span></span>; <span class="hljs-comment">//这里要传入引用保证是同一个对象</span><br>	<span class="hljs-comment">//创建一个读取消息线程</span><br>	<span class="hljs-function">std::thread <span class="hljs-title">readTd</span><span class="hljs-params">(&amp;A::readMsg, &amp;a)</span></span>; <span class="hljs-comment">//这里要传入引用保证是同一个对象</span><br>	insertTd.<span class="hljs-built_in">join</span>();<br>	readTd.<span class="hljs-built_in">join</span>();<br>	<span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>语句1和语句2表示线程A先锁资源1，再锁资源2，语句3和语句4表示线程B先锁资源2再锁资源1，具备死锁产生的条件。</p>
+<h3 id="死锁的解决方案">死锁的解决方案</h3>
+<p>保证上锁的顺序一致。</p>
+<h3 id="死锁必要条件">死锁必要条件</h3>
+<ul>
+<li>互斥条件：进程对所需求的资源具有排他性，若有其他进程请求该资源，请求进程只能等待。</li>
+<li>不剥夺条件：进程在所获得的资源未释放前，不能被其他进程强行夺走，只能自己释放</li>
+<li>请求和保持条件：进程当前所拥有的资源在进程请求其他新资源时，由该进程继续占有。</li>
+<li>循环等待条件：存在一种进程资源循环等待链，链中每个进程已获得的资源同时被链中下一个进程所请求。</li>
+</ul>
+<h3 id="处理方法">处理方法</h3>
+<p>主要有以下四种方法：</p>
+<ul>
+<li>鸵鸟策略</li>
+<li>死锁检测与死锁恢复</li>
+<li>死锁预防</li>
+<li>死锁避免</li>
+</ul>
+<h4 id="鸵鸟策略"><strong>鸵鸟策略</strong></h4>
+<p>把头埋在沙子里，假装根本没发生问题。</p>
+<p>因为解决死锁问题的代价很高，因此鸵鸟策略这种不采取任务措施的方案会获得更高的性能。</p>
+<p>当发生死锁时不会对用户造成多大影响，或发生死锁的概率很低，可以采用鸵鸟策略。</p>
+<p>大多数操作系统，包括 <strong>Unix，Linux 和
+Windows</strong>，处理死锁问题的办法仅仅是忽略它。</p>
+<h4 id="死锁检测与死锁恢复"><strong>死锁检测与死锁恢复</strong></h4>
+<p>不试图阻止死锁，而是当检测到死锁发生时，采取措施进行恢复。</p>
+<ol type="1">
+<li><p>每种类型一个资源的死锁检测</p>
+<figure>
+<img
+src="/img/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/202205212345141-170331929874913.png" srcset="/img/loading.gif" lazyload
+alt="img" />
+<figcaption aria-hidden="true">img</figcaption>
+</figure>
+<p>上图为资源分配图，其中<strong>方框表示资源</strong>，<strong>圆圈表示进程</strong>。资源指向进程表示该资源已经分配给该进程，进程指向资源表示进程请求获取该资源。</p>
+<p>图 a 可以抽取出环，如图 b，它满足了环路等待条件，因此会发生死锁。</p>
+<p>每种类型一个资源的死锁检测算法是通过<strong>检测有向图是否存在环来实现</strong>，从一个节点出发进行深度优先搜索，对访问过的节点进行标记，如果访问了已经标记的节点，就表示有向图存在环，也就是检测到死锁的发生。</p></li>
+<li><p>每种类型多个资源的死锁检测</p>
+<figure>
+<img
+src="/img/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/202205212345141-170332063527515.png" srcset="/img/loading.gif" lazyload
+alt="img" />
+<figcaption aria-hidden="true">img</figcaption>
+</figure>
+<p>上图中，有三个进程四个资源，每个数据代表的含义如下：</p>
+<ul>
+<li>E 向量：资源总量</li>
+<li>A 向量：资源剩余量</li>
+<li>C
+矩阵：每个进程所拥有的资源数量，每一行都代表一个进程拥有资源的数量</li>
+<li>R 矩阵：每个进程请求的资源数量</li>
+</ul>
+<p>进程 P1 和 P2 所请求的资源都得不到满足，只有进程 P3 可以，让 P3
+执行，之后释放 P3 拥有的资源，此时 A = (2 2 2 0)。P2
+可以执行，执行后释放 P2 拥有的资源，A = (4 2 2 1) 。P1
+也可以执行。所有进程都可以顺利执行，没有死锁。</p>
+<p><strong>算法总结如下</strong>：</p>
+<p>每个进程最开始时都不被标记，执行过程有可能被标记。当算法结束时，任何没有被标记的进程都是死锁进程。</p>
+<ol type="1">
+<li>寻找一个没有标记的进程 Pi，它所请求的资源小于等于 A。</li>
+<li>如果找到了这样一个进程，那么将 C 矩阵的第 i 行向量加到 A
+中，标记该进程，并转回 1。</li>
+<li>如果没有这样一个进程，算法终止。</li>
+</ol></li>
+</ol>
+<h3 id="死锁恢复">死锁恢复</h3>
+<ul>
+<li>利用抢占恢复</li>
+<li>利用回滚恢复</li>
+<li>通过杀死进程恢复</li>
+</ul>
+<h3 id="死锁预防">死锁预防</h3>
+<p>在程序运行之前预防发生死锁。</p>
+<ol type="1">
+<li><p>破坏互斥条件</p>
+<p>例如假脱机打印机技术允许若干个进程同时输出，唯一真正请求物理打印机的进程是打印机守护进程。</p></li>
+<li><p>破坏请求和保持条件</p>
+<p>一种实现方式是规定所有进程在开始执行前请求所需要的全部资源。</p></li>
+<li><p>破坏不剥夺条件</p>
+<p>允许抢占资源</p></li>
+<li><p>破环循环等待条件</p>
+<p>给资源统一编号，进程只能按编号顺序来请求资源。</p></li>
+</ol>
+<h3 id="死锁避免">死锁避免</h3>
+<p>在程序运行时避免发生死锁</p>
+<ol type="1">
+<li><p>安全状态</p>
+<figure>
+<img src="/img/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/202205212345923.png" srcset="/img/loading.gif" lazyload
+alt="img" />
+<figcaption aria-hidden="true">img</figcaption>
+</figure>
+<p>图 a 的第二列 Has 表示已拥有的资源数，第三列 Max
+表示总共需要的资源数，Free 表示还有可以使用的资源数。从图 a
+开始出发，先让 B 拥有所需的所有资源（图 b），运行结束后释放 B，此时 Free
+变为 5（图 c）；接着以同样的方式运行 C 和
+A，使得所有进程都能成功运行，因此可以称图 a 所示的状态时安全的。</p>
+<p>定义：<strong>如果没有死锁发生，并且即使所有进程突然请求对资源的最大需求，也仍然存在某种调度次序能够使得每一个进程运行完毕，则称该状态是安全的。</strong></p>
+<p>安全状态的检测与死锁的检测类似，因为安全状态必须要求不能发生死锁。下面的银行家算法与死锁检测算法非常类似，可以结合着做参考对比。</p></li>
+<li><p>单个资源的银行家算法</p>
+<p>一个小城镇的银行家，他向一群客户分别承诺了一定的贷款额度，算法要做的是判断对请求的满足是否会进入不安全状态，如果是，就拒绝请求；否则予以分配。</p>
+<figure>
+<img src="/img/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/202205212345716.png" srcset="/img/loading.gif" lazyload
+alt="单个资源的银行家算法" />
+<figcaption aria-hidden="true">单个资源的银行家算法</figcaption>
+</figure>
+<p>上图 c 为不安全状态，因此算法会拒绝之前的请求，从而避免进入图 c
+中的状态。</p></li>
+<li><p>多个资源的银行家算法</p>
+<figure>
+<img
+src="/img/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/202205212345258-170332226699720.png" srcset="/img/loading.gif" lazyload
+alt="img" />
+<figcaption aria-hidden="true">img</figcaption>
+</figure>
+<p>上图中有五个进程，四个资源。左边的图表示已经分配的资源，右边的图表示还需要分配的资源。最右边的
+E、P 以及 A
+分别表示：总资源、已分配资源以及可用资源，注意这三个为向量，而不是具体数值，例如
+A=(1020)，表示 4 个资源分别还剩下 1/0/2/0。</p></li>
+<li><p><strong>检查一个状态是否安全的算法如下</strong>：</p>
+<ul>
+<li>查找右边的矩阵是否存在一行小于等于向量
+A。如果不存在这样的行，那么系统将会发生死锁，状态是不安全的。</li>
+<li>假若找到这样一行，将该进程标记为终止，并将其已分配资源加到 A
+中。</li>
+<li>重复以上两步，直到所有进程都标记为终止，则状态时安全的。</li>
+</ul>
+<p>如果一个状态不是安全的，需要拒绝进入这个状态。</p></li>
+</ol>
+<h2
+id="为什么分段式存储管理有外部碎片而无内部碎片为什么固定分区分配有内部碎片而不会有外部碎片">为什么分段式存储管理有外部碎片而无内部碎片？为什么固定分区分配有内部碎片而不会有外部碎片？</h2>
+<p>分段式分配是按需分配，而固定式分配是固定分配的方式。</p>
+<h2 id="内部碎片与外部碎片">内部碎片与外部碎片</h2>
+<p>内碎片：分配给某些进程的内存区域中有些部分没用上，常见于固定分配方式</p>
+<p>内存总量相同，100M</p>
+<p>固定分配，将100M分割成10块，每块10M，一个程序需要45M，那么需要分配5块，第五块只用了5M，剩下的5M就是内部碎片；</p>
+<p>分段式分配，按需分配，一个程序需要45M，就给分片45MB，剩下的55M供其它程序使用，不存在内部碎片。</p>
+<p>外碎片：内存中某些空闲区因为比较小，而难以利用上，一般出现在内存动态分配方式中</p>
+<p>分段式分配：内存总量相同，100M，比如，内存分配依次5M，15M，50M，25M，程序运行一段时间之后，5M，15M的程序运行完毕，释放内存，其他程序还在运行，再次分配一个10M的内存供其它程序使用，只能从头开始分片，这样，就会存在10M+5M的外部碎片</p>
+<h2 id="如何消除外部碎片">如何消除外部碎片</h2>
+<p>对于<strong>外部碎片，通过紧凑技术消除</strong>，就是操作系统不时地对进程进行移动和整理。但是这需要动态重定位寄存器地支持，且相对费时。紧凑地过程实际上类似于Windows系统中地磁盘整理程序，只不过后者是对外存空间地紧凑。</p>
+<h2
+id="冯诺依曼结构有哪几个模块分别对应现代计算机的哪几个部分百度安全一面">冯诺依曼结构有哪几个模块？分别对应现代计算机的哪几个部分？（百度安全一面）</h2>
+<ul>
+<li><strong>存储器</strong>：内存</li>
+<li><strong>控制器</strong>，<strong>运算器</strong>：共同组成CPU</li>
+<li><strong>输入设备</strong>：键盘</li>
+<li><strong>输出设备</strong>：显示器、网卡</li>
+</ul>
+<div class="admonition info">
+<p class="admonition-title">
+现代计算机结构和传统冯诺依曼结构的区别
+</p>
+<p>
+现代计算机结构和传统冯诺依曼结构还是有一定区别的，传统冯诺依曼结构是把控制器和运算器分开，而现代计算机将运算器和控股之气放到一起，形成了<strong>中央处理器(CPU)</strong>。
+</p>
+</div>
+<h2
+id="多进程和多线程的区别是什么换句话说什么时候该用多线程什么时候该用多进程">多进程和多线程的区别是什么？换句话说，什么时候该用多线程，什么时候该用多进程？</h2>
+<ul>
+<li>频繁修改：需要频繁创建和销毁的优先使用<strong>多线程</strong></li>
+<li>计算量：需要大量计算的优先使用<strong>多线程</strong>
+因为需要消耗大量CPU资源且切换频繁，所以多线程好一点</li>
+<li>相关性：任务间相关性比较强的用<strong>多线程</strong>，相关性比较弱的用多进程。因为线程之间的数据共享和同步比较简单。</li>
+<li>多分布：可能要扩展到多机分布的用<strong>多进程</strong>，多核分布用<strong>多线程</strong>。</li>
+</ul>
+<p>但是实际中更常见的是进程加线程的结合方式，并不是非此即彼的。</p>
+<h2
+id="服务器高并发的解决方案你知道多少">服务器高并发的解决方案你知道多少？</h2>
+<ul>
+<li><strong>应用数据与静态资源分离</strong>：将静态资源（图片，视频，js，css等）单独保存到专门的静态资源服务器中，在客户端访问的时候从静态资源服务器中返回静态资源，从主服务器中返回应用数据。</li>
+<li><strong>客户端缓存</strong>：因为效率最高，消耗资源最小的就是纯静态的html页面，所以可以把网站上的页面尽可能用静态的来实现，在页面过期或者有数据更新之后再将页面重新缓存。或者先生成静态页面，然后用ajax异步请求获取动态数据。</li>
+<li><strong>集群和分布式</strong>
+：<strong>集群</strong>是所有的服务器都有相同的功能，请求哪台都可以，主要起分流作用，<strong>分布式</strong>是将不同的业务放到不同的服务器中，处理一个请求可能需要使用到多台服务器，起到加快请求处理的速度。可以使用服务器集群和分布式架构，使得原本属于一个服务器的计算压力分散到多个服务器上。同时加快请求处理的速度。</li>
+<li><strong>反向代理</strong>：在访问服务器的时候，服务器通过别的服务器获取资源或结果返回给客户端。</li>
+</ul>
 
                 
               </div>
@@ -1471,6 +1740,11 @@ alt="CLOCK算法" />
           <div>2023年12月23日</div>
         </div>
       
+      
+        <div class="license-meta-item license-meta-date">
+          <div>更新于</div>
+          <div>2023年12月23日</div>
+        </div>
       
       
         <div class="license-meta-item">
