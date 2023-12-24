@@ -539,16 +539,26 @@ InnoDB
 对于InnoDB类型的表，其数据的物理组织形式是聚簇表
 </li>
 </ul>
-</div>
-<ol start="2" type="1">
-<li>MyISAM
-<ul>
-<li>不支持事务</li>
-<li>MyISAM的索引和数据是分开的，并且索引是有压缩的</li>
-<li>每张MyISAM表在磁盘上会对应三个文件：.frm文件（存储表的定义数据）、.MYD文件（存放表具体记录的数据）、.MYI文件（存储索引）</li>
-<li>MyISAM表的select count (*) 是非常快的</li>
-</ul></li>
+<ol start="2">
+<li>
+MyISAM
+</li>
 </ol>
+<ul>
+<li>
+不支持事务
+</li>
+<li>
+MyISAM的索引和数据是分开的，并且索引是有压缩的
+</li>
+<li>
+每张MyISAM表在磁盘上会对应三个文件：.frm文件（存储表的定义数据）、.MYD文件（存放表具体记录的数据）、.MYI文件（存储索引）
+</li>
+<li>
+MyISAM表的select count (*) 是非常快的
+</li>
+</ul>
+</div>
 
                 
               </div>
