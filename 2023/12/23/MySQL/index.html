@@ -25,6 +25,10 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://gstarmin.github.io/img/MySQL/202205220024265.png">
 <meta property="og:image" content="https://gstarmin.github.io/img/MySQL/202205220024265.png">
+<meta property="og:image" content="https://gstarmin.github.io/img/MySQL/202205220024781.png">
+<meta property="og:image" content="https://gstarmin.github.io/img/MySQL/202205220024132.png">
+<meta property="og:image" content="https://gstarmin.github.io/img/MySQL/202205220024561.png">
+<meta property="og:image" content="https://gstarmin.github.io/img/MySQL/202205220024930.png">
 <meta property="article:published_time" content="2023-12-23T12:16:10.000Z">
 <meta property="article:modified_time" content="2023-12-23T12:16:10.000Z">
 <meta property="article:author" content="Starmin">
@@ -299,7 +303,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          5.3k 字
+          17k 字
         
       </span>
     
@@ -310,7 +314,7 @@
         
         
         
-          53 分钟
+          172 分钟
         
       </span>
     
@@ -607,23 +611,561 @@ MyISAM表的select count (*) 是非常快的
 info
 </p>
 <p>
-MySQL InnoDB 存储引擎的默认支持的隔离级别是 REPEATABLE-READ（可重读）
+MySQL InnoDB 存储引擎的默认支持的隔离级别是
+<strong>REPEATABLE-READ（可重读）</strong>,与 SQL
+标准不同的地方在于InnoDB 存储引擎在
+REPEATABLE-READ（可重读）事务隔离级别下使用的是Next-Key Lock
+锁算法，因此可以<strong>避免幻读</strong>的产生，这与其他数据库系统(如
+SQL Server)是不同的。所以说InnoDB 存储引擎的默认支持的隔离级别是
+REPEATABLE-READ（可重读）
+已经可以完全保证事务的隔离性要求，即<strong>达到了
+SQL标准的SERIALIZABLE(可串行化)隔离级别</strong>。
+</p>
+<p>
+因为隔离级别越低，事务请求的锁越少，所以大部分数据库系统的隔离级别都是READ-COMMITTED(读取提交内容):，但是你要知道的是InnoDB
+存储引擎默认使用 REPEATABLE-READ（可重读）并不会有任何性能损失。
 </p>
 </div>
+<h2
+id="都知道数据库索引采用b树而不是b树原因也有很多主要原因是什么">都知道数据库索引采用B+树而不是B树，原因也有很多，主要原因是什么？</h2>
+<p>B+树只要遍历叶子节点就可以实现整棵树的遍历，而且在数据库中基于范围的查询是非常频繁的，而B树只能中序遍历所有节点，效率太低。</p>
+<h2
+id="文件索引和数据库索引为什么使用b树而不是b树上个问题的详细回答">文件索引和数据库索引为什么使用B+树而不是B树?（上个问题的详细回答）</h2>
+<ul>
+<li><strong>遍历更方便</strong>：B+树只要遍历叶子节点就可以实现整棵树的遍历，而且在数据库中基于范围的查询是非常频繁的，而B树只能中序遍历所有节点，效率太低。</li>
+<li><strong>IO次数更少</strong>：由于B+树在内部节点上不包含数据信息，因此在内存页中能够存放更多的key。数据存放的更加紧密，具有更好的空间局部性。因此访问叶子节点上关联的数据也具有更好的缓存命中率</li>
+<li><strong>磁盘寻址加载次数更少</strong>：B+tree的内部结点并没有指向关键字具体信息的指针(红色部分)，因此其内部结点相对B
+树更小。如果把所有同一内部结点的关键字存放在同一块盘中，那么盘块所能容纳的关键字数量也越多。一次性读入内存中的需要查找的关键字也就越多，相对来说IO读写次数也就降低了</li>
+<li><strong>查找效率稳定</strong>：B+树查找效率更加稳定，B树有可能在中间节点找到数据，稳定性不够。</li>
+</ul>
+<h2 id="听说过视图吗那游标呢">听说过视图吗？那游标呢？</h2>
+<p>视图是一种虚拟的表，通常是有一个表或者多个表的行或列的子集，具有和物理表相同的功能
+游标是对查询出来的结果集作为一个单元来有效的处理。一般不使用游标，但是需要逐条处理数据的时候，游标显得十分重要。</p>
+<h2
+id="mysql中为什么要有事务回滚机制">MySQL中为什么要有事务回滚机制？</h2>
+<p>MySQL 中，恢复机制是通过回滚日志（undo
+log）实现的，所有事务进行的修改都会先记录到这个回滚日志中，然后在对数据库中的对应行进行写入。
+<strong>当事务已经被提交之后，就无法再次回滚了。</strong></p>
+<p>回滚日志作用：</p>
+<ol type="1">
+<li>能够在发生错误或者用户执行 ROLLBACK 时提供回滚相关的信息<br />
+</li>
+<li>在整个系统发生崩溃、数据库进程直接被杀死后，当用户再次启动数据库进程时，还能够立刻通过查询回滚日志将之前未完成的事务进行回滚，这也就需要回滚日志必须先于数据持久化到磁盘上，是我们需要先写日志后写数据库的主要原因。</li>
+</ol>
+<h2
+id="数据库引擎innodb与myisam的区别">数据库引擎InnoDB与MyISAM的区别</h2>
+<h3 id="innodb"><strong>InnoDB</strong></h3>
+<ul>
+<li>是 MySQL
+默认的事务型存储引擎，只有在需要它不支持的特性时，才考虑使用其它存储引擎。</li>
+<li>实现了四个标准的隔离级别，默认级别是可重复读(REPEATABLE
+READ)。在可重复读隔离级别下，通过多版本并发控制(MVCC)+ 间隙锁(Next-Key
+Locking)防止幻影读。</li>
+<li>主索引是聚簇索引，在索引中保存了数据，从而避免直接读取磁盘，因此对查询性能有很大的提升。</li>
+<li>内部做了很多优化，包括从磁盘读取数据时采用的可预测性读、能够加快读操作并且自动创建的自适应哈希索引、能够加速插入操作的插入缓冲区等。</li>
+<li>支持真正的在线热备份。其它存储引擎不支持在线热备份，要获取一致性视图需要停止对所有表的写入，而在读写混合场景中，停止写入可能也意味着停止读取。</li>
+</ul>
+<p>### <strong>MyISAM</strong></p>
+<ul>
+<li>设计简单，数据以紧密格式存储。对于只读数据，或者表比较小、可以容忍修复操作，则依然可以使用它。</li>
+<li>提供了大量的特性，包括压缩表、空间数据索引等。</li>
+<li>不支持事务。</li>
+<li>不支持行级锁，只能对整张表加锁，读取时会对需要读到的所有表加共享锁，写入时则对表加排它锁。但在表有读取操作的同时，也可以往表中插入新的记录，这被称为并发插入(CONCURRENT
+INSERT)。</li>
+</ul>
+<h3 id="总结">总结</h3>
+<ul>
+<li>事务: InnoDB 是事务型的，可以使用 <code>Commit</code> 和
+<code>Rollback</code> 语句。</li>
+<li>并发: MyISAM 只支持表级锁，而 InnoDB 还支持行级锁。</li>
+<li>外键: InnoDB 支持外键。</li>
+<li>备份: InnoDB 支持在线热备份。</li>
+<li>崩溃恢复: MyISAM 崩溃后发生损坏的概率比 InnoDB
+高很多，而且恢复的速度也更慢。</li>
+<li>其它特性: MyISAM 支持压缩表和空间数据索引。</li>
+</ul>
+<h2
+id="数据库并发事务会带来哪些问题">数据库并发事务会带来哪些问题？</h2>
+<p>数据库并发会带来<strong>脏读</strong>、<strong>幻读</strong>、<strong>丢弃更改</strong>、<strong>不可重复读</strong>这四个常见问题，其中：</p>
+<ul>
+<li><strong>脏读</strong>：在第一个修改事务和读取事务进行的时候，读取事务读到的数据为100，这是修改之后的数据，但是之后该事务满足一致性等特性而做了回滚操作，那么读取事务得到的结果就是脏数据了。</li>
+<li><strong>幻读</strong>：一般是T1在某个范围内进行修改操作（增加或者删除），而T2读取该范围导致读到的数据是修改之前的了，强调范围。</li>
+<li><strong>丢弃修改</strong>：两个写事务T1
+T2同时对A=0进行递增操作，结果T2覆盖T1，导致最终结果是1
+而不是2，事务被覆盖</li>
+<li><strong>不可重复读</strong>：T2 读取一个数据，然后T1
+对该数据做了修改。如果 T2
+再次读取这个数据，此时读取的结果和第一次读取的结果不同。</li>
+</ul>
+<h3 id="脏读"><strong>脏读</strong></h3>
+<figure>
+<img src="/img/MySQL/202205220024781.png" srcset="/img/loading.gif" lazyload alt="脏读" />
+<figcaption aria-hidden="true">脏读</figcaption>
+</figure>
+<p>第一个事务首先读取var变量为50，接着准备更新为100的时，并未提交，第二个事务已经读取var为100，此时第一个事务做了回滚。最终第二个事务读取的var和数据库的var不一样。</p>
+<h3 id="幻读幻影读"><strong>幻读（幻影读）</strong></h3>
+<figure>
+<img src="/img/MySQL/202205220024132.png" srcset="/img/loading.gif" lazyload alt="幻读" />
+<figcaption aria-hidden="true">幻读</figcaption>
+</figure>
+<p>T1 读取某个范围的数据，T2 在这个范围内插入新的数据，T1
+再次读取这个范围的数据，此时读取的结果和和第一次读取的结果不同。</p>
+<h3 id="丢弃修改"><strong>丢弃修改</strong></h3>
+<figure>
+<img src="/img/MySQL/202205220024561.png" srcset="/img/loading.gif" lazyload alt="丢弃修改" />
+<figcaption aria-hidden="true">丢弃修改</figcaption>
+</figure>
+<p>T1 和 T2 两个事务都对一个数据进行修改，T1 先修改，T2 随后修改，T2
+的修改覆盖了 T1
+的修改。例如：事务1读取某表中的数据A=50，事务2也读取A=50，事务1修改A=A+50，事务2也修改A=A+50，最终结果A=100，事务1的修改被丢失。</p>
+<h3 id="不可重复读"><strong>不可重复读</strong></h3>
+<figure>
+<img src="/img/MySQL/202205220024930.png" srcset="/img/loading.gif" lazyload alt="不可重复读" />
+<figcaption aria-hidden="true">不可重复读</figcaption>
+</figure>
+<p>T2 读取一个数据，T1 对该数据做了修改。如果 T2
+再次读取这个数据，此时读取的结果和第一次读取的结果不同。</p>
+<h2
+id="数据库悲观锁和乐观锁的原理和应用场景分别有什么">数据库悲观锁和乐观锁的原理和应用场景分别有什么？</h2>
+<p><strong>悲观锁，先获取锁，再进行业务操作</strong>，一般就是利用类似
+SELECT … FOR UPDATE 这样的语句，对数据加锁，避免其他事务意外修改数据。
+当数据库执行SELECT … FOR UPDATE时会获取被select中的数据行的行锁，select
+for
+update获取的行锁会在当前事务结束时自动释放，因此必须在事务中使用。</p>
+<p><strong>乐观锁，先进行业务操作，只在最后实际更新数据时进行检查数据是否被更新过</strong>。Java
+并发包中的 AtomicFieldUpdater 类似，也是利用 CAS
+机制，并不会对数据加锁，而是通过对比数据的时间戳或者版本号，来实现乐观锁需要的版本判断。</p>
+<h2
+id="mysql索引主要使用的两种数据结构是什么">MySQL索引主要使用的两种数据结构是什么？</h2>
+<ul>
+<li><p><strong>哈希索引</strong>，对于哈希索引来说，底层的数据结构肯定是哈希表，因此<strong>在绝大多数需求为单条记录查询</strong>的时候，可以选择哈希索引，查询性能最快；其余大部分场景，建议选择BTree索引</p></li>
+<li><p><strong>BTree索引</strong>，Mysql的BTree索引使用的是B树中的B+Tree，BTREE索引就是一种将索引值按一定的算法，存入一个树形的数据结构中（二叉树），每次查询都是从树的入口root开始，依次遍历node，获取leaf。</p>
+<p>但对于主要的两种存储引擎（MyISAM和InnoDB）的实现方式是不同的。</p></li>
+</ul>
+<h2
+id="数据库为什么要进行分库和分表呢都放在一个库或者一张表中不可以吗">数据库为什么要进行分库和分表呢？都放在一个库或者一张表中不可以吗？</h2>
+<p>分库与分表的目的在于，减小数据库的单库单表负担，提高查询性能，缩短查询时间。</p>
+<p><strong>通过分表</strong>，可以减少数据库的单表负担，将压力分散到不同的表上，同时因为不同的表上的数据量少了，起到提高查询性能，缩短查询时间的作用，此外，可以很大的缓解表锁的问题。</p>
+<p>分表策略可以归纳为垂直拆分和水平拆分：</p>
+<ul>
+<li><strong>水平拆分</strong>：将同一个表的数据按一定规则拆到不同的数据库中。当表的行数超过200万行时，就会变慢，这时可以把一张的表的数据拆成多张表来存放</li>
+<li><strong>垂直拆分</strong>：将一个表按照字段分成多表，每个表存储其中一部分字段</li>
+</ul>
+<p><strong>库内分表</strong>，仅仅是解决了单表数据过大的问题，但并没有把单表的数据分散到不同的物理机上，因此并不能减轻
+MySQL 服务器的压力，仍然存在同一个物理机上的资源竞争和瓶颈，包括
+CPU、内存、磁盘 IO、网络带宽等。</p>
+<p><strong>分库与分表带来的分布式困境与应对之策</strong>：</p>
+<ul>
+<li>数据迁移与扩容问题：一般做法是通过程序先读出数据，然后按照指定的分表策略再将数据写入到各个分表中。</li>
+<li>分页与排序问题：需要在不同的分表中将数据进行排序并返回，并将不同分表返回的结果集进行汇总和再次排序，最后再返回给用户。</li>
+</ul>
+<h2
+id="不可重复读和幻读区别是什么可以举个例子吗">不可重复读和幻读区别是什么？可以举个例子吗？</h2>
+<p><strong>不可重复读的重点是修改，幻读的重点在于新增或者删除。</strong></p>
+<ul>
+<li>例1（同样的条件, 你读取过的数据, 再次读取出来发现值不一样了
+）：事务1中的A先生读取自己的工资为
+1000的操作还没完成，事务2中的B先生就修改了A的工资为2000，导致A再读自己的工资时工资变为
+2000；这就是不可重复读。</li>
+<li>例2（同样的条件, 第1次和第2次读出来的记录数不一样
+）：假某工资单表中工资大于3000的有4人，事务1读取了所有工资大于3000的人，共查到4条记录，这时事务2
+又插入了一条工资大于3000的记录，事务1再次读取时查到的记
+录就变为了5条，这样就导致了幻读。</li>
+</ul>
+<h2
+id="mysql中有四种索引类型可以简单说说吗">MySQL中有四种索引类型，可以简单说说吗？</h2>
+<ul>
+<li><strong>FULLTEXT</strong>
+：即为全文索引，目前只有MyISAM引擎支持。其可以在CREATE TABLE ，ALTER
+TABLE ，CREATE INDEX 使用，不过目前只有 CHAR、VARCHAR ，TEXT
+列上可以创建全文索引，需要注意的是MySQL5.6以后支持全文索引了，5.6之前是不支持的。</li>
+<li><strong>HASH</strong>
+：由于HASH的唯一（几乎100%的唯一）及类似键值对的形式，很适合作为索引。
+HASH索引可以一次定位，不需要像树形索引那样逐层查找,因此具有极高的效率。但是，这种高效是有条件的，即只在“=”和“in”条件下高效，对于范围查询、排序及组合索引仍然效率不高。</li>
+<li><strong>BTREE</strong>
+：BTREE索引就是一种将索引值按一定的算法，存入一个树形的数据结构中（二叉树），每次查询都是从树的入口root开始，依次遍历node，获取leaf。这是MySQL里默认和最常用的索引类型。</li>
+<li><strong>RTREE</strong>
+：RTREE在MySQL很少使用，仅支持geometry数据类型，支持该类型的存储引擎只有MyISAM、BDb、InnoDb、NDb、Archive几种。
+相对于BTREE，RTREE的优势在于范围查找。</li>
+</ul>
+<h2 id="mysql的索引种类有哪些">MySQL的索引种类有哪些？</h2>
+<ul>
+<li><p><strong>普通索引</strong>：最基本的索引，没有任何限制。</p></li>
+<li><p><strong>唯一索引</strong>：索引列的值必须唯一，但允许有空值。</p></li>
+<li><p><strong>主键索引</strong>：一种特殊的唯一索引，一个表只能有一个主键，不允许有空值。</p></li>
+<li><p><strong>全文索引</strong>：主要用来查找文本中的关键字，而不是直接与索引中的值相比较。</p></li>
+</ul>
 <div class="admonition info">
 <p class="admonition-title">
 info
 </p>
 <p>
-与 SQL 标准不同的地方在于InnoDB 存储引擎在
-REPEATABLE-READ（可重读）事务隔离级别下使用的是Next-Key Lock
-锁算法，因此可以避免幻读的产生，这与其他数据库系统(如 SQL
-Server)是不同的。所以说InnoDB 存储引擎的默认支持的隔离级别是
-REPEATABLE-READ（可重读） 已经可以完全保证事务的隔离性要求，即达到了
-SQL标准的SERIALIZABLE(可串行化)隔离级别。
+索引类型主要指的是索引的数据结构，如B-Tree、Hash、R-Tree等。不同类型的索引有不同的适用场景和性能特性。例如，B-Tree索引适用于全键值、键值范围或键前缀查找，而Hash索引主要适用于等值查询。
 </p>
 </div>
-<pre><code class="hljs">因为隔离级别越低，事务请求的锁越少，所以大部分数据库系统的隔离级别都是READ-COMMITTED(读取提交内 容):，但是你要知道的是InnoDB 存储引擎默认使用 REPEATABLE-READ（可重读）并不会有任何性能损失。</code></pre>
+<p>​
+索引种类则是根据索引的特性和约束来分类的，包括普通索引、唯一索引、主键索引和全文索引。</p>
+<h2 id="视图的作用是什么可以更改吗">视图的作用是什么？可以更改吗？</h2>
+<p><strong>视图</strong>是一种虚拟表，其内容由查询定义。与真实的表一样，视图包含一系列带有名称的列和行数据。但是，视图并不在数据库中以存储的数据值集形式存在。行和列数据来自由定义视图的查询所引用的表，并且在引用视图时动态生成。</p>
+<p>视图的<strong>主要作用</strong>包括：</p>
+<ul>
+<li>简化用户对数据的理解和操作：视图可以简化复杂的SQL查询，使得用户不必为以后的操作每次指定全部的条件。</li>
+<li>增加数据的安全性：通过视图，用户只能查询和修改指定的数据，防止敏感信息被未授权的用户查看，增强机密信息的安全性。</li>
+<li>提高表的逻辑独立性：视图可以屏蔽原有表结构变化带来的影响。</li>
+</ul>
+<p>视图<strong>可以被修改</strong>，MySQL中，你可以使用ALTER
+VIEW语句来修改已存在的视图。此外，视图是一个虚拟表，实际的数据来自于基本表，所以通过插入、修改和删除操作更新视图中的数据，实质上是在更新视图所引用的基本表的数据，也就是说，<strong>更新视图会作用在原表上</strong>。</p>
+<h2
+id="场景题假如你所在的公司选择mysql数据库作数据存储一天五万条以上的增量预计运维三年你有哪些优化手段">场景题：假如你所在的公司选择MySQL数据库作数据存储，一天五万条以上的增量，预计运维三年，你有哪些优化手段？</h2>
+<ul>
+<li>设计良好的数据库结构，允许部分数据冗余，尽量避免join查询，提高效率。</li>
+<li>选择合适的表字段数据类型和存储引擎，适当的添加索引。</li>
+<li>MySQL库主从读写分离。</li>
+<li>找规律分表，减少单表中的数据量提高查询速度。</li>
+<li>添加缓存机制，比如Memcached，Apc等。</li>
+<li>不经常改动的页面，生成静态页面。</li>
+<li>书写高效率的SQL。比如 SELECT * FROM TABEL 改为 SELECT field_1,
+field_2, field_3 FROM TABLE。</li>
+</ul>
+<div class="admonition info">
+<p class="admonition-title">
+info
+</p>
+<p>
+Memcached是一个高性能的分布式内存对象缓存系统。它通过在内存中维护一个统一的巨大的hash表，能够用来存储各种格式的数据，包括图像、视频、文件以及数据库检索的结果等。简单的说就是将数据调用到内存中，然后从内存中读取，从而大大提高读取速度345。
+</p>
+<p>
+APC，全称是Alternative PHP
+Cache，是PHP的一个扩展。它除了可以将PHP代码解释成OPCode保存在内存中之外，还能在PHP的进程之间使用共享内存（系统内核的数据结构）来保存数据，而且完全透明。
+</p>
+</div>
+<h2
+id="什么时候需要建立数据库索引呢">什么时候需要建立数据库索引呢？</h2>
+<p>在最频繁使用的、用以缩小查询范围的字段,需要排序的字段上建立索引。</p>
+<p>不宜建索引的情况：</p>
+<ol type="1">
+<li>对于查询中很少涉及的列或者重复值比较多的列</li>
+<li>对于一些特殊的数据类型，不宜建立索引，比如文本字段（text）</li>
+</ol>
+<h2
+id="数据库中的主键超键候选键外键是什么">数据库中的主键、超键、候选键、外键是什么？</h2>
+<ul>
+<li><strong>超键</strong>：在关系中能唯一标识<strong>元组的属性集</strong>称为关系模式的超键</li>
+<li><strong>候选键</strong>：不含有<strong>多余属性的超键</strong>称为候选键。也就是在候选键中，若再删除属性，就不是键了！</li>
+<li><strong>主键</strong>：<strong>用户选作元组标识的一个候选键程序主键</strong></li>
+<li><strong>外键</strong>：如果关系模式<strong>R中属性K是其它模式的主键</strong>，那么<strong>k在模式R中称为外键</strong>。</li>
+</ul>
+<p>举例：</p>
+<table>
+<thead>
+<tr class="header">
+<th>学号</th>
+<th>姓名</th>
+<th>性别</th>
+<th>年龄</th>
+<th>系别</th>
+<th>专业</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>20020612</td>
+<td>李辉</td>
+<td>男</td>
+<td>20</td>
+<td>计算机</td>
+<td>软件开发</td>
+</tr>
+<tr class="even">
+<td>20060613</td>
+<td>张明</td>
+<td>男</td>
+<td>18</td>
+<td>计算机</td>
+<td>软件开发</td>
+</tr>
+<tr class="odd">
+<td>20060614</td>
+<td>王小玉</td>
+<td>女</td>
+<td>19</td>
+<td>物理</td>
+<td>力学</td>
+</tr>
+<tr class="even">
+<td>20060615</td>
+<td>李淑华</td>
+<td>女</td>
+<td>17</td>
+<td>生物</td>
+<td>动物学</td>
+</tr>
+<tr class="odd">
+<td>20060616</td>
+<td>赵静</td>
+<td>男</td>
+<td>21</td>
+<td>化学</td>
+<td>食品化学</td>
+</tr>
+<tr class="even">
+<td>20060617</td>
+<td>赵静</td>
+<td>女</td>
+<td>20</td>
+<td>生物</td>
+<td>植物学</td>
+</tr>
+</tbody>
+</table>
+<ol type="1">
+<li>超键：于是我们从例子中可以发现
+学号是标识学生实体的唯一标识。那么该元组的超键就为学号。除此之外我们还可以把它跟其他属性组合起来，比如：(<code>学号</code>，<code>性别</code>)，(<code>学号</code>，<code>年龄</code>)</li>
+<li>候选键：根据例子可知，学号是一个可以唯一标识元组的唯一标识，因此学号是一个候选键，实际上，候选键是超键的子集，比如
+（学号，年龄）是超键，但是它不是候选键。因为它还有了额外的属性。</li>
+<li>主键：简单的说，例子中的元组的候选键为学号，但是我们选定他作为该元组的唯一标识，那么学号就为主键。</li>
+<li>外键是相对于主键的，比如在学生记录里，主键为学号，在成绩单表中也有学号字段，因此学号为成绩单表的外键，为学生表的主键。</li>
+</ol>
+<p><strong>主键为候选键的子集，候选键为超键的子集，而外键的确定是相对于主键的。</strong></p>
+<h3 id="主键和候选键的区别">主键和候选键的区别</h3>
+<table>
+
+<thead>
+<tr class="header">
+<th style="text-align: center;">比较基础</th>
+<th style="text-align: center;">主键</th>
+<th style="text-align: center;">候选键</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;"><strong>定义</strong></td>
+<td
+style="text-align: center;">它是一个唯一且非空的键，用于唯一地标识模式中每个表的记录。</td>
+<td
+style="text-align: center;">它也是一个唯一键，用于唯一地标识关系或表中的记录。</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><strong>基本</strong></td>
+<td style="text-align: center;">一个表或关系只能包含一个主键。</td>
+<td style="text-align: center;">一个表或关系可以有多个候选键。</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><strong>NULL</strong></td>
+<td
+style="text-align: center;">主键的任何<strong>列都不能为NULL</strong>。</td>
+<td
+style="text-align: center;">候选键的列<strong>可以包含NULL值</strong>。</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><strong>目标</strong></td>
+<td style="text-align: center;">它是表或关系的基本组成部分。</td>
+<td style="text-align: center;">它表示哪个键可以用作主键。</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><strong>用途</strong></td>
+<td style="text-align: center;">它可以用作候选键。</td>
+<td style="text-align: center;">它可能或可能不用作主键。</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><strong>指定</strong></td>
+<td style="text-align: center;">不需要为任何关系指定主键。</td>
+<td
+style="text-align: center;">在不指定候选键的情况下无法建立关系。</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><strong>示例</strong></td>
+<td
+style="text-align: center;">考虑一个名为“student”的表，具有列（roll_no.,
+name, class, DOB, email, mobile）。这里，
+roll_no**列可以作为关系的主键，因为它可以唯一标识学生的记录。</td>
+<td style="text-align: center;">给定表中的roll_no,
+mobile<strong>和email</strong>列可以作为候选键，因为它们可以唯一标识学生的记录。</td>
+</tr>
+</tbody>
+</table>
+<h2 id="数据库三大范式">数据库三大范式</h2>
+<h3 id="第一范式"><strong>第一范式</strong></h3>
+<p>在任何一个关系数据库中，第一范式（1NF）是对关系模式的基本要求，不满足第一范式（1NF）的数据库就不是关系数据库。
+所谓第一范式（1NF）是指数据库表的每一列都是不可分割的基本数据项，同一列中不能有多个值，即实体中的某个属性不能有多个值或者不能有重复的属性。</p>
+<p>如果出现重复的属性，就可能需要定义一个新的实体，新的实体由重复的属性构成，新实体与原实体之间为一对多关系。在第一范式（1NF）中表的每一行只包含一个实例的信息。</p>
+<p>简而言之，<strong>第一范式就是无重复的列</strong>。</p>
+<h3 id="第二范式">第二范式</h3>
+<p>第二范式（2NF）是在第一范式（1NF）的基础上建立起来的，即满足第二范式（2NF）必须先满足第一范式（1NF）。第二范式（2NF）要求数据库表中的每个实例或行必须可以被惟一地区分。</p>
+<p>为实现区分通常需要为表加上一个列，以存储各个实例的惟一标识。这个惟一属性列被称为主关键字或主键、主码。
+第二范式（2NF）要求实体的属性完全依赖于主关键字。</p>
+<p>所谓完全依赖是指不能存在仅依赖主关键字一部分的属性，如果存在，那么这个属性和主关键字的这一部分应该分离出来形成一个新的实体，新实体与原实体之间是一对多的关系。为实现区分通常需要为表加上一个列，以存储各个实例的惟一标识。</p>
+<p>简而言之，<strong>第二范式就是非主属性非部分依赖于主关键字</strong>。</p>
+<h3 id="第三范式">第三范式</h3>
+<p>满足第三范式（3NF）必须先满足第二范式（2NF）。简而言之，第三范式（3NF）要求一个数据库表中不包含已在其它表中已包含的非主关键字信息。</p>
+<p>例如，<strong>存在一个部门信息表，其中每个部门有部门编号（dept_id）、部门名称、部门简介等信息。那么在员工信息表中列出部门编号后就不能再将部门名称、部门简介等与部门有关的信息再加入员工信息表中。如果不存在部门信息表，则根据第三范式（3NF）也应该构建它，否则就会有大量的数据冗余。</strong></p>
+<p>简而言之，第三范式就是属性不依赖于其它非主属性。</p>
+<h3 id="总结-1">总结</h3>
+<ul>
+<li>第一范式（1NF）：字段不可分； 　　</li>
+<li>第二范式（2NF）：有主键，非主键字段依赖主键； 　</li>
+<li>第三范式（3NF）：非主键字段不能相互依赖。</li>
+</ul>
+<p>解释：1NF：原子性。 字段不可再分,否则就不是关系数据库;；
+　　2NF：唯一性 。一个表只说明一个事物；
+　　3NF：每列都与主键有直接关系，不存在传递依赖。</p>
+<h2
+id="mysql常见的存储引擎innodbmyisam的区别适用场景分别是">MySQL常见的存储引擎InnoDB、MyISAM的区别？适用场景分别是？</h2>
+<ol type="1">
+<li>事务：MyISAM不支持，InnoDB支持</li>
+<li>锁级别： MyISAM 表级锁，InnoDB 行级锁及外键约束</li>
+<li>MyISAM存储表的总行数；InnoDB不存储总行数；</li>
+<li>MyISAM采用<strong>非聚集索引，B+树叶子存储指向数据文件的指针</strong>。InnoDB主键索引采用<strong>聚集索引，B+树叶子存储数据</strong></li>
+</ol>
+<p><strong>适用场景</strong>： MyISAM适合：
+插入不频繁，查询非常频繁，如果执行大量的SELECT，MyISAM是更好的选择，
+没有事务。 InnoDB适合：
+可靠性要求比较高，或者要求事务；表更新和查询都相当的频繁，
+大量的INSERT或UPDATE。</p>
+<h2 id="聚集索引和非聚集索引">聚集索引和非聚集索引</h2>
+<p>以字典为例，聚集索引就是按照拼音查询，非聚集索引就是按照偏旁等来进行查询。</p>
+<h3 id="聚集索引">聚集索引</h3>
+<p>我们的汉语字典的正文本身就是一个聚集索引。比如，我们要查"安"字，就会很自然地翻开字典的前几页，因为"安"的拼音是"an"，而按照拼音排序
+汉字的字典是以英文字母"a"开头并以"z"结尾的，那么"安"字就自然地排在字典的前部。如果你翻完了所有以"a"开头的部分仍然找不到这个字，那么就说明你的字典中没有这个字；也就是说，<strong>字典的正文部分本身就是一个目录，你不需要再去查其他目录来找到你需要找的内容</strong>。</p>
+<p>我们把这种<strong>正文内容本身就是一种按照一定规则排列的目录称为"聚集索引"</strong>。</p>
+<h3 id="非聚集索引">非聚集索引</h3>
+<p>仍然以字典为例，如果你遇到不认识的字，不知道它的发音，这时候，你就不能按照聚集索引的方法找到你要查的字，而需要去根据"偏旁部首"查到你要找的字，然后根据这个字后的页码直接翻到某页来找到你要找的字。</p>
+<p>但是结合"部首目录"和"检字表"而查到的字的排序并不是
+真正的正文的排序方法，比如你查"张"字，我们可以看到在查部首之后的检字表中"张"的页码是672页，检字表中"张"的上面是"驰"字，但页码却是63
+页，"张"的下面是"弩"字，页面是390页。</p>
+<p>我们把<strong>这种目录纯粹是目录，正文纯粹是正文的排序方式称为"非聚集索引"。</strong></p>
+<h3 id="区别-1">区别</h3>
+<p>聚集索引和非聚集索引的区别在于，通过<strong>聚集索引可以直接查到需要查找的数据</strong>，
+而通过<strong>非聚集索引只能查到记录对应的主键值 ，
+再使用主键的值通过聚集索引查找到需要的数据</strong>。
+聚集索引和非聚集索引的根本区别是表记录的排列顺序和与索引的排列顺序是否一致。</p>
+<h2
+id="事务四大特性acid原子性一致性隔离性持久性">事务四大特性（ACID）原子性、一致性、隔离性、持久性</h2>
+<p><strong>原子性</strong>：一个事务（transaction）中的所有操作，要么全部完成，要么全部不完成，不会结束在中间某个环节。
+。事务在执行过程中发生错误，会被恢复（Rollback）到事务开始前的状态，就像这个事务从来没有执行过一样。</p>
+<p><strong>一致性</strong>：在事务开始之前和事务结束以后，数据库的完整性没有被破坏。这表示写入的资料必须完全符合所有的预设规则，这包含资料的精确度、串联性以及后续数据库可以自发性地完成预定的工作。</p>
+<p><strong>隔离性</strong>：数据库允许多个并发事务同时对其数据进行读写和修改的能力，隔离性可以防止多个事务并发执行时由于交叉执行而导致数据的不一致。事务隔离分为不同级别，包括读未提交（Read
+uncommitted）、读提交（read committed）、可重复读（repeatable
+read）和串行化（Serializable）。</p>
+<p><strong>持久性</strong>：事务处理结束后，对数据的修改就是永久的，即便系统故障也不会丢失。</p>
+<h2
+id="sql中的now和current_date两个函数有什么区别">SQL中的NOW()和CURRENT_DATE()两个函数有什么区别？</h2>
+<p>NOW（）命令用于显示当前年份，月份，日期，小时，分钟和秒。
+CURRENT_DATE（）仅显示当前年份，月份和日期。</p>
+<h2 id="创建索引时需要注意什么">创建索引时需要注意什么？</h2>
+<ul>
+<li>非空字段：应该指定列为NOT NULL，除非你想存储NULL。在 MySQL
+中，含有空值的列很难进行查询优化，因为它们使得索引、索引的统计信息以及比较运算更加复杂。你应该用0、一个特殊的值或者一个空串代替空值；</li>
+<li>取值离散大的字段：变量各个取值之间的差异程度大的列放到联合索引的前面，可以通过count()函数查看字段的差异值，返回值越大说明字段的唯一值越多字段的离散程度高；</li>
+<li>索引字段越小越好：数据库的数据存储以页为单位一页存储的数据越多一次IO操作获取的数据越大效率越高。
+唯一、不为空、经常被查询的字段的字段适合建索引</li>
+</ul>
+<h2
+id="mysql中char和varchar的区别有哪些">MySQL中CHAR和VARCHAR的区别有哪些？</h2>
+<ul>
+<li>char的长度是不可变的，用空格填充到指定长度大小，而varchar的长度是可变的。</li>
+<li>char的存取速度还是要比varchar要快得多</li>
+<li>char的存储方式是：对英文字符（ASCII）占用1个字节，对一个汉字占用两个字节。varchar的存储方式是：对每个英文字符占用2个字节，汉字也占用2个字节。</li>
+</ul>
+<h2 id="mysql-索引使用的注意事项">MySQL 索引使用的注意事项</h2>
+<p>MySQL 索引通常是被用于提高 WHERE
+条件的数据行匹配时的搜索速度，在索引的使用过程中，存在一些使用细节和注意事项。</p>
+<h3
+id="不要在列上使用函数这将导致索引失效而进行全表扫描"><strong>不要在列上使用函数，这将导致索引失效而进行全表扫描</strong></h3>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">select</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">from</span> news <span class="hljs-keyword">where</span> <span class="hljs-keyword">year</span>(publish_time) <span class="hljs-operator">&lt;</span> <span class="hljs-number">2017</span><br></code></pre></td></tr></table></figure>
+<p>为了使用索引，防止执行全表扫描，可以进行改造:</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">select</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">from</span> news <span class="hljs-keyword">where</span> publish_time <span class="hljs-operator">&lt;</span> <span class="hljs-string">&#x27;2017-01-01&#x27;</span><br></code></pre></td></tr></table></figure>
+<p>还有一个建议，不要在列上进行运算，这也将导致索引失效而进行全表扫描</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">select</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">from</span> news <span class="hljs-keyword">where</span> id <span class="hljs-operator">/</span> <span class="hljs-number">100</span> <span class="hljs-operator">=</span> <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+<p>为了使用索引，防止执行全表扫描，可以进行改造</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">select</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">from</span> news <span class="hljs-keyword">where</span> id <span class="hljs-operator">=</span> <span class="hljs-number">1</span> <span class="hljs-operator">*</span> <span class="hljs-number">100</span><br></code></pre></td></tr></table></figure>
+<h3 id="尽量避免使用-或-not-in或-等否定操作符"><strong>尽量避免使用 !=
+或 not in或 &lt;&gt; 等否定操作符</strong></h3>
+<p>应该尽量避免在 where 子句中使用 != 或 not in 或 &lt;&gt;
+操作符，因为这几个操作符都会导致索引失效而进行全表扫描。尽量避免使用 or
+来连接条件 应该尽量避免在 where 子句中使用 or
+来连接条件，因为这会导致索引失效而进行全表扫描。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">select</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">from</span> news <span class="hljs-keyword">where</span> id <span class="hljs-operator">=</span> <span class="hljs-number">1</span> <span class="hljs-keyword">or</span> id <span class="hljs-operator">=</span> <span class="hljs-number">2</span><br></code></pre></td></tr></table></figure>
+<h3
+id="多个单列索引并不是最佳选择"><strong>多个单列索引并不是最佳选择</strong></h3>
+<p>MySQL
+只能使用一个索引，会从多个索引中选择一个限制最为严格的索引，因此，为多个列创建单列索引，并不能提高
+MySQL 的查询性能。 假设，有两个单列索引，分别为 news_year_idx(news_year)
+和
+news_month_idx(news_month)。现在，有一个场景需要针对资讯的年份和月份进行查询，那么，SQL
+语句可以写成：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">select</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">from</span> news <span class="hljs-keyword">where</span> news_year <span class="hljs-operator">=</span> <span class="hljs-number">2017</span> <span class="hljs-keyword">and</span> news_month <span class="hljs-operator">=</span> <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+<p>事实上，MySQL 只能使用一个单列索引。为了提高性能，可以使用复合索引
+news_year_month_idx(news_year, news_month) 保证 news_year 和 news_month
+两个列都被索引覆盖。</p>
+<h3
+id="复合索引的最左前缀原则"><strong>复合索引的最左前缀原则</strong></h3>
+<p>复合索引遵守“最左前缀”原则，即在查询条件中使用了复合索引的第一个字段，索引才会被使用。因此，在复合索引中索引列的顺序至关重要。如果不是按照索引的最左列开始查找，则无法使用索引。
+假设，有一个场景只需要针对资讯的月份进行查询，那么，SQL
+语句可以写成：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">select</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">from</span> news <span class="hljs-keyword">where</span> news_month <span class="hljs-operator">=</span> <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+<p>此时，无法使用 news_year_month_idx(news_year, news_month)
+索引，因为遵守“最左前缀”原则，在查询条件中没有使用复合索引的第一个字段，索引是不会被使用的。</p>
+<h3 id="覆盖索引的好处"><strong>覆盖索引的好处</strong></h3>
+<p>如果一个索引包含所有需要的查询的字段的值，直接根据索引的查询结果返回数据，而无需读表，能够极大的提高性能。因此，可以定义一个让索引包含的额外的列，即使这个列对于索引而言是无用的。</p>
+<h3
+id="范围查询对多列查询的影响"><strong>范围查询对多列查询的影响</strong></h3>
+<p>查询中的某个列有范围查询，则其右边所有列都无法使用索引优化查找。
+举个例子，假设有一个场景需要查询本周发布的资讯文章，其中的条件是必须是启用状态，且发布时间在这周内。那么，SQL
+语句可以写成：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">select</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">from</span> news <span class="hljs-keyword">where</span> publish_time <span class="hljs-operator">&gt;=</span> <span class="hljs-string">&#x27;2017-01-02&#x27;</span> <span class="hljs-keyword">and</span> publish_time <span class="hljs-operator">&lt;=</span> <span class="hljs-string">&#x27;2017-01-08&#x27;</span> <span class="hljs-keyword">and</span> enable <span class="hljs-operator">=</span> <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+<p>这种情况下，因为范围查询对多列查询的影响，将导致
+news_publish_idx(publish_time, enable) 索引中 publish_time
+右边所有列都无法使用索引优化查找。换句话说，news_publish_idx(publish_time,
+enable) 索引等价于 news_publish_idx(publish_time) 。
+对于这种情况，我的建议：对于范围查询，务必要注意它带来的副作用，并且尽量少用范围查询，可以通过曲线救国的方式满足业务场景。
+例如，上面案例的需求是查询本周发布的资讯文章，因此可以创建一个news_weekth
+字段用来存储资讯文章的周信息，使得范围查询变成普通的查询，SQL
+可以改写成：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">select</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">from</span> news <span class="hljs-keyword">where</span> news_weekth <span class="hljs-operator">=</span> <span class="hljs-number">1</span> <span class="hljs-keyword">and</span> enable <span class="hljs-operator">=</span> <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+<p>然而，并不是所有的范围查询都可以进行改造，对于必须使用范围查询但无法改造的情况，我的建议：不必试图用
+SQL 来解决所有问题，可以使用其他数据存储技术控制时间轴，例如 Redis 的
+SortedSet
+有序集合保存时间，或者通过缓存方式缓存查询结果从而提高性能。</p>
+<h3
+id="索引不会包含有null值的列"><strong>索引不会包含有NULL值的列</strong></h3>
+<p>只要列中包含有 NULL
+值都将不会被包含在索引中，复合索引中只要有一列含有
+NULL值，那么这一列对于此复合索引就是无效的。
+因此，在数据库设计时，除非有一个很特别的原因使用 NULL
+值，不然尽量不要让字段的默认值为 NULL。<br />
+</p>
+<h3 id="隐式转换的影响"><strong>隐式转换的影响</strong></h3>
+<p>当查询条件左右两侧类型不匹配的时候会发生隐式转换，隐式转换带来的影响就是可能导致索引失效而进行全表扫描。下面的案例中，date_str
+是字符串，然而匹配的是整数类型，从而发生隐式转换。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">select</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">from</span> news <span class="hljs-keyword">where</span> date_str <span class="hljs-operator">=</span> <span class="hljs-number">201701</span><br></code></pre></td></tr></table></figure>
+<p>因此，要谨记隐式转换的危害，时刻注意通过同类型进行比较。</p>
+<h3 id="like-语句的索引失效问题"><strong>like
+语句的索引失效问题</strong></h3>
+<p>like 的方式进行查询，在 like “value%” 可以使用索引，但是对于 like
+“%value%”
+这样的方式，执行全表查询，这在数据量小的表，不存在性能问题，但是对于海量数据，全表扫描是非常可怕的事情。所以，根据业务需求，考虑使用
+ElasticSearch 或 Solr 是个不错的方案。</p>
+<h2
+id="mysql中有哪些索引有什么特点">MySQL中有哪些索引？有什么特点？</h2>
+<ul>
+<li><strong>普通索引</strong>：仅加速查询</li>
+<li><strong>唯一索引</strong>：加速查询 + 列值唯一（可以有null）</li>
+<li><strong>主键索引</strong>：加速查询 + 列值唯一（不可以有null）+
+表中只有一个</li>
+<li><strong>组合索引</strong>：多列值组成一个索引，专门用于组合搜索，其效率大于索引合并</li>
+<li><strong>全文索引</strong>：对文本的内容进行分词，进行搜索</li>
+<li><strong>索引合并</strong>：使用多个单列索引组合搜索</li>
+<li><strong>覆盖索引</strong>：select的数据列只用从索引中就能够取得，不必读取数据行，换句话说查询列要被所建的索引覆盖</li>
+<li><strong>聚簇索引</strong>：表数据是和主键一起存储的，主键索引的叶结点存储行数据(包含了主键值)，二级索引的叶结点存储行的主键值。使用的是B+树作为索引的存储结构，非叶子节点都是索引关键字，但非叶子节点中的关键字中不存储对应记录的具体内容或内容地址。叶子节点上的数据是主键与具体记录(数据内容)</li>
+</ul>
+<h2
+id="既然索引有那么多优点为什么不对表总的每一列创建一个索引呢">既然索引有那么多优点，为什么不对表总的每一列创建一个索引呢？</h2>
+<ul>
+<li>当对表中的数据进行增加、删除和修改的时候，<strong>索引也要动态的维护</strong>，这样就降低了数据的维护速度。</li>
+<li><strong>索引需要占物理空间</strong>，除了数据表占数据空间之外，每一个索引还要占一定的物理空间，如果要建立簇索引，那么需要的空间就会更大。</li>
+<li><strong>创建索引和维护索引要耗费时间</strong>，这种时间随着数据量的增加而增加</li>
+</ul>
 
                 
               </div>
