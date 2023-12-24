@@ -1,0 +1,963 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Starmin">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="MySQL知识点 关系型和非关系型数据库？ 概念 关系型数据库：。关系数据库（或 SQL 数据库）以包含行和列的表格格式存储数据。列包含数据属性，行包含数据值。您可以链接关系数据库中的表，以更深入地了解不同数据点之间的相互关系。主要代表有SQL Server，Oracle,Mysql,PostgreSQL。 非关系型数据库：非关系数据库（或 NoSQL 数据库）使用各种数据模型来访问和管理数据。这">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MySQL">
+<meta property="og:url" content="https://gstarmin.github.io/2023/12/23/MySQL/">
+<meta property="og:site_name" content="私人杂货铺">
+<meta property="og:description" content="MySQL知识点 关系型和非关系型数据库？ 概念 关系型数据库：。关系数据库（或 SQL 数据库）以包含行和列的表格格式存储数据。列包含数据属性，行包含数据值。您可以链接关系数据库中的表，以更深入地了解不同数据点之间的相互关系。主要代表有SQL Server，Oracle,Mysql,PostgreSQL。 非关系型数据库：非关系数据库（或 NoSQL 数据库）使用各种数据模型来访问和管理数据。这">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gstarmin.github.io/img/MySQL/202205220024265.png">
+<meta property="og:image" content="https://gstarmin.github.io/img/MySQL/202205220024265.png">
+<meta property="article:published_time" content="2023-12-23T12:16:10.000Z">
+<meta property="article:modified_time" content="2023-12-23T12:16:10.000Z">
+<meta property="article:author" content="Starmin">
+<meta property="article:tag" content="面试">
+<meta property="article:tag" content="MySQL">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://gstarmin.github.io/img/MySQL/202205220024265.png">
+  
+  
+  
+  <title>MySQL - 私人杂货铺</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"gstarmin.github.io","root":"/","version":"1.9.3","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 5.4.2"><style>.mjpage .MJX-monospace {
+  font-family: monospace;
+}
+
+.mjpage .MJX-sans-serif {
+  font-family: sans-serif;
+}
+
+.mjpage {
+  display: inline;
+  font-style: normal;
+  font-weight: normal;
+  line-height: normal;
+  font-size: 100%;
+  font-size-adjust: none;
+  text-indent: 0;
+  text-align: left;
+  text-transform: none;
+  letter-spacing: normal;
+  word-spacing: normal;
+  word-wrap: normal;
+  white-space: nowrap;
+  float: none;
+  direction: ltr;
+  max-width: none;
+  max-height: none;
+  min-width: 0;
+  min-height: 0;
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+
+.mjpage * {
+  transition: none;
+  -webkit-transition: none;
+  -moz-transition: none;
+  -ms-transition: none;
+  -o-transition: none;
+}
+
+.mjx-svg-href {
+  fill: blue;
+  stroke: blue;
+}
+
+.MathJax_SVG_LineBox {
+  display: table !important;
+}
+
+.MathJax_SVG_LineBox span {
+  display: table-cell !important;
+  width: 10000em !important;
+  min-width: 0;
+  max-width: none;
+  padding: 0;
+  border: 0;
+  margin: 0;
+}
+
+.mjpage__block {
+  text-align: center;
+  margin: 1em 0em;
+  position: relative;
+  display: block !important;
+  text-indent: 0;
+  max-width: none;
+  max-height: none;
+  min-width: 0;
+  min-height: 0;
+  width: 100%;
+}
+</style></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Starmin</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="MySQL"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-12-23 20:16" pubdate>
+          2023年12月23日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          4.4k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          44 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">MySQL</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="mysql知识点">MySQL知识点</h1>
+<h2 id="关系型和非关系型数据库">关系型和非关系型数据库？</h2>
+<h3 id="概念">概念</h3>
+<p><strong>关系型数据库</strong>：。关系数据库（或 SQL
+数据库）以包含行和列的表格格式存储数据。列包含数据属性，行包含数据值。您可以链接关系数据库中的表，以更深入地了解不同数据点之间的相互关系。主要代表有SQL
+Server，Oracle,Mysql,PostgreSQL。</p>
+<p><strong>非关系型数据库</strong>：非关系数据库（或 NoSQL
+数据库）使用各种数据模型来访问和管理数据。这些数据库专门针对需要大数据量、低延迟和灵活数据模型的应用程序进行了优化，这是通过放宽其他数据库的某些数据一致性限制来实现的。主要代表MongoDB，Redis、CouchDB。</p>
+<h3 id="数据存储">数据存储</h3>
+<h4 id="关系型数据库">关系型数据库</h4>
+<p>关系数据库将数据存储在包含列和行的表中。每列代表一个特定的数据属性，每行代表该数据的一个实例。您为每个表指定一个主键，即唯一标识表的标识符列。您可以使用主键在表之间建立关系。您可以使用它作为领个表中的外键，在两个表的行之间建立关联。</p>
+<p>例如，假设一家零售商创建了一张包含所有产品的表。在此表中，您可以为产品名称、描述和价格设置列。另一张表包含有关客户、客户姓名以及客户所购商品的数据。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs shell">Product_id（主键）  Product_name  Product_cost<br>P1				   Product_A	 100 USD<br>P2				   Product_B	 50 USD<br>P3				   Product_C	 80 USD<br><br>Customer_id Customer_name Item_purchased（外键）<br>C1			Customer_A	  P2<br>C2			Customer_B	  P1<br>C3			Customer_C	  P3<br></code></pre></td></tr></table></figure>
+<h3 id="非关系型数据库">非关系型数据库</h3>
+<p>由于管理和存储无架构数据的方式不同，因此存在几种不同的非关系数据库系统。无架构数据是指在不受关系数据库要求的限制的情况下存储的数据。</p>
+<h4 id="键值数据库">键值数据库</h4>
+<p>键值数据库将数据存储为<strong>键值对的集合</strong>。在一个键值对中，键用作唯一标识符。键和值都可以是从简单对象到复杂复合对象的任何内容。</p>
+<figure>
+<img
+src="/img/MySQL/PartitionKey.8dd0530a7f6d66d101f31de30db515564f4cf28a.png" srcset="/img/loading.gif" lazyload
+alt="键值数据库" />
+<figcaption aria-hidden="true">键值数据库</figcaption>
+</figure>
+<h4 id="文档数据库">文档数据库</h4>
+<p>面向文档的数据库的文档模型格式与开发人员在其应用程序代码中使用的格式相同。它们将数据存储为
+JSON 对象，这些对象具有灵活、半结构化和分层的性质。</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs json"><span class="hljs-punctuation">&#123;</span><br><br>  company_name<span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;AnyCompany&quot;</span><span class="hljs-punctuation">,</span><br><br>  address<span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span>street<span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;1212 Main Street&quot;</span><span class="hljs-punctuation">,</span> city<span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Anytown&quot;</span><span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span><br><br>  phone_number<span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;1-800-555-0101&quot;</span><span class="hljs-punctuation">,</span><br><br>  industry<span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><span class="hljs-string">&quot;food processing&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-string">&quot;appliances&quot;</span><span class="hljs-punctuation">]</span><br><br>  type<span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;private&quot;</span><span class="hljs-punctuation">,</span><br><br>  number_of_employees<span class="hljs-punctuation">:</span> <span class="hljs-number">987</span><br><br><span class="hljs-punctuation">&#125;</span><br></code></pre></td></tr></table></figure>
+<h4 id="图形数据库">图形数据库</h4>
+<p>图形数据库专门用于存储和导航关系。它们使用节点来存储数据实体，并使用边缘来存储实体之间的关系。</p>
+<p>边缘总是有起始节点、终止节点、类型和方向。例如，它可以描述父子关系、操作和所有权。</p>
+<figure>
+<img
+src="/img/MySQL/foaf-graph.e5e42865e0ee97a2972f9014d28f525ef68a981b.png" srcset="/img/loading.gif" lazyload
+alt="图形数据库" />
+<figcaption aria-hidden="true">图形数据库</figcaption>
+</figure>
+<h3 id="区别">区别</h3>
+<h4 id="结构">结构</h4>
+<p>关系数据库以表格形式存储数据，并遵循有关数据变体和表关系的严格规则。</p>
+<p>非关系数据库则更加灵活，适用于需求不断变化的数据。</p>
+<h4 id="存储">存储</h4>
+<p>Sql通常以数据库表的形式存储，例如存储用户信息，SQL中增加外部关系的话，需要在原表中增加一个外键，来关联外部数据表。</p>
+<p>NoSql采用key-value的形式存储</p>
+<h4 id="事务"><strong>事务</strong></h4>
+<p>关系数据库模型遵循严格的 <strong>ACID</strong>
+属性。这意味着一组后续操作将始终一起完成。如果单个操作失败，则整组操作都会失败。这样可以始终保证数据的准确性。</p>
+<div class="admonition info">
+<p class="admonition-title">
+ACID属性
+</p>
+<p>
+ACID属性指的是<strong>原子性</strong>、<strong>一致性</strong>、<strong>隔离性</strong>和<strong>持久性</strong>是指数据库在数据处理中出现错误或中断的情况下保持数据完整性的能力。
+</p>
+</div>
+<p>非关系数据库提供了一种更灵活的模型，即<strong>基本可用</strong>、<strong>软状态</strong>和<strong>最终一致性</strong>（BASE）。非关系数据库可以保证可用性，但不能保证即时一致性。数据库状态可能会随着时间的推移而发生变化，并最终保持一致。一些非关系数据库可能会在性能或其他方面做出妥协，以实现
+ACID 合规性。</p>
+<h4 id="数据表-vs-数据集"><strong>数据表 VS 数据集</strong></h4>
+<p>关系型是表格型的，存储在数据表的行和列中。彼此关联，容易提取。而非关系型是大块存储在一起。</p>
+<h4 id="预定义结构-vs-动态结构"><strong>预定义结构 VS
+动态结构</strong></h4>
+<p>在sql中，必须定义好地段和表结构之后，才能够添加数据，例如定义表的主键、索引、外键等。表结构可以在定义之后更新，但是如果有比较大的结构变更，就会变的比较复杂。</p>
+<p>在Nosql数据库中，数据可以在任何时候任何地方添加。不需要预先定义。</p>
+<h2 id="为什么使用索引">为什么使用索引？</h2>
+<ul>
+<li>通过创建唯一性索引，可以保证数据库表中每一行数据的<strong>唯一性</strong>。</li>
+<li>可以大大<strong>加快数据的检索速度</strong>，这也是创建索引的最主要的原因。</li>
+<li>帮助服务器<strong>避免排序和临时表</strong></li>
+<li>将随机IO变为顺序IO。</li>
+<li>可以<strong>加速表和表之间的连接</strong>，特别是在实现数据的参考完整性方面特别有意义。</li>
+</ul>
+<h2
+id="innodb为什么要用自增id作为主键">Innodb为什么要用自增id作为主键？</h2>
+<p>如果表使用自增主键，那么每次插入新的记录，记录就会顺序添加到当前索引节点的后续位置，当一页写满，就会自动开辟一个新的页。
+如果使用<strong>非自增主键（如果身份证号或学号等），由于每次插入主键的值近似于随机，因此每次新纪录都要被插到现有索引页得中间某个位置，
+频繁的移动、分页操作造成了大量的碎片，得到了不够紧凑的索引结构，后续不得不通过OPTIMIZE
+TABLE（optimize table）来重建表并优化填充页面</strong>。</p>
+<h2
+id="myisam和innodb实现b树索引方式的区别是什么">MyISAM和InnoDB实现B树索引方式的区别是什么？</h2>
+<ul>
+<li><p>MyISAM，B+Tree叶节点的data域存放的是数据记录的地址，在索引检索的时候，首先按照B+Tree搜索算法搜索索引，如果指定的key存在，则取出其data域的值，然后以data域的值为地址读取相应的数据记录，这被称为“<strong>非聚簇索引</strong>”</p></li>
+<li><p>InnoDB，其数据文件本身就是索引文件，相比MyISAM，索引文件和数据文件是分离的，其表数据文件本身就是按B+Tree组织的一个索引结构，树的节点data域保存了完整的数据记录，这个索引的key是数据表的主键，因此InnoDB表数据文件本身就是主索引，这被称为“<strong>聚簇索引</strong>”或者“<strong>聚集索引</strong>”，而其余的索引都作为辅助索引，<strong>辅助索引的data域存储相应记录主键的值而不是地址</strong>，这也是和MyISAM不同的地方。</p>
+<p>在根据主索引搜索时，直接找到key所在的节点即可取出数据；在根据辅助索引查找时，则需要先取出主键的值，再走一遍主索引。因此，在设计表的时候，不建议使用过长的字段为主键，也不建议使用非单调的字段作为主键，这样会造成主索引频繁分裂。</p></li>
+</ul>
+<div class="admonition info">
+<p class="admonition-title">
+info
+</p>
+<p>
+InnoDB和MyISAM是MySQL的两个存储引擎
+</p>
+</div>
+<h2
+id="你了解mysql的内部构造吗一般可以分为哪两个部分">你了解MySQL的内部构造吗？一般可以分为哪两个部分？</h2>
+<p>可以分为服务层和存储引擎层两部分，其中：</p>
+<p><strong>服务层包括连接器、查询缓存、分析器、优化器、执行器等</strong>，涵盖MySQL的大多数核心服务功能，以及所有的内置函数（如日期、时间、数学和加密函数等），所有跨存储引擎的功能都在这一层实现，比如存储过程、触发器、视图等。</p>
+<p><strong>存储引擎层负责数据的存储和提取</strong>。其架构模式是插件式的，支持InnoDB、MyISAM、Memory等多个存储引擎。现在最常用的存储引擎是InnoDB，它从MySQL
+5.5.5版本开始成为了默认的存储引擎。</p>
+<figure>
+<img src="/img/MySQL/202205220024265.png" srcset="/img/loading.gif" lazyload alt="SQL执行的全部过程" />
+<figcaption aria-hidden="true">SQL执行的全部过程</figcaption>
+</figure>
+<h2
+id="说一下mysql是如何执行一条sql的具体步骤有哪些">说一下MySQL是如何执行一条SQL的？具体步骤有哪些？</h2>
+<figure>
+<img src="/img/MySQL/202205220024265.png" srcset="/img/loading.gif" lazyload alt="SQL执行的全部过程" />
+<figcaption aria-hidden="true">SQL执行的全部过程</figcaption>
+</figure>
+<p>Server层按顺序执行sql的步骤为：</p>
+<ol type="1">
+<li>连接器（验证用户身份，给予权限）</li>
+<li>查询缓存（存在缓存则直接返回，不存在则执行后续操作）</li>
+<li>分析器（对SQL进行词法分析和语法分析操作）</li>
+<li>优化器（主要对执行的sql优化选择最优的执行方案方法）</li>
+<li>执行器（执行时会先看用户是否有执行权限，有才去使用这个引擎提供的接口）</li>
+<li>去引擎层获取数据返回（如果开启查询缓存则会缓存查询结果）</li>
+</ol>
+<h2
+id="说一说dropdelete与truncate的共同点和区别">说一说Drop、Delete与Truncate的共同点和区别</h2>
+<ul>
+<li>Drop直接删掉表;</li>
+<li>Truncate删除表中数据，再插入时自增长id又从1开始 ;</li>
+<li>Delete删除表中数据，可以加where字句。</li>
+</ul>
+<h3 id="具体解析"><strong>具体解析</strong></h3>
+<ol type="1">
+<li><p><strong>DELETE语句</strong>执行删除的过程是<strong>每次从表中删除一行</strong>，并且同时将该行的删除操作作为事务记录在日志中保存以便进行进行回滚操作。<strong>TRUNCATE
+TABLE</strong>
+则<strong>一次性地从表中删除所有的数据并不把单独的删除操作记录记入日志保存</strong>，删除行是不能恢复的。并且在删除的过程中不会激活与表有关的删除触发器，且使用的系统和事务日志资源少。</p></li>
+<li><p>表被TRUNCATE
+后，这个表和索引所占用的空间会恢复到初始大小，而DELETE操作不会减少表或索引所占用的空间。drop语句将表所占用的空间全释放掉。</p></li>
+<li><p>一般而言，drop &gt; truncate &gt; delete</p></li>
+<li><p>TRUNCATE 只能对TABLE；DELETE可以是table和view</p></li>
+<li><p>TRUNCATE
+和DELETE只删除数据，而DROP则删除整个表（结构和数据）。</p></li>
+<li><p>truncate与不带where的delete只删除数据，而不删除表的结构（定义）；drop语句将删除表的结构，包括被依赖的约束（constrain),触发器（trigger)索引（index)，依赖于该表的存储过程/函数将被保留，但其状态会变为：invalid。</p></li>
+<li><p>TRUNCATE TABLE
+删除表中的所有行，但表结构及其列、约束、索引等保持不变，新<strong>行标识所用的计数值重置为该列的种子</strong>。如果想保留标识计数值，请改用
+DELETE。如果要删除表定义及其数据，请使用 DROP TABLE 语句。</p></li>
+<li><p>对于由 FOREIGN KEY 约束引用的表，不能使用 TRUNCATE
+TABLE，而应使用不带 WHERE 子句的 DELETE 语句。由于 TRUNCATE TABLE
+不记录在日志中，所以它不能激活触发器。</p></li>
+</ol>
+<p>​</p>
+<h2
+id="mysql优化了解吗说一下从哪些方面可以做到性能优化">MySQL优化了解吗？说一下从哪些方面可以做到性能优化？</h2>
+<ul>
+<li>为搜索字段创建索引</li>
+<li>避免使用 Select *，列出需要查询的字段</li>
+<li>垂直分割分表</li>
+<li>选择正确的存储引擎</li>
+</ul>
+<div class="admonition info">
+<p class="admonition-title">
+MySQL的两个存储引擎
+</p>
+<p>
+MySQL的两个存储引擎为InnoDB和MyISAM,它们各有特点和使用场景。
+</p>
+<ol>
+<li>
+InnoDB
+</li>
+</ol>
+<ul>
+<li>
+支持事务，通过MVCC（并发版本控制）来实现
+</li>
+<li>
+默认的锁粒度为行级锁，可以支持更高的并发
+</li>
+<li>
+支持外键约束
+</li>
+<li>
+可以通过自动增长列
+</li>
+<li>
+配合一些热备工具可以支持在线热备份
+</li>
+<li>
+在InnoDB中存在着缓冲管理，通过缓冲池，将索引和数据全部缓存起来，加快查询的速度
+</li>
+<li>
+对于InnoDB类型的表，其数据的物理组织形式是聚簇表
+</li>
+</ul>
+</div>
+<ol start="2" type="1">
+<li>MyISAM
+<ul>
+<li>不支持事务</li>
+<li>MyISAM的索引和数据是分开的，并且索引是有压缩的</li>
+<li>每张MyISAM表在磁盘上会对应三个文件：.frm文件（存储表的定义数据）、.MYD文件（存放表具体记录的数据）、.MYI文件（存储索引）</li>
+<li>MyISAM表的select count (*) 是非常快的</li>
+</ul></li>
+</ol>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E9%9D%A2%E8%AF%95/" class="category-chain-item">面试</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E9%9D%A2%E8%AF%95/">#面试</a>
+      
+        <a href="/tags/MySQL/">#MySQL</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>MySQL</div>
+      <div>https://gstarmin.github.io/2023/12/23/MySQL/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Starmin</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年12月23日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/12/23/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" title="操作系统">
+                        <span class="hidden-mobile">操作系统</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
