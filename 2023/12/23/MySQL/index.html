@@ -299,7 +299,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          4.8k 字
+          5.3k 字
         
       </span>
     
@@ -310,7 +310,7 @@
         
         
         
-          48 分钟
+          53 分钟
         
       </span>
     
@@ -566,6 +566,64 @@ MyISAM表的select count (*) 是非常快的
 <li><strong>重复读</strong>，就是对一个记录读取多次的记录是相同的，比如对于一个数A读取的话一直是A，前后两次读取的A是一致的；<strong>可以阻止脏读和不可重复读，但幻读仍有可能发生</strong></li>
 <li><strong>可串行化读</strong>，在并发情况下，和串行化的读取的结果是一致的，没有什么不同，比如不会发生脏读和幻读；<strong>该级别可以防止脏读、不可重复读以及幻读</strong></li>
 </ul>
+<table>
+<thead>
+<tr class="header">
+<th>隔离级别</th>
+<th>脏读</th>
+<th>不可重复读</th>
+<th>幻影读</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>READ-UNCOMMITTED 未提交读</td>
+<td>√</td>
+<td>√</td>
+<td>√</td>
+</tr>
+<tr class="even">
+<td>READ-COMMITTED 提交读</td>
+<td>×</td>
+<td>√</td>
+<td>√</td>
+</tr>
+<tr class="odd">
+<td>REPEATABLE-READ 重复读</td>
+<td>×</td>
+<td>×</td>
+<td>√</td>
+</tr>
+<tr class="even">
+<td>SERIALIZABLE 可串行化读</td>
+<td>×</td>
+<td>×</td>
+<td>×</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition info">
+<p class="admonition-title">
+info
+</p>
+<p>
+MySQL InnoDB 存储引擎的默认支持的隔离级别是 REPEATABLE-READ（可重读）
+</p>
+</div>
+<div class="admonition info">
+<p class="admonition-title">
+info
+</p>
+<p>
+与 SQL 标准不同的地方在于InnoDB 存储引擎在
+REPEATABLE-READ（可重读）事务隔离级别下使用的是Next-Key Lock
+锁算法，因此可以避免幻读的产生，这与其他数据库系统(如 SQL
+Server)是不同的。所以说InnoDB 存储引擎的默认支持的隔离级别是
+REPEATABLE-READ（可重读） 已经可以完全保证事务的隔离性要求，即达到了
+SQL标准的SERIALIZABLE(可串行化)隔离级别。
+</p>
+</div>
+<pre><code class="hljs">因为隔离级别越低，事务请求的锁越少，所以大部分数据库系统的隔离级别都是READ-COMMITTED(读取提交内 容):，但是你要知道的是InnoDB 存储引擎默认使用 REPEATABLE-READ（可重读）并不会有任何性能损失。</code></pre>
 
                 
               </div>
