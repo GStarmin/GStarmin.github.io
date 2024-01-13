@@ -1,0 +1,1029 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Starmin">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="海量数据处理 如何从大量的 URL 中找出相同的 URL？ 题目描述：给定 a、b 两个文件，各存放 50 亿个 URL，每个 URL 各占 64B，内存限制是 4G。请找出 a、b 两个文件共同的 URL。 解答思路：每个 URL 占 64B，那么 50 亿个 URL 占用的空间大小约为 320GB。  5, 000, 000, 000 _ 64B ≈ 5GB _ 64 &#x3D; 320GB  由于内">
+<meta property="og:type" content="article">
+<meta property="og:title" content="海量数据处理">
+<meta property="og:url" content="https://gstarmin.github.io/2024/01/10/%E6%B5%B7%E9%87%8F%E6%95%B0%E6%8D%AE%E5%A4%84%E7%90%86/">
+<meta property="og:site_name" content="私人杂货铺">
+<meta property="og:description" content="海量数据处理 如何从大量的 URL 中找出相同的 URL？ 题目描述：给定 a、b 两个文件，各存放 50 亿个 URL，每个 URL 各占 64B，内存限制是 4G。请找出 a、b 两个文件共同的 URL。 解答思路：每个 URL 占 64B，那么 50 亿个 URL 占用的空间大小约为 320GB。  5, 000, 000, 000 _ 64B ≈ 5GB _ 64 &#x3D; 320GB  由于内">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-01-10T12:50:46.000Z">
+<meta property="article:modified_time" content="2024-01-10T12:50:46.000Z">
+<meta property="article:author" content="Starmin">
+<meta property="article:tag" content="面试">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>海量数据处理 - 私人杂货铺</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"gstarmin.github.io","root":"/","version":"1.9.3","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 5.4.2"><style>.mjpage .MJX-monospace {
+  font-family: monospace;
+}
+
+.mjpage .MJX-sans-serif {
+  font-family: sans-serif;
+}
+
+.mjpage {
+  display: inline;
+  font-style: normal;
+  font-weight: normal;
+  line-height: normal;
+  font-size: 100%;
+  font-size-adjust: none;
+  text-indent: 0;
+  text-align: left;
+  text-transform: none;
+  letter-spacing: normal;
+  word-spacing: normal;
+  word-wrap: normal;
+  white-space: nowrap;
+  float: none;
+  direction: ltr;
+  max-width: none;
+  max-height: none;
+  min-width: 0;
+  min-height: 0;
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+
+.mjpage * {
+  transition: none;
+  -webkit-transition: none;
+  -moz-transition: none;
+  -ms-transition: none;
+  -o-transition: none;
+}
+
+.mjx-svg-href {
+  fill: blue;
+  stroke: blue;
+}
+
+.MathJax_SVG_LineBox {
+  display: table !important;
+}
+
+.MathJax_SVG_LineBox span {
+  display: table-cell !important;
+  width: 10000em !important;
+  min-width: 0;
+  max-width: none;
+  padding: 0;
+  border: 0;
+  margin: 0;
+}
+
+.mjpage__block {
+  text-align: center;
+  margin: 1em 0em;
+  position: relative;
+  display: block !important;
+  text-indent: 0;
+  max-width: none;
+  max-height: none;
+  min-width: 0;
+  min-height: 0;
+  width: 100%;
+}
+</style></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Starmin</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="海量数据处理"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-01-10 20:50" pubdate>
+          2024年1月10日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          6.2k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          63 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">海量数据处理</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="海量数据处理">海量数据处理</h1>
+<h2 id="如何从大量的-url-中找出相同的-url">如何从大量的 URL 中找出相同的
+URL？</h2>
+<p><strong>题目描述</strong>：给定 a、b 两个文件，各存放 50 亿个
+URL，每个 URL 各占 64B，内存限制是 4G。请找出 a、b 两个文件共同的
+URL。</p>
+<p>解答思路：每个 URL 占 64B，那么 50 亿个 URL 占用的空间大小约为
+320GB。</p>
+<blockquote>
+<p>5, 000, 000, 000 _ 64B ≈ 5GB _ 64 = 320GB</p>
+</blockquote>
+<p>由于内存大小只有 4G，因此，我们不可能一次性把所有 URL
+加载到内存中处理。对于这种类型的题目，一般采用<strong>分治策略</strong>，即：把一个文件中的
+URL 按照某个特征划分为多个小文件，使得每个小文件大小不超过
+4G，这样就可以把这个小文件读到内存中进行处理了。</p>
+<ol type="1">
+<li><p>哈希取余</p>
+<p>首先遍历文件 a，对遍历到的 URL 求 <code>hash(URL) % 1000</code>
+，根据计算结果把遍历到的 URL 存储到 a0, a1, a2, ...,
+a999，这样每个大小约为 300MB。使用同样的方法遍历文件 b，把文件 b 中的
+URL 分别存储到文件 b0, b1, b2, ..., b999
+中。这样处理过后，所有可能相同的 URL 都在对应的小文件中，即 a0 对应 b0,
+..., a999 对应 b999，不对应的小文件不可能有相同的
+URL。那么接下来，我们只需要求出这 1000 对小文件中相同的 URL 就好了。</p>
+<p>接着遍历 ai( <code>i∈[0,999]</code> )，把 URL 存储到一个 HashSet
+集合中。然后遍历 bi 中每个 URL，看在 HashSet
+集合中是否存在，若存在，说明这就是共同的 URL，可以把这个 URL
+保存到一个单独的文件中。</p></li>
+<li><p>前缀树</p>
+<p>一般而言，URL
+的长度差距不会不大，而且前面几个字符，绝大部分相同。这种情况下，非常适合使用<strong>字典树</strong>（trie
+tree）
+这种数据结构来进行存储，降低存储成本的同时，提高查询效率。</p></li>
+</ol>
+<h2 id="如何从大量数据中找出高频词">如何从大量数据中找出高频词？</h2>
+<h3 id="题目描述">题目描述</h3>
+<p>有一个 1GB 大小的文件，文件里每一行是一个词，每个词的大小不超过
+16B，内存大小限制是 1MB，要求返回频数最高的 100 个词(Top 100)</p>
+<p><strong>解答思路</strong>：由于内存限制，我们依然无法直接将大文件的所有词一次读到内存中。因此，同样可以采用<strong>分治策略</strong>，把一个大文件分解成多个小文件，保证每个文件的大小小于
+1MB，进而直接将单个小文件读取到内存中进行处理。</p>
+<h3 id="解决方法">解决方法</h3>
+<p>首先遍历大文件，对遍历到的每个词 x，执行 <code>hash(x) % 5000</code>
+，将结果为 i 的词存放到文件 ai 中。遍历结束后，我们可以得到 5000
+个小文件。每个小文件的大小为 200KB 左右。如果有的小文件大小仍然超过
+1MB，则采用同样的方式继续进行分解。</p>
+<p>接着统计每个小文件中出现频数最高的 100 个词。最简单的方式是使用
+HashMap 来实现。其中 key 为词，value
+为该词出现的频率。具体方法是：对于遍历到的词 x，如果在 map
+中不存在，则执行 <code>map.put(x, 1)</code> ；若存在，则执行
+<code>map.put(x, map.get(x)+1)</code> ，将该词频数加 1。</p>
+<p>上面我们统计了每个小文件单词出现的频数。接下来，我们可以通过维护一个<strong>小顶堆</strong>来找出所有词中出现频数最高的
+100
+个。具体方法是：依次遍历每个小文件，构建一个<strong>小顶堆</strong>，堆大小为
+100。如果遍历到的词的出现次数大于堆顶词的出现次数，则用新词替换堆顶的词，然后重新调整为<strong>小顶堆</strong>，遍历结束后，小顶堆上的词就是出现频数最高的
+100 个词。</p>
+<h2
+id="如何找出某一天访问百度网站最多的-ip">如何找出某一天访问百度网站最多的
+IP？</h2>
+<h3 id="题目描述-1">题目描述</h3>
+<p><strong>现有海量日志数据保存在一个超大文件中，该文件无法直接读入内存，要求从中提取某天访问百度次数最多的那个
+IP。</strong></p>
+<h3 id="解答思路">解答思路</h3>
+<p>这道题只关心某一天访问百度最多的
+IP，因此，可以首先对文件进行一次遍历，把这一天访问百度 IP
+的相关信息记录到一个单独的大文件中。接下来采用的方法与上一题一样，大致就是先对
+IP 进行哈希映射，接着使用 HashMap 统计重复 IP
+的次数，最后计算出重复次数最多的 IP。</p>
+<div class="admonition note">
+<p class="admonition-title">
+note
+</p>
+<p>
+这里只需要找出出现次数最多的 IP，可以不必使用堆，直接用一个变量 max
+即可。
+</p>
+</div>
+<h2
+id="如何在大量的数据中找出不重复的整数">如何在大量的数据中找出不重复的整数？</h2>
+<p>### 题目描述</p>
+<p>在 2.5 亿个整数中找出不重复的整数。注意：内存不足以容纳这 2.5
+亿个整数。</p>
+<h3 id="解答思路-1">解答思路</h3>
+<h4 id="方法一分支法">方法一：分支法</h4>
+<p>与前面的题目方法类似，先将 2.5 亿个数划分到多个小文件，用
+HashSet/HashMap
+找出每个小文件中不重复的整数，再合并每个子结果，即为最终结果。</p>
+<h4 id="方法二位图法">方法二：位图法</h4>
+<p><strong>位图</strong>，就是用一个或多个 bit
+来标记某个元素对应的值，而键就是该元素。采用位作为单位来存储数据，可以大大节省存储空间。</p>
+<p>位图通过使用位数组来表示某些元素是否存在。假设我们要对
+<code>[0,7]</code> 中的 5 个元素 (6, 4, 2, 1, 5)
+进行排序，可以采用位图法。0~7 范围总共有 8 个数，只需要 8bit，即 1
+个字节。首先将每个位都置 0：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">0 0 0 0 0 0 0 0<br></code></pre></td></tr></table></figure>
+<p>然后遍历 5 个元素，首先遇到 6，那么将下标为 6 的位的 0 置为
+1；接着遇到 4，把下标为 4 的位 的 0 置为 1：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">0 0 0 0 1 0 1 0<br></code></pre></td></tr></table></figure>
+<p>依次遍历，结束后，位数组是这样的：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">0 1 1 0 1 1 1 0<br></code></pre></td></tr></table></figure>
+<p>对于整数相关的算法的求解，<strong>位图法</strong>是一种非常实用的算法。假设
+int 整数占用 4B，即 32bit，那么我们可以表示的整数的个数为 <span
+class="math inline">\(2^32\)</span>。</p>
+<p><strong>那么对于这道题</strong>，我们用 2 个 bit
+来表示各个数字的状态：</p>
+<ul>
+<li>00 表示这个数字没出现过；</li>
+<li>01 表示这个数字出现过一次（即为题目所找的不重复整数）；</li>
+<li>10 表示这个数字出现了多次。</li>
+</ul>
+<p>那么这 <span class="math inline">\(2^32\)</span>
+个整数，总共所需内存为 <span
+class="math inline">\(2^32\)</span>*2b=1GB。因此，当可用内存超过 1GB
+时，可以采用位图法。假设内存满足位图法需求，进行下面的操作：</p>
+<p>遍历 2.5 亿个整数，查看位图中对应的位，如果是 00，则变为 01，如果是
+01 则变为 10，如果是 10 则保持不变。遍历结束后，查看位图，把对应位是 01
+的整数输出即可。</p>
+<p>当然，本题中特别说明：<strong>内存不足以容纳这 2.5
+亿个整数</strong>，2.5 亿个整数的内存大小为：2.5e8/1024/1024/1024 *
+4=3.72GB， 如果内存大于 1GB，是可以通过位图法解决的。</p>
+<h2
+id="如何在大量的数据中判断一个数是否存在">如何在大量的数据中判断一个数是否存在？</h2>
+<h3 id="题目描述-2">题目描述</h3>
+<p>给定 40 亿个不重复的没排过序的 unsigned int
+型整数，然后再给定一个数，如何快速判断这个数是否在这 40
+亿个整数当中？</p>
+<h3 id="解答思路-2">解答思路</h3>
+<h4 id="方法一分治法">方法一：分治法</h4>
+<p>方法与前面类似，就不再次赘述了</p>
+<h4 id="方法二位图法-1">方法二：位图法</h4>
+<p>与上个问题类似</p>
+<h2 id="毒药毒老鼠">毒药毒老鼠</h2>
+<h3 id="题目描述-3">题目描述</h3>
+<p>有1000个一模一样的瓶子，其中有999瓶是普通的水，有1瓶是毒药。任何喝下毒药的生命都会在一星期之后死亡。现在你只有10只小白鼠和1个星期的时间，如何检验出哪个瓶子有毒药？</p>
+<h3 id="解答思路-3">解答思路</h3>
+<p>这个问题可以通过二进制和小白鼠的组合来解决。具体步骤如下：</p>
+<ol type="1">
+<li>首先，将1000个瓶子编号为1到1000。</li>
+<li>然后，将这些编号转换为二进制。例如，瓶子编号1在二进制中是0000000001，瓶子编号2在二进制中是0000000010，以此类推，直到瓶子编号1000在二进制中是1111101000。</li>
+<li>接下来，将10只小白鼠分别对应二进制编号的10位。例如，第一只小白鼠对应最低位（最右边的位），第二只小白鼠对应第二位，以此类推，第十只小白鼠对应最高位（最左边的位）。</li>
+<li>对于每一个瓶子，如果其二进制编号在某一位上是1，就让对应的小白鼠喝那个瓶子的水。例如，对于编号为3（二进制为0000000011）的瓶子，第一只和第二只小白鼠会喝这个瓶子的水。</li>
+<li>一星期后，观察哪些小白鼠死亡。如果第n只小白鼠死亡，那么毒药瓶子的二进制编号在第n位上是1。例如，如果第一只和第二只小白鼠死亡，那么毒药瓶子的编号在二进制表示中的最后两位是11。</li>
+<li>通过这种方式，我们可以确定出哪个瓶子含有毒药。</li>
+</ol>
+<p>这种方法的关键在于利用了二进制编码的特性，使得10只小白鼠就能够测试出1000个瓶子中哪一个含有毒药。</p>
+<h2 id="如何查询最热门的查询串">如何查询最热门的查询串？</h2>
+<h3 id="题目描述-4">题目描述</h3>
+<p>搜索引擎会通过日志文件把用户每次检索使用的所有查询串都记录下来，每个查询串的长度不超过
+255 字节。</p>
+<p>假设目前有 1000w 个记录（这些查询串的重复度比较高，虽然总数是
+1000w，但如果除去重复后，则不超过 300w 个）。请统计最热门的 10
+个查询串，要求使用的内存不能超过
+1G。（一个查询串的重复度越高，说明查询它的用户越多，也就越热门。）</p>
+<h3 id="解答思路-4">解答思路</h3>
+<p>每个查询串最长为 255B，1000w 个串需要占用 约 2.55G
+内存，因此，我们无法将所有字符串全部读入到内存中处理。</p>
+<h4 id="方法一分治法-1">方法一：分治法</h4>
+<p>分治法依然是一个非常实用的方法。</p>
+<p>划分为多个小文件，保证单个小文件中的字符串能被直接加载到内存中处理，然后求出每个文件中出现次数最多的
+10 个字符串；最后通过一个小顶堆统计出所有文件中出现最多的 10
+个字符串。</p>
+<p>方法可行，但不是最好，下面介绍其他方法。</p>
+<h4 id="方法二hashmap-法">方法二：HashMap 法</h4>
+<p>虽然字符串总数比较多，但去重后不超过
+300w，因此，可以考虑把所有字符串及出现次数保存在一个 HashMap
+中，所占用的空间为 300w*(255+4)≈777M（其中，4 表示整数占用的 4
+个字节）。由此可见，1G 的内存空间完全够用。</p>
+<p><strong>思路如下</strong>：</p>
+<p>首先，遍历字符串，若不在 map 中，直接存入 map，value 记为 1；若在 map
+中，则把对应的 value 加 1，这一步时间复杂度 <code>O(N)</code> 。</p>
+<p>接着遍历 map，构建一个 10
+个元素的小顶堆，若遍历到的字符串的出现次数大于堆顶字符串的出现次数，则进行替换，并将堆调整为小顶堆。</p>
+<p>遍历结束后，堆中 10
+个字符串就是出现次数最多的字符串。这一步时间复杂度
+<code>O(Nlog10)</code> 。</p>
+<h4 id="方法三前缀树法">方法三：前缀树法</h4>
+<p>方法二使用了 HashMap
+来统计次数，当这些字符串有大量相同前缀时，可以考虑使用前缀树来统计字符串出现的次数，树的结点保存字符串出现次数，0
+表示没有出现。</p>
+<p><strong>思路如下</strong>：</p>
+<p>在遍历字符串时，在前缀树中查找，如果找到，则把结点中保存的字符串次数加
+1，否则为这个字符串构建新结点，构建完成后把叶子结点中字符串的出现次数置为
+1。</p>
+<p>最后依然使用小顶堆来对字符串的出现次数进行排序。</p>
+<h2 id="如何统计不同电话号码的个数">如何统计不同电话号码的个数？</h2>
+<h3 id="题目描述-5">题目描述</h3>
+<p>已知某个文件内包含一些电话号码，每个号码为 8
+位数字，统计不同号码的个数</p>
+<h3 id="解答思路-5">解答思路</h3>
+<p>这道题本质还是求解<strong>数据重复</strong>的问题，对于这类问题，一般首先考虑位图法。</p>
+<p>对于本题，8 位电话号码可以表示的号码个数为 108 个，即 1
+亿个。我们每个号码用一个 bit 来表示，则总共需要 1 亿个 bit，内存占用约
+12M。</p>
+<p><strong>思路如下</strong>：</p>
+<p>申请一个位图数组，长度为 1 亿，初始化为
+0。然后遍历所有电话号码，把号码对应的位图中的位置置为
+1。遍历完成后，如果 bit 为
+1，则表示这个电话号码在文件中存在，否则不存在。bit 值为 1 的数量即为
+不同电话号码的个数。</p>
+<h3 id="方法总结">方法总结</h3>
+<p>求解数据重复问题，记得考虑位图法。</p>
+<h2 id="如何从-5-亿个数中找出中位数">如何从 5 亿个数中找出中位数？</h2>
+<h3 id="题目描述-6">题目描述</h3>
+<p>从 5
+亿个数中找出中位数。数据排序后，位置在最中间的数就是中位数。当样本数为奇数时，中位数为
+第 <code>(N+1)/2</code> 个数；当样本数为偶数时，中位数为 第
+<code>N/2</code> 个数与第 <code>1+N/2</code> 个数的均值。</p>
+<h3 id="解答思路-6">解答思路</h3>
+<p>如果这道题没有内存大小限制，则可以把所有数读到内存中排序后找出中位数。但是最好的排序算法的时间复杂度都为
+<code>O(NlogN)</code> 。这里使用其他方法。</p>
+<h4 id="方法一">方法一</h4>
+<p>维护两个堆，一个大顶堆，一个小顶堆。大顶堆中最大的数<strong>小于等于</strong>小顶堆中最小的数；保证这两个堆中的元素个数的差不超过
+1。</p>
+<p>若数据总数为<strong>偶数</strong>，当这两个堆建好之后，<strong>中位数就是这两个堆顶元素的平均值</strong>。当数据总数为<strong>奇数</strong>时，根据两个堆的大小，<strong>中位数一定在数据多的堆的堆顶</strong>。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-keyword">class</span> <span class="hljs-title class_">MedianFinder</span> &#123;<br><span class="hljs-keyword">public</span>:<br>    priority_queue&lt;<span class="hljs-type">int</span>, vector&lt;<span class="hljs-type">int</span>&gt;, less&lt;<span class="hljs-type">int</span>&gt;&gt; queMin;<br>    priority_queue&lt;<span class="hljs-type">int</span>, vector&lt;<span class="hljs-type">int</span>&gt;, greater&lt;<span class="hljs-type">int</span>&gt;&gt; queMax;<br><br>    <span class="hljs-built_in">MedianFinder</span>() &#123;&#125;<br><br>    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">addNum</span><span class="hljs-params">(<span class="hljs-type">int</span> num)</span> </span>&#123;<br>        <span class="hljs-keyword">if</span> (queMin.<span class="hljs-built_in">empty</span>() || num &lt;= queMin.<span class="hljs-built_in">top</span>()) &#123;<br>            queMin.<span class="hljs-built_in">push</span>(num);<br>            <span class="hljs-keyword">if</span> (queMax.<span class="hljs-built_in">size</span>() + <span class="hljs-number">1</span> &lt; queMin.<span class="hljs-built_in">size</span>()) &#123;<br>                queMax.<span class="hljs-built_in">push</span>(queMin.<span class="hljs-built_in">top</span>());<br>                queMin.<span class="hljs-built_in">pop</span>();<br>            &#125;<br>        &#125; <span class="hljs-keyword">else</span> &#123;<br>            queMax.<span class="hljs-built_in">push</span>(num);<br>            <span class="hljs-keyword">if</span> (queMax.<span class="hljs-built_in">size</span>() &gt; queMin.<span class="hljs-built_in">size</span>()) &#123;<br>                queMin.<span class="hljs-built_in">push</span>(queMax.<span class="hljs-built_in">top</span>());<br>                queMax.<span class="hljs-built_in">pop</span>();<br>            &#125;<br>        &#125;<br>    &#125;<br><br>    <span class="hljs-function"><span class="hljs-type">double</span> <span class="hljs-title">findMedian</span><span class="hljs-params">()</span> </span>&#123;<br>        <span class="hljs-keyword">if</span> (queMin.<span class="hljs-built_in">size</span>() &gt; queMax.<span class="hljs-built_in">size</span>()) &#123;<br>            <span class="hljs-keyword">return</span> queMin.<span class="hljs-built_in">top</span>();<br>        &#125;<br>        <span class="hljs-keyword">return</span> (queMin.<span class="hljs-built_in">top</span>() + queMax.<span class="hljs-built_in">top</span>()) / <span class="hljs-number">2.0</span>;<br>    &#125;<br>&#125;;<br></code></pre></td></tr></table></figure>
+<h4 id="方法二分治法">方法二：分治法</h4>
+<p>分治法的思想是把一个大的问题逐渐转换为规模较小的问题来求解。</p>
+<p>对于这道题，顺序读取这 5 亿个数字，对于读取到的数字
+num，如果它对应的二进制中最高位为 1，则把这个数字写到 f1 中，否则写入 f0
+中。通过这一步，可以把这 5 亿个数划分为两部分，而且 f0 中的数都大于 f1
+中的数（最高位是符号位）。</p>
+<p>划分之后，可以非常容易地知道中位数是在 f0 还是 f1 中。假设 f1 中有 1
+亿个数，那么中位数一定在 f0 中，且是在 f0 中，从小到大排列的第 1.5
+亿个数与它后面的一个数的平均值。</p>
+<div class="admonition note">
+<p class="admonition-title">
+note
+</p>
+<p>
+5 亿数的中位数是第 2.5 亿与右边相邻一个数求平均值。若 f1
+有一亿个数，那么中位数就是 f0 中从第 1.5
+亿个数开始的两个数求得的平均值。
+</p>
+</div>
+<p>对于 f0
+可以用次高位的二进制继续将文件一分为二，如此划分下去，直到划分后的文件可以被加载到内存中，把数据加载到内存中以后直接排序，找出中位数。</p>
+<div class="admonition info">
+<p class="admonition-title">
+info
+</p>
+<p>
+<strong>注意</strong>，当数据总数为偶数，如果划分后两个文件中的数据有相同个数，那么中位数就是数据较小的文件中的最大值与数据较大的文件中的最小值的平均值。
+</p>
+</div>
+<h2 id="如何按照-query-的频度排序">如何按照 query 的频度排序？</h2>
+<h3 id="题目描述-7">题目描述</h3>
+<p>有 10 个文件，每个文件大小为 1G，每个文件的每一行存放的都是用户的
+query，每个文件的 query 都可能重复。要求按照 query 的频度排序。</p>
+<h3 id="解答思路-7">解答思路</h3>
+<p>如果 query 的重复度比较大，可以考虑一次性把所有 query
+读入内存中处理；如果 query 的重复率不高，那么可用内存不足以容纳所有的
+query，这时候就需要采用分治法或其他的方法来解决。</p>
+<h4 id="方法一hashmap-法">方法一：HashMap 法</h4>
+<p>如果 query 重复率高，说明不同 query 总数比较小，可以考虑把所有的
+query 都加载到内存中的 HashMap 中。接着就可以按照 query
+出现的次数进行排序。</p>
+<h4 id="方法二分治法-1">方法二：分治法</h4>
+<p>分治法需要根据数据量大小以及可用内存的大小来确定问题划分的规模。对于这道题，可以顺序遍历
+10 个文件中的 query，通过 Hash 函数 <code>hash(query) % 10</code> 把这些
+query 划分到 10 个小文件中。之后对每个小文件使用 HashMap 统计 query
+出现次数，根据次数排序并写入到另外一个单独文件中。</p>
+<p>接着对所有文件按照 query
+的次数进行排序，这里可以使用归并排序（由于无法把所有 query
+都读入内存，因此需要使用外排序）。</p>
+<h4 id="总结">总结</h4>
+<ul>
+<li>内存若够，直接读入进行排序；</li>
+<li>内存不够，先划分为小文件，小文件排好序后，整理使用外排序进行归并。</li>
+</ul>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E9%9D%A2%E8%AF%95/" class="category-chain-item">面试</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E9%9D%A2%E8%AF%95/">#面试</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>海量数据处理</div>
+      <div>https://gstarmin.github.io/2024/01/10/海量数据处理/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Starmin</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2024年1月10日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/01/06/%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/" title="系统设计">
+                        <span class="hidden-mobile">系统设计</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
