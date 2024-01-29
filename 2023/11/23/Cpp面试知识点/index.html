@@ -309,7 +309,7 @@
         
         
         
-          912 分钟
+          914 分钟
         
       </span>
     
@@ -518,7 +518,7 @@ note
 </p>
 <p>
 const 成员函数中如果实在想修改某个变量，可以使用 mutable
-进行修饰。成员变量中如果想建⽴在整个类中都恒定的常量，应该用类中的枚举常量来实现或者
+进行修饰。成员变量中如果想建立在整个类中都恒定的常量，应该用类中的枚举常量来实现或者
 static const。
 </p>
 </div>
@@ -560,7 +560,7 @@ C++ 的多重继承带来的不便。</li>
 是完全面向对象的语⾔，所有的函数和变量必须是类的一部分。除了基本数据类型之外，其余的都作为类对象，对象将数据和方法结合起来，把它们封装在类中，这样每个对象都可以实现自⼰的特点和行为。
 Java 中取消了 C++ 中的 struct 和 union 。</li>
 <li><strong>自动内存管理</strong>：Java 程序中所有对象都是用 new
-操作符建⽴在内存堆栈上，<strong>Java
+操作符建立在内存堆栈上，<strong>Java
 自动进行无用内存回收操作</strong>，不需要程序员进行⼿动删除。而 C++
 中必须由程序员释放内存资源，增加了程序设计者的负担。Java
 中当一个对象不再被用到时， 无用内存回收器将给他们加上标签。Java
@@ -722,7 +722,7 @@ C＋＋函数的调用规范。⽐如在 C＋＋ 中调用 C 库函数，就需�
 <p>对于 define
 来说，<strong>宏定义实际上是在预编译阶段进行处理，没有类型，也就没有类型检查</strong>，仅仅做的是遇到宏定义进行字符串的展开，遇到多少次就展开多少次，而且这个简单的展开过程中，很容易出现边界效应，达不到预期的效果。因为
 define 宏定义仅仅是展开，因此运行时系统并不为宏定义分配内存，但是从汇编
-的⻆度来讲， define 却以⽴即数的方式保留了多份数据的拷贝。</p>
+的⻆度来讲， define 却以立即数的方式保留了多份数据的拷贝。</p>
 <p>对于 const 来说，<strong>const 是在编译期间进行处理的，const
 有类型，也有类型检查</strong>，程序运行时系统会为 const
 常量分配内存，而且从汇编的⻆度讲，const
@@ -787,7 +787,7 @@ function()。因为基类和派生类中都没有虚函数的定义，那么编�
 间，然后构造派生类的自身内容，形成一个派生类对象，那么在进行类型转换时，直接截取基类的部分的内存，编译器认为类型就是基类，那么（函数符号表［不同于虚函数表的另一个表］中）绑定的函数地址也就是基类中函数的地址，所以执行的是基类的函数。</p>
 <h3
 id="编译器处理虚函数表应该如何处理">编译器处理虚函数表应该如何处理</h3>
-<p>对于派生类来说，编译器建⽴虚函数表的过程其实一共是三个步骤：</p>
+<p>对于派生类来说，编译器建立虚函数表的过程其实一共是三个步骤：</p>
 <ol type="1">
 <li>拷贝基类的虚函数表，如果是多继承，就拷贝每个有虚函数基类的虚函数表</li>
 <li>当然还有一个基类的虚函数表和派生类自身的虚函数表共用了一个虚函数表，也称为某个基类为派生类的主基类</li>
@@ -887,10 +887,11 @@ id="结构体内存对齐方式和为什么要进行内存对齐">结构体内�
 <p>⾸先我们来说一下结构体中内存对齐的规则：</p>
 <ul>
 <li>对于结构体中的各个成员，第一个成员位于偏移为 0
-的位置，以后的每个数据成员的偏移量必须是min(#pragma pack()
-制定的数，数据成员本身⻓度) 的倍数。</li>
+的位置，以后的每个数据成员的偏移量必须是<code>min(#pragma pack()制定的数，数据成员本身⻓度)</code>
+的倍数。</li>
 <li>在所有的数据成员完成各自对齐之后，结构体或联合体本身也要进行对齐，整体⻓度是
-min(#pragma pack()制定的数，⻓度最⻓的数据成员的⻓度) 的倍数。</li>
+<code>min(#pragma pack()制定的数，⻓度最⻓的数据成员的⻓度)</code>
+的倍数。</li>
 </ul>
 <p>那么内存对齐的作用是什么呢？</p>
 <ul>
@@ -1013,7 +1014,7 @@ DLL 中寻找相应函数代码，因此需要相应 DLL 文件的⽀持。</p>
 <p>静态链接库与动态链接库都是共享代码的方式，如果采用静态链接库，则无论你愿不愿意，lib
 中的指令都全部被直接包含在最终生成的 EXE 文件中了。但是若使用 DLL，该
 DLL 不必被包含在最终 EXE 文件中，EXE
-文件执行时可以“动态”地引用和卸载这个与 EXE 独⽴的 DLL 文件。</p>
+文件执行时可以“动态”地引用和卸载这个与 EXE 独立的 DLL 文件。</p>
 <p>静态链接库和动态链接库的另外一个区别在于静态链接库中不能再包含其他的动态链接库或者静态库，而在动态链接库中还可以再包含其他的动态或静态链接库。</p>
 <p>动态库就是在需要调用其中的函数时，根据函数映射表找到该函数然后调入堆栈执行。如果在当前工程中有多处对dll文件中同一个函数的调用，那么执行时，这个函数只会留下一份拷贝。但如果有多处对
 lib
@@ -1495,7 +1496,7 @@ id="成员初始化列表的概念为什么用它会快一些">成员初始化�
 <p>在类的构造函数中，不在函数体内对成员变量赋值，而是在构造函数的花括号前面使用冒号和初始化列表赋值</p>
 <h4 id="效率">效率</h4>
 <p>用初始化列表会快一些的原因是，<strong>对于自定义类型，它少了一次调用构造函数的过程，而在函数体中赋值则会多一次调用。而对于内置数据类型则没有差别。</strong>举个例子：</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;iostream&gt;</span></span><br><span class="hljs-keyword">using</span> <span class="hljs-keyword">namespace</span> std;<br><span class="hljs-keyword">class</span> <span class="hljs-title class_">A</span><br>&#123;<br><span class="hljs-keyword">public</span>:<br>    <span class="hljs-built_in">A</span>()<br>    &#123;<br>        cout &lt;&lt; <span class="hljs-string">&quot;默认构造函数A()&quot;</span> &lt;&lt; endl;<br>    &#125;<br>    <span class="hljs-built_in">A</span>(<span class="hljs-type">int</span> a)<br>    &#123;<br>        value = a;<br>        cout &lt;&lt; <span class="hljs-string">&quot;A(int &quot;</span>&lt;&lt;value&lt;&lt;<span class="hljs-string">&quot;)&quot;</span> &lt;&lt; endl;<br>    &#125;<br>    <span class="hljs-built_in">A</span>(<span class="hljs-type">const</span> A&amp; a)<br>    &#123;<br>        value = a.value;<br>        cout &lt;&lt; <span class="hljs-string">&quot;拷贝构造函数A(A&amp; a):  &quot;</span>&lt;&lt;value &lt;&lt; endl;<br>    &#125;<br>    <span class="hljs-type">int</span> value;<br>&#125;;<br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">B</span><br>&#123;<br><span class="hljs-keyword">public</span>:<br>    <span class="hljs-built_in">B</span>() : <span class="hljs-built_in">a</span>(<span class="hljs-number">1</span>)<br>    &#123;<br>        b = <span class="hljs-built_in">A</span>(<span class="hljs-number">2</span>);<br>    &#125;<br>    A a;<br>    A b;<br>&#125;;<br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span><br><span class="hljs-function"></span>&#123;<br>    B b;<br>&#125;<br><br><span class="hljs-comment">//输出结果：</span><br><span class="hljs-comment">//A(int 1)</span><br><span class="hljs-comment">//默认构造函数A()</span><br><span class="hljs-comment">//A(int 2)</span><br></code></pre></td></tr></table></figure>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;iostream&gt;</span></span><br><span class="hljs-keyword">using</span> <span class="hljs-keyword">namespace</span> std;<br><span class="hljs-keyword">class</span> <span class="hljs-title class_">A</span><br>&#123;<br><span class="hljs-keyword">public</span>:<br>    <span class="hljs-built_in">A</span>()<br>    &#123;<br>        cout &lt;&lt; <span class="hljs-string">&quot;默认构造函数A()&quot;</span> &lt;&lt; endl;<br>    &#125;<br>    <span class="hljs-built_in">A</span>(<span class="hljs-type">int</span> a)<br>    &#123;<br>        value = a;<br>        cout &lt;&lt; <span class="hljs-string">&quot;A(int &quot;</span>&lt;&lt;value&lt;&lt;<span class="hljs-string">&quot;)&quot;</span> &lt;&lt; endl;<br>    &#125;<br>    <span class="hljs-built_in">A</span>(<span class="hljs-type">const</span> A&amp; a)<br>    &#123;<br>        value = a.value;<br>        cout &lt;&lt; <span class="hljs-string">&quot;拷贝构造函数A(A&amp; a):  &quot;</span>&lt;&lt;value &lt;&lt; endl;<br>    &#125;<br>    <span class="hljs-type">int</span> value;<br>&#125;;<br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">B</span><br>&#123;<br><span class="hljs-keyword">public</span>:<br>    <span class="hljs-built_in">B</span>() : <span class="hljs-built_in">a</span>(<span class="hljs-number">1</span>)<br>    &#123;<br>        b = <span class="hljs-built_in">A</span>(<span class="hljs-number">2</span>);<br>    &#125;<br>    A a;<br>    A b;<br>&#125;;<br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span><br><span class="hljs-function"></span>&#123;<br>    B b;<br>&#125;<br><br><span class="hljs-comment">//输出结果：</span><br><span class="hljs-comment">//默认构造函数A()</span><br><span class="hljs-comment">//A(int 2)</span><br><span class="hljs-comment">//拷贝构造函数A(A&amp; a): 2</span><br><br><br><span class="hljs-comment">// 注：</span><br><span class="hljs-comment">// 在B的构造函数中，先初始化了B类的成员变量a（使用A类的默认构造函数），然后初始化了成员变量b，通过调用A类的带有int参数的构造函数（A(2)）。</span><br><span class="hljs-comment">// A类的带有int参数的构造函数被调用，输出&quot;A(int 2)&quot;。</span><br><span class="hljs-comment">// 接着，A类的拷贝构造函数被调用，因为在B类的构造函数中，要将A类对象b初始化为A类对象（A(2)），这会触发拷贝构造函数。拷贝构造函数输出&quot;拷贝构造函数A(A&amp; a): 2&quot;。</span><br></code></pre></td></tr></table></figure>
 <p>从代码运行结果可以看出，在构造函数体内部初始化的对象b多了一次构造函数的调用过程，而对象a则没有。由于对象成员变量的初始化动作发生在进入构造函数之前，对于内置类型没什么影响，但<strong>如果有些成员是类</strong>，那么在进入构造函数之前，会先调用一次默认构造函数，进入构造函数后所做的事其实是一次赋值操作(对象已存在)，所以<strong>如果是在构造函数体内进行赋值的话，等于是一次默认构造加一次赋值，而初始化列表只做一次赋值操作。</strong></p>
 <h3 id="c函数调用的压栈过程">C++函数调用的压栈过程</h3>
 <ol type="1">
