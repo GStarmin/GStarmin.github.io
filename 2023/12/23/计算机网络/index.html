@@ -316,7 +316,7 @@
         
         
         
-          260 分钟
+          261 分钟
         
       </span>
     
@@ -1428,6 +1428,8 @@ id="三次握手过程中bindlistenaccept哪个环节">三次握手过程中bind
 <li><code>connect()</code>:
 该函数用于发起到远程套接字的连接请求。这对应于第三次握手中客户端接收到服务端的SYN-ACK后，发送ACK表示连接建立成功。</li>
 </ol>
+<h3 id="socket端口复用">socket端口复用</h3>
+<p>C++可以使用<code>setsockopt</code>函数，并将<code>SO_REUSEADDR</code>选项设置为<code>1</code>。这样可以允许多个socket绑定到同一端口上。</p>
 
                 
               </div>

@@ -298,7 +298,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          97k 字
+          98k 字
         
       </span>
     
@@ -309,7 +309,7 @@
         
         
         
-          971 分钟
+          976 分钟
         
       </span>
     
@@ -1030,6 +1030,17 @@ lib
 <li>类之间应满足子类型关系，通常表现为一个类从另一个类公有派生而来</li>
 <li>必须先使用基类指针指向子类型的对象，然后直接或间接使用基类指针调用虚函数</li>
 </ol>
+<h3
+id="怎么用c代码判断16位32位还是64位系统">怎么用C++代码判断16位、32位还是64位系统</h3>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;iostream&gt;</span></span><br><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span> </span>&#123;<br>    <span class="hljs-keyword">if</span> (<span class="hljs-built_in">sizeof</span>(<span class="hljs-type">void</span>*) == <span class="hljs-number">2</span>) &#123;<br>        std::cout &lt;&lt; <span class="hljs-string">&quot;This is a 16-bit system.&quot;</span> &lt;&lt; std::endl;<br>    &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (<span class="hljs-built_in">sizeof</span>(<span class="hljs-type">void</span>*) == <span class="hljs-number">4</span>) &#123;<br>        std::cout &lt;&lt; <span class="hljs-string">&quot;This is a 32-bit system.&quot;</span> &lt;&lt; std::endl;<br>    &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (<span class="hljs-built_in">sizeof</span>(<span class="hljs-type">void</span>*) == <span class="hljs-number">8</span>) &#123;<br>        std::cout &lt;&lt; <span class="hljs-string">&quot;This is a 64-bit system.&quot;</span> &lt;&lt; std::endl;<br>    &#125; <span class="hljs-keyword">else</span> &#123;<br>        std::cout &lt;&lt; <span class="hljs-string">&quot;Unknown architecture.&quot;</span> &lt;&lt; std::endl;<br>    &#125;<br><br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<div class="admonition info">
+<p class="admonition-title">
+info
+</p>
+<p>
+16位是2字节是因为16位下地址空间有2^16,一个地址要用16位表示，所以就是2字节。32位和64位同理。
+</p>
+</div>
 <h2 id="类和数据抽象">类和数据抽象</h2>
 <h3 id="类之间的关系">类之间的关系</h3>
 <p>has-A 包含关系:⽤以描述⼀个类由多个部件类构成，实现 has-A
@@ -2818,7 +2829,7 @@ epoll 是非常高效的，它可以轻易地处理百万级别的并发连接�
 <p><strong>总结</strong>：执行
 <strong>epoll_create()</strong>时，创建了红黑树和就绪链表；执行
 <strong>epoll_ctl()</strong>时，如果增加 socket
-句柄，则检查在红黑树中是否存在，存在立即返回，不存在则添加到树干上，然后向内核注册回调函数，用于当中断事件来临时向准备就绪链表中插入数据；执行
+句柄，则检查在红黑树中是否存在，存在立即返回，不存在则添加到树干上，然后向内核注册回调函数，用于当中断事件来临时向准备就绪链表（是一个双向链表）中插入数据；执行
 <strong>epoll_wait()</strong>时,如果 rdllist
 链表不为空，则这里的事件复制到用户态内存（使用共享内存提高效率）中，同时将事件数量返回给用户。</p>
 <h3
