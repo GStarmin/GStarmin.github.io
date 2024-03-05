@@ -309,7 +309,7 @@
         
         
         
-          996 分钟
+          997 分钟
         
       </span>
     
@@ -415,6 +415,16 @@ lock 函数来获得 shared_ptr。</p>
 1，导致跳出函数时资源没有被释放（的析构函数没有被调用），解决办法：把其中一个改为weak_ptr就可以。</p>
 <p>详细介绍智能指针见<a
 href="https://gstarmin.github.io/2023/03/04/Cpp-%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88/">C++智能指针</a></p>
+<h3
+id="智能指针的引用计数是普通成员变量还是指针变量使用static可不可以">智能指针的引用计数是普通成员变量还是指针变量？使用static可不可以？</h3>
+<p>指针变量；</p>
+<p>不可以用static变量，在只有一个对象的时候，该方法是合适的。但是static变量是属于类的，如下图所示，当出现第二个对象，此时新增一个shared_ptr指针，此时内部的count就变成了4，既不满足指向对象1的指针数量，也不满足指向对象2的指针数量。</p>
+<figure>
+<img
+src="/img/Cpp%E9%9D%A2%E8%AF%95%E7%9F%A5%E8%AF%86%E7%82%B9/650eab4b416c41089f3219a7b6dea02f.png" srcset="/img/loading.gif" lazyload
+alt="在这里插入图片描述" />
+<figcaption aria-hidden="true">在这里插入图片描述</figcaption>
+</figure>
 <h3 id="c-中内存分配情况">C++ 中内存分配情况</h3>
 <p>栈：由编译器管理分配和回收，存放局部变量和函数参数。</p>
 <p>堆：由程序员管理，需要⼿动 new malloc delete free
