@@ -305,7 +305,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          26k 字
+          27k 字
         
       </span>
     
@@ -316,7 +316,7 @@
         
         
         
-          261 分钟
+          266 分钟
         
       </span>
     
@@ -1430,6 +1430,20 @@ id="三次握手过程中bindlistenaccept哪个环节">三次握手过程中bind
 </ol>
 <h3 id="socket端口复用">socket端口复用</h3>
 <p>C++可以使用<code>setsockopt</code>函数，并将<code>SO_REUSEADDR</code>选项设置为<code>1</code>。这样可以允许多个socket绑定到同一端口上。</p>
+<h3
+id="http对文件的分段是怎么设计的">HTTP对文件的分段是怎么设计的？</h3>
+<ol type="1">
+<li><strong>分块传输标识：</strong>
+在HTTP响应的头部，通过设置<code>Transfer-Encoding: chunked</code>来表示服务器将采用分块传输的方式。这告诉客户端，响应实体主体将以块的形式进行传输。</li>
+<li><strong>数据块格式：</strong>
+每个数据块由两部分组成，分别是十六进制的块大小和块数据。块大小指示了当前块包含的数据的字节数，然后是一个CRLF（回车换行）标志，接着是实际的数据，再以CRLF标志结束。</li>
+<li><strong>最后的块：</strong>
+为了表示数据传输的结束，使用一个零大小的块（"0"）。这表明没有更多的块要传输，标志着实体主体的结束。</li>
+</ol>
+<p>下面是一个简单的示例，展示了一个包含两个分块的HTTP响应：</p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs http"><span class="hljs-meta">HTTP/1.1</span> <span class="hljs-number">200</span> OK<br><span class="hljs-attribute">Content-Type</span><span class="hljs-punctuation">: </span>text/plain<br><span class="hljs-attribute">Transfer-Encoding</span><span class="hljs-punctuation">: </span>chunked<br><br><span class="language-moonscript"><span class="hljs-number">7</span>\r\n</span><br><span class="language-moonscript">Hello, \r\n</span><br><span class="language-moonscript"><span class="hljs-number">6</span>\r\n</span><br><span class="language-moonscript">world!\r\n</span><br><span class="language-moonscript"><span class="hljs-number">0</span>\r\n\r\n</span><br></code></pre></td></tr></table></figure>
+<p>在这个例子中，第一个块大小为7（十进制），包含字符串"Hello,
+"；第二个块大小为6，包含字符串"world!"；最后的块为0，表示传输结束。</p>
 
                 
               </div>
