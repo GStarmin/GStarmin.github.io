@@ -301,6 +301,76 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h1 class="index-header">
         
+        <a href="/2023/07/02/muduo%E5%BA%93-I-O%E5%A4%8D%E7%94%A8/" target="_self">
+          muduo库-I/O复用
+        </a>
+      </h1>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2023/07/02/muduo%E5%BA%93-I-O%E5%A4%8D%E7%94%A8/" target="_self">
+        <div>
+          muduo库-I/O复用 I/O复用使得程序能同时监听多个文件描述符，能有效提高程序性能。Linux下，实现I/O复用的系统调用主要有3个：  select poll epoll  muduo采用了2和3，分别用PollPoller/EPollPoller对poll/epoll进行了封装，基类Poller主要用于提供统一的接口。 Poller类 先来看看基类Poller定义： 1234567891
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2023-07-02 15:10" pubdate>
+              2023-07-02
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/C/" class="category-chain-item">C++</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/C/muduo/" class="category-chain-item">muduo</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/C/">#C++</a>
+            
+              <a href="/tags/muduo/">#muduo</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
         <a href="/2023/07/02/muduo%E5%BA%93-%E7%BD%91%E7%BB%9C%E5%BA%93%E6%A6%82%E6%8B%AC/" target="_self">
           muduo库-网络库概括
         </a>
@@ -888,67 +958,6 @@
               <a href="/tags/C/">#C++</a>
             
               <a href="/tags/muduo/">#muduo</a>
-            
-          </div>
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2023/06/26/Cpp-lambda%E9%80%92%E5%BD%92%E8%B0%83%E7%94%A8%E7%9A%84%E9%97%AE%E9%A2%98/" target="_self">
-          Cpp-lambda递归调用的问题
-        </a>
-      </h1>
-
-      
-      <a class="index-excerpt index-excerpt__noimg" href="/2023/06/26/Cpp-lambda%E9%80%92%E5%BD%92%E8%B0%83%E7%94%A8%E7%9A%84%E9%97%AE%E9%A2%98/" target="_self">
-        <div>
-          Cpp-lambda递归调用的问题 今天写了一个lambda函数： 123456789function&lt;bool(TreeNode*, long long, long long)&gt; isBST = [](TreeNode* root, long long lower, long long upper)&#123;    if(!root)        return true;
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2023-06-26 15:05" pubdate>
-              2023-06-26
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3 d-flex align-items-center">
-            <i class="iconfont icon-category"></i>
-            
-
-<span class="category-chains">
-  
-  
-    
-      <span class="category-chain">
-        
-  <a href="/categories/C/" class="category-chain-item">C++</a>
-  
-  
-
-      </span>
-    
-  
-</span>
-
-          </div>
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/C/">#C++</a>
             
           </div>
         
