@@ -456,7 +456,7 @@ class="math inline">\(O(n)\)</span>的遍历。（可优化为只返回给用户
 <p><img src="/img/网络IO模型/poll定义.png" srcset="/img/loading.gif" lazyload /></p>
 <p><strong>缺点</strong>：</p>
 <ul>
-<li>pollfd数组拷贝到了内核态仍然有开销，poll在每次调用的时候都会存在一个将pollfd结构体数组中的每个结构体元素从用户态向内核态中的一个链表节点拷贝的过程，而内核中的这个链表并不会一直保存，当poll运行一次就会重新执行一次上述的拷贝过程，</li>
+<li>pollfd数组拷贝到了内核态仍然有开销，poll在每次调用的时候都会存在一个将pollfd结构体数组中的每个结构体元素从用户态向内核态中的一个链表节点拷贝的过程，而内核中的这个链表并不会一直保存，当poll运行一次就会重新执行一次上述的拷贝过程.</li>
 <li>poll并没有通知用户态哪一个socket有数据，仍然需要用户态自己去做一次<span
 class="math inline">\(O(n)\)</span>的遍历。</li>
 </ul>
