@@ -29,6 +29,8 @@
 <meta property="og:image" content="https://gstarmin.github.io/img/MySQL/202205220024132.png">
 <meta property="og:image" content="https://gstarmin.github.io/img/MySQL/202205220024561.png">
 <meta property="og:image" content="https://gstarmin.github.io/img/MySQL/202205220024930.png">
+<meta property="og:image" content="https://gstarmin.github.io/img/MySQL/2002319-20201221103607402-1375547408.png">
+<meta property="og:image" content="https://gstarmin.github.io/img/MySQL/2002319-20201221103615438-278818902.png">
 <meta property="article:published_time" content="2023-12-23T12:16:10.000Z">
 <meta property="article:modified_time" content="2023-12-25T13:48:10.000Z">
 <meta property="article:author" content="Starmin">
@@ -314,7 +316,7 @@
         
         
         
-          227 分钟
+          235 分钟
         
       </span>
     
@@ -1342,7 +1344,7 @@ id="数据库高并发是我们经常会遇到的你有什么好的解决方案�
 View</strong> 来实现的。</p>
 <p>具体实现见<a
 target="_blank" rel="noopener" href="https://pdai.tech/md/db/sql-mysql/sql-mysql-mvcc.html#mvcc%E7%9A%84%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86">MVCC的实现原理</a></p>
-<h3 id="b树和b树以及区别">B树和B+树以及区别</h3>
+<h2 id="b树和b树以及区别">B树和B+树以及区别</h2>
 <h4 id="b树">B树</h4>
 <p>首先介绍一下一棵 m 阶的 B 树的特性。<img
 src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" srcset="/img/loading.gif" lazyload
@@ -1375,6 +1377,44 @@ m-1；而在B+树中，根结点的关键字个数n的范围是1 &lt;= n &lt;=
 m,非根结点的范围是⌈m/2⌉&lt;=n &lt;= m。</li>
 <li>在B+树中，所有非叶结点仅起到索引作用，即结点中的每个索引项只含有对应子树的最大关键字和指向该子树的指针，不含有该关键字对应记录的存储地址。</li>
 <li>在B树中，叶结点包含的关键字和其他结点包含的关键字是不重复的；而在B+树中，叶结点包含了全部关键字，即其他非叶结点中的关键字包含在叶结点中。</li>
+</ol>
+<h2 id="覆盖索引">覆盖索引</h2>
+<p>每一个索引在 InnoDB
+里面对应一棵B+树，先讲一下主键索引和非主键索引的区别：</p>
+<p>对于表:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs mysql">mysql&gt; select * from student;<br>+----+------+-----+<br>| id | name | age |<br>+----+------+-----+<br>|  1 | 小赵 |  10 |<br>|  2 | 小王 |  11 |<br>|  3 | 小李 |  12 |<br>|  4 | 小陈 |  13 |<br>+----+------+-----+<br>4 rows in set (0.00 sec)<br></code></pre></td></tr></table></figure>
+<figure>
+<img src="/img/MySQL/2002319-20201221103607402-1375547408.png" srcset="/img/loading.gif" lazyload
+alt="img" />
+<figcaption aria-hidden="true">img</figcaption>
+</figure>
+<p><strong>叶子节点中，主键索引存储了整行数据，而非主键索引中存储的值为主键id</strong>。</p>
+<p>当我们执行以下语句:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mysql">select age from student where name = &#x27;小李&#x27;;<br></code></pre></td></tr></table></figure>
+<p>执行顺序:</p>
+<ol type="1">
+<li>在name索引树上找到名称为小李的节点 id为03</li>
+<li>从id索引树上找到id为03的节点 获取所有数据</li>
+<li>从数据中获取字段命为age的值12,返回.</li>
+</ol>
+<p>这样<strong>从非主键索引树搜索再回到主键索引树搜索的过程称为：回表</strong></p>
+<p>回表一定程度上消耗性能,那么如何降低这种性能损耗呢?于是提出了一种方法:<strong>覆盖索引</strong>.</p>
+<h3 id="覆盖索引-1">覆盖索引</h3>
+<p>覆盖索引（covering index
+，或称为索引覆盖）即从非主键索引中就能查到的记录，而不需要查询主键索引中的记录，<strong>避免回表的产生</strong>减少了树的搜索次数，显著提升性能。</p>
+<h3 id="覆盖索引的使用">覆盖索引的使用</h3>
+<p>如果一个业务中,很多类似于根据姓名查找年龄的业务,那么可以将这些热点业务重新根据(name
+, age)建立联合索引,先删除之前以name构建的索引:</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-keyword">ALTER</span> <span class="hljs-keyword">TABLE</span> student <span class="hljs-keyword">DROP</span> <span class="hljs-keyword">INDEX</span> I_name;<br><span class="hljs-keyword">ALTER</span> <span class="hljs-keyword">TABLE</span> student <span class="hljs-keyword">ADD</span> <span class="hljs-keyword">INDEX</span> I_name_age(<span class="hljs-type">name</span>, age);<br></code></pre></td></tr></table></figure>
+<p>联合索引:</p>
+<p>[<img src="/img/MySQL/2002319-20201221103615438-278818902.png" srcset="/img/loading.gif" lazyload
+alt="img" /></p>
+<p>再次执行如下sql:</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-keyword">select</span> age <span class="hljs-keyword">from</span> student <span class="hljs-keyword">where</span> <span class="hljs-type">name</span> = <span class="hljs-string">&#x27;小李&#x27;</span>;<br></code></pre></td></tr></table></figure>
+<p>执行流程:</p>
+<ol type="1">
+<li>在name,age联合索引树上找到名称为小李的节点。</li>
+<li>此时节点索引里包含信息age直接返回 12,从而避免回表。</li>
 </ol>
 
                 
