@@ -298,7 +298,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          102k 字
+          105k 字
         
       </span>
     
@@ -309,7 +309,7 @@
         
         
         
-          1018 分钟
+          1052 分钟
         
       </span>
     
@@ -415,6 +415,59 @@ lock 函数来获得 shared_ptr。</p>
 1，导致跳出函数时资源没有被释放（的析构函数没有被调用），解决办法：把其中一个改为weak_ptr就可以。</p>
 <p>详细介绍智能指针见<a
 href="https://gstarmin.github.io/2023/03/04/Cpp-%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88/">C++智能指针</a></p>
+<h3
+id="make_shared与直接创建shared_ptr的区别">make_shared与直接创建shared_ptr的区别</h3>
+<h4 id="shared_ptr结构">shared_ptr结构</h4>
+<p>shared_ptr源码如下（截取片段）；</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-keyword">template</span> &lt;<span class="hljs-keyword">class</span> <span class="hljs-title class_">_Ty</span>&gt;<br><span class="hljs-keyword">class</span> <span class="hljs-title class_">shared_ptr</span> : <span class="hljs-keyword">public</span> _Ptr_base&lt;_Ty&gt; &#123; <span class="hljs-comment">// class for reference counted resource management</span><br>&#125;<br><br><span class="hljs-keyword">template</span> &lt;<span class="hljs-keyword">class</span> <span class="hljs-title class_">_Ty</span>&gt;<br><span class="hljs-keyword">class</span> <span class="hljs-title class_">_Ptr_base</span> &#123; <span class="hljs-comment">// base class for shared_ptr and weak_ptr</span><br><span class="hljs-keyword">private</span>:<br>    element_type* _Ptr&#123;<span class="hljs-literal">nullptr</span>&#125;;<br>    _Ref_count_base* _Rep&#123;<span class="hljs-literal">nullptr</span>&#125;;<br>&#125;<br></code></pre></td></tr></table></figure>
+<figure>
+<img
+src="/img/Cpp%E9%9D%A2%E8%AF%95%E7%9F%A5%E8%AF%86%E7%82%B9/v2-0f63ac10a770358bae0ec65a954fe457_720w.webp" srcset="/img/loading.gif" lazyload
+alt="img" />
+<figcaption aria-hidden="true">img</figcaption>
+</figure>
+<figure>
+<img
+src="/img/Cpp%E9%9D%A2%E8%AF%95%E7%9F%A5%E8%AF%86%E7%82%B9/v2-4dccfe27f585d77a81e74ca427731616_720w.webp" srcset="/img/loading.gif" lazyload
+alt="img" />
+<figcaption aria-hidden="true">img</figcaption>
+</figure>
+<h4
+id="直接创建shared_ptr是异常不安全的可能会发生内存泄漏而make_shared是异常安全的">（1）直接创建shared_ptr是异常不安全的，可能会发生内存泄漏；而make_shared是异常安全的。</h4>
+<p>参考下面的例子：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">//不好：可能会泄漏</span><br><span class="hljs-comment">//异常不安全的，编译器可能会把两个用以创建函数的两个参数的表达式重新排序。</span><br><span class="hljs-comment">//可能会首先为两个对象先进行内存分配，然后再试图调用二者的Widget构造函数。</span><br><span class="hljs-comment">//一旦其中一个构造函数调用抛出了异常，那么另一个对象的内存可能永远不会被释放了！</span><br><br><span class="hljs-comment">//异常不安全</span><br><span class="hljs-built_in">fun</span>(<span class="hljs-built_in">shared_ptr</span>&lt;Widget&gt;(<span class="hljs-keyword">new</span> <span class="hljs-built_in">Widget</span>(a,b)),<br>    <span class="hljs-built_in">shared_ptr</span>&lt;Widget&gt;(<span class="hljs-keyword">new</span> <span class="hljs-built_in">Widget</span>(c,d)));<br><br><span class="hljs-comment">//异常不安全</span><br><span class="hljs-keyword">auto</span>* p1 = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Widget</span>(a,b);<br><span class="hljs-keyword">auto</span>* p2 = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Widget</span>(c,d);<br><span class="hljs-built_in">shared_ptr</span>&lt;Widget&gt;(p1);<br><span class="hljs-built_in">shared_ptr</span>&lt;Widget&gt;(p2);<br><br><span class="hljs-comment">//异常安全，但写法不干净</span><br><span class="hljs-function">shared_ptr&lt;Widget&gt; <span class="hljs-title">sp1</span><span class="hljs-params">(<span class="hljs-keyword">new</span> Widget(a,b))</span></span>;<br><span class="hljs-function">shared_ptr&lt;Widget&gt; <span class="hljs-title">sp2</span><span class="hljs-params">(<span class="hljs-keyword">new</span> Widget(c,d))</span></span>;<br><span class="hljs-built_in">fun</span>(sp1,sp2);<br><br><span class="hljs-comment">//异常安全，性能最好，也很干净</span><br><span class="hljs-built_in">fun</span>(<span class="hljs-built_in">make_shared</span>&lt;Widget&gt;(a,b), <span class="hljs-built_in">make_shared</span>&lt;Widget&gt;(c,d));<br></code></pre></td></tr></table></figure>
+<h4
+id="make_shared-只需要分配一次内存而直接创建-shared_ptr-需要分配两次内存">2）make_shared
+只需要分配一次内存，而直接创建 shared_ptr 需要分配两次内存。</h4>
+<figure>
+<img
+src="/img/Cpp%E9%9D%A2%E8%AF%95%E7%9F%A5%E8%AF%86%E7%82%B9/v2-a26c103854275fabd9f854a186ff7c18_720w.webp" srcset="/img/loading.gif" lazyload
+alt="img" />
+<figcaption aria-hidden="true">img</figcaption>
+</figure>
+<p>采用直接创建shared_ptr的方式，那么首先需要在堆上为原始对象分配内存，其次根据上面
+shared_ptr 的构造函数可知，<code>new _Ref_count&lt;_Ux&gt;(_Px)</code>
+时还需要为控制块分配一次内存。</p>
+<p>然后我们再来看看 make_shared 源码，它采用placement
+new的方式，动态分配了一个
+<code>_Ref_count_obj2</code>，这也是<code>_Ref_count_base</code>的一个派生类，<code>union &#123;_Wrap&lt;_Ty&gt; _Storage;&#125;</code>为
+<code>_Ty</code>
+类型的对象分配了内存空间，所以对象和控制块都被放在了一块。</p>
+<h4
+id="make_shared也存在缺陷只有当-_weaks-为-0-时控制块才会调用-_delete_this-释放自己weak_ptr会拖延整块内存释放时间">（3）make_shared也存在缺陷，只有当
+_Weaks 为 0 时，控制块才会调用 _Delete_this()
+释放自己，weak_ptr会拖延整块内存释放时间。</h4>
+<p>上面我们提到，在_Ref_count_base的实现中，只有当 _Weaks 为 0
+时，控制块才会调用 _Delete_this()
+释放自己，然而**由于现在对象也被放在了控制块中，所以即使 _Uses 为 0
+时，对象空间也没有算被释放，只有当 _Weaks 为 0 时，
+才算是真的被释放了**。</p>
+<p>测试代码如下：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;iostream&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;memory&gt;</span></span><br><span class="hljs-keyword">using</span> <span class="hljs-keyword">namespace</span> std;<br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">MyClass</span> &#123;<br><span class="hljs-keyword">public</span>:<br>    <span class="hljs-built_in">MyClass</span>() &#123; cout &lt;&lt; <span class="hljs-string">&quot;MyClass()&quot;</span> &lt;&lt; endl; &#125;<br>    ~<span class="hljs-built_in">MyClass</span>() &#123; cout &lt;&lt; <span class="hljs-string">&quot;~MyClass()&quot;</span> &lt;&lt; endl; &#125;<br><span class="hljs-keyword">private</span>:<br>    <span class="hljs-type">double</span> x, y, z;<br>&#125;;<br><br><span class="hljs-type">int</span> alloc_times = <span class="hljs-number">0</span>;<br><span class="hljs-type">int</span> dealloc_times = <span class="hljs-number">0</span>;<br><span class="hljs-type">int</span> allocated = <span class="hljs-number">0</span>;<br><br><span class="hljs-function"><span class="hljs-type">void</span>* <span class="hljs-keyword">operator</span> <span class="hljs-title">new</span><span class="hljs-params">(<span class="hljs-type">size_t</span> size)</span> </span>&#123;<br>    <span class="hljs-type">void</span>* p = std::<span class="hljs-built_in">malloc</span>(size);<br>    cout &lt;&lt; <span class="hljs-string">&quot;new &quot;</span> &lt;&lt; size &lt;&lt; <span class="hljs-string">&quot; byte(s)&quot;</span> &lt;&lt; endl;<br><br>    allocated += size;<br>    alloc_times++;<br>    <span class="hljs-keyword">return</span> p;<br>&#125;<br><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-keyword">operator</span> <span class="hljs-title">delete</span><span class="hljs-params">(<span class="hljs-type">void</span>* p)</span> <span class="hljs-keyword">noexcept</span> </span>&#123;<br>    cout &lt;&lt; <span class="hljs-string">&quot;deleted memory&quot;</span> &lt;&lt; endl;<br><br>    dealloc_times++;<br>    <span class="hljs-keyword">return</span> std::<span class="hljs-built_in">free</span>(p);<br>&#125;<br><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span> </span>&#123;<br>    weak_ptr&lt;MyClass&gt; w;<br>    cout &lt;&lt; <span class="hljs-string">&quot;分配尺寸:&quot;</span> &lt;&lt; allocated &lt;&lt; endl;<br>    cout &lt;&lt; <span class="hljs-string">&quot;分配次数&quot;</span> &lt;&lt; alloc_times &lt;&lt; endl;<br>    cout &lt;&lt; <span class="hljs-string">&quot;释放次数&quot;</span> &lt;&lt; dealloc_times &lt;&lt; endl;<br>    &#123;<br>        <span class="hljs-comment">//shared_ptr&lt;MyClass&gt; s&#123;new MyClass()&#125;;</span><br>        shared_ptr s = std::<span class="hljs-built_in">make_shared</span>&lt;MyClass&gt;();<br>        w = s;<br><br>    &#125;   <span class="hljs-comment">//1. s析构、释放原始对象、但不释放控制块</span><br>    cout &lt;&lt; <span class="hljs-string">&quot;block end--------&quot;</span> &lt;&lt; endl;<br>    cout &lt;&lt; <span class="hljs-string">&quot;分配尺寸:&quot;</span> &lt;&lt; allocated &lt;&lt; endl;<br>    cout &lt;&lt; <span class="hljs-string">&quot;分配次数&quot;</span> &lt;&lt; alloc_times &lt;&lt; endl;<br>    cout &lt;&lt; <span class="hljs-string">&quot;释放次数&quot;</span> &lt;&lt; dealloc_times &lt;&lt; endl;<br><br>    w.<span class="hljs-built_in">reset</span>(); <span class="hljs-comment">//2. w析构、释放控制块</span><br>    cout &lt;&lt; <span class="hljs-string">&quot;分配尺寸:&quot;</span> &lt;&lt; allocated &lt;&lt; endl;<br>    cout &lt;&lt; <span class="hljs-string">&quot;分配次数&quot;</span> &lt;&lt; alloc_times &lt;&lt; endl;<br>    cout &lt;&lt; <span class="hljs-string">&quot;释放次数&quot;</span> &lt;&lt; dealloc_times &lt;&lt; endl;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>当采用直接创建shared_ptr的方式时，输入如下：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs text">分配尺寸:0<br>分配次数0<br>释放次数0<br>new 24 byte(s)<br>MyClass()<br>new 24 byte(s)<br>~MyClass()<br>deleted memory<br>block end--------<br>分配尺寸:48<br>分配次数2<br>释放次数1<br>deleted memory<br>分配尺寸:48<br>分配次数2<br>释放次数2<br></code></pre></td></tr></table></figure>
+<p>当采用make_shared的方式时，输入如下：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs text">分配尺寸:0<br>分配次数0<br>释放次数0<br>new 40 byte(s)<br>MyClass()<br>~MyClass()<br>block end--------<br>分配尺寸:40<br>分配次数1<br>释放次数0<br>deleted memory<br>分配尺寸:40<br>分配次数1<br>释放次数1<br></code></pre></td></tr></table></figure>
 <h3
 id="智能指针的引用计数是普通成员变量还是指针变量使用static可不可以">智能指针的引用计数是普通成员变量还是指针变量？使用static可不可以？</h3>
 <p>指针变量；</p>

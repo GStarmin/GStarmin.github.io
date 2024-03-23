@@ -305,7 +305,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          23k 字
+          26k 字
         
       </span>
     
@@ -316,7 +316,7 @@
         
         
         
-          235 分钟
+          257 分钟
         
       </span>
     
@@ -1416,6 +1416,88 @@ alt="img" /></p>
 <li>在name,age联合索引树上找到名称为小李的节点。</li>
 <li>此时节点索引里包含信息age直接返回 12,从而避免回表。</li>
 </ol>
+<h2 id="select-...-for-update-where-xxx...-加锁情况">select ... for
+update where xxx... 加锁情况</h2>
+<h3 id="主键">主键</h3>
+<p>当where条件用的数据库主键时。</p>
+<p>例如开启一个事务1，在事务中更新id=1的用户的年龄：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">begin</span>;<br><span class="hljs-keyword">select</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">from</span> <span class="hljs-keyword">user</span> <span class="hljs-keyword">where</span> id<span class="hljs-operator">=</span><span class="hljs-number">1</span> <span class="hljs-keyword">for</span> <span class="hljs-keyword">update</span>;<br><span class="hljs-keyword">update</span> <span class="hljs-keyword">user</span> <span class="hljs-keyword">set</span> age<span class="hljs-operator">=</span><span class="hljs-number">22</span> <span class="hljs-keyword">where</span> id<span class="hljs-operator">=</span><span class="hljs-number">1</span>;<br></code></pre></td></tr></table></figure>
+<p>where条件中的id是数据库的主键，并且使用for
+update关键字，加了一个<strong>行锁</strong>，这个事务没有commit。</p>
+<p>此时，开启了另外一个事务2，也更新id=1的用户的年龄：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">begin</span>;<br><span class="hljs-keyword">update</span> <span class="hljs-keyword">user</span> <span class="hljs-keyword">set</span> age<span class="hljs-operator">=</span><span class="hljs-number">23</span> <span class="hljs-keyword">where</span> id<span class="hljs-operator">=</span><span class="hljs-number">1</span>;<br><span class="hljs-keyword">commit</span>;<br></code></pre></td></tr></table></figure>
+<p>在执行事务2的sql语句的过程中，会一直等待事务1释放锁。</p>
+<h3 id="唯一索引">唯一索引</h3>
+<p>当where条件用的数据库唯一索引时。</p>
+<p>开启一个事务1，在事务中更新code=101的用户的年龄：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">begin</span>;<br><span class="hljs-keyword">select</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">from</span> <span class="hljs-keyword">user</span> <span class="hljs-keyword">where</span> code<span class="hljs-operator">=</span><span class="hljs-string">&#x27;101&#x27;</span> <span class="hljs-keyword">for</span> <span class="hljs-keyword">update</span>;<br><span class="hljs-keyword">update</span> <span class="hljs-keyword">user</span> <span class="hljs-keyword">set</span> age<span class="hljs-operator">=</span><span class="hljs-number">22</span> <span class="hljs-keyword">where</span> code<span class="hljs-operator">=</span><span class="hljs-string">&#x27;101&#x27;</span>;<br></code></pre></td></tr></table></figure>
+<p>where条件中的code是数据库的<strong>唯一索引</strong>，并且使用for
+update关键字，加了一个<strong>行锁</strong>，这个事务没有commit。</p>
+<p>此时，开启了另外一个事务2，也更新code=101的用户的年龄：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">begin</span>;<br><span class="hljs-keyword">update</span> <span class="hljs-keyword">user</span> <span class="hljs-keyword">set</span> age<span class="hljs-operator">=</span><span class="hljs-number">23</span> <span class="hljs-keyword">where</span> code<span class="hljs-operator">=</span><span class="hljs-string">&#x27;101&#x27;</span>;<br><span class="hljs-keyword">commit</span>;<br></code></pre></td></tr></table></figure>
+<h3 id="普通索引">普通索引</h3>
+<p>当where条件用的数据库普通索引时。</p>
+<p>开启一个事务1，在事务中更新name=周星驰的用户的年龄：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">begin</span>;<br><span class="hljs-keyword">select</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">from</span> <span class="hljs-keyword">user</span> <span class="hljs-keyword">where</span> name<span class="hljs-operator">=</span><span class="hljs-string">&#x27;周星驰&#x27;</span> <span class="hljs-keyword">for</span> <span class="hljs-keyword">update</span>;<br><span class="hljs-keyword">update</span> <span class="hljs-keyword">user</span> <span class="hljs-keyword">set</span> age<span class="hljs-operator">=</span><span class="hljs-number">22</span> <span class="hljs-keyword">where</span> name<span class="hljs-operator">=</span><span class="hljs-string">&#x27;周星驰&#x27;</span>;<br></code></pre></td></tr></table></figure>
+<p>where条件中的name是数据库的普通索引，并且使用for
+update关键字，加了一个<strong>行锁</strong>，这个事务没有commit。</p>
+<p>此时，开启了另外一个事务2，也更新name=周星驰的用户的年龄：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">begin</span>;<br><span class="hljs-keyword">update</span> <span class="hljs-keyword">user</span> <span class="hljs-keyword">set</span> age<span class="hljs-operator">=</span><span class="hljs-number">23</span> <span class="hljs-keyword">where</span> name<span class="hljs-operator">=</span><span class="hljs-string">&#x27;周星驰&#x27;</span>;<br><span class="hljs-keyword">commit</span>;<br></code></pre></td></tr></table></figure>
+<p>执行结果跟主键的情况也是一样的。 <img
+src="/img/MySQL/f0dac846-3c8b-4c30-b1c6-9eed869d65cd-17111930681232.png" srcset="/img/loading.gif" lazyload
+alt="img" /></p>
+<h3 id="主键范围">主键范围</h3>
+<p>当where条件用的数据库主键范围时。</p>
+<p>开启一个事务1，在事务中更新id in (1,2)的用户的年龄：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">begin</span>;<br><span class="hljs-keyword">select</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">from</span> <span class="hljs-keyword">user</span> <span class="hljs-keyword">where</span> id <span class="hljs-keyword">in</span> (<span class="hljs-number">1</span>,<span class="hljs-number">2</span>) <span class="hljs-keyword">for</span> <span class="hljs-keyword">update</span>;<br><span class="hljs-keyword">update</span> <span class="hljs-keyword">user</span> <span class="hljs-keyword">set</span> age<span class="hljs-operator">=</span><span class="hljs-number">22</span> <span class="hljs-keyword">where</span> id <span class="hljs-keyword">in</span> (<span class="hljs-number">1</span>,<span class="hljs-number">2</span>);<br></code></pre></td></tr></table></figure>
+<p>where条件中的id是数据库的主键范围，并且使用for
+update关键字，加了多个行锁，这个事务没有commit。</p>
+<p>此时，开启了另外一个事务2，也更新id=1的用户的年龄：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">begin</span>;<br><span class="hljs-keyword">update</span> <span class="hljs-keyword">user</span> <span class="hljs-keyword">set</span> age<span class="hljs-operator">=</span><span class="hljs-number">23</span> <span class="hljs-keyword">where</span> id<span class="hljs-operator">=</span><span class="hljs-number">1</span>;<br><span class="hljs-keyword">commit</span>;<br></code></pre></td></tr></table></figure>
+<p>执行结果跟主键的情况也是一样的。 <img
+src="/img/MySQL/f0dac846-3c8b-4c30-b1c6-9eed869d65cd-17111931086044.png" srcset="/img/loading.gif" lazyload
+alt="img" /></p>
+<p>此时，开启了另外一个事务2，也更新id=2的用户的年龄：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">begin</span>;<br><span class="hljs-keyword">update</span> <span class="hljs-keyword">user</span> <span class="hljs-keyword">set</span> age<span class="hljs-operator">=</span><span class="hljs-number">23</span> <span class="hljs-keyword">where</span> id<span class="hljs-operator">=</span><span class="hljs-number">2</span>;<br><span class="hljs-keyword">commit</span>;<br></code></pre></td></tr></table></figure>
+<p>执行结果跟主键的情况也是一样的。 <img
+src="/img/MySQL/f0dac846-3c8b-4c30-b1c6-9eed869d65cd-17111931086044.png" srcset="/img/loading.gif" lazyload
+alt="img" /></p>
+<h3 id="普通字段">普通字段</h3>
+<p>当where条件用的数据库普通字段时。该字段<strong>既不是主键，也不是索引</strong>。</p>
+<p>开启一个事务1，在事务中更新age=22的用户的年龄：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">begin</span>;<br><span class="hljs-keyword">select</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">from</span> <span class="hljs-keyword">user</span> <span class="hljs-keyword">where</span> age<span class="hljs-operator">=</span><span class="hljs-number">22</span> <span class="hljs-keyword">for</span> <span class="hljs-keyword">update</span>;<br><span class="hljs-keyword">update</span> <span class="hljs-keyword">user</span> <span class="hljs-keyword">set</span> age<span class="hljs-operator">=</span><span class="hljs-number">22</span> <span class="hljs-keyword">where</span> age<span class="hljs-operator">=</span><span class="hljs-number">22</span> ;<br></code></pre></td></tr></table></figure>
+<p>where条件中的age是数据库的普通字段，并且使用for
+update关键字，加的是<code>表锁</code>，这个事务没有commit。</p>
+<p>此时，开启了另外一个事务2，也更新age=22的用户的年龄：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">begin</span>;<br><span class="hljs-keyword">update</span> <span class="hljs-keyword">user</span> <span class="hljs-keyword">set</span> age<span class="hljs-operator">=</span><span class="hljs-number">23</span> <span class="hljs-keyword">where</span> age<span class="hljs-operator">=</span><span class="hljs-number">22</span> ;<br><span class="hljs-keyword">commit</span>;<br></code></pre></td></tr></table></figure>
+<p>此时，执行事务2时，会一直阻塞等待事务1释放锁。</p>
+<p>调整一下sql条件，查询条件改成age=23：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">begin</span>;<br><span class="hljs-keyword">update</span> <span class="hljs-keyword">user</span> <span class="hljs-keyword">set</span> age<span class="hljs-operator">=</span><span class="hljs-number">23</span> <span class="hljs-keyword">where</span> age<span class="hljs-operator">=</span><span class="hljs-number">23</span> ;<br><span class="hljs-keyword">commit</span>;<br></code></pre></td></tr></table></figure>
+<p>此时，行事务3时，也会一直阻塞等待事务1释放锁。</p>
+<p>也就是说，在for
+update语句中，使用普通字段作为查询条件时，加的是<strong>表锁</strong>，而并非行锁。</p>
+<h3 id="空数据">空数据</h3>
+<p>当where条件查询的数据不存在时，会发生什么呢？</p>
+<p>开启一个事务1，在事务中更新id=66的用户的年龄：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">begin</span>;<br><span class="hljs-keyword">select</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">from</span> <span class="hljs-keyword">user</span> <span class="hljs-keyword">where</span> id<span class="hljs-operator">=</span><span class="hljs-number">66</span> <span class="hljs-keyword">for</span> <span class="hljs-keyword">update</span>;<br><span class="hljs-keyword">update</span> <span class="hljs-keyword">user</span> <span class="hljs-keyword">set</span> age<span class="hljs-operator">=</span><span class="hljs-number">22</span> <span class="hljs-keyword">where</span> id<span class="hljs-operator">=</span><span class="hljs-number">66</span> ;<br></code></pre></td></tr></table></figure>
+<p>这条数据是不存在的。</p>
+<p>此时，开启了另外一个事务2，也更新id=66的用户的年龄：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">begin</span>;<br><span class="hljs-keyword">update</span> <span class="hljs-keyword">user</span> <span class="hljs-keyword">set</span> age<span class="hljs-operator">=</span><span class="hljs-number">23</span> <span class="hljs-keyword">where</span> id<span class="hljs-operator">=</span><span class="hljs-number">66</span> ;<br><span class="hljs-keyword">commit</span>;<br></code></pre></td></tr></table></figure>
+<p>执行结果： <img
+src="/img/MySQL/495c7155-c901-47bd-a0ce-cd4b5f3a86f9.png" srcset="/img/loading.gif" lazyload alt="img" />
+执行成功了，说明这种情况<strong>没有加锁</strong>。</p>
+<h3 id="总结-2">总结</h3>
+<p>最后给大家总结一下select...for update加锁的情况：</p>
+<ol type="1">
+<li>主键字段：加行锁。</li>
+<li>唯一索引字段：加行锁。</li>
+<li>普通索引字段：加行锁。</li>
+<li>主键范围：加多个行锁。</li>
+<li>普通字段：加表锁。</li>
+<li>查询空数据：不加锁。</li>
+</ol>
+<p>如果事务1加了行锁，一直没有释放锁，事务2操作相同行的数据时，会一直等待直到超时。</p>
+<p>如果事务1加了表锁，一直没有释放锁，事务2不管操作的是哪一行数据，都会一直等待直到超时。</p>
 
                 
               </div>

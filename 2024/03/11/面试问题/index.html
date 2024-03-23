@@ -23,6 +23,8 @@
 <meta property="og:site_name" content="私人杂货铺">
 <meta property="og:description" content="面试问题 C++ C++编译生成可执行文件的顺序  预处理：在编译之前，源代码会经过预处理器的处理。预处理器执行诸如宏替换、包含头文件等操作。预处理器生成一个经过预处理的源代码文件。 编译：预处理后的源代码会被编译器编译成汇编代码（Assembly code），汇编代码是与特定架构相关的低级代码。 汇编：汇编器将汇编代码转换为机器代码（Object code），这是由二进制表示的机器可执行代码。">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gstarmin.github.io/img/%E9%9D%A2%E8%AF%95%E9%97%AE%E9%A2%98/14100820337928.jpg">
+<meta property="og:image" content="https://gstarmin.github.io/img/%E9%9D%A2%E8%AF%95%E9%97%AE%E9%A2%98/14100820334293.jpg">
 <meta property="og:image" content="https://gstarmin.github.io/img/%E9%9D%A2%E8%AF%95%E9%97%AE%E9%A2%98/3.1.jpg">
 <meta property="og:image" content="https://gstarmin.github.io/img/%E9%9D%A2%E8%AF%95%E9%97%AE%E9%A2%98/3.2.jpg">
 <meta property="og:image" content="https://gstarmin.github.io/img/%E9%9D%A2%E8%AF%95%E9%97%AE%E9%A2%98/3.3.jpg">
@@ -37,7 +39,7 @@
 <meta property="article:author" content="Starmin">
 <meta property="article:tag" content="面试">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://gstarmin.github.io/img/%E9%9D%A2%E8%AF%95%E9%97%AE%E9%A2%98/3.1.jpg">
+<meta name="twitter:image" content="https://gstarmin.github.io/img/%E9%9D%A2%E8%AF%95%E9%97%AE%E9%A2%98/14100820337928.jpg">
   
   
   
@@ -305,7 +307,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          38k 字
+          40k 字
         
       </span>
     
@@ -316,7 +318,7 @@
         
         
         
-          378 分钟
+          403 分钟
         
       </span>
     
@@ -618,6 +620,50 @@ target="_blank" rel="noopener" href="https://www.zywvvd.com/notes/coding/cpp/cpp
 <blockquote>
 <p>**_Z + 函数名长度 + 函数名 + 类型首字母的小写**</p>
 </blockquote>
+<h3 id="c-编译器都做了哪些优化">C++ 编译器都做了哪些优化？</h3>
+<ul>
+<li>常量折叠（constant
+folding）。编译器将编译期能计算为常量的表达式直接替换为计算结果。</li>
+<li>常量传播（constant
+propagation）。编译器追踪到一个值的源头，发现它是常量后，会将所有地方出现的这个值替换为常量。</li>
+<li>公共子表达式消除（common subexpression
+elimination）。将重复的计算过程重写掉，只算一次，其它地方复制结果。</li>
+<li>移除死代码（dead code
+removal）。用许多其它方法优化后，可能有些代码对输出不产生影响，就可以移除这些代码。这里包含了对没用到的值的读写操作，以及完全没用到的整个函数或表达式。</li>
+<li>指令选择（instruction
+selection）。这个不算是通常意义的优化，但既然编译器会将程序转换为它的内部表示形式，并生成CPU指令，编译器通常有一个庞大的等效指令序列的集合可供选择。编译需要知道目标处理器架构的细节以作出正确选择。</li>
+<li>移动循环中的不变代码（loop invariant code
+movement）。编译器能识别一块代码在循环过程中值不变，并将这块代码移出循环。其于此，编译器还能将循环中不变的条件检查移出循环外，再将循环体复制两次：一次针对条件为真，一次针对条件为假。之后还能做进一步优化。</li>
+<li>窥孔优化（peephole
+optimization）。编译器取一小段指令序列并做局部优化。</li>
+<li>尾调用移除（tail call
+removal）。一个在结尾处调用自身的递归函数通常可被重写为循环，从而降低函数调用开销，并减小栈溢出的可能。</li>
+</ul>
+<h3 id="大端小端">大端小端</h3>
+<h3 id="大端模式与小端模式">大端模式与小端模式</h3>
+<ol type="1">
+<li>大端模式是指<strong>数据的低位保存在内存的高地址中，而数据的高位保存在内存的低地址中</strong>.</li>
+<li>小端模式是指<strong>数据的低位保存在内存的低地址中，而数据的高位保存在内存的高地址中</strong>。</li>
+</ol>
+<p>例如：</p>
+<p>一个16bit的short型x，在<a
+target="_blank" rel="noopener" href="https://so.csdn.net/so/search?q=内存&amp;spm=1001.2101.3001.7020">内存</a>中的地址为0x0010，x的值为0x1122。那么0x11为数据高字节，0x22为数据低字节。</p>
+<ol type="1">
+<li>对于大端模式，就将0x11放在内存低地址中，即0x0010中；0x22放在内存高地址中，即0x0011中。</li>
+<li>小端模式，就将0x11放在内存高地址中，即0x0011中；0x22放在内存低地址中，即0x0010中。</li>
+</ol>
+<p>怎么判断大端小端？</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;iostream&gt;</span></span><br><br><span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">isLittleEndian</span><span class="hljs-params">()</span> </span>&#123;<br>    <span class="hljs-type">int</span> num = <span class="hljs-number">1</span>;<br>    <span class="hljs-comment">// 将整数强制转换为字符指针，然后检查第一个字节的值</span><br>    <span class="hljs-comment">// 如果是小端序，最低有效字节会被存储在低地址处</span><br>    <span class="hljs-keyword">return</span> (*(<span class="hljs-type">char</span> *)&amp;num == <span class="hljs-number">1</span>);<br>&#125;<br><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span> </span>&#123;<br>    <span class="hljs-keyword">if</span> (<span class="hljs-built_in">isLittleEndian</span>()) &#123;<br>        std::cout &lt;&lt; <span class="hljs-string">&quot;This system is Little Endian.&quot;</span> &lt;&lt; std::endl;<br>    &#125; <span class="hljs-keyword">else</span> &#123;<br>        std::cout &lt;&lt; <span class="hljs-string">&quot;This system is Big Endian.&quot;</span> &lt;&lt; std::endl;<br>    &#125;<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<h3 id="如何让哈希表按插入的顺序有序">如何让哈希表按插入的顺序有序</h3>
+<p>设置一个哈希表和一个双向链表</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs cpp">unordered_map&lt;<span class="hljs-type">int</span>, list&lt;<span class="hljs-type">int</span>&gt;::iterator&gt; umap;<br>list&lt;<span class="hljs-type">int</span>&gt; l;<br></code></pre></td></tr></table></figure>
+<p>取值可以使用<code>umap[key]-&gt;val</code>做到<code>O(1)</code>,同时<code>l</code>中也按照插入顺序有序。</p>
+<h3
+id="make_shared与直接创建shared_ptr的区别">make_shared与直接创建shared_ptr的区别</h3>
+<p>make_shared 只需要分配一次内存，而直接创建 shared_ptr
+需要分配两次内存。</p>
+<p>make_shared也存在缺陷，只有当 _Weaks 为 0 时，控制块才会调用
+_Delete_this() 释放自己，weak_ptr会拖延整块内存释放时间。</p>
 <h2 id="linux">Linux</h2>
 <h2
 id="linux系统查看cpu占用的命令腾讯云">linux系统查看cpu占用的命令（腾讯云）</h2>
@@ -759,6 +805,36 @@ IP 地址。</li>
 <p>这个命令会读取 <code>filename.txt</code>
 文件的每一行，并将每行的第二列打印输出。</p>
 <h3 id="linux的进程调度腾讯云">Linux的进程调度（腾讯云）</h3>
+<h3 id="gdb-调试遇到stackovlerflow怎么办">GDB
+调试遇到stackovlerflow怎么办？</h3>
+<p>如果按照一般的方式编译：</p>
+<p>gcc –o stackoverflow stackoverflow.c</p>
+<p>linux系统能够探测到程序中的stack
+overflow，从而终止程序，如下图所示：</p>
+<figure>
+<img src="/img/%E9%9D%A2%E8%AF%95%E9%97%AE%E9%A2%98/14100820337928.jpg" srcset="/img/loading.gif" lazyload
+alt="Linux下的栈溢出案例分析-GDB调试操练" />
+<figcaption
+aria-hidden="true">Linux下的栈溢出案例分析-GDB调试操练</figcaption>
+</figure>
+<p>那有没有办法让系统不探测到stack
+overflow，此处可以在编译时，禁用堆栈保护，具体命令如下：</p>
+<p>gcc –fno-stack-protector –o stackoverflow stackoverflow.c</p>
+<p>然后采用gdb调试stackoverflow，</p>
+<figure>
+<img src="/img/%E9%9D%A2%E8%AF%95%E9%97%AE%E9%A2%98/14100820334293.jpg" srcset="/img/loading.gif" lazyload
+alt="Linux下的栈溢出案例分析-GDB调试操练" />
+<figcaption
+aria-hidden="true">Linux下的栈溢出案例分析-GDB调试操练</figcaption>
+</figure>
+<h3 id="fork函数">fork函数</h3>
+<p>for就会复制一份原来的进程即就是创建一个新进程,我们称子进程，而原来的进程我们称为父进程，此时父子进程是共存的，他们一起向下执行代码。</p>
+<p>fork的返回值问题:</p>
+<p>在父进程中，fork返回新创建子进程的进程ID；</p>
+<p>在子进程中，fork返回0；</p>
+<p>如果出现错误，fork返回一个负值；</p>
+<p>getppid():得到一个进程的父进程的PID;</p>
+<p>getpid():得到当前进程的PID;</p>
 <h2 id="计算机网络"><strong>计算机网络</strong></h2>
 <h2 id="http协议里-301-304啥用处腾讯云">http协议里 301
 304啥用处（腾讯云）</h2>
@@ -1256,6 +1332,24 @@ View，然后整个事务期间都在用这个 Read View**。</li>
 <li>distinct：是否在select部分使用了distinc关键字</li>
 </ul></li>
 </ul>
+<h3 id="mysql怎么避免回表">MySQL怎么避免回表</h3>
+<ul>
+<li>覆盖索引</li>
+<li>索引下推</li>
+</ul>
+<h3 id="mysql的null值是怎么存储的">MySQL的NULL值是怎么存储的</h3>
+<p>MySQL 的 Compact 行格式中会用「NULL值列表」来标记值为 NULL 的列，NULL
+值并不会存储在行格式中的真实数据部分。</p>
+<h3 id="mysql查询优化">mysql查询优化</h3>
+<ol type="1">
+<li>使用索引</li>
+<li>覆盖索引</li>
+<li>避免索引失效的情况</li>
+<li>尽量使用数字型字段，若只含数值信息的字段尽量不要设计为字符型，这会降低查询和连接的性能</li>
+<li>尽量避免使用游标，因为游标的效率较差，如果游标操作的数据超过1万行，那么就应该考虑改写。</li>
+<li>索引并不是越多越好，索引固然可以提高相应的 select
+的效率，但同时也降低了 insert 及 update 的效率</li>
+</ol>
 <h2 id="操作系统">操作系统</h2>
 <h3
 id="用户态和内核态的互换条件腾讯云">用户态和内核态的互换、条件（腾讯云）</h3>
@@ -1398,6 +1492,12 @@ Space），以释放物理内存供其他进程使用。常见的页面置换算
 </ol>
 <h3
 id="怎么提前销毁懒汉式局部静态变量">怎么提前销毁懒汉式局部静态变量？</h3>
+<h3 id="三种工厂模式的区别">三种工厂模式的区别</h3>
+<ul>
+<li>简单工厂模式只有一个抽象产品类，只有一个具体的工厂类。</li>
+<li>工厂方法模式只有一个抽象产品类，而抽象工厂模式有多个抽象产品类。</li>
+<li>工厂方法模式的具体工厂类只能创建一个具体产品类的实例，而抽象工厂模式可以创建多个具体产品类的实例。</li>
+</ul>
 <h2 id="redis">Redis</h2>
 <p>常见的有五种数据结构：String（字符串），Hash（哈希），List（列表），Set（集合）、Zset（有序集合）。</p>
 <figure>
