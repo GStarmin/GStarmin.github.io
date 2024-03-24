@@ -31,6 +31,7 @@
 <meta property="og:image" content="https://gstarmin.github.io/img/MySQL/202205220024930.png">
 <meta property="og:image" content="https://gstarmin.github.io/img/MySQL/2002319-20201221103607402-1375547408.png">
 <meta property="og:image" content="https://gstarmin.github.io/img/MySQL/2002319-20201221103615438-278818902.png">
+<meta property="og:image" content="https://gstarmin.github.io/img/MySQL/20210908213037.png">
 <meta property="article:published_time" content="2023-12-23T12:16:10.000Z">
 <meta property="article:modified_time" content="2023-12-25T13:48:10.000Z">
 <meta property="article:author" content="Starmin">
@@ -316,7 +317,7 @@
         
         
         
-          257 分钟
+          262 分钟
         
       </span>
     
@@ -1498,6 +1499,30 @@ src="/img/MySQL/495c7155-c901-47bd-a0ce-cd4b5f3a86f9.png" srcset="/img/loading.g
 </ol>
 <p>如果事务1加了行锁，一直没有释放锁，事务2操作相同行的数据时，会一直等待直到超时。</p>
 <p>如果事务1加了表锁，一直没有释放锁，事务2不管操作的是哪一行数据，都会一直等待直到超时。</p>
+<h3 id="索引下推">索引下推</h3>
+<p>索引下推(Index Condition
+Pushdown，简称ICP)，是MySQL5.6版本的新特性，它能<strong>减少回表查询次数</strong>，提高查询效率。</p>
+<h4 id="索引下推优化的原理">索引下推优化的原理</h4>
+<p>我们先简单了解一下MySQL大概的架构：</p>
+<figure>
+<img src="/img/MySQL/20210908213037.png" srcset="/img/loading.gif" lazyload alt="MySQL大概架构" />
+<figcaption aria-hidden="true">MySQL大概架构</figcaption>
+</figure>
+<p>MySQL服务层负责SQL语法解析、生成执行计划等，并调用存储引擎层去执行数据的存储和检索。</p>
+<p><code>索引下推</code>的<strong>下推</strong>其实就是指将部分上层（服务层）负责的事情，交给了下层（引擎层）去处理。</p>
+<p>我们来具体看一下，在没有使用ICP的情况下，MySQL的查询：</p>
+<ul>
+<li>存储引擎读取索引记录；</li>
+<li>根据索引中的主键值，定位并读取完整的行记录（回表一次）；</li>
+<li>存储引擎把记录交给<code>Server</code>层去检测该记录是否满足<code>WHERE</code>条件（回表第二次）。</li>
+</ul>
+<p>使用ICP的情况下，查询过程：</p>
+<ul>
+<li>存储引擎读取索引记录（不是完整的行记录）；</li>
+<li>判断<code>WHERE</code>条件部分能否用索引中的列来做检查，条件不满足，则处理下一行索引记录；</li>
+<li>条件满足，使用索引中的主键去定位并读取完整的行记录（回表一次）；</li>
+<li>存储引擎把记录交给<code>Server</code>层，<code>Server</code>层检测该记录是否满足<code>WHERE</code>条件的其余部分。</li>
+</ul>
 
                 
               </div>
