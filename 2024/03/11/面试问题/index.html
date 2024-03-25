@@ -307,7 +307,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          46k 字
+          56k 字
         
       </span>
     
@@ -318,7 +318,7 @@
         
         
         
-          465 分钟
+          560 分钟
         
       </span>
     
@@ -664,6 +664,17 @@ id="make_shared与直接创建shared_ptr的区别">make_shared与直接创建sha
 需要分配两次内存。</p>
 <p>make_shared也存在缺陷，只有当 _Weaks 为 0 时，控制块才会调用
 _Delete_this() 释放自己，weak_ptr会拖延整块内存释放时间。</p>
+<h3
+id="dynamic_cast把父类指针转为void会怎么样">dynamic_cast把父类指针转为void*会怎么样</h3>
+<p>在C++中，<code>dynamic_cast</code>
+用于在运行时进行安全的类型转换，通常用于将基类指针或引用转换为派生类指针或引用。如果将父类指针转换为
+<code>void*</code>，会丢失类型信息，因此无法在后续代码中准确地确定其类型。具体表现如下：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;iostream&gt;</span></span><br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Base</span> &#123;<br><span class="hljs-keyword">public</span>:<br>    <span class="hljs-keyword">virtual</span> ~<span class="hljs-built_in">Base</span>() &#123;&#125;<br>&#125;;<br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Derived</span> : <span class="hljs-keyword">public</span> Base &#123;<br><span class="hljs-keyword">public</span>:<br>    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">foo</span><span class="hljs-params">()</span> </span>&#123;<br>        std::cout &lt;&lt; <span class="hljs-string">&quot;Derived::foo()&quot;</span> &lt;&lt; std::endl;<br>    &#125;<br>&#125;;<br><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span> </span>&#123;<br>    Derived derivedObj;<br>    Base* basePtr = &amp;derivedObj;<br><br>    <span class="hljs-comment">// 将父类指针转换为 void*</span><br>    <span class="hljs-type">void</span>* voidPtr = <span class="hljs-built_in">dynamic_cast</span>&lt;<span class="hljs-type">void</span>*&gt;(basePtr);<br><br>    <span class="hljs-comment">// 尝试将 void* 转换回父类指针</span><br>    Base* newBasePtr = <span class="hljs-built_in">static_cast</span>&lt;Base*&gt;(voidPtr); <span class="hljs-comment">// 非法，无法使用 static_cast 将 void* 转换回指针类型</span><br><br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>在上述示例中，<code>static_cast</code> 无法将 <code>void*</code>
+转换回指针类型，因为在将 <code>Base*</code> 转换为 <code>void*</code>
+时，类型信息已经丢失。因此，将父类指针转换为 <code>void*</code>
+后，再转换回去是不可行的。通常情况下，不建议将指针转换为
+<code>void*</code>，除非有特殊的需求。</p>
 <h2 id="linux">Linux</h2>
 <h2
 id="linux系统查看cpu占用的命令腾讯云">linux系统查看cpu占用的命令（腾讯云）</h2>
@@ -1732,6 +1743,99 @@ alt="img" />
 <figcaption aria-hidden="true">img</figcaption>
 </figure>
 <h2 id="项目">项目</h2>
+<h2 id="muduo">muduo</h2>
+<p>服务器通信网络库重写并简化了muduo网络库，使用C++11去除了boost库的依赖，使用基于OOP思想，reactor模型。one
+loop per thread的模型，通过epoll +
+线程池，使用多线程和事件循环机制实现高并发处理。</p>
+<h3 id="channel">channel</h3>
+<p><strong>Channel类其实相当于一个文件描述符的保姆</strong>,想要IO多路复用监听某个文件描述符，就要把这个fd和该fd感兴趣的事件通过epoll_ctl<strong>注册</strong>到IO多路复用模块（我管它叫<strong>事件监听器</strong>）上。当事件监听器监听到该fd发生了某个事件。事件监听器返回
+[发生事件的fd集合]以及[每个fd都发生了什么事件].Channel类则封装了一个
+[fd] 和这个 [fd感兴趣事件] 以及事件监听器监听到
+[该fd实际发生的事件].</p>
+<h3 id="poller">Poller</h3>
+<p><strong>负责监听文件描述符事件是否触发</strong>以及<strong>返回发生事件的文件描述符以及具体事件</strong>的模块就是Poller。所以<strong>一个Poller对象对应一个事件监听器</strong>（这里我不确定要不要把Poller就当作事件监听器）。在multi-reactor模型中，有多少reactor就有多少Poller。(这个Poller是个抽象虚类，由EpollPoller和PollPoller继承实现)</p>
+<ul>
+<li><code>epollfd_</code>就是用<code>epoll_create</code>方法返回的epoll句柄，这个是常识。</li>
+<li><code>channels_</code>：这个变量是<code>std::unordered_map&lt;int, Channel*&gt;</code>类型，负责记录
+文件描述符 ---&gt;
+Channel的映射，也帮忙保管所有注册在你这个Poller上的Channel。</li>
+<li><code>ownerLoop_</code>：所属的EventLoop对象，看到后面你懂了。</li>
+</ul>
+<p><strong>EpollPoller给外部提供的最重要的方法：</strong></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-function">TimeStamp <span class="hljs-title">poll</span><span class="hljs-params">(<span class="hljs-type">int</span> timeoutMs, ChannelList *activeChannels)</span></span><br></code></pre></td></tr></table></figure>
+<p>这个函数可以说是<strong>Poller的核心</strong>了，当外部调用<code>poll</code>方法的时候，该方法底层其实是通过<code>epoll_wait</code>获取这个事件监听器上发生事件的fd及其对应发生的事件，我们知道每个fd都是由一个Channel封装的，通过哈希表<code>channels_</code>可以根据fd找到封装这个fd的Channel。<strong>将事件监听器监听到该fd发生的事件写进这个Channel中的revents成员变量中。</strong>然后把这个Channel装进<code>activeChannels</code>中（它是一个vector&lt;Channel*&gt;）。这样，当外界调用完<code>poll</code>之后就能拿到事件监听器的<strong>监听结果（<code>activeChannels_</code>）</strong></p>
+<h3 id="eventloop">EventLoop</h3>
+<p>EventLoop就是负责实现<strong>“循环”</strong>，负责驱动<strong>“循环”</strong>的重要模块！！Channel和Poller其实相当于EventLoop的手下，EventLoop整合封装了二者并向上提供了更方便的接口来使用。</p>
+<p>每个EventLoop对象都唯一绑定了一个线程，这个线程其实就在一直执行这个函数里面的while循环，这个while循环的大致逻辑比较简单。就是调用<code>Poller::poll</code>方法获取事件监听器上的监听结果。接下来在loop里面就会调用监听结果中每一个Channel的处理函数<code>HandlerEvent( )</code>。每一个Channel的处理函数会根据Channel类中封装的实际发生的事件，执行Channel类中封装的各事件处理函数。（比如一个Channel发生了可读事件，可写事件，则这个Channel的<code>HandlerEvent( )</code>就会调用提前注册在这个Channel的可读事件和可写事件处理函数，又比如另一个Channel只发生了可读事件，那么<code>HandlerEvent( )</code>就只会调用提前注册在这个Channel中的可读事件处理函数)</p>
+<h3
+id="acceptor-接受新用户连接并分发连接给subreactorsubeventloop"><strong>Acceptor:
+接受新用户连接并分发连接给SubReactor（SubEventLoop）</strong></h3>
+<h3 id="tcpconnection类">TcpConnection类</h3>
+<p><strong>主要</strong>封装了一个已建立的TCP连接，以及控制该TCP连接的方法（连接建立和关闭和销毁），以及该连接发生的各种事件（读/写/错误/连接）对应的处理函数，以及这个TCP连接的服务端和客户端的套接字地址信息等。</p>
+<p><strong>我个人觉得TcpConnection类和Acceptor类是兄弟关系，Acceptor用于main
+EventLoop中，对服务器监听套接字fd及其相关方法进行封装（监听、接受连接、分发连接给SubEventLoop等），TcpConnection用于SubEventLoop中，对连接套接字fd及其相关方法进行封装（读消息事件、发送消息事件、连接关闭事件、错误事件等）。</strong></p>
+<h2 id="项目的流程">项目的流程</h2>
+<ol type="1">
+<li>建立连接：创建<code>TcpServer</code>对象，并在<code>TcpServer</code>的构造函数实例化了一个<code>Acceptor</code>对象，并往这个<code>Acceptor</code>对象注册了一个回调函数<code>TcpServer::newConnection()</code>。实例化Acceptor对象时，Acceptor的构造函数中实例化了一个Channel对象，即<code>acceptChannel_</code>，该Channel对象封装了服务器监听套接字文件描述符（尚未注册到main
+EventLoop的事件监听器上）。接着Acceptor构造函数将<code>Acceptor::handleRead( )</code>方法注册进<code>acceptChannel_</code>中，这也意味着，日后如果事件监听器监听到<code>acceptChannel_</code>发生可读事件，将会调用<code>Acceptor::handleRead( )</code>函数。当有连接到来的时候，会在
+<code>Acceptor::handleRead( )</code>中调用<code>TcpServer::newConnection()</code>将建立好的连接封装成TcpConnection对象然后发送到sub
+Eventloop上。</li>
+<li>消息读取：sub eventloop和main
+eventloop一样，也是用Poller调用poll函数获取事件监听结果，然后同样调用channel监听到的事件并调用提前注册好的事件处理函数。这里<code>readCallback_</code>保存的函数其实是<code>TcpConnection::handleRead( )</code>，<strong>消息读取的处理逻辑也就是由这个函数提供的</strong>。函数首先调用<code>Buffer_.readFd(channel_-&gt;fd(), &amp;saveErrno)</code>，该函数底层调用linux的<code>readv()</code>将Tcp接收缓冲区数据拷贝到用户定义的缓冲区中（<code>inputBuffer_</code>）。如果在读取拷贝的过程中发生了什么错误，这个错误信息就会保存在<code>savedErrno</code>中。如果当<code>readFd( )</code>返回值大于0，说明从接收缓冲区中读取到了数据，那么会接着调用<code>messageCallback_</code>中保存的用户自定义的读取消息后的处理函数。</li>
+<li>消息发送：<code>TcpConnection::send(buf)</code>函数内部其实是调用了Linux的函数<code>write( )</code>，如果TCP发送缓冲区能一次性容纳buf，那这个<code>write( )</code>函数将buf全部拷贝到发送缓冲区中。<strong>如果TCP发送缓冲区内不能一次性容纳buf：</strong>
+<ol type="1">
+<li>这时候<code>write( )</code>函数<code>buf</code>数据尽可能地拷贝到TCP发送缓冲区中，并且将errno设置为<code>EWOULDBLOCK</code>。</li>
+<li>剩余未拷贝到TCP发送缓冲区中的<code>buf</code>数据会被存放在<code>TcpConnection::outputBuffer_</code>中。并且向事件监听器上<strong>注册该<code>TcpConnection::channel_</code>的可写事件</strong>。</li>
+<li>事件监听器监听到该Tcp连接可写事件，就会调用<code>TcpConnection::handleWrite( )</code>函数把<code>TcpConnection::outputBuffer_</code>中剩余的数据发送出去。</li>
+<li>在<code>TcpConnection::handleWrite( )</code>函数中，通过调用<code>Buffer::writeFd()</code>函数将<code>outputBuffer_</code>的数据写入到Tcp发送缓冲区，如果Tcp发送缓冲区能容纳全部剩余的未发送数据，那最好不过了。如果Tcp发送缓冲区依旧没法容纳剩余的未发送数据，那就尽可能地将数据拷贝到Tcp发送缓冲区中，继续保持可写事件的监听。</li>
+<li>当数据全部拷贝到Tcp发送缓冲区之后，就会调用用户自定义的【写完后的事件处理函数】，并且<strong>移除该TcpConnection在事件监听器上的可写事件</strong>。（移除可写事件是为了提高效率，不会让<code>epoll_wait()</code>
+毫无意义的频繁触发可写事件。因为大多数时候是没有数据需要发送的，频繁触发可写事件但又没有数据可写。）</li>
+</ol></li>
+<li>断开连接：
+<ol type="1">
+<li>被动断开：服务端<code>TcpConnection::handleRead()</code>中感知到客户端把连接断开了。<code>TcpConnection::handleRead( )</code>函数内部调用了Linux的函数<code>readv( )</code>，当<code>readv( )</code>返回0的时候，服务端就知道客户端断开连接了。然后就接着调用<code>TcpConnection::handleClose( )</code>。<code>TcpServer::removeConnection( )</code>函数调用了<code>remvoveConnectionInLoop( )</code>函数，把unordered_map中该tcpconnection的对象映射删除，该函数的运行是在MainEventLoop线程中执行的，这里涉及到线程切换。因为该函数主要是从TcpServer对象中删除某条数据。而TcpServer对象是属于MainEventLoop的。这也是贯彻了One
+Loop Per
+Thread的理念。<code>TcpConnection::connectDestroyed( )</code>函数的执行是又跳回到了subEventLoop线程中。该函数就是将Tcp连接的监听描述符从事件监听器中移除。另外SubEventLoop中的Poller类对象还保存着这条Tcp连接的<code>channel_</code>，所以调用<code>channel_.remove( )</code>将这个Tcp连接的channel对象从Poller内的数据结构中删除。</li>
+<li>主动断开：服务器主动关闭时，调用<code>TcpServer::~TcpServer()</code>析构函数。不断循环的让这个TcpConnection对象所属的SubEventLoop线程执行<code>TcpConnection::connectDestroyed()</code>函数，同时在MainEventLoop的<code>TcpServer::~TcpServer()</code>函数中调用<code>item.second.reset()</code>释放保管TcpConnection对象的共享智能指针，以达到释放TcpConnection对象的堆内存空间的目的。</li>
+</ol></li>
+</ol>
+<h3 id="channel的生命周期">channel的生命周期</h3>
+<p>从Acceptor的构造函数开始被构造，然后在断开连接时候的<code>TcpConnection::connectDestroyed( )</code>中被删除。</p>
+<h3 id="tcpconnection的生命周期">TcpConnection的生命周期</h3>
+<p>连接到来的时候<code>Acceptor::handleRead( )</code>中调用<code>TcpServer::newConnection()</code>将建立好的连接封装成TcpConnection对象然后发送到sub
+Eventloop上。在断开连接的时候<code>TcpConnection::connectDestroyed</code>执行完毕就销毁。详细看https://www.cnblogs.com/Qiu-Bai/p/17127757.html，之后再补充。</p>
+<h3
+id="如果tcpconnection中有正在发送的数据怎么保证在触发tcpconnection关闭机制后能先让tcpconnection先把数据发送完再释放tcpconnection对象的资源">如果<strong>TcpConnection中有正在发送的数据，怎么保证在触发TcpConnection关闭机制后，能先让TcpConnection先把数据发送完再释放TcpConnection对象的资源？</strong></h3>
+<p>TcpConnection类继承了enable_shared_from_this类，继承了这个类之后能使用shared_from_this()函数。假如我们在TcpConnection对象（我们管这个对象叫TCA）中的成员函数中调用了<code>shared_from_this()</code>，该函数可以返回一个shared_ptr，并且这个shared_ptr指向的对象是TCA。</p>
+<p>接着这个shared_ptr就作为channel_的<code>Channel::tie()</code>函数的函数参数。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">/*****  Channel.h   ******/</span><br>std::weak_ptr&lt;<span class="hljs-type">void</span>&gt; tie_; <br><span class="hljs-comment">/*****  Channel.cc   ******/</span><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">Channel::tie</span><span class="hljs-params">(<span class="hljs-type">const</span> shared_ptr&lt;<span class="hljs-type">void</span>&gt;&amp; obj)</span></span><br><span class="hljs-function"></span>&#123;<br>    tie_ = obj;<br>    tied_ = <span class="hljs-literal">true</span>;<br>&#125;<br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">Channel::HandlerEvent</span><span class="hljs-params">(TimeStamp receiveTime)</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-keyword">if</span>(tied_)&#123;<br>        shared_ptr&lt;<span class="hljs-type">void</span>&gt; guard = tie_.<span class="hljs-built_in">lock</span>();<br>        <span class="hljs-keyword">if</span> (guard)<br>            <span class="hljs-built_in">HandleEventWithGuard</span>(receiveTime);<br>    &#125;<br>    <span class="hljs-keyword">else</span>&#123;<br>        。。。。一般不会执行到这里其实。我实在想不到正常运行的情况下怎么会执行到这里，可能是我比较菜。<br>        <span class="hljs-built_in">HandleEventWithGuard</span>(receiveTime);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>当事件监听器返回监听结果，就要对每一个发生事件的channel对象调用他们的<code>HandlerEvent()</code>函数。在这个<code>HandlerEvent</code>函数中，会先把<code>tie_</code>这个weak_ptr提升为强共享智能指针。这个强共享智能指针会指向当前的TcpConnection对象。就算你外面调用删除析构了其他所有的指向该TcpConnection对象的智能指针。你只要<code>HandleEventWithGuard()</code>函数没执行完，你这个TcpConnetion对象都不会被析构释放堆内存。而<code>HandleEventWithGuard()</code>函数里面就有负责处理消息发送事件的逻辑。当<code>HandleEventWithGuard()</code>函数调用完毕，这个<code>guard</code>智能指针就会被释放。</p>
+<h3 id="buffer类">buffer类</h3>
+<p><strong>readv和writev允许单个系统调用读入到或写出自一个或多个缓冲区</strong>。</p>
+<h4
+id="bufferreadfd函数剖析"><strong>Buffer::readFd()函数剖析</strong></h4>
+<p>这个readFd巧妙的设计，可以让用户一次性把所有TCP接收缓冲区的所有数据全部都读出来并放到用户自定义的缓冲区Buffer中。用户自定义缓冲区Buffer是有大小限制的，我们一开始不知道TCP接收缓冲区中的数据量有多少，如果一次性读出来会不会导致Buffer装不下而溢出。所以在<code>readFd( )</code>函数中会在栈上创建一个临时空间<code>extrabuf</code>，然后使用<code>readv</code>的分散读特性，将TCP缓冲区中的数据先拷贝到Buffer中，如果Buffer容量不够，就把剩余的数据都拷贝到<code>extrabuf</code>中，然后再调整Buffer的容量(动态扩容)，再把<code>extrabuf</code>的数据拷贝到Buffer中。当这个函数结束后，<code>extrabuf</code>也会被释放。另外<code>extrabuf</code>是在栈上开辟的空间，速度比在堆上开辟还要快。</p>
+<h2 id="线程池的好处">线程池的好处</h2>
+<p>线程池<strong>为避免频繁创建、销毁线程</strong>，提供一组子线程，能从工作队列取任务、执行任务，而用户可以向工作队列加入任务，从而完成用户任务。可以更加高效。</p>
+<h3 id="跳表和红黑树的优劣">跳表和红黑树的优劣</h3>
+<h4 id="红黑树">红黑树</h4>
+<ol type="1">
+<li>节点要么是黑色，要么是红色</li>
+<li>根节点和叶子节点（NIL）都是黑色</li>
+<li>每个红色结点的两个子结点一定都是黑色。</li>
+<li><strong>任意一结点到每个叶子结点的路径都包含数量相同的黑结点。</strong></li>
+<li>从上一条可以推出，如果一个结点存在黑子结点，那么该结点肯定有两个子结点</li>
+</ol>
+<h4 id="为什么不使用红黑树">为什么不使用红黑树</h4>
+<p>跳表和红黑树复杂度一样，但是并发环境下，红黑树在插入和删除的时候可能需要做一些rebalance的操作，这样的操作可能会涉及到整个树的其他部分，而skiplist的操作显然更加局部性一些，锁需要盯住的节点更少，因此在这样的情况下性能好一些。</p>
+<h3 id="内存池">内存池</h3>
+<p>内存缓存模块仿写了Google的tcmalloc，实现了高效的多线程内存管理，使用基于页面的内存分配机制，用于替换系统的内存分配相关函数
+malloc 和 free、使用三层 Cache结构，Thread
+Cache：主要解决锁竞争的问题；Central Cache：主要负责居中调度的问题；Page
+Cache：主要负责提供以页为单位的大块内存；减少多线程场景下的锁竞争和系统开销，提高内存分配和释放的速度和效率。</p>
+<p>span管理以页为单位的大内存块。</p>
+<p>线程局部存储通过thread_local声明即可，例如<strong><em>int thread_
+local errCode;</em></strong></p>
 <h3 id="内存池的实现">内存池的实现</h3>
 <p>该项目所使用的内存池原型是 Google 的开源项目 tcmalloc，其全称为
 Thread-Caching Malloc，即线程缓存的
@@ -2123,6 +2227,51 @@ processlist</strong>命令查看当前 MySQL
 正在进行的线程状态，可以实时地查看 SQL 的执行情况。</p></li>
 <li><p>找到慢查询 SQL 后可以用执行计划（explain）进行分析</p></li>
 </ol>
+<h3
+id="单reactor单线程到多reactor多线程">单reactor单线程到多reactor多线程</h3>
+<h4 id="单reactor单线程">单reactor单线程</h4>
+<p>这种模型在Reactor中处理事件，并分发事件，如果是连接事件交给acceptor处理，如果是读写事件和业务处理就交给handler处理，但始终只有一个线程执行所有的事情。</p>
+<figure>
+<img
+src="/img/%E9%9D%A2%E8%AF%95%E9%97%AE%E9%A2%98/v2-a3a7f2b064f424fbb11e77f019123e62_720w.webp" srcset="/img/loading.gif" lazyload
+alt="img" />
+<figcaption aria-hidden="true">img</figcaption>
+</figure>
+<p>该线程模型的不足</p>
+<ol type="1">
+<li>仅用一个线程处理请求，对于多核资源机器来说是有点浪费的</li>
+<li>当处理读写任务的线程负载过高后，处理速度下降，事件会堆积，严重的会超时，可能导致客户端重新发送请求，性能越来越差</li>
+<li>单线程也会有可靠性的问题</li>
+</ol>
+<h4 id="单reactor多线程">单reactor多线程</h4>
+<p>这种模型和第一种模型到的主要区别是把业务处理从之前的单一线程脱离出来，换成线程池处理，也就是Reactor线程只处理连接事件和读写事件，业务处理交给线程池处理，充分利用多核机器的资源、提高性能并且增加可靠性。</p>
+<figure>
+<img
+src="/img/%E9%9D%A2%E8%AF%95%E9%97%AE%E9%A2%98/v2-d60a5c2c930e3ec611855d387d2429ec_720w.webp" srcset="/img/loading.gif" lazyload
+alt="img" />
+<figcaption aria-hidden="true">img</figcaption>
+</figure>
+<p>该线程模型的不足</p>
+<p>Reactor线程承担所有的事件，例如监听和响应，高并发场景下单线程存在性能问题</p>
+<h4 id="多reactor多线程">多reactor多线程</h4>
+<p>这种模型下和第二种模型相比是把Reactor线程拆分了mainReactor和subReactor两个部分，mainReactor只处理连接事件，读写事件交给subReactor来处理。业务逻辑还是由线程池来处理。</p>
+<figure>
+<img
+src="/img/%E9%9D%A2%E8%AF%95%E9%97%AE%E9%A2%98/v2-ca0ee6f64ec8654ba143c30548874095_720w.webp" srcset="/img/loading.gif" lazyload
+alt="img" />
+<figcaption aria-hidden="true">img</figcaption>
+</figure>
+<p>mainRactor只处理连接事件，用一个线程来处理就好。处理读写事件的subReactor个数一般和CPU数量相等，一个subReactor对应一个线程，业务逻辑由线程池处理</p>
+<p>这种模型使各个模块职责单一，降低耦合度，性能和稳定性都有提高。这种模型在许多项目中广泛应用，比如Netty的主从线程模型等</p>
+<h4
+id="reactor三种模式形象比喻"><strong>Reactor三种模式形象比喻</strong></h4>
+<p>餐厅一般有接待员和服务员，接待员负责在门口接待顾客，服务员负责全程服务顾客
+Reactor的三种线程模型可以用接待员和服务员类比</p>
+<ol type="1">
+<li>单Reactor单线程模型：接待员和服务员是同一个人，一直为顾客服务。客流量较少适合</li>
+<li>单Reactor多线程模型：一个接待员，多个服务员。客流量大，一个人忙不过来，由专门的接待员在门口接待顾客，然后安排好桌子后，由一个服务员一直服务，一般每个服务员负责一片中的几张桌子</li>
+<li>多Reactor多线程模型：多个接待员，多个服务员。这种就是客流量太大了，一个接待员忙不过来了</li>
+</ol>
 <h3 id="有没有避免死锁的机制">有没有避免死锁的机制</h3>
 <h3 id="介绍以下内存池怎么实现的">介绍以下内存池怎么实现的？</h3>
 <h3 id="介绍以下muduo库">介绍以下muduo库</h3>
@@ -2141,6 +2290,8 @@ id="手撕代码将一个字符串转换成字符加出现次数的形式比如a
 <h3 id="手写读者写者">手写读者写者</h3>
 <h3 id="口算99999995">口算(9^999999)%5=?</h3>
 <p>求（a^b）%n。本质是快速幂，只写出递归。a、b、n都很⼤，int会爆，必须⽤long</p>
+<h3 id="线程安全的循环队列">线程安全的循环队列</h3>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;iostream&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;mutex&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;condition_variable&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;vector&gt;</span></span><br><br><span class="hljs-keyword">template</span> &lt;<span class="hljs-keyword">typename</span> T&gt;<br><span class="hljs-keyword">class</span> <span class="hljs-title class_">CircularQueue</span> &#123;<br><span class="hljs-keyword">private</span>:<br>    std::vector&lt;T&gt; queue;<br>    <span class="hljs-type">int</span> capacity;<br>    <span class="hljs-type">int</span> size;<br>    <span class="hljs-type">int</span> front;<br>    <span class="hljs-type">int</span> rear;<br>    std::mutex mtx;<br>    std::condition_variable not_full;<br>    std::condition_variable not_empty;<br><br><span class="hljs-keyword">public</span>:<br>    <span class="hljs-built_in">CircularQueue</span>(<span class="hljs-type">int</span> capacity) : <span class="hljs-built_in">capacity</span>(capacity), <span class="hljs-built_in">size</span>(<span class="hljs-number">0</span>), <span class="hljs-built_in">front</span>(<span class="hljs-number">0</span>), <span class="hljs-built_in">rear</span>(<span class="hljs-number">-1</span>) &#123;<br>        queue.<span class="hljs-built_in">resize</span>(capacity);<br>    &#125;<br><br>    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">enqueue</span><span class="hljs-params">(<span class="hljs-type">const</span> T&amp; item)</span> </span>&#123;<br>        <span class="hljs-function">std::unique_lock&lt;std::mutex&gt; <span class="hljs-title">lock</span><span class="hljs-params">(mtx)</span></span>;<br>        not_full.<span class="hljs-built_in">wait</span>(lock, [<span class="hljs-keyword">this</span>]() &#123; <span class="hljs-keyword">return</span> size &lt; capacity; &#125;);<br><br>        rear = (rear + <span class="hljs-number">1</span>) % capacity;<br>        queue[rear] = item;<br>        size++;<br><br>        lock.<span class="hljs-built_in">unlock</span>();<br>        not_empty.<span class="hljs-built_in">notify_one</span>();<br>    &#125;<br><br>    <span class="hljs-function">T <span class="hljs-title">dequeue</span><span class="hljs-params">()</span> </span>&#123;<br>        <span class="hljs-function">std::unique_lock&lt;std::mutex&gt; <span class="hljs-title">lock</span><span class="hljs-params">(mtx)</span></span>;<br>        not_empty.<span class="hljs-built_in">wait</span>(lock, [<span class="hljs-keyword">this</span>]() &#123; <span class="hljs-keyword">return</span> size &gt; <span class="hljs-number">0</span>; &#125;);<br><br>        T item = queue[front];<br>        front = (front + <span class="hljs-number">1</span>) % capacity;<br>        size--;<br><br>        lock.<span class="hljs-built_in">unlock</span>();<br>        not_full.<span class="hljs-built_in">notify_one</span>();<br><br>        <span class="hljs-keyword">return</span> item;<br>    &#125;<br><br>    <span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">is_empty</span><span class="hljs-params">()</span> </span>&#123;<br>        <span class="hljs-function">std::lock_guard&lt;std::mutex&gt; <span class="hljs-title">lock</span><span class="hljs-params">(mtx)</span></span>;<br>        <span class="hljs-keyword">return</span> size == <span class="hljs-number">0</span>;<br>    &#125;<br><br>    <span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">is_full</span><span class="hljs-params">()</span> </span>&#123;<br>        <span class="hljs-function">std::lock_guard&lt;std::mutex&gt; <span class="hljs-title">lock</span><span class="hljs-params">(mtx)</span></span>;<br>        <span class="hljs-keyword">return</span> size == capacity;<br>    &#125;<br>&#125;;<br><br></code></pre></td></tr></table></figure>
 <h2 id="比赛">比赛</h2>
 <h3 id="金融科技建模大赛">金融科技建模大赛</h3>
 <h4 id="赛题设置">赛题设置</h4>
