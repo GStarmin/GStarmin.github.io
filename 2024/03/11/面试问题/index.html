@@ -307,7 +307,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          56k 字
+          61k 字
         
       </span>
     
@@ -318,7 +318,7 @@
         
         
         
-          560 分钟
+          607 分钟
         
       </span>
     
@@ -675,6 +675,75 @@ id="dynamic_cast把父类指针转为void会怎么样">dynamic_cast把父类指�
 时，类型信息已经丢失。因此，将父类指针转换为 <code>void*</code>
 后，再转换回去是不可行的。通常情况下，不建议将指针转换为
 <code>void*</code>，除非有特殊的需求。</p>
+<h3
+id="什么样的数据类型需要关注大小端字节序">什么样的数据类型需要关注大小端字节序？</h3>
+<p>只有超过一个字节的基本数据类型才需要考虑字节序</p>
+<h3
+id="free释放内存的时候是怎么知道释放内存的大小的">free释放内存的时候是怎么知道释放内存的大小的？</h3>
+<p>glibc:<strong>空间的大小记录在参数指针指向地址的前面，free的时候通过这个记录即可知道要释放的内存有多大。</strong></p>
+<h3
+id="utf-8知道吗了解utf-8与gbk有什么不一样吗">utf-8知道吗？了解utf-8与gbk有什么不一样吗？</h3>
+<ul>
+<li><strong>ASCII</strong>：ASCII
+只有127个字符，表示英文字母的大小写、数字和一些符号，但由于其他语言用ASCII
+编码表示字节不够，例如：常用中文需要两个字节，且不能和ASCII冲突，中国定制了GB2312编码格式，相同的，其他国家的语言也有属于自己的编码格式。</li>
+<li><strong>Unicode</strong>：由于每个国家的语言都有属于自己的编码格式，在多语言编辑文本中会出现乱码，这样Unicode应运而生，Unicode就是将这些语言统一到一套编码格式中，通常<strong>两个字节表示一个字符</strong>，而<strong>ASCII是一个字节表示一个字符</strong>，这样如果你编译的文本是全英文的，用Unicode编码比ASCII编码需要多一倍的存储空间，在存储和传输上就十分不划算。</li>
+<li><strong>UTF-8</strong>：为了解决上述问题，又出现了把Unicode编码转化为“<strong>可变长编码</strong>”UTF-8编码，UTF-8编码将Unicode字符按数字大小编码为<strong>1-6个字节</strong>，<strong>英文字母被编码成一个字节，常用汉字被编码成三个字节</strong>，如果你编译的文本是纯英文的，那么用UTF-8就会非常节省空间，并且ASCII码也是UTF-8的一部分。</li>
+<li>UTF-8是一种Unicode字符集的变长字符编码方式，支持包括英文、拉丁文、中文、日文、韩文等在内的几乎所有字符。</li>
+<li>GBK是一种针对汉字的字符编码方式，它是在GB2312字符集的基础上扩展而来，支持汉字和一些常用的符号、数字等。</li>
+</ul>
+<h3
+id="static局部变量与普通局部变量区别">static局部变量与普通局部变量区别？</h3>
+<ul>
+<li>static局部变量只被初始化一次，自从第一次被初始化直到程序运行结束都一直存在。普通局部变量，只在函数执行期间存在，函数的一次调用执行结束后，变量被撤销，其所占用的内存也被收回。</li>
+<li>静态局部变量在静态存储区分配空间，局部变量在栈里分配空间。</li>
+</ul>
+<h3
+id="socket写过吗tcp三次握手发生在哪个函数">socket写过吗？tcp三次握手发生在哪个函数？</h3>
+<ul>
+<li>客户端调用connect()函数，此时客户端会向服务端发送SYN</li>
+<li>服务端收到SYN后，会从listen()函数返回SYN+ACK</li>
+<li>客户端收到connect()函数的返回，之后向服务端发送最后一个ACK</li>
+<li>服务端收到最后一个ACK以后，将该连接请求从未完成连接队列放入已完成连接队列中，等待accept()从该队列中取出</li>
+</ul>
+<h3 id="内存对齐的好处坏处">内存对齐的好处/坏处</h3>
+<h3 id="c浮点数存储方式">C++浮点数存储方式</h3>
+<h4 id="float大小为4字节即32位">float：大小为4字节，即32位</h4>
+<ol type="1">
+<li>最高位 31 位 ,保存符号位 S，“0”表示正数 ,“1”表示负数</li>
+<li>第30 位～23 位 ,共 8 位 ,保存指数部分(指数值加上偏移量127)
+,称为阶码</li>
+<li>第22 位～0 位 ,共 23 位 ,保存系数部分
+（整数位的1不保存），称为尾数</li>
+</ol>
+<h4 id="double大小为8字节即64位">double：大小为8字节，即64位</h4>
+<ol type="1">
+<li>最高位 63 位 ,保存符号位 S，“0”表示正数 ,“1”表示负数</li>
+<li>第 62 位～52 位 ,共 11 位 ,保存指数部分(指数值加上偏移量1023)
+,称为阶码</li>
+<li>第 51 位～0 位 ,共 52 位 ,保存系数部分
+（整数位的1不保存），称为尾数</li>
+</ol>
+<h3
+id="动态链接库和静态链接库的区别都是有多份拷贝吗">动态链接库和静态链接库的区别？都是有多份拷贝吗？</h3>
+<p><strong>静态链接库用来和所有的目标文件一起组织成可执行文件，生成的可执行文件可以独立运行</strong>。存在诸多缺点：</p>
+<ul>
+<li>首先，<strong>可执行文件内部拷贝了所有目标文件和静态链接库的指令和数据，文件本身的体积会很大</strong>。当<strong>系统中存在多个链接同一个静态库的可执行文件时</strong>，<strong>每个可执行文件中都存有一份静态库的指令和数据</strong>，就会造成内存空间的极大浪费。</li>
+<li>此外，<strong>一旦程序中有模块更新，整个程序就必须重新链接后才能运行</strong>。假设一个程序有
+20 个模块构成，每个模块的大小为 1
+MB，那么每次更新任何一个模块，用户就必须重新获取 20 MB
+的程序，<strong>对用户很不友好</strong>。</li>
+</ul>
+<p><strong>动态链接，指的是将链接的时机推迟到程序运行时再进行</strong>。具体来讲，<strong>对于一个以动态链接方式运行的项目，</strong>：</p>
+<ul>
+<li><strong>首先由静态链接器将所有的目标文件组织成一个可执行文件，</strong></li>
+<li><strong>运行时将所需的动态链接库全部载入内存，由动态链接器完成可执行文件和动态库文件的链接工作</strong>。</li>
+</ul>
+<p>和静态链接库相比，动态链接库可以很好地<strong>解决空间浪费</strong>和<strong>更新困难的问题</strong>。</p>
+<ul>
+<li>动态链接库和可执行文件是分别载入内存的，因此动态链接库的体积通常会小一些。<strong>当有多个程序使用同一个动态链接库时，所有程序可以共享一份动态链接库的指令和数据，避免了空间的浪费</strong>。</li>
+<li>采用动态链接的方式<strong>也可以方便程序的更新和升级</strong>，当程序的某个模块更新后，只需要将旧的模块替换掉，程序运行时会自动将所有模板载入内存并动态地链接在一起。</li>
+</ul>
 <h2 id="linux">Linux</h2>
 <h2
 id="linux系统查看cpu占用的命令腾讯云">linux系统查看cpu占用的命令（腾讯云）</h2>
@@ -846,6 +915,31 @@ aria-hidden="true">Linux下的栈溢出案例分析-GDB调试操练</figcaption>
 <p>如果出现错误，fork返回一个负值；</p>
 <p>getppid():得到一个进程的父进程的PID;</p>
 <p>getpid():得到当前进程的PID;</p>
+<h3 id="linux查看现在运行的所以进程">linux查看现在运行的所以进程</h3>
+<p>ps aux</p>
+<h3 id="linux日志查询">linux日志查询</h3>
+<p>cat /var/log/syslog</p>
+<h3
+id="linux如何在日志中查找某个数据">linux如何在日志中查找某个数据</h3>
+<p>grep "keyword" /var/log/syslog</p>
+<h3 id="fork-的原理哪里体现了fork分配资源">fork()
+的原理，哪里体现了fork分配资源？</h3>
+<p>复制堆栈段，数据段，栈段等内存布局，但是代码段是映射的父进程的代码段以节省空间</p>
+<h3
+id="fork是把进程从1个变成2个那么最初的进程是从哪里来的">fork()是把进程从1个变成2个，那么最初的进程是从哪里来的？</h3>
+<p>系统启动时先加载内核，然后通过引导程序启动初始进程init或者叫systemd进程，是整个进程树的根节点</p>
+<h4 id="启动进程是用户态还是内核态">启动进程是用户态还是内核态？</h4>
+<p>systemd进程是内核直接创建的，因此是内核态进程</p>
+<h3
+id="栈和堆大小是多少堆动态开辟的话能和内存一样大吗">栈和堆大小是多少，堆动态开辟的话能和内存一样大吗</h3>
+<p><strong>Linux下进程栈的默认大小是10M</strong>，可以通过ulimit
+-s查看并修改默认栈大小。
+默认一个线程要预留1M左右的栈大小，所以进程中有N个线程时，Windows下大概有N*M的栈大小。
+堆的大小理论上大概等于进程虚拟空间大小-内核虚拟内存大小。</p>
+<h3 id="多线程的线程栈分配在哪里">多线程的线程栈分配在哪里？</h3>
+<p>多线程的线程栈分配通常在进程的虚拟内存空间中。具体来说，每个线程都会有自己的线程栈，线程栈一般位于进程的用户空间内存中，与进程的堆、全局变量区等相邻，是线程独享的存储区域。</p>
+<p>线程栈的大小通常是固定的，操作系统会为每个线程分配一定大小的线程栈空间，这个大小可以在创建线程时指定，或者由操作系统根据默认值进行分配。当线程调用函数、定义局部变量等操作时，这些数据会存储在线程的栈空间中。</p>
+<p>线程栈的分配是由操作系统负责管理的，具体的分配方式可能因操作系统的不同而有所差异。一般来说，操作系统会在创建线程时分配线程栈，并在线程结束时释放线程栈空间，以确保线程的正常运行和资源的回收。</p>
 <h2 id="计算机网络"><strong>计算机网络</strong></h2>
 <h2 id="http协议里-301-304啥用处腾讯云">http协议里 301
 304啥用处（腾讯云）</h2>
@@ -1089,6 +1183,10 @@ Line）</strong>：状态行和响应头部之后的一个空行，用于分隔�
 Body）</strong>：包含实际的响应数据，例如HTML文档、JSON数据等。</p></li>
 </ol>
 <p>HTTP报文的组成部分是根据HTTP协议规范定义的，它们共同构成了HTTP通信中传输的数据格式。</p>
+<h3
+id="http3和http2的区别quic协议原理">HTTP3和HTTP2的区别？QUIC协议原理？</h3>
+<p><a target="_blank" rel="noopener" href="https://juejin.cn/post/6995109407545622542">解读
+HTTP1/HTTP2/HTTP3</a></p>
 <h2 id="数据库">数据库</h2>
 <h3
 id="一条mysql语句的执行过程腾讯云">一条MySQL语句的执行过程(腾讯云)</h3>
@@ -1450,6 +1548,31 @@ lock（记录锁+间隙锁）⽅式解决了幻读，因为当执⾏ select ... 
 <li>如果sql里面有排序，请给排序字段加上索引，不然会造成排序使用全表扫描；</li>
 <li>能用inner join 就用 inner join</li>
 </ol>
+<h3 id="mysql-有哪些锁">mysql 有哪些锁？</h3>
+<ul>
+<li><strong>全局锁</strong>：通过flush tables with read lock
+语句会将整个数据库就处于只读状态了，这时其他线程执行以下操作，增删改或者表结构修改都会阻塞。全局锁主要应用于做<strong>全库逻辑备份</strong>，这样在备份数据库期间，不会因为数据或表结构的更新，而出现备份文件的数据与预期的不一样。</li>
+<li><strong>表级锁</strong>：MySQL 里面表级别的锁有这几种：
+<ul>
+<li>表锁：通过lock tables
+语句可以对表加表锁，表锁除了会限制别的线程的读写外，也会限制本线程接下来的读写操作。</li>
+<li>元数据锁：当我们对数据库表进行操作时，会自动给这个表加上
+MDL，对一张表进行 CRUD 操作时，加的是 <strong>MDL
+读锁</strong>；对一张表做结构变更操作的时候，加的是 <strong>MDL
+写锁</strong>；MDL 是为了保证当用户对表执行 CRUD
+操作时，防止其他线程对这个表结构做了变更。</li>
+<li>意向锁：当执行插入、更新、删除操作，需要先对表加上「意向独占锁」，然后对该记录加独占锁。<strong>意向锁的目的是为了快速判断表里是否有记录被加锁</strong>。</li>
+</ul></li>
+<li><strong>行级锁</strong>：InnoDB 引擎是支持行级锁的，而 MyISAM
+引擎并不支持行级锁。
+<ul>
+<li>记录锁，锁住的是一条记录。而且记录锁是有 S 锁和 X
+锁之分的，满足读写互斥，写写互斥</li>
+<li>间隙锁，只存在于可重复读隔离级别，目的是为了解决可重复读隔离级别下幻读的现象。</li>
+<li>Next-Key Lock 称为临键锁，是 Record Lock + Gap Lock
+的组合，锁定一个范围，并且锁定记录本身。</li>
+</ul></li>
+</ul>
 <h2 id="操作系统">操作系统</h2>
 <h3
 id="用户态和内核态的互换条件腾讯云">用户态和内核态的互换、条件（腾讯云）</h3>
@@ -1527,18 +1650,9 @@ id="遇到过死锁吗怎么解决的不要背那四条">遇到过死锁吗？�
 接收到中断信号后，会暂停当前正在执行的进程，并执行中断处理程序。下面是
 CPU 中断后进程的处理流程的一般步骤：</p>
 <ol type="1">
-<li><strong>中断响应</strong>：CPU
-响应中断信号，停止当前正在执行的指令，并保存当前进程的执行状态（如程序计数器、寄存器状态等）。</li>
-<li><strong>关中断</strong></li>
-<li><strong>中断处理</strong>：CPU 跳转到中断向量表（Interrupt Vector
-Table）中对应的中断处理程序入口点，开始执行中断处理程序。中断处理程序负责处理特定类型的中断，如时钟中断、硬件故障中断等。</li>
-<li><strong>保存上下文</strong>：中断处理程序会保存当前进程的上下文（Context），包括进程的寄存器状态、堆栈指针等信息，以便稍后恢复进程的执行状态。</li>
-<li><strong>执行中断服务程序</strong>：中断处理程序根据中断类型和中断源的不同，执行相应的处理逻辑，可能包括设备的输入输出操作、错误处理、进程调度等。</li>
-<li><strong>恢复进程执行</strong>：中断处理程序完成后，会根据需要选择是否恢复当前被中断的进程的执行。如果需要切换到其他进程执行，会进行进程调度，选择合适的进程，并加载其执行状态。</li>
-<li><strong>恢复上下文</strong>：如果恢复了之前被中断的进程的执行，中断处理程序会恢复该进程的执行状态，包括恢复寄存器状态、堆栈指针等，使进程可以继续执行中断发生之前的指令。</li>
-<li><strong>开中断</strong></li>
-<li><strong>继续执行</strong>：CPU
-继续执行中断处理程序之后的指令，或者切换到其他进程执行，完成整个中断处理过程。</li>
+<li><strong>发生中断</strong>：当外部设备或者软件程序需要处理器的注意或者响应时，会发出中断信号。处理器在接收到中断信号后，会停止当前执行的指令，保存当前执行现场，并跳转到中断处理程序执行。</li>
+<li><strong>中断响应</strong>：处理器接收到中断信号后，会根据中断向量表找到对应的中断处理程序的入口地址。处理器会保存当前执行现场（如程序计数器、寄存器状态等），以便在中断处理完成后能够恢复执行。</li>
+<li><strong>中断处理</strong>：处理器跳转到中断处理程序的入口地址开始执行中断处理程序。中断处理程序会根据中断类型进行相应的处理，可能涉及到保存现场、处理中断事件、执行特定任务等。</li>
 </ol>
 <figure>
 <img
@@ -1743,7 +1857,7 @@ alt="img" />
 <figcaption aria-hidden="true">img</figcaption>
 </figure>
 <h2 id="项目">项目</h2>
-<h2 id="muduo">muduo</h2>
+<h3 id="muduo">muduo</h3>
 <p>服务器通信网络库重写并简化了muduo网络库，使用C++11去除了boost库的依赖，使用基于OOP思想，reactor模型。one
 loop per thread的模型，通过epoll +
 线程池，使用多线程和事件循环机制实现高并发处理。</p>
@@ -1774,7 +1888,7 @@ id="acceptor-接受新用户连接并分发连接给subreactorsubeventloop"><str
 <p><strong>主要</strong>封装了一个已建立的TCP连接，以及控制该TCP连接的方法（连接建立和关闭和销毁），以及该连接发生的各种事件（读/写/错误/连接）对应的处理函数，以及这个TCP连接的服务端和客户端的套接字地址信息等。</p>
 <p><strong>我个人觉得TcpConnection类和Acceptor类是兄弟关系，Acceptor用于main
 EventLoop中，对服务器监听套接字fd及其相关方法进行封装（监听、接受连接、分发连接给SubEventLoop等），TcpConnection用于SubEventLoop中，对连接套接字fd及其相关方法进行封装（读消息事件、发送消息事件、连接关闭事件、错误事件等）。</strong></p>
-<h2 id="项目的流程">项目的流程</h2>
+<h3 id="项目的流程">项目的流程</h3>
 <ol type="1">
 <li>建立连接：创建<code>TcpServer</code>对象，并在<code>TcpServer</code>的构造函数实例化了一个<code>Acceptor</code>对象，并往这个<code>Acceptor</code>对象注册了一个回调函数<code>TcpServer::newConnection()</code>。实例化Acceptor对象时，Acceptor的构造函数中实例化了一个Channel对象，即<code>acceptChannel_</code>，该Channel对象封装了服务器监听套接字文件描述符（尚未注册到main
 EventLoop的事件监听器上）。接着Acceptor构造函数将<code>Acceptor::handleRead( )</code>方法注册进<code>acceptChannel_</code>中，这也意味着，日后如果事件监听器监听到<code>acceptChannel_</code>发生可读事件，将会调用<code>Acceptor::handleRead( )</code>函数。当有连接到来的时候，会在
@@ -1815,7 +1929,7 @@ id="如果tcpconnection中有正在发送的数据怎么保证在触发tcpconnec
 <h4
 id="bufferreadfd函数剖析"><strong>Buffer::readFd()函数剖析</strong></h4>
 <p>这个readFd巧妙的设计，可以让用户一次性把所有TCP接收缓冲区的所有数据全部都读出来并放到用户自定义的缓冲区Buffer中。用户自定义缓冲区Buffer是有大小限制的，我们一开始不知道TCP接收缓冲区中的数据量有多少，如果一次性读出来会不会导致Buffer装不下而溢出。所以在<code>readFd( )</code>函数中会在栈上创建一个临时空间<code>extrabuf</code>，然后使用<code>readv</code>的分散读特性，将TCP缓冲区中的数据先拷贝到Buffer中，如果Buffer容量不够，就把剩余的数据都拷贝到<code>extrabuf</code>中，然后再调整Buffer的容量(动态扩容)，再把<code>extrabuf</code>的数据拷贝到Buffer中。当这个函数结束后，<code>extrabuf</code>也会被释放。另外<code>extrabuf</code>是在栈上开辟的空间，速度比在堆上开辟还要快。</p>
-<h2 id="线程池的好处">线程池的好处</h2>
+<h3 id="线程池的好处">线程池的好处</h3>
 <p>线程池<strong>为避免频繁创建、销毁线程</strong>，提供一组子线程，能从工作队列取任务、执行任务，而用户可以向工作队列加入任务，从而完成用户任务。可以更加高效。</p>
 <h3 id="跳表和红黑树的优劣">跳表和红黑树的优劣</h3>
 <h4 id="红黑树">红黑树</h4>
@@ -2272,6 +2386,10 @@ Reactor的三种线程模型可以用接待员和服务员类比</p>
 <li>单Reactor多线程模型：一个接待员，多个服务员。客流量大，一个人忙不过来，由专门的接待员在门口接待顾客，然后安排好桌子后，由一个服务员一直服务，一般每个服务员负责一片中的几张桌子</li>
 <li>多Reactor多线程模型：多个接待员，多个服务员。这种就是客流量太大了，一个接待员忙不过来了</li>
 </ol>
+<h3
+id="free函数如何知道要释放的空间大小">free()函数如何知道要释放的空间大小？</h3>
+<p>free()函数如何知道要释放的空间大小？ - 卡麦哈麦哈的回答 - 知乎
+https://www.zhihu.com/question/302440083/answer/544571934</p>
 <h3 id="有没有避免死锁的机制">有没有避免死锁的机制</h3>
 <h3 id="介绍以下内存池怎么实现的">介绍以下内存池怎么实现的？</h3>
 <h3 id="介绍以下muduo库">介绍以下muduo库</h3>
@@ -2292,6 +2410,35 @@ id="手撕代码将一个字符串转换成字符加出现次数的形式比如a
 <p>求（a^b）%n。本质是快速幂，只写出递归。a、b、n都很⼤，int会爆，必须⽤long</p>
 <h3 id="线程安全的循环队列">线程安全的循环队列</h3>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;iostream&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;mutex&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;condition_variable&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;vector&gt;</span></span><br><br><span class="hljs-keyword">template</span> &lt;<span class="hljs-keyword">typename</span> T&gt;<br><span class="hljs-keyword">class</span> <span class="hljs-title class_">CircularQueue</span> &#123;<br><span class="hljs-keyword">private</span>:<br>    std::vector&lt;T&gt; queue;<br>    <span class="hljs-type">int</span> capacity;<br>    <span class="hljs-type">int</span> size;<br>    <span class="hljs-type">int</span> front;<br>    <span class="hljs-type">int</span> rear;<br>    std::mutex mtx;<br>    std::condition_variable not_full;<br>    std::condition_variable not_empty;<br><br><span class="hljs-keyword">public</span>:<br>    <span class="hljs-built_in">CircularQueue</span>(<span class="hljs-type">int</span> capacity) : <span class="hljs-built_in">capacity</span>(capacity), <span class="hljs-built_in">size</span>(<span class="hljs-number">0</span>), <span class="hljs-built_in">front</span>(<span class="hljs-number">0</span>), <span class="hljs-built_in">rear</span>(<span class="hljs-number">-1</span>) &#123;<br>        queue.<span class="hljs-built_in">resize</span>(capacity);<br>    &#125;<br><br>    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">enqueue</span><span class="hljs-params">(<span class="hljs-type">const</span> T&amp; item)</span> </span>&#123;<br>        <span class="hljs-function">std::unique_lock&lt;std::mutex&gt; <span class="hljs-title">lock</span><span class="hljs-params">(mtx)</span></span>;<br>        not_full.<span class="hljs-built_in">wait</span>(lock, [<span class="hljs-keyword">this</span>]() &#123; <span class="hljs-keyword">return</span> size &lt; capacity; &#125;);<br><br>        rear = (rear + <span class="hljs-number">1</span>) % capacity;<br>        queue[rear] = item;<br>        size++;<br><br>        lock.<span class="hljs-built_in">unlock</span>();<br>        not_empty.<span class="hljs-built_in">notify_one</span>();<br>    &#125;<br><br>    <span class="hljs-function">T <span class="hljs-title">dequeue</span><span class="hljs-params">()</span> </span>&#123;<br>        <span class="hljs-function">std::unique_lock&lt;std::mutex&gt; <span class="hljs-title">lock</span><span class="hljs-params">(mtx)</span></span>;<br>        not_empty.<span class="hljs-built_in">wait</span>(lock, [<span class="hljs-keyword">this</span>]() &#123; <span class="hljs-keyword">return</span> size &gt; <span class="hljs-number">0</span>; &#125;);<br><br>        T item = queue[front];<br>        front = (front + <span class="hljs-number">1</span>) % capacity;<br>        size--;<br><br>        lock.<span class="hljs-built_in">unlock</span>();<br>        not_full.<span class="hljs-built_in">notify_one</span>();<br><br>        <span class="hljs-keyword">return</span> item;<br>    &#125;<br><br>    <span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">is_empty</span><span class="hljs-params">()</span> </span>&#123;<br>        <span class="hljs-function">std::lock_guard&lt;std::mutex&gt; <span class="hljs-title">lock</span><span class="hljs-params">(mtx)</span></span>;<br>        <span class="hljs-keyword">return</span> size == <span class="hljs-number">0</span>;<br>    &#125;<br><br>    <span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">is_full</span><span class="hljs-params">()</span> </span>&#123;<br>        <span class="hljs-function">std::lock_guard&lt;std::mutex&gt; <span class="hljs-title">lock</span><span class="hljs-params">(mtx)</span></span>;<br>        <span class="hljs-keyword">return</span> size == capacity;<br>    &#125;<br>&#125;;<br><br></code></pre></td></tr></table></figure>
+<h3 id="无锁队列">无锁队列</h3>
+<p>每个节点的数据结构：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-keyword">class</span> <span class="hljs-title class_">QueueNode</span> &#123;<br>  <span class="hljs-keyword">public</span>:<br>    <span class="hljs-type">int</span>        val;<br>    QueueNode* next;<br>    <span class="hljs-built_in">QueueNode</span>(<span class="hljs-type">int</span> val) : <span class="hljs-built_in">val</span>(val) &#123;<br>        next = <span class="hljs-literal">NULL</span>;<br>    &#125;<br>&#125;;<br></code></pre></td></tr></table></figure>
+<p>而对于一个无锁队列对象而言，包含以下部分</p>
+<ul>
+<li>数据：队列的最大长度、链表头结点、链表尾节点</li>
+<li>函数：初始化（构造函数）、入队、出队</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs cpp">lass LockFreeQueue &#123;<br>  <span class="hljs-keyword">public</span>:<br>    <span class="hljs-built_in">LockFreeQueue</span>();<br>    <span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">enqueue</span><span class="hljs-params">(<span class="hljs-type">int</span> val)</span></span>;<br>    <span class="hljs-function"><span class="hljs-type">int</span>  <span class="hljs-title">dequeue</span><span class="hljs-params">()</span></span>;<br>    ~<span class="hljs-built_in">LockFreeQueue</span>();<br><br>  <span class="hljs-keyword">private</span>:<br>    <span class="hljs-type">int</span>        queue_size; <span class="hljs-comment">// 暂时未使用，论文里并没有提及最大资源数</span><br>    QueueNode* tail;<br>    QueueNode* head;<br>&#125;;<br></code></pre></td></tr></table></figure>
+<figure>
+<img
+src="/img/%E9%9D%A2%E8%AF%95%E9%97%AE%E9%A2%98/20201221172747323.png" srcset="/img/loading.gif" lazyload
+alt="img" />
+<figcaption aria-hidden="true">img</figcaption>
+</figure>
+<h5 id="入队操作">入队操作</h5>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">LockFreeQueue::enqueue</span><span class="hljs-params">(<span class="hljs-type">int</span> val)</span></span><br><span class="hljs-function"></span>&#123;<br>    QueueNode* cur_node;<br>    QueueNode* add_node = <span class="hljs-keyword">new</span> <span class="hljs-built_in">QueueNode</span>(val);<br>    <span class="hljs-keyword">while</span> (<span class="hljs-number">1</span>) &#123;<br>        cur_node = tail;<br>        <span class="hljs-keyword">if</span> (__sync_bool_compare_and_swap(&amp;(cur_node-&gt;next), <span class="hljs-literal">NULL</span>, add_node)) &#123;<br>            <span class="hljs-keyword">break</span>;<br>        &#125;<br>        <span class="hljs-keyword">else</span> &#123;<br>            __sync_bool_compare_and_swap(&amp;tail, cur_node, cur_node-&gt;next);<br>        &#125;<br>    &#125;<br>    __sync_bool_compare_and_swap(&amp;tail, cur_node, add_node);<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+<ol type="1">
+<li>加入成功，那么退出循环进入倒数第三行</li>
+<li>加入不成功，说明这时候有其他线程抢先往里面插入了一个节点，那么就把当前节点的位置更新为尾节点，再次进入循环直到能正确更新</li>
+</ol>
+<p>到了最后一个CAS的时候，只需要进行一次置尾操作，并不需要循环，原因是：如果当前线程将节点已经加进去了的话，那么其他所有线程的操作都会失败，只有当前线程更新尾节点完成后，其他线程的第二个CAS操作才能成功。</p>
+<p>这里有一个小trick，明明第6行每次循环时都会更新节点，为什么还需要第二个CAS操作呢？因为在极端情况下，一个线程已经完成了增加节点操作，在置尾操作（第三个CAS）之前突然挂了，这时候就导致其他所有线程全部不能更新。</p>
+<p>在左耳朵耗子的博客中，对于上述问题的解决方法描述是选用了《Implementing
+Lock-Free
+Queues》论文中提到的第二个方法，该方法采用的是一开始在head，然后不断找next直到找尾节点（通过多个线程共用fetch来减少开销）。本文以论文中提到的第一个方法为例进行描述（因为我觉得它更优雅）。</p>
+<h5 id="出队操作">出队操作</h5>
+<p>与入队操作类似。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">LockFreeQueue::dequeue</span><span class="hljs-params">()</span></span><br><span class="hljs-function"></span>&#123;<br>    QueueNode* cur_node;<br>    <span class="hljs-type">int</span>        val;<br>    <span class="hljs-keyword">while</span> (<span class="hljs-number">1</span>) &#123;<br>        cur_node = head;<br>        <span class="hljs-keyword">if</span> (cur_node-&gt;next == <span class="hljs-literal">NULL</span>) &#123;<br>            <span class="hljs-keyword">return</span> <span class="hljs-number">-1</span>;<br>        &#125;<br><br>        <span class="hljs-keyword">if</span> (__sync_bool_compare_and_swap(&amp;head, cur_node, cur_node-&gt;next)) &#123;<br>            <span class="hljs-keyword">break</span>;<br>        &#125;<br>    &#125;<br>    val = cur_node-&gt;next-&gt;val;<br>    <span class="hljs-keyword">delete</span> cur_node;<br>    <span class="hljs-keyword">return</span> val;<br>&#125;<br></code></pre></td></tr></table></figure>
 <h2 id="比赛">比赛</h2>
 <h3 id="金融科技建模大赛">金融科技建模大赛</h3>
 <h4 id="赛题设置">赛题设置</h4>
