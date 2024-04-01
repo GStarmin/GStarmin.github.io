@@ -306,7 +306,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          26k 字
+          27k 字
         
       </span>
     
@@ -317,7 +317,7 @@
         
         
         
-          262 分钟
+          268 分钟
         
       </span>
     
@@ -1419,6 +1419,8 @@ alt="img" /></p>
 </ol>
 <h2 id="select-...-for-update-where-xxx...-加锁情况">select ... for
 update where xxx... 加锁情况</h2>
+<p>更详细见<a
+target="_blank" rel="noopener" href="https://www.cnblogs.com/rjzheng/p/9950951.html">【原创】惊！史上最全的select加锁分析(Mysql)</a></p>
 <h3 id="主键">主键</h3>
 <p>当where条件用的数据库主键时。</p>
 <p>例如开启一个事务1，在事务中更新id=1的用户的年龄：</p>
@@ -1521,8 +1523,22 @@ Pushdown，简称ICP)，是MySQL5.6版本的新特性，它能<strong>减少回�
 <li>存储引擎读取索引记录（不是完整的行记录）；</li>
 <li>判断<code>WHERE</code>条件部分能否用索引中的列来做检查，条件不满足，则处理下一行索引记录；</li>
 <li>条件满足，使用索引中的主键去定位并读取完整的行记录（回表一次）；</li>
-<li>存储引擎把记录交给<code>Server</code>层，<code>Server</code>层检测该记录是否满足<code>WHERE</code>条件的其余部分。</li>
+<li>存储引擎把记录交给<code>Server</code>层，<code>Server</code>层检测该记录是否满足<code>WHERE</code>条件的其余部分。、</li>
 </ul>
+<h4 id="什么时候会触发索引下推">什么时候会触发索引下推</h4>
+<ol type="1">
+<li><p><strong>查询类型</strong>：只有使用了<strong>非聚簇索引</strong>的查询才可能触发ICP。这是因为在聚簇索引中，索引与数据行是紧密耦合的，所以没有额外的检索步骤。</p></li>
+<li><p><strong>WHERE
+子句的结构</strong>：当查询的WHERE子句中的一部分可以使用索引进行过滤，而另一部分则不能时，ICP最有可能被触发。在这种情况下，可以使用索引的部分首先进行过滤，然后应用余下的条件。</p></li>
+</ol>
+<p>例如，考虑一个包含<code>first_name</code>和<code>last_name</code>的复合索引。以下查询可能会触发ICP：</p>
+<figure class="highlight n1ql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs n1ql"><span class="hljs-keyword">SELECT</span> * <span class="hljs-keyword">FROM</span> users <span class="hljs-keyword">WHERE</span> first_name = <span class="hljs-string">&#x27;John&#x27;</span> <span class="hljs-keyword">AND</span> last_name <span class="hljs-keyword">LIKE</span> <span class="hljs-string">&#x27;Smi%&#x27;</span>;<br></code></pre></td></tr></table></figure>
+<p>在这个例子中，<code>first_name</code>的等值比较可以直接用索引进行过滤，而<code>last_name</code>的LIKE操作可能会触发ICP，这样只有满足<code>first_name</code>条件的索引条目才会进一步检查<code>last_name</code>。</p>
+<ol start="3" type="1">
+<li><p><strong>存储引擎</strong>：不是所有的存储引擎都支持ICP。例如，InnoDB和MEMORY存储引擎支持ICP，而MyISAM则不支持。</p></li>
+<li><p><strong>EXPLAIN输出</strong>：当怀疑ICP可能对查询有益时，可以使用EXPLAIN命令来查看查询的执行计划。如果ICP被使用，你会在<code>Extra</code>列看到“Using
+index condition”。</p></li>
+</ol>
 
                 
               </div>
