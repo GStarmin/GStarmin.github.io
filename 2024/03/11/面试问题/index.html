@@ -307,7 +307,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          69k 字
+          72k 字
         
       </span>
     
@@ -318,7 +318,7 @@
         
         
         
-          694 分钟
+          723 分钟
         
       </span>
     
@@ -907,7 +907,7 @@ maxevents, int timeout)：</strong>
 <li><code>events</code>：用于存储发生事件的文件描述符和事件类型的数组。</li>
 <li><code>maxevents</code>：<code>events</code>
 数组的大小，表示最多可以存储多少个事件。</li>
-<li>timeout：等待事件的超时时间，以毫秒为单位。可以有以下几种取值：
+<li><code>timeout</code>：等待事件的超时时间，以毫秒为单位。可以有以下几种取值：
 <ul>
 <li><code>-1</code>：无限等待，直到有事件发生。</li>
 <li><code>0</code>：立即返回，不等待事件。</li>
@@ -972,7 +972,7 @@ aria-hidden="true">Linux下的栈溢出案例分析-GDB调试操练</figcaption>
 <p>如果出现错误，fork返回一个负值；</p>
 <p>getppid():得到一个进程的父进程的PID;</p>
 <p>getpid():得到当前进程的PID;</p>
-<h3 id="linux查看现在运行的所以进程">linux查看现在运行的所以进程</h3>
+<h3 id="linux查看现在运行的所有进程">linux查看现在运行的所有进程</h3>
 <p>ps aux</p>
 <h3 id="linux日志查询">linux日志查询</h3>
 <p>cat /var/log/syslog</p>
@@ -992,7 +992,7 @@ id="栈和堆大小是多少堆动态开辟的话能和内存一样大吗">栈�
 <p><strong>Linux下进程栈的默认大小是10M</strong>，可以通过ulimit
 -s查看并修改默认栈大小。
 默认一个线程要预留1M左右的栈大小，所以进程中有N个线程时，Windows下大概有N*M的栈大小。
-堆的大小理论上大概等于进程虚拟空间大小-内核虚拟内存大小。</p>
+堆的大小理论上大概等于<strong>进程虚拟空间大小-内核虚拟内存</strong>大小。</p>
 <h3 id="多线程的线程栈分配在哪里">多线程的线程栈分配在哪里？</h3>
 <h3 id="什么是协程">什么是协程？</h3>
 <p>协程是另一种轻量级的执行单元。协程不是进程或线程，其执行过程更类似于子例程或不带返回值的函数调用。协程的切换开销比线程更小，适用于高并发场景。</p>
@@ -1305,6 +1305,9 @@ IP 地址同时建立过多的连接。</li>
 <li><strong>应用数据重传机制</strong>：当接收端收到不完整的数据时，可以请求发送端重新发送丢失的数据段，保证数据的完整性和可用性。</li>
 <li><strong>加入安全认证机制</strong>：通过使用加密算法和数字签名等技术，保证数据信息的机密性和完整性，防止黑客攻击和数据泄露。</li>
 </ol>
+<h3 id="为什么dns协议不用tcp">为什么DNS协议不用TCP？</h3>
+<p>UDP更快，TCP还需要三次握手，四次挥手；三次握手的时间UDP已经传完了。</p>
+<p>另外，如果本地查询没有查到，需要本地DNS服务器迭代向顶级域名DNS服务器、权威域名DNS服务器迭代查询，如果每次都需要TCP三次握手，四次挥手，那么跟UDP的差距就很大了。</p>
 <h2 id="数据库">数据库</h2>
 <h3
 id="一条mysql语句的执行过程腾讯云">一条MySQL语句的执行过程(腾讯云)</h3>
@@ -1728,8 +1731,8 @@ id="用户态和内核态的互换条件腾讯云">用户态和内核态的互�
 <p>从用户态到内核态切换可以通过三种方式，或者说会导致从用户态切换到内核态的操作：</p>
 <p>其实系统调用本身就是中断，但是软件中断，跟硬中断不同。系统调用机制是使用了操作系统为用户特别开放的一个中断来实现，如
 Linux 的 int 80h 中断。</p>
-<p>异常：如果当前进程运行在用户态，如果这个时候发生了异常事件，会触发由当前运行进程切换到处理此异常的内核相关进程中
-外围设备中断：外围设备完成用户请求的操作之后，会向CPU发出中断信号，这时CPU会转去处理对应的中断处理程序。</p>
+<p>异常：如果当前进程运行在用户态，如果这个时候发生了异常事件，会触发由当前运行进程切换到处理此异常的内核相关进程中</p>
+<p>外围设备中断：外围设备完成用户请求的操作之后，会向CPU发出中断信号，这时CPU会转去处理对应的中断处理程序。</p>
 <h4 id="切换过程">切换过程</h4>
 <p>当发生用户态到内核态的切换时，会发生如下过程（本质上是从“用户程序”切换到“内核程序”）</p>
 <ul>
@@ -1890,6 +1893,42 @@ Instruction）。这些指令会使处理器从用户态切换到内核态，进
 <li><strong>避免死锁</strong>：通过银行家算法等来判断并避免系统进入不安全状态，从而避免死锁。</li>
 <li><strong>检测与解除死锁</strong>：定期检测系统中是否发生死锁，一旦发生死锁，则采取解除死锁的措施。解除死锁通常涉及撤销一些进程，以便回收它们的资源，从而使得其他进程能够继续执行。</li>
 </ol>
+<h3 id="软连接和硬链接的区别">软连接和硬链接的区别</h3>
+<p><strong>物理实现</strong>：</p>
+<ul>
+<li>软链接：
+软链接是⼀个独⽴的⽂件，它包含了指向⽬标⽂件或⽬录的路径。软链接实际上是⼀个特殊的⽂件，其中包含有关⽬标⽂件的引⽤。</li>
+<li>硬链接：
+硬链接是⽬标⽂件的⼀个额外的⽬录项。⽬录项指向相同的物理数据块，实际上只是⽂件系统中的两个或多个⽬录项指向相同的inode。</li>
+</ul>
+<p><strong>链接的目标</strong>：</p>
+<ul>
+<li>软链接：
+软链接可以链接到⽂件或⽬录，甚⾄可以链接到不存在的⽂件。</li>
+<li>硬链接： 硬链接只能链接到⽂件，⽽且必须是同⼀⽂件系统中的。</li>
+</ul>
+<p><strong>对链接的影响</strong>：</p>
+<ul>
+<li>软链接：
+如果原始⽂件被删除或移动，软链接仍然存在，但链接将失效。软链接可以跨⽂件系统，但如果⽬标⽂件被删除，软链接将成为坏链接（dangling
+link）。</li>
+<li>硬链接：
+删除或移动原始⽂件并不会影响硬链接，因为硬链接只是inode的另⼀个引⽤。只有当所有硬链接都被删除后，inode的数据块才会被释放。</li>
+</ul>
+<p><strong>创建方式</strong>：</p>
+<ul>
+<li>软链接： 使⽤ln -s 命令创建软链接。例如， ln -s target_file
+link_name 。</li>
+<li>硬链接： 使⽤ln 命令创建硬链接。例如， ln target_file link_name
+。</li>
+</ul>
+<p><strong>链接数量</strong>：</p>
+<ul>
+<li>软链接：
+软链接只会增加⽬标⽂件的链接计数，⽽不会增加inode的链接计数。</li>
+<li>硬链接：
+硬链接会增加⽬标⽂件的链接计数，也会增加inode的链接计数。当链接计数为零时，⽂件系统才会释放相关的数据块。</li>
+</ul>
 <h2 id="设计模式">设计模式</h2>
 <h3 id="单例模式实现的优点">单例模式实现的优点</h3>
 <ol type="1">
@@ -1907,6 +1946,12 @@ id="怎么提前销毁懒汉式局部静态变量">怎么提前销毁懒汉式�
 <li>工厂方法模式只有一个抽象产品类，而抽象工厂模式有多个抽象产品类。</li>
 <li>工厂方法模式的具体工厂类只能创建一个具体产品类的实例，而抽象工厂模式可以创建多个具体产品类的实例。</li>
 </ul>
+<h3 id="使用工厂模式的好处">使用工厂模式的好处？</h3>
+<p>可以将对象的创建和实现解耦。</p>
+<h4 id="总结-1">总结</h4>
+<p><strong>简单工厂模式</strong>：让一个工厂类负责创建所有对象；但没有考虑后期扩展和维护，修改违背开闭原则，静态方法不能被继承。</p>
+<p><strong>工厂方法模式</strong>：主要思想是继承，修改符合开闭原则；但每个工厂只能创建一种类型的产品。</p>
+<p><strong>抽象工厂模式</strong>：主要思想是组合，本质是产品族，实际包含了很多工厂方法，修改符合开闭原则；但只适用于增加同类工厂这种横向扩展需求，不适合新增功能方法这种纵向扩展。</p>
 <h2 id="redis">Redis</h2>
 <p>常见的有五种数据结构：String（字符串），Hash（哈希），List（列表），Set（集合）、Zset（有序集合）。</p>
 <figure>
@@ -2614,12 +2659,39 @@ id="实现vector类要求实现这些方法初始化整体拷贝push_backpop_bac
 <h3
 id="快乐数每一位平方求和循环操作是否可以变为1">快乐数，每一位平方求和，循环操作是否可以变为1</h3>
 <p>见<a
-target="_blank" rel="noopener" href="https://leetcode.cn/problems/happy-number/description/">LC.202快乐数</a></p>
+target="_blank" rel="noopener" href="https://leetcode.cn/problems/happy-number/description/">LC.202快乐数</a>.</p>
 <h3 id="链表快排">链表快排</h3>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-function">ListNode* <span class="hljs-title">solve</span><span class="hljs-params">(ListNode* head, ListNode* pend)</span></span>&#123;<br>    <span class="hljs-comment">//链表是空或者只有一个元素就返回</span><br>    <span class="hljs-keyword">if</span>(!head||head-&gt;next==pend) <span class="hljs-keyword">return</span> head;<br>    <span class="hljs-type">int</span> val = head-&gt;val; <span class="hljs-comment">//哨兵值</span><br>    ListNode* p = head; <span class="hljs-comment">//记录“哨兵”的位置</span><br>    ListNode* q = p-&gt;next; <span class="hljs-comment">//用于遍历待排序链表的指针</span><br>    <span class="hljs-keyword">while</span>(q!=pend)&#123;<br>        <span class="hljs-comment">//发现比哨兵结点小的值就交换。从而保证p指针所指的结点比哨兵值小</span><br>        <span class="hljs-keyword">if</span>(q-&gt;val &lt; val)&#123;<br>            p = p-&gt;next;<br>            <span class="hljs-built_in">swap</span>(p-&gt;val, q-&gt;val);<br>        &#125;<br>        q = q-&gt;next;<br>    &#125;<br>    <span class="hljs-comment">//交换哨兵和p指针指向值，至此哨兵的位置就固定了</span><br>    <span class="hljs-built_in">swap</span>(head-&gt;val, p-&gt;val);<br>    <span class="hljs-keyword">return</span> p;<br>&#125;<br></code></pre></td></tr></table></figure>
 <h3 id="判断一个点是否在三角形内">判断一个点是否在三角形内</h3>
 <p>使用叉乘判断点是否在三角形内:</p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-meta">#<span class="hljs-keyword">include</span><span class="hljs-string">&lt;bits/stdc++.h&gt;</span></span><br><br><span class="hljs-keyword">struct</span> <span class="hljs-title class_">Point</span><br>&#123;<br>	<span class="hljs-type">double</span> x;<br>	<span class="hljs-type">double</span> y;<br>&#125;;<br><br><span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">IsInsideTriangle</span><span class="hljs-params">(Point p, Point A, Point B, Point C)</span></span><br><span class="hljs-function"></span>&#123;<br>	<span class="hljs-type">double</span> AB = (B.x - A.x) * (p.y - A.y) - (B.y - A.y) * (p.x - A.x);<br>	<span class="hljs-type">double</span> BC = (C.x - B.x) * (p.y - B.y) - (C.y - B.y) * (p.x - B.x);<br>	<span class="hljs-type">double</span> CA = (A.x - C.x) * (p.y - C.y) - (A.y - C.y) * (p.x - C.x);<br><br>	<span class="hljs-keyword">if</span> (((AB &gt; <span class="hljs-number">0</span> &amp;&amp; BC &gt; <span class="hljs-number">0</span> &amp;&amp; CA &gt; <span class="hljs-number">0</span>) || (AB &lt; <span class="hljs-number">0</span> &amp;&amp; BC &lt; <span class="hljs-number">0</span> &amp;&amp; CA &lt; <span class="hljs-number">0</span>)))<br>		<span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;<br>	<span class="hljs-keyword">else</span><br>		<span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;<br>&#125;<br><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span><br><span class="hljs-function"></span>&#123;<br>	Point p = &#123; <span class="hljs-number">0</span>, <span class="hljs-number">0</span> &#125;;<br>	Point A = &#123; <span class="hljs-number">0</span>, <span class="hljs-number">1</span> &#125;;<br>	Point B = &#123; <span class="hljs-number">1</span>, <span class="hljs-number">0</span> &#125;;<br>	Point C = &#123; <span class="hljs-number">0</span>, <span class="hljs-number">-1</span> &#125;;<br><br>	<span class="hljs-keyword">if</span> (<span class="hljs-built_in">IsInsideTriangle</span>(p, A, B, C))<br>	&#123;<br>		cout &lt;&lt; <span class="hljs-string">&quot;Point is inside the triangle.&quot;</span>;<br>	&#125;<br>	<span class="hljs-keyword">else</span><br>	&#123;<br>		cout &lt;&lt; <span class="hljs-string">&quot;Point is outside the triangle.&quot;</span>;<br>	&#125;<br><br>	<span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+<h3 id="反转链表倒数k个节点前的节点">反转链表倒数k个节点前的节点</h3>
+<h3 id="lc151.-反转字符串中的单词要求原地翻转">LC151.
+反转字符串中的单词（要求原地翻转）</h3>
+<p>见<a
+target="_blank" rel="noopener" href="https://leetcode.cn/problems/reverse-words-in-a-string/description/">LC151.
+反转字符串中的单词</a>.</p>
+<h3 id="lc236.-二叉树的最近公共祖先">LC236. 二叉树的最近公共祖先</h3>
+<p>见<a
+target="_blank" rel="noopener" href="https://leetcode.cn/problems/lowest-common-ancestor-of-a-binary-tree/description/">LC236.
+二叉树的最近公共祖先</a>.</p>
+<h3 id="lc39.-组合总和">LC39. 组合总和</h3>
+<p>见<a
+target="_blank" rel="noopener" href="https://leetcode.cn/problems/combination-sum/description/">LC39.
+组合总和</a>.</p>
+<h3 id="lc7.-整数反转">LC7. 整数反转</h3>
+<p>见<a
+target="_blank" rel="noopener" href="https://leetcode.cn/problems/reverse-integer/description/">整数反转</a>.</p>
+<h3 id="稀疏矩阵乘法要优化之后的">稀疏矩阵乘法（要优化之后的）</h3>
+<p>见<a
+target="_blank" rel="noopener" href="https://developer.aliyun.com/article/346625">稀疏矩阵相乘</a>.</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><code class="hljs CPP"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;vector&gt;</span></span><br><br><span class="hljs-comment">// 执行矩阵乘法的函数</span><br>std::vector&lt;std::vector&lt;<span class="hljs-type">int</span>&gt;&gt; <span class="hljs-built_in">matrixMul2</span>(<span class="hljs-type">const</span> std::vector&lt;std::vector&lt;<span class="hljs-type">int</span>&gt;&gt;&amp; A, <span class="hljs-type">const</span> std::vector&lt;std::vector&lt;<span class="hljs-type">int</span>&gt;&gt;&amp; B) &#123;<br>    <span class="hljs-comment">// 获取矩阵的维度</span><br>    <span class="hljs-type">int</span> m = A.<span class="hljs-built_in">size</span>();    <span class="hljs-comment">// 矩阵 A 的行数</span><br>    <span class="hljs-type">int</span> n = A[<span class="hljs-number">0</span>].<span class="hljs-built_in">size</span>(); <span class="hljs-comment">// 矩阵 A 的列数 / 矩阵 B 的行数</span><br>    <span class="hljs-type">int</span> p = B[<span class="hljs-number">0</span>].<span class="hljs-built_in">size</span>(); <span class="hljs-comment">// 矩阵 B 的列数</span><br><br>    <span class="hljs-comment">// 向量用于跟踪全零的行和列</span><br>    <span class="hljs-function">std::vector&lt;<span class="hljs-type">bool</span>&gt; <span class="hljs-title">r_all0</span><span class="hljs-params">(m, <span class="hljs-literal">true</span>)</span></span>; <span class="hljs-comment">// 最初将所有行标记为全零</span><br>    <span class="hljs-function">std::vector&lt;<span class="hljs-type">bool</span>&gt; <span class="hljs-title">c_all0</span><span class="hljs-params">(p, <span class="hljs-literal">true</span>)</span></span>; <span class="hljs-comment">// 最初将所有列标记为全零</span><br><br>    <span class="hljs-comment">// 检查矩阵 A 的每一行是否有非零元素</span><br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; m; ++i) &#123;<br>        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> j = <span class="hljs-number">0</span>; j &lt; n; ++j) &#123;<br>            <span class="hljs-keyword">if</span> (A[i][j] != <span class="hljs-number">0</span>) &#123;<br>                r_all0[i] = <span class="hljs-literal">false</span>; <span class="hljs-comment">// 将行标记为非全零</span><br>                <span class="hljs-keyword">break</span>; <span class="hljs-comment">// 不需要检查剩余元素</span><br>            &#125;<br>        &#125;<br>    &#125;<br><br>    <span class="hljs-comment">// 检查矩阵 B 的每一列是否有非零元素</span><br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> j = <span class="hljs-number">0</span>; j &lt; p; ++j) &#123;<br>        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; n; ++i) &#123;<br>            <span class="hljs-keyword">if</span> (B[i][j] != <span class="hljs-number">0</span>) &#123;<br>                c_all0[j] = <span class="hljs-literal">false</span>; <span class="hljs-comment">// 将列标记为非全零</span><br>                <span class="hljs-keyword">break</span>; <span class="hljs-comment">// 不需要检查剩余元素</span><br>            &#125;<br>        &#125;<br>    &#125;<br><br>    <span class="hljs-comment">// 用零初始化结果矩阵</span><br>    std::vector&lt;std::vector&lt;<span class="hljs-type">int</span>&gt;&gt; <span class="hljs-built_in">ans</span>(m, std::<span class="hljs-built_in">vector</span>&lt;<span class="hljs-type">int</span>&gt;(p, <span class="hljs-number">0</span>));<br><br>    <span class="hljs-comment">// 执行矩阵乘法</span><br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; m; ++i) &#123;<br>        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> j = <span class="hljs-number">0</span>; j &lt; p; ++j) &#123;<br>            <span class="hljs-comment">// 如果整行或整列都是零，则跳过计算</span><br>            <span class="hljs-keyword">if</span> (r_all0[i] || c_all0[j]) &#123;<br>                <span class="hljs-keyword">continue</span>;<br>            &#125;<br>            <span class="hljs-type">int</span> sum_ = <span class="hljs-number">0</span>; <span class="hljs-comment">// 用于存储乘积和的变量</span><br>            <span class="hljs-comment">// 计算矩阵 A 的第 i 行与矩阵 B 的第 j 列的点积</span><br>            <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> k = <span class="hljs-number">0</span>; k &lt; n; ++k) &#123;<br>                sum_ += A[i][k] * B[k][j];<br>            &#125;<br>            ans[i][j] = sum_; <span class="hljs-comment">// 存储结果</span><br>        &#125;<br>    &#125;<br>    <span class="hljs-keyword">return</span> ans; <span class="hljs-comment">// 返回结果矩阵</span><br>&#125;<br></code></pre></td></tr></table></figure>
+<h3 id="lc343.-整数拆分割绳子">LC343. 整数拆分(割绳子)</h3>
+<p>见<a
+target="_blank" rel="noopener" href="https://leetcode.cn/problems/integer-break/">整数拆分</a>.</p>
+<h3 id="lc54.-螺旋矩阵">LC54. 螺旋矩阵</h3>
+<p>见<a
+target="_blank" rel="noopener" href="https://leetcode.cn/problems/spiral-matrix/description/?envType=study-plan-v2&amp;envId=top-100-liked">螺旋矩阵</a>.</p>
 <h3
 id="手撕代码将一个字符串转换成字符加出现次数的形式比如aaabb转换成a3b2要求不能用任何int转str的api腾讯云">手撕代码：将一个字符串转换成字符加出现次数的形式，比如aaabb转换成a3b2（要求不能用任何int转str的api）（腾讯云）</h3>
 <h3 id="手写线程池腾讯云">手写线程池（腾讯云）</h3>
@@ -2699,6 +2771,34 @@ id="美团用户点外卖场景-如何快速筛选距离比较近的商家不要
 <li>创建文档列表：lucene首先对原始文档数据进行编号（DocID），形成列表，就是一个文档列表</li>
 <li>创建倒排索引列表：然后对文档中数据进行分词，得到词条。对词条进行编号，以词条创建索引。然后记录下包含该词条的所有文档编号（及其它信息）。</li>
 </ol>
+<h3
+id="我有1t空间的url怎么考虑统计出现top10000的url">我有1T空间的url，怎么考虑统计出现top10000的url</h3>
+<p>处理1TB数据以找到出现次数最多的前10000个URL是一个大数据问题。这里有一个可能的解决方案，使用MapReduce编程模型：</p>
+<ol type="1">
+<li><strong>Map阶段</strong>：将数据分割成更小的块，每个块由一个Map任务处理。Map任务读取URL，然后为每个URL生成键值对，键是URL，值是1。</li>
+<li><strong>Shuffle阶段</strong>：系统将所有键值对按键（URL）进行排序和合并，以便所有相同的键（URL）都在一起。</li>
+<li><strong>Reduce阶段</strong>：每个Reduce任务处理一组具有相同键的键值对，累加值以计算每个URL的总出现次数。</li>
+<li><strong>最后处理</strong>：所有Reduce任务的输出被合并，然后可以使用一个排序算法来找到出现次数最多的前10000个URL。</li>
+</ol>
+<h4
+id="如果是分布式的场景即有多个机子上都有很多url现在怎么考虑">如果是分布式的场景，即有多个机子上都有很多url，现在怎么考虑</h4>
+<p>在分布式系统中处理大量URL的情况，你可以采用以下步骤：</p>
+<ol type="1">
+<li><strong>数据分片</strong>：首先，将1TB的数据均匀分配到多个机器上。</li>
+<li><strong>本地统计</strong>：每台机器上运行MapReduce任务，本地统计每个URL出现的次数。</li>
+<li><strong>全局合并</strong>：将所有机器上的本地统计结果合并，这通常涉及到一个中心节点或使用另一个MapReduce作业来完成。</li>
+<li><strong>Top K算法</strong>：在合并后的全局数据上运行Top
+K算法（如Min-Heap或MapReduce中的Secondary
+Sort）来找到出现次数最多的前10000个URL。</li>
+</ol>
+<h3
+id="有140g沙子现在有7g和2g的砝码各一个并有一个天平用最少次数把沙子分为50g和90g">有140g沙子，现在有7g和2g的砝码各一个，并有一个天平，用最少次数把沙子分为50g和90g</h3>
+<ol type="1">
+<li>用7 + 2 = 9g称两次得到18g</li>
+<li>用7g称一次加上之前的18g一共是25g</li>
+<li>用这25g沙子再称25g沙子得到50g</li>
+</ol>
+<p>一共4次。</p>
 <h2 id="其他">其他</h2>
 <h3 id="你都知道哪些消息队列">你都知道哪些消息队列</h3>
 <ul>
