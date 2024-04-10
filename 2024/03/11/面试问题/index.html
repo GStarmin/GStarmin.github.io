@@ -318,7 +318,7 @@
         
         
         
-          748 分钟
+          749 分钟
         
       </span>
     
@@ -1997,22 +1997,23 @@ Registers，通用寄存器)的数据宽度为64位，64位指令集就是运行
 <h2 id="设计模式">设计模式</h2>
 <h3 id="面向对象设计的六大原则">面向对象设计的六大原则</h3>
 <ol type="1">
-<li>单一职责（Single Responsibility
-Principle）:一个类应该只负责一个职责，术语叫：仅有一个引起其变化的原因。</li>
-<li>开闭原则（Open Close
-Principle）:一个类一旦开发完成，后续增加新的功能就不应该通过修改这个类来完成，而是通过继承，增加新的类。</li>
-<li>里氏替换原则（Liskov Substitution
-Principle）:一个软件系统中所有用到一个类的地方都替换成其子类，系统应该仍然可以正常工作。</li>
-<li>依赖倒置原则（Dependence Inversion
-Principle）:是指一种特定的解耦（传统的依赖关系建立在高层次上，而具体的策略设置则应用在低层次的模块上）形式，使得高层次的模块不依赖于低层次的模块的实现细节，依赖关系被颠倒（反转），从而使得低层次模块依赖于高层次模块的需求抽象。
+<li><strong>单一职责（Single Responsibility
+Principle）</strong>:一个类应该只负责一个职责，术语叫：仅有一个引起其变化的原因。</li>
+<li><strong>开闭原则（Open Close
+Principle）</strong>:一个类一旦开发完成，后续增加新的功能就不应该通过修改这个类来完成，而是通过继承，增加新的类。</li>
+<li><strong>里氏替换原则（Liskov Substitution
+Principle）</strong>:一个软件系统中所有用到一个类的地方都替换成其子类，系统应该仍然可以正常工作。</li>
+<li><strong>依赖倒置原则（Dependence Inversion
+Principle）</strong>:是指一种特定的解耦（传统的依赖关系建立在高层次上，而具体的策略设置则应用在低层次的模块上）形式，使得高层次的模块不依赖于低层次的模块的实现细节，依赖关系被颠倒（反转），从而使得低层次模块依赖于高层次模块的需求抽象。
 <ol type="1">
 <li>高层次的模块不应该依赖于低层次的模块，两者都应该依赖于抽象接口。</li>
 <li>抽象接口不应该依赖于具体实现。而具体实现则应该依赖于抽象接口。</li>
 </ol></li>
-<li>接口隔离原则(Interface Segregation Principle,
-ISP)：客户端不应该依赖它不需要的接口。</li>
-<li>迪米特法则(Law of Demeter, LoD), 最少知识原则(Principle of Least
-Knowledge)： 1. 每个对象应该对其他对象尽可能最少的知道 2.
+<li><strong>接口隔离原则(Interface Segregation Principle,
+ISP)</strong>：客户端不应该依赖它不需要的接口。</li>
+<li><strong>迪米特法则(Law of Demeter, LoD)</strong>,
+最少知识原则(Principle of Least Knowledge)： 1.
+每个对象应该对其他对象尽可能最少的知道 2.
 每个对象应该仅和其朋友通信；不和陌生人通信 3. 仅仅和直接朋友通信</li>
 </ol>
 <h3 id="单例模式实现的优点">单例模式实现的优点</h3>
@@ -2686,6 +2687,11 @@ id="epoll一定要比select快吗能举个例子吗">epoll一定要比select快�
 id="epoll最多能有多少个连接这个了解吗">epoll最多能有多少个连接这个了解吗？</h3>
 <p>8G内存，
 一个epoll服务端，15个客户端（通过增加虚拟IP，每个客户端5万个连接），能支持的并发连接数是接近70万。</p>
+<h3
+id="客户端与服务器端建立tcp连接当服务器端进程core-dump之后会发生什么">客户端与服务器端建立TCP连接，当服务器端进程core
+dump之后会发生什么</h3>
+<p>当服务器端进程发生core
+dump后，TCP连接通常会因为服务器进程的终止而关闭。客户端可能会收到一个错误，如<code>ECONNRESET</code>，表明连接被对方重置。此外，客户端的任何后续尝试发送或接收数据都会失败，因为TCP连接不再有效。</p>
 <h3 id="有没有避免死锁的机制">有没有避免死锁的机制</h3>
 <h3 id="介绍以下内存池怎么实现的">介绍以下内存池怎么实现的？</h3>
 <h3 id="介绍以下muduo库">介绍以下muduo库</h3>
