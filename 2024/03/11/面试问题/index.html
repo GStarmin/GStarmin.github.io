@@ -25,6 +25,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://gstarmin.github.io/img/%E9%9D%A2%E8%AF%95%E9%97%AE%E9%A2%98/14100820337928.jpg">
 <meta property="og:image" content="https://gstarmin.github.io/img/%E9%9D%A2%E8%AF%95%E9%97%AE%E9%A2%98/14100820334293.jpg">
+<meta property="og:image" content="https://gstarmin.github.io/img/%E9%9D%A2%E8%AF%95%E9%97%AE%E9%A2%98/webp.webp">
 <meta property="og:image" content="https://gstarmin.github.io/img/%E9%9D%A2%E8%AF%95%E9%97%AE%E9%A2%98/3.1.jpg">
 <meta property="og:image" content="https://gstarmin.github.io/img/%E9%9D%A2%E8%AF%95%E9%97%AE%E9%A2%98/3.2.jpg">
 <meta property="og:image" content="https://gstarmin.github.io/img/%E9%9D%A2%E8%AF%95%E9%97%AE%E9%A2%98/3.3.jpg">
@@ -307,7 +308,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          81k 字
+          91k 字
         
       </span>
     
@@ -318,7 +319,7 @@
         
         
         
-          814 分钟
+          906 分钟
         
       </span>
     
@@ -410,8 +411,8 @@ id="类中不同类型对象地址相差多少腾讯云">类中不同类型对�
 <li><strong>capacity()</strong>：返回向量当前分配的内存空间大小，即向量的容量。容量可以大于或等于实际存储的元素数量。</li>
 </ol>
 <p>如果需要手动缩减向量的容量，可以使用<code>shrink_to_fit()</code>方法。这个方法会释放多余的内存，使得向量的容量等于实际存储的元素数量。</p>
-<h3 id="cpp---可执件的过程追问链接阶段的详细过程">.cpp -&gt;
-可执⾏⽂件的过程，追问：链接阶段的详细过程</h3>
+<h3 id="cpp---可执行文件的过程追问链接阶段的详细过程">.cpp -&gt;
+可执行文件的过程，追问：链接阶段的详细过程</h3>
 <ol type="1">
 <li><strong>预处理阶段</strong>：
 <ul>
@@ -843,6 +844,19 @@ id="weak_ptr指向的对象可能不存在怎么处理这种情况">weak_ptr指�
 <p>可以将整形转换为指针，也可以把指针转为数组；可以在指针和引用里进行肆无忌惮的转换，平台一致性比较差。</p>
 <h4 id="const_cast">const_cast</h4>
 <p>常量指针转换为非常量指针，并且仍然指向原来的对象。常量引用转换为非常量引用，并且仍然指向原来的对象。去掉类型的const或volatile属性。</p>
+<h3 id="哪些场景会遇到悬空指针">哪些场景会遇到悬空指针？</h3>
+<ol type="1">
+<li>在函数中返回指向局部变量的指针。</li>
+</ol>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-function"><span class="hljs-type">int</span>* <span class="hljs-title">func</span><span class="hljs-params">()</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-type">int</span> a = <span class="hljs-number">10</span>;<br>    <span class="hljs-type">int</span>* p = &amp;a;	<span class="hljs-comment">// 指针指向局部变量，函数返回后</span><br>    <span class="hljs-keyword">return</span> p;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>要避免这种情况，可以使用动态内存分配。</p>
+<ol start="2" type="1">
+<li><p>在函数中定义局部容器变量，然后返回容器中元素的指针</p>
+<p><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-function"><span class="hljs-type">int</span>* <span class="hljs-title">func</span><span class="hljs-params">()</span></span><br><span class="hljs-function"></span>&#123;<br>    vetcor&lt;<span class="hljs-type">int</span>&gt; vec = &#123;<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">4</span>, <span class="hljs-number">5</span>, <span class="hljs-number">6</span>&#125;;<br>    <span class="hljs-keyword">return</span> &amp;vec[<span class="hljs-number">2</span>];		<span class="hljs-comment">// 函数返回后vec会被销毁，所以返回的指针会成为选空指针</span><br>&#125;<br></code></pre></td></tr></table></figure></p></li>
+</ol>
+<h3 id="c的union">C++的union</h3>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-keyword">union</span> <span class="hljs-title class_">U</span><br>&#123;<br>    <span class="hljs-type">int</span> x;<br>    <span class="hljs-type">float</span> y;<br>&#125;;<br><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span><br><span class="hljs-function"></span>&#123;<br>    U u;<br>    u.x = <span class="hljs-number">114</span>;<br>    cout &lt;&lt; u.x &lt;&lt; endl;<br>    u.y = <span class="hljs-number">5.14</span>;<br>    cout &lt;&lt; u.y &lt;&lt; endl;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>unoin的多个变量共用一块内存，如果是多个变量的话，union的大小就是站内存最大的那个。</p>
 <h2 id="linux">Linux</h2>
 <h2
 id="linux系统查看cpu占用的命令腾讯云">linux系统查看cpu占用的命令（腾讯云）</h2>
@@ -1037,7 +1051,8 @@ id="栈和堆大小是多少堆动态开辟的话能和内存一样大吗">栈�
 堆的大小理论上大概等于<strong>进程虚拟空间大小-内核虚拟内存</strong>大小。</p>
 <h3 id="多线程的线程栈分配在哪里">多线程的线程栈分配在哪里？</h3>
 <h3 id="什么是协程">什么是协程？</h3>
-<p>协程是另一种轻量级的执行单元。协程不是进程或线程，其执行过程更类似于子例程或不带返回值的函数调用。协程的切换开销比线程更小，适用于高并发场景。</p>
+<p>协程是另一种轻量级的执行单元。协程不是进程或线程，协程的调度完全由用户控制（也就是在用户态执行）。协程拥有自己的寄存器上下文和栈。协程调度切换时，将寄存器上下文和栈保存到线程的堆区，在切回来的时候，恢复先前保存的寄存器上下文和栈，直接操作栈则基本没有内核切换的开销，可以不加锁的访问全局变量，所以上下文的切换非常快。</p>
+<p>协程最大的优势就是协程极高的执行效率。因为子程序切换不是线程切换，而是由程序自身控制，因此，没有线程切换的开销，和线程切换相比，线程数量越多，协程的性能优势就越明显。不需要多线程的锁机制，因为只有一个线程，也不存在同时写变量冲突，在协程中控制共享资源不加锁，只需要判断状态就好了，所以执行效率比多线程高很多。此外，一个线程的内存在MB级别，而协程只需要KB级别。</p>
 <h3 id="磁盘空间使用情况可以">磁盘空间使用情况可以</h3>
 <p>通过df -h命令查看</p>
 <h3
@@ -1134,9 +1149,6 @@ reset的SocketException)。</p>
 duplicate。</p>
 <p>在关闭一个TCP连接后，马上又重新建立起一个相同的IP地址和端口之间的TCP连接，后一个连接被称为前一个连接的化身（incarnation)，那么有可能出现这种情况，前一个连接的迷途重复分组在前一个连接终止后出现，从而被误解成从属于新的化身。</p>
 <p>为了避免这个情况，TCP不允许处于TIME_WAIT状态的连接启动一个新的化身，因为TIME_WAIT状态持续2MSL，就可以保证当成功建立一个TCP连接的时候，来自连接先前化身的重复分组已经在网络中消逝。</p>
-<h3 id="time_wait状态过多要怎么解决">TIME_WAIT状态过多要怎么解决？</h3>
-<p>编辑内核文件/etc/sysctl.conf，加入以下内容：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs conf">net.ipv4.tcp_syncookies = 1 表示开启SYN Cookies。当出现SYN等待队列溢出时，启用cookies来处理，可防范少量SYN攻击，默认为0，表示关闭；<br>net.ipv4.tcp_tw_reuse = 1 表示开启重用。允许将TIME-WAIT sockets重新用于新的TCP连接，默认为0，表示关闭；<br>net.ipv4.tcp_tw_recycle = 1 表示开启TCP连接中TIME-WAIT sockets的快速回收，默认为0，表示关闭。<br>net.ipv4.tcp_fin_timeout 修改系默认的 TIMEOUT 时间<br></code></pre></td></tr></table></figure>
 <h3 id="tcp为什么会粘包腾讯云">TCP为什么会粘包（腾讯云）</h3>
 <p>由于Nagle算法的优化会将多个小数据合成大数据发送</p>
 <h4 id="粘包的包是在哪合成的">粘包的包是在哪合成的</h4>
@@ -1429,6 +1441,9 @@ IP 地址同时建立过多的连接。</li>
 <li>增加了密码学运算</li>
 <li>服务器必须拒绝客户端<code>SYN</code>报文中的其他只在<code>SYN</code>和<code>SYN+ACK</code>中协商的选项，原因是服务器没有地方可以保存这些选项，比如<code>Wscale</code>和<code>SACK</code>。</li>
 </ul>
+<h3 id="time_wait状态过多要怎么解决">TIME_WAIT状态过多要怎么解决？</h3>
+<p>编辑内核文件/etc/sysctl.conf，加入以下内容：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs conf">net.ipv4.tcp_syncookies = 1 表示开启SYN Cookies。当出现SYN等待队列溢出时，启用cookies来处理，可防范少量SYN攻击，默认为0，表示关闭；<br>net.ipv4.tcp_tw_reuse = 1 表示开启重用。允许将TIME-WAIT sockets重新用于新的TCP连接，默认为0，表示关闭；<br>net.ipv4.tcp_tw_recycle = 1 表示开启TCP连接中TIME-WAIT sockets的快速回收，默认为0，表示关闭。<br>net.ipv4.tcp_fin_timeout 修改系默认的 TIMEOUT 时间<br></code></pre></td></tr></table></figure>
 <h3 id="udp如何变得安全">udp如何变得安全</h3>
 <ol type="1">
 <li><strong>实现多路径传输</strong>：通过利用多个网络路径同时进行文件传输，分散数据流量，避免单一路径的拥堵问题，提高UDP协议的传输速度和稳定性。</li>
@@ -1482,6 +1497,10 @@ TCP keepalive 机制 （TCP 保活机制）。</p>
 <li>如果对端主机崩溃，或对端由于其他原因导致报文不可达。当 TCP
 保活的探测报文发送给对端后，石沉大海，没有响应，连续几次，达到保活探测次数后，TCP
 会报告该 TCP 连接已经死亡。</li>
+</ul>
+<h3 id="dns缓存存在哪些问题">DNS缓存存在哪些问题？</h3>
+<ul>
+<li>缓存刷新不受控：当企业的域名发生变更时，并没有办法刷新全球各地的递归服务器缓存以及客户端上的DNS缓存，因此在每个缓存TTL值超时之前，客户发起请求仍然会按照缓存记录的原有映射关系发起请求，这就可能会出现站点不可达或者访问到错误的网站。只有等递归服务器和客户端上的DNS缓存失效后，才能重新发起请求，得到最新的映射关系。</li>
 </ul>
 <h2 id="数据库">数据库</h2>
 <h3
@@ -1844,6 +1863,22 @@ src="/img/%E9%9D%A2%E8%AF%95%E9%97%AE%E9%A2%98/1090617-20211123091527322-1401355
 alt="img" />
 <figcaption aria-hidden="true">img</figcaption>
 </figure>
+<p>见<a
+target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/article/2296117">细说MySQL锁机制</a>.</p>
+<h4 id="加锁模式">加锁模式</h4>
+<ul>
+<li><p><strong>记录锁</strong>：用于锁一行，分为共享和排他。</p></li>
+<li><p><strong>意向锁</strong>：意向锁属于表级锁，其设计目的主要是为了在一个事务中揭示下一行将要被请求锁的类型。分为意向共享锁和意向排他锁。<strong>意向锁之间是相互兼容的，但是意向锁和普通锁之间是可以互斥的。</strong></p>
+<ul>
+<li>作用：如果另一个任务试图在该<strong>表级别</strong>上应用共享或排它锁，则受到由第一个任务控制的表级别意向锁的阻塞。第二个任务在<strong>锁定该表</strong>前不必检查各个页或行锁，而只需检查表上的意向锁。</li>
+</ul></li>
+<li><p><strong>间隙锁</strong>：<strong>间隙锁是一个在两个索引记录之间的间隙上的锁。</strong>不锁记录本身</p></li>
+<li><p><strong>临键锁</strong>：记录锁和间隙锁的结合，不仅锁了区间，也锁了记录本身，区间是左开右闭。</p></li>
+<li><p><strong>插入意向锁</strong>：间隙锁形式的意向锁，是一个<strong>间隙锁</strong>，<strong>行锁</strong>。当执行插入操作时，总会检查当前插入操作的下一条记录（已存在的主索引节点）上是否存在锁对象，判断是否锁住了
+gap，如果锁住了，则判定和插入意向锁冲突，当前插入操作就需要等待，也就是配合上面的间隙锁或者临键锁一起防止了幻读操作。</p></li>
+<li><p><strong>自增锁</strong>：用于自增主键的锁，是一个表锁。</p></li>
+</ul>
+<h4 id="锁粒度">锁粒度</h4>
 <ul>
 <li><strong>全局锁</strong>：通过flush tables with read lock
 语句会将整个数据库就处于只读状态了，这时其他线程执行以下操作，增删改或者表结构修改都会阻塞。全局锁主要应用于做<strong>全库逻辑备份</strong>，这样在备份数据库期间，不会因为数据或表结构的更新，而出现备份文件的数据与预期的不一样。</li>
@@ -1938,6 +1973,16 @@ truncate 和 drop 只删除了行数据。</p>
 和 drop 不能添加 where 查询条件。</p>
 <p>重置自增列方面：在 InnoDB 引擎中，truncate 可以重置自增列，而 delete
 不能重置自增列。</p>
+<h3
+id="数据库插入大量数据怎么优化插入速度">数据库插入大量数据怎么优化插入速度？</h3>
+<ul>
+<li>禁用索引：在插入数据前暂时禁用索引，数据插入完毕后再启用索引。可以通过<code>ALTER TABLE tb_name DISABLE KEYS;</code>和<code>ALTER TABLE tb_name ENABLE KEYS;</code>来实现。</li>
+<li>禁用唯一性检查：插入数据时，MySQL
+会对插入的数据进行唯一性检查。这种唯一性检验会降低插入数据的速度。为了降低这种情况对查询速度的影响，可以在插入数据前禁用唯一性检查，等到插入数据完毕后在开启。语句为<code>SET UNIQUE_CHECKS=0;</code>和<code>SET UNIQUE_CHECKS=1;</code></li>
+<li>禁用外键检查</li>
+<li>禁止自动提交：<code>SET AUTOCOMMIT=0;</code>插入之后再设置<code>SET AUTOCOMMIT=1;</code></li>
+<li>使用批量插入:<code>INSERT INTO items(name,city,price,number,picture) VALUES ('耐克运动鞋','广州',500,1000,'001.jpg'),('耐克运动鞋2','广州2',500,1000,'002.jpg');</code>，这样比一句一句执行insert少了与数据库之间的连接等操作</li>
+</ul>
 <h2 id="操作系统">操作系统</h2>
 <h3
 id="用户态和内核态的互换条件腾讯云">用户态和内核态的互换、条件（腾讯云）</h3>
@@ -2251,6 +2296,82 @@ alt="img" />
 <li>netlink</li>
 <li>procfs(/proc)</li>
 </ul>
+<h3 id="页面置换算法">页面置换算法</h3>
+<ol type="1">
+<li>OPT：标杆，实际上不能实现</li>
+<li>FIFO：先进先出，效果最差，有颠簸</li>
+<li>LRU：最近最久未使用，根据⻚⾯未被访问时⻓⽤升序列表将⻚⾯排列，每次将最久未被使⽤⻚⾯置换出去。</li>
+<li>LFU：最少频次使用，每次淘汰使用频次最少的页面</li>
+<li>Clock：时钟算法，为每个页面设置一个访问位，再将内存中的页面都通过链接指针链接成一个循环队列。
+<ol type="1">
+<li>当需要淘汰一个页面时，只需检查页的访问位：如果是0，选择此页换出；如果是1，将它置0，暂不换出，继续检查下一个页面</li>
+</ol></li>
+<li>改进的clock算法：除了设置访问位，还考虑到页面有没有被修改，同时设置(访问位，
+标志位)。然后找到第一个(访问位， 标志位)为(0, 0)的位置。
+<ol type="1">
+<li>第一轮：从当前位置开始扫描到第一个（0,0）的帧用于替换。本轮扫描不修改任何标志位</li>
+<li>第二轮:若第一轮扫描失败，则重新扫描，查找第一个（0,1）的帧用于替换。本轮将所有扫描过的帧访问位设为0</li>
+<li>第三轮:若第二轮扫描失败，则重新扫描，查找第一个（0,0）的帧用于替换。本轮扫描不修改任何标志位</li>
+<li>第四轮:若第三轮扫描失败，则重新扫描，查找第一个(0,1）的帧用于替换</li>
+</ol></li>
+</ol>
+<h3 id="lru-k算法和2q算法">LRU-K算法和2Q算法</h3>
+<h4 id="lru-k算法">LRU-K算法</h4>
+<p>LRU-K中的K代表最近使用的次数，因此LRU可以认为是LRU-1。LRU-K的主要目的是为了解决LRU算法“缓存污染”的问题，其核心思想是将“最近使用过1次”的判断标准扩展为“最近使用过K次”。</p>
+<p>相比LRU，LRU-K需要多维护一个队列，用于记录所有缓存数据被访问的历史。只有当数据的访问次数达到K次的时候，才将数据放入缓存。当需要淘汰数据时，LRU-K会淘汰第K次访问时间距当前时间最大的数据。详细实现如下</p>
+<figure>
+<img src="/img/%E9%9D%A2%E8%AF%95%E9%97%AE%E9%A2%98/webp.webp" srcset="/img/loading.gif" lazyload
+alt="img" />
+<figcaption aria-hidden="true">img</figcaption>
+</figure>
+<p>(1). 数据第一次被访问，加入到访问历史列表；</p>
+<p>(2).
+如果数据在访问历史列表里后没有达到K次访问，则按照一定规则（FIFO，LRU）淘汰；</p>
+<p>(3).
+当访问历史队列中的数据访问次数达到K次后，将数据索引从历史队列删除，将数据移到缓存队列中，并缓存此数据，缓存队列重新按照时间排序；</p>
+<p>(4). 缓存数据队列中被再次访问后，重新排序；</p>
+<p>(5).
+需要淘汰数据时，淘汰缓存队列中排在末尾的数据，即：淘汰“倒数第K次访问离现在最久”的数据。</p>
+<p>LRU-K具有LRU的优点，同时能够避免LRU的缺点，实际应用中LRU-2是综合各种因素后最优的选择，LRU-3或者更大的K值命中率会高，但适应性差，需要大量的数据访问才能将历史访问记录清除掉。</p>
+<h4 id="q算法">2Q算法</h4>
+<p>该算法类似于LRU-2，不同点在于2Q将LRU-2算法中的访问历史队列（注意这不是缓存数据的）改为一个FIFO缓存队列，即：2Q算法有两个缓存队列，一个是FIFO队列，一个是LRU队列。</p>
+<p>当数据第一次访问时，2Q算法将数据缓存在FIFO队列里面，当数据第二次被访问时，则将数据从FIFO队列移到LRU队列里面，两个队列各自按照自己的方法淘汰数据。详细实现如下：</p>
+<figure>
+<img
+src="/img/%E9%9D%A2%E8%AF%95%E9%97%AE%E9%A2%98/webp-17139454032892.webp" srcset="/img/loading.gif" lazyload
+alt="img" />
+<figcaption aria-hidden="true">img</figcaption>
+</figure>
+<p>(1). 新访问的数据插入到FIFO队列；</p>
+<p>(2).
+如果数据在FIFO队列中一直没有被再次访问，则最终按照FIFO规则淘汰；</p>
+<p>(3). 如果数据在FIFO队列中被再次访问，则将数据移到LRU队列头部；</p>
+<p>(4). 如果数据在LRU队列再次被访问，则将数据移到LRU队列头部；</p>
+<p>(5). LRU队列淘汰末尾的数据。</p>
+<h3 id="虚拟内存">虚拟内存</h3>
+<p>虚拟内存是一种扩展了物理内存的概念，它允许计算机将硬盘上的一部分空间作为虚拟内存，用于存储暂时不被使用的程序或数据。当程序需要更多内存空间时，虚拟内存会将不常用的数据暂时保存到硬盘上，从而释放出内存空间供其他程序使用。</p>
+<p>虚拟内存的工作原理包括以下几个步骤：</p>
+<ol type="1">
+<li><strong>地址映射</strong>:
+操作系统将每个程序的内存地址映射到物理内存或虚拟内存中的某个位置。程序访问内存时，操作系统会根据映射关系将程序指令或数据加载到内存中。</li>
+<li><strong>页面置换</strong>:
+当物理内存不足以容纳所有程序的数据时，操作系统会将不常用的页面（内存中的一段数据）转移到硬盘上的虚拟内存中，从而为其他程序释放出空间。这个过程称为页面置换，常用的置换算法包括最近最少使用（LRU）和先进先出（FIFO）等。</li>
+<li><strong>页面调度</strong>:
+当程序需要访问虚拟内存中的数据时，操作系统会将所需的页面从硬盘上调入内存，并更新地址映射表，以便程序能够正确地访问数据。</li>
+</ol>
+<p>虚拟内存的优点在于它可以扩展物理内存的容量，使计算机能够同时运行更多的程序，提高了系统的整体性能和稳定性。然而，虚拟内存也会带来一定的性能开销，因为数据需要在内存和硬盘之间频繁地传输。</p>
+<h3
+id="内核里面有进程和线程的区分吗">内核里面有进程和线程的区分吗？</h3>
+<p><strong>没有</strong>，在Linux
+里面，无论是进程，还是线程，到了内核里面，我们统一都叫任务（Task），由一个统一的结构
+task_struct 进行管理，这个task_struct
+数据结构非常复杂，囊括了进程管理生命周期中的各种信息。</p>
+<figure>
+<img
+src="/img/%E9%9D%A2%E8%AF%95%E9%97%AE%E9%A2%98/v2-f85eb7314f9227c8c32ca1bd64458607_720w.webp" srcset="/img/loading.gif" lazyload
+alt="img" />
+<figcaption aria-hidden="true">img</figcaption>
+</figure>
 <h2 id="设计模式">设计模式</h2>
 <h3 id="面向对象设计的六大原则">面向对象设计的六大原则</h3>
 <ol type="1">
@@ -2273,6 +2394,73 @@ ISP)</strong>：客户端不应该依赖它不需要的接口。</li>
 每个对象应该对其他对象尽可能最少的知道 2.
 每个对象应该仅和其朋友通信；不和陌生人通信 3. 仅仅和直接朋友通信</li>
 </ol>
+<h3 id="常见设计模式和使用场景">常见设计模式和使用场景、</h3>
+<p>设计模式分为三大类：创建型模式、结构型模式、行为型模式。</p>
+<h4 id="单例模式">单例模式</h4>
+<p>一般使用于整个程序只需要一个类的实例，可以节省资源，并提供一个全局访问函数来访问该实例。</p>
+<p><strong>应用场景</strong>：</p>
+<ul>
+<li>缓存</li>
+<li>线程池</li>
+<li>⽇志记录器</li>
+</ul>
+<h4 id="工厂模式">工厂模式</h4>
+<p>细分为简单工厂、工厂方法和抽象工厂。在创建对象时，不会对客户端暴露对象的创建逻辑，而是通过使⽤共同的接口来创建对象。其⽤来封装和管理类的创建，本质是对获取对象过程的抽象。</p>
+<p><strong>应用场景</strong>：</p>
+<ul>
+<li>当⼀个类不知道它所需要的类的时候。</li>
+<li>当⼀个类希望通过其子类来指定创建对象的时候。</li>
+<li>当类将创建对象的职责委托给多个帮助⼦类中的某⼀个，并且希望将哪⼀个帮助⼦类是代理者的信息局部化时。</li>
+</ul>
+<p><strong>场景举例</strong>：</p>
+<ul>
+<li>在数据库操作中，通过⼯⼚模式可以根据不同的数据库类型（MySQL、Oracle等）创建对应的数据库连接对象</li>
+<li>通过⼯⼚模式可以根据配置⽂件或其他条件选择不同类型的⽇志记录器，如⽂件⽇志记录器、数据库⽇志记录器等。</li>
+<li>在图形⽤户界⾯（GUI）库中，可以使⽤⼯⼚模式创建不同⻛格或主题的界⾯元素，如按钮、⽂本框等。</li>
+<li>在加密算法库中，可以使⽤⼯⼚模式根据需要选择不同的加密算法，例如对称加密、⾮对称加密等。</li>
+<li>在⽂件解析过程中，可以使⽤⼯⼚模式根据⽂件类型选择不同的解析器，如XML解析器、JSON解析器等。</li>
+<li>在⽹络通信库中，可以使⽤⼯⼚模式创建不同类型的⽹络连接对象，如TCP连接、UDP连接等。</li>
+</ul>
+<h4 id="观察者模式">观察者模式</h4>
+<p>属于行为型模式的⼀种，它定义了⼀种⼀对多的依赖关系，让多个观察者对象同时监听某⼀个主题对象。这个主题对象在状态变化时，会通知所有的观察者对象，使他们能够自动更新自己。</p>
+<p><strong>使用场景</strong>：</p>
+<ul>
+<li><strong>事件处理</strong>：当⼀个对象的状态发⽣改变时，观察者模式可以⽤于通知和处理与该对象相关的事件。这在图形⽤户界⾯（GUI）开发中是很常⻅的，例如按钮点击事件、⿏标移动事件等。</li>
+<li><strong>发布订阅</strong>：观察者模式可以⽤于实现发布-订阅模型，其中⼀个主题（发布者）负责发送通知，⽽多个观察者（订阅者）监听并响应这些通知。这种模型在消息队列系统、事件总线等场景中经常使⽤。</li>
+<li>MVC架构：观察者模式常被⽤于实现MVC架构中的模型和视图之间的通信。当模型的状态发⽣改变时，所有相关的视图都会得到通知并更新显示。</li>
+<li><strong>异步编程</strong>：观察者模式可以⽤于处理异步任务的完成事件。任务完成时，通知所有相关的观察者进⾏后续处理。</li>
+</ul>
+<h4 id="代理模式">代理模式</h4>
+<p>代理模式（Proxy
+Pattern）是⼀种结构型设计模式，其主要⽬的是在访问某个对象时引⼊⼀种代理对象，通过代理对象控制对原始对象的访问。代理模式可以⽤于实现懒加载、控制访问、监控对象等场景。</p>
+<figure>
+<img
+src="/img/%E9%9D%A2%E8%AF%95%E9%97%AE%E9%A2%98/image-20240424211906167.png" srcset="/img/loading.gif" lazyload
+alt="image-20240424211906167" />
+<figcaption aria-hidden="true">image-20240424211906167</figcaption>
+</figure>
+<p><strong>应用场景</strong>：</p>
+<ol type="1">
+<li>远程代理：⼀个对象在不同的地址空间提供局部代表。这样可以隐藏⼀个对象存在于不同地址空间的事实。</li>
+<li>虚拟代理：根据需要创建开销很⼤的对象。通过它来存放实例化需要很⻓时间的真实对象，这样就可以达到性能的最优化。⽐如说你打开⼀个很⼤的HTML⽹⻚时，⾥⾯可能有很多的⽂字和图⽚，但你还是可以很快打开它，此时你所看到的是所有的⽂字，但图⽚却是⼀张⼀张地下载后才能看到。那些未打开的图片框，就是通过虚拟代理来替代了真实的图片，此时代理存储了真实图片的路径和尺⼨。</li>
+<li>安全代理：⽤来控制真实对象访问时的权限。⼀般⽤于对象应该有不同的访问权限的时候。</li>
+<li>智能指引：指当调⽤真实的对象时，代理处理另外⼀些事。如计算真实对象的引⽤次数，这样当该对象没有引⽤时，可以⾃动释放它；或当第⼀次引⽤⼀个持久对象时，将它装⼊内存；或在访问⼀个实际对象前，检查是否已经锁定它，以确保其他对象不能改变它。它们都是通过代理在访问⼀个对象时附加⼀些内务处理。</li>
+</ol>
+<h4 id="策略模式">策略模式</h4>
+<p>策略模式（Strategy
+Pattern）是⼀种⾏为设计模式，它定义了⼀系列算法，，把它们单独封装起来，并且使它们可以互相替换，使得算法可以独⽴于使⽤它的客户端⽽变化，也是说这些算法所完成的功能类型是⼀样的，对外接⼝也是⼀样的，只是不同的策略为引起环境⻆⾊表现出不同的⾏为。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">// 策略接⼝</span><br><span class="hljs-keyword">public</span> interface PricingStrategy &#123;<br><span class="hljs-function"><span class="hljs-type">double</span> <span class="hljs-title">calculatePrice</span><span class="hljs-params">(<span class="hljs-type">double</span> price)</span></span>;<br>&#125;<br><span class="hljs-comment">// 具体策略类：⽆折扣</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">NoDiscountStrategy</span> implements PricingStrategy &#123;<br>@<span class="hljs-function">Override</span><br><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-type">double</span> <span class="hljs-title">calculatePrice</span><span class="hljs-params">(<span class="hljs-type">double</span> price)</span> </span>&#123;<br>		<span class="hljs-keyword">return</span> price;<br>	&#125;<br>&#125;<br><span class="hljs-comment">// 具体策略类：打九折</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">DiscountStrategy</span> implements PricingStrategy &#123;<br>    @<span class="hljs-function">Override</span><br><span class="hljs-function">    <span class="hljs-keyword">public</span> <span class="hljs-type">double</span> <span class="hljs-title">calculatePrice</span><span class="hljs-params">(<span class="hljs-type">double</span> price)</span> </span>&#123;<br>    	<span class="hljs-keyword">return</span> price * <span class="hljs-number">0.9</span>;<br>    &#125;<br>&#125;<br><span class="hljs-comment">// 具体策略类：满减</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">CashbackStrategy</span> implements PricingStrategy &#123;<br>    @<span class="hljs-function">Override</span><br><span class="hljs-function">    <span class="hljs-keyword">public</span> <span class="hljs-type">double</span> <span class="hljs-title">calculatePrice</span><span class="hljs-params">(<span class="hljs-type">double</span> price)</span> </span>&#123;<br>        <span class="hljs-keyword">if</span> (price &gt;= <span class="hljs-number">200</span>) &#123;<br>            <span class="hljs-keyword">return</span> price - <span class="hljs-number">50</span>;<br>        &#125; <span class="hljs-keyword">else</span> &#123;<br>            <span class="hljs-keyword">return</span> price;<br>        &#125;<br>    &#125;<br>&#125;<br><span class="hljs-comment">// 环境类</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">ShoppingCart</span> &#123;<br>    <span class="hljs-keyword">private</span> PricingStrategy pricingStrategy;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-type">void</span> <span class="hljs-title">setPricingStrategy</span><span class="hljs-params">(PricingStrategy pricingStrategy)</span> </span>&#123;<br>        <span class="hljs-keyword">this</span>.pricingStrategy = pricingStrategy;<br>    &#125;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-type">double</span> <span class="hljs-title">checkout</span><span class="hljs-params">(<span class="hljs-type">double</span> totalPrice)</span> </span>&#123;<br>        <span class="hljs-keyword">return</span> pricingStrategy.<span class="hljs-built_in">calculatePrice</span>(totalPrice);<br>    &#125;<br>&#125;<br><br><span class="hljs-comment">// 客户端代码</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Client</span> &#123;<br><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-type">static</span> <span class="hljs-type">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> </span>&#123;<br>        ShoppingCart cart = <span class="hljs-keyword">new</span> <span class="hljs-built_in">ShoppingCart</span>();<br>        <span class="hljs-comment">// 选择⽆折扣策略</span><br>        cart.<span class="hljs-built_in">setPricingStrategy</span>(<span class="hljs-keyword">new</span> <span class="hljs-built_in">NoDiscountStrategy</span>());<br>        <span class="hljs-type">double</span> price1 = cart.<span class="hljs-built_in">checkout</span>(<span class="hljs-number">100</span>);<br>        System.out.<span class="hljs-built_in">println</span>(<span class="hljs-string">&quot;Total Price: &quot;</span> + price1); <span class="hljs-comment">// 输出：Total Price: 100.0</span><br>        <span class="hljs-comment">// 选择打九折策略</span><br>        cart.<span class="hljs-built_in">setPricingStrategy</span>(<span class="hljs-keyword">new</span> <span class="hljs-built_in">DiscountStrategy</span>());<br>        <span class="hljs-type">double</span> price2 = cart.<span class="hljs-built_in">checkout</span>(<span class="hljs-number">100</span>);<br>        System.out.<span class="hljs-built_in">println</span>(<span class="hljs-string">&quot;Total Price: &quot;</span> + price2); <span class="hljs-comment">// 输出：Total Price: 90.0</span><br>        <span class="hljs-comment">// 选择满减策略</span><br>        cart.<span class="hljs-built_in">setPricingStrategy</span>(<span class="hljs-keyword">new</span> <span class="hljs-built_in">CashbackStrategy</span>());<br>        <span class="hljs-type">double</span> price3 = cart.<span class="hljs-built_in">checkout</span>(<span class="hljs-number">200</span>);<br>        System.out.<span class="hljs-built_in">println</span>(<span class="hljs-string">&quot;Total Price: &quot;</span> + price3); <span class="hljs-comment">// 输出：Total Price: 150.0</span><br>	&#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<h4 id="装饰模式">装饰模式</h4>
+<p>装饰模式（Decorator
+Pattern）是⼀种结构型设计模式，它允许在不改变原始类接⼝的情况下，动态地添加功能或责任。<strong>装饰模式通过创建⼀个装饰类，包裹原始类的实例，并在保持原始类接⼝不变的情况下，提供额外的功能。</strong>就增加功能来说，装饰模式⽐⽣成⼦类更为灵活。</p>
+<figure>
+<img
+src="/img/%E9%9D%A2%E8%AF%95%E9%97%AE%E9%A2%98/image-20240424212726692.png" srcset="/img/loading.gif" lazyload
+alt="image-20240424212726692" />
+<figcaption aria-hidden="true">image-20240424212726692</figcaption>
+</figure>
+<h4 id="适配器模式">适配器模式</h4>
+<p>将⼀个类的接⼝转换成⽤户希望得到的另⼀个接⼝。它使原本不相容的接⼝得以协同⼯作——速记关键字:转换接⼝2。</p>
 <h3 id="单例模式实现的优点">单例模式实现的优点</h3>
 <ol type="1">
 <li>因为单例模式在内存中就只有一个实例，其主要优点可以<strong>减少内存的开支</strong>。尤其是一个对象需要频繁地创建销毁时，毕竟创建或销毁时性能又无法优化,
@@ -3029,7 +3217,7 @@ id="快乐数每一位平方求和循环操作是否可以变为1">快乐数，�
 <p>见<a
 target="_blank" rel="noopener" href="https://leetcode.cn/problems/happy-number/description/">LC.202快乐数</a>.</p>
 <h3 id="链表快排">链表快排</h3>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-function">ListNode* <span class="hljs-title">solve</span><span class="hljs-params">(ListNode* head, ListNode* pend)</span></span>&#123;<br>    <span class="hljs-comment">//链表是空或者只有一个元素就返回</span><br>    <span class="hljs-keyword">if</span>(!head||head-&gt;next==pend) <span class="hljs-keyword">return</span> head;<br>    <span class="hljs-type">int</span> val = head-&gt;val; <span class="hljs-comment">//哨兵值</span><br>    ListNode* p = head; <span class="hljs-comment">//记录“哨兵”的位置</span><br>    ListNode* q = p-&gt;next; <span class="hljs-comment">//用于遍历待排序链表的指针</span><br>    <span class="hljs-keyword">while</span>(q!=pend)&#123;<br>        <span class="hljs-comment">//发现比哨兵结点小的值就交换。从而保证p指针所指的结点比哨兵值小</span><br>        <span class="hljs-keyword">if</span>(q-&gt;val &lt; val)&#123;<br>            p = p-&gt;next;<br>            <span class="hljs-built_in">swap</span>(p-&gt;val, q-&gt;val);<br>        &#125;<br>        q = q-&gt;next;<br>    &#125;<br>    <span class="hljs-comment">//交换哨兵和p指针指向值，至此哨兵的位置就固定了</span><br>    <span class="hljs-built_in">swap</span>(head-&gt;val, p-&gt;val);<br>    <span class="hljs-keyword">return</span> p;<br>&#125;<br></code></pre></td></tr></table></figure>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-function">ListNode* <span class="hljs-title">solve</span><span class="hljs-params">(ListNode* head, ListNode* pend)</span></span>&#123;<br>    <span class="hljs-comment">// 链表是空或者只有一个元素就返回</span><br>    <span class="hljs-keyword">if</span>(!head||head-&gt;next==pend) <span class="hljs-keyword">return</span> head;<br>    <span class="hljs-type">int</span> val = head-&gt;val; <span class="hljs-comment">//哨兵值</span><br>    ListNode* p = head; <span class="hljs-comment">//记录“哨兵”的位置</span><br>    ListNode* q = p-&gt;next; <span class="hljs-comment">//用于遍历待排序链表的指针</span><br>    <span class="hljs-keyword">while</span>(q!=pend)&#123;<br>        <span class="hljs-comment">//发现比哨兵结点小的值就交换。从而保证p指针所指的结点比哨兵值小</span><br>        <span class="hljs-keyword">if</span>(q-&gt;val &lt; val)&#123;<br>            p = p-&gt;next;<br>            <span class="hljs-built_in">swap</span>(p-&gt;val, q-&gt;val);<br>        &#125;<br>        q = q-&gt;next;<br>    &#125;<br>    <span class="hljs-comment">//交换哨兵和p指针指向值，至此哨兵的位置就固定了</span><br>    <span class="hljs-built_in">swap</span>(head-&gt;val, p-&gt;val);<br>    <span class="hljs-keyword">return</span> p;<br>&#125;<br></code></pre></td></tr></table></figure>
 <h3 id="判断一个点是否在三角形内">判断一个点是否在三角形内</h3>
 <p>使用叉乘判断点是否在三角形内:</p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-meta">#<span class="hljs-keyword">include</span><span class="hljs-string">&lt;bits/stdc++.h&gt;</span></span><br><br><span class="hljs-keyword">struct</span> <span class="hljs-title class_">Point</span><br>&#123;<br>	<span class="hljs-type">double</span> x;<br>	<span class="hljs-type">double</span> y;<br>&#125;;<br><br><span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">IsInsideTriangle</span><span class="hljs-params">(Point p, Point A, Point B, Point C)</span></span><br><span class="hljs-function"></span>&#123;<br>	<span class="hljs-type">double</span> AB = (B.x - A.x) * (p.y - A.y) - (B.y - A.y) * (p.x - A.x);<br>	<span class="hljs-type">double</span> BC = (C.x - B.x) * (p.y - B.y) - (C.y - B.y) * (p.x - B.x);<br>	<span class="hljs-type">double</span> CA = (A.x - C.x) * (p.y - C.y) - (A.y - C.y) * (p.x - C.x);<br><br>	<span class="hljs-keyword">if</span> (((AB &gt; <span class="hljs-number">0</span> &amp;&amp; BC &gt; <span class="hljs-number">0</span> &amp;&amp; CA &gt; <span class="hljs-number">0</span>) || (AB &lt; <span class="hljs-number">0</span> &amp;&amp; BC &lt; <span class="hljs-number">0</span> &amp;&amp; CA &lt; <span class="hljs-number">0</span>)))<br>		<span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;<br>	<span class="hljs-keyword">else</span><br>		<span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;<br>&#125;<br><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span><br><span class="hljs-function"></span>&#123;<br>	Point p = &#123; <span class="hljs-number">0</span>, <span class="hljs-number">0</span> &#125;;<br>	Point A = &#123; <span class="hljs-number">0</span>, <span class="hljs-number">1</span> &#125;;<br>	Point B = &#123; <span class="hljs-number">1</span>, <span class="hljs-number">0</span> &#125;;<br>	Point C = &#123; <span class="hljs-number">0</span>, <span class="hljs-number">-1</span> &#125;;<br><br>	<span class="hljs-keyword">if</span> (<span class="hljs-built_in">IsInsideTriangle</span>(p, A, B, C))<br>	&#123;<br>		cout &lt;&lt; <span class="hljs-string">&quot;Point is inside the triangle.&quot;</span>;<br>	&#125;<br>	<span class="hljs-keyword">else</span><br>	&#123;<br>		cout &lt;&lt; <span class="hljs-string">&quot;Point is outside the triangle.&quot;</span>;<br>	&#125;<br><br>	<span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br><br></code></pre></td></tr></table></figure>
@@ -3179,6 +3367,110 @@ id="有140g沙子现在有7g和2g的砝码各一个并有一个天平用最少�
 <ol type="1">
 <li>从图中的任意一个顶点开始进行深度优先搜索。</li>
 <li>在搜索过程中，如果遇到一个已经被访问过的顶点，而且这个顶点不是当前顶点的父节点（在搜索树中），则说明存在环。</li>
+</ol>
+<h3 id="git-pull和git-pull---rebasegit-fetch的区别">git pull和git pull
+--rebase，git fetch的区别</h3>
+<h4 id="git-fetch和git-pull的区别">git fetch和git pull的区别</h4>
+<p>在执行 <code>git pull</code> 后，代码会自动 merge 到本地的分支中，而
+<code>git fetch</code> 会忽略掉这个 merge 操作，因此简单来说：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">git pull = git fetch + git merge<br></code></pre></td></tr></table></figure>
+<h4 id="git-pull和git-pull---rebase的区别">git pull和git pull
+--rebase的区别</h4>
+<p><code>git pull</code> 命令默认包含了一个 <code>--merge</code>
+参数，因此二者的区别其实就是 <code>merge</code> 和 <code>rebase</code>
+的区别。</p>
+<p><strong>merge</strong>:</p>
+<p><code>merge</code> 会创建一个新的
+commit，如果合并时遇到了冲突，需要解决冲突后重新 commit。</p>
+<figure>
+<img
+src="/img/%E9%9D%A2%E8%AF%95%E9%97%AE%E9%A2%98/175befc2f02f4d1f909ad5fd541cebfftplv-k3u1fbpfcp-zoom-in-crop-mark1512000.awebp" srcset="/img/loading.gif" lazyload
+alt="在这里插入图片描述" />
+<figcaption aria-hidden="true">在这里插入图片描述</figcaption>
+</figure>
+<p><strong>rebase</strong>：</p>
+<p><code>rebase</code> 会将两个分支进行合并，同时合并之前的 commit
+历史。如果出现冲突，解决冲突后执行以下命令即可：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">git add<br>git rebase --<span class="hljs-built_in">continue</span><br></code></pre></td></tr></table></figure>
+<figure>
+<img
+src="/img/%E9%9D%A2%E8%AF%95%E9%97%AE%E9%A2%98/ec7db69f93ee440a8a5b9b62dd68668ctplv-k3u1fbpfcp-zoom-in-crop-mark1512000.awebp" srcset="/img/loading.gif" lazyload
+alt="在这里插入图片描述" />
+<figcaption aria-hidden="true">在这里插入图片描述</figcaption>
+</figure>
+<h3
+id="现在我们来实现一个多线程环境下的任务执行器你觉得应该如何设计呢">现在我们来实现一个多线程环境下的任务执行器，你觉得应该如何设计呢？</h3>
+<p>可以首先设计一个任务队列，用来存放待执行的任务。然后创建多个线程，这些线程会从任务队列中取出任务并执行。任务执行完成后，将结果存放到一个共享的列表中。需要注意的是，在多线程环境下，要确保线程安全，可以使用同步机制或锁来保证共享资源的安全访问。</p>
+<h3 id="git-rebase-git-merge-git-squash的区别">git rebase, git merge,
+git squash的区别</h3>
+<figure>
+<img
+src="/img/%E9%9D%A2%E8%AF%95%E9%97%AE%E9%A2%98/v2-d788def8f1d3a97ff0c9b4fee80e6d6d_720w.webp" srcset="/img/loading.gif" lazyload
+alt="img" />
+<figcaption aria-hidden="true">img</figcaption>
+</figure>
+<p><strong>git merge</strong>：</p>
+<p>这是最基本的merge，就是把提交历史原封不动的拷贝过来，包含完整的提交历史记录。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">git checkout master<br>git merge dev<br></code></pre></td></tr></table></figure>
+<figure>
+<img
+src="/img/%E9%9D%A2%E8%AF%95%E9%97%AE%E9%A2%98/v2-42076e03447bfaf473c8f73a044db7ce_720w.webp" srcset="/img/loading.gif" lazyload
+alt="img" />
+<figcaption aria-hidden="true">img</figcaption>
+</figure>
+<p>此时还会生产一个 <code>merge commit (D')</code>，这个
+<code>merge commit</code>
+不包含任何代码改动，而包含在dev分支上的几个commit列表(A,
+B和C)。查看git的提交历史(git log)可以看到所有的这些提交历史记录。</p>
+<p><strong>git squash merge</strong>:</p>
+<p>根据字面意思，这个操作完成的是压缩的提交，解决的是什么问题呢？由于在dev分支上执行的是开发工作，有一些很小的提交，或者是纠正前面的错误的提交，对于这类提交对整个工程来说不需要单独显示出来一次提交，不然导致项目的提交历史过于复杂。所以基于这种原因，我们可以把dev上的所有提交都合并成一个提交；然后提交到主干。</p>
+<figure>
+<img
+src="/img/%E9%9D%A2%E8%AF%95%E9%97%AE%E9%A2%98/v2-055cd40632a48014f2651ac262edfc59_720w.webp" srcset="/img/loading.gif" lazyload
+alt="img" />
+<figcaption aria-hidden="true">img</figcaption>
+</figure>
+<p>在这个例子中，我们把A，B和C的改动合并成了一个D。</p>
+<p>注意，squash merge
+并不会替我们产生提交D，它只是把所有原本属于A、B和C的改动合并，然后放在本地文件，需要你再次手动执行
+<code>git commit</code> 操作。</p>
+<p>此时又要注意了，因为你要你手动 commit，也就是说这个 commit
+是你产生的，不是有原来 dev
+分支上的开发人员产生的，提交者本身发生了变化。也可以这么理解，就是你把
+dev 分支上的所有代码改动一次性提交到 master 分支上而已。</p>
+<p><strong>git rebase merge</strong>:</p>
+<p>由于 <code>squash merge</code>
+会变更提交者作者信息，这是一个很大的问题，后期问题追溯不好处理(当然也可以由分支dev的所有者来执行
+<code>squash merge</code>
+操作，以解决部分问题)，<code>rebase merge</code>
+可以保留提交的作者信息，同时可以合并commit历史，完美的解决了上面的问题。</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs text">$ git checkout dev<br>$ git rebase -i master<br>$ git checkout master<br>$ git merge dev<br></code></pre></td></tr></table></figure>
+<p><code>rebase merge</code> 分两步完成：</p>
+<p><strong>第一步：</strong>执行rebase操作，结果是看起来dev分支是从主分支的提交3拉出来的，而不是从提交2拉出来的，然后使用-i参数手动调整commit历史，是否合并如何合并。例如
+<code>rebase -i</code> 命令会弹出文本编辑框：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs text">pick &lt;A&gt; Message for commit #1<br>pick &lt;B&gt; Message for commit #2<br>pick &lt;C&gt; Message for commit #3<br></code></pre></td></tr></table></figure>
+<p>假设提交B是对提交A的一个拼写错误修正，因此可以不需要显式的指出来，我们把B修改为fixup：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs text">pick &lt;A&gt; Message for commit #1<br>fixup &lt;B&gt; Message for commit #2<br>pick &lt;C&gt; Message for commit #3<br></code></pre></td></tr></table></figure>
+<p>rebase之后的状态变为：</p>
+<p><img
+src="/img/%E9%9D%A2%E8%AF%95%E9%97%AE%E9%A2%98/v2-2a870e3f8e10df8c5dbdb70ca4536f50_720w.webp" srcset="/img/loading.gif" lazyload
+alt="img" /> A' 是A和B的合并。</p>
+<p>第二步：再执行merge操作，把dev分支合并到master分支：</p>
+<figure>
+<img
+src="/img/%E9%9D%A2%E8%AF%95%E9%97%AE%E9%A2%98/v2-61227468d7c1fe05d529f36ed491e849_720w.webp" srcset="/img/loading.gif" lazyload
+alt="img" />
+<figcaption aria-hidden="true">img</figcaption>
+</figure>
+<p>注意：</p>
+<ol type="1">
+<li>在执行 <code>rebase</code>
+的时候可能会出现冲突的问题，此时需要手工解决冲突的问题，然后执行(git
+add)命令；</li>
+<li>所有冲突解决完之后，这时不需要执行(git commit)命令，而是运行(git
+rebase
+--continue)命令，一直到rebase完成；如果中途想放弃rebase操作，可以运行(git
+rebase --abort)命令回到rebase之前的状态。</li>
 </ol>
 
                 
