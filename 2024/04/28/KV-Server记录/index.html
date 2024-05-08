@@ -1,0 +1,1365 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Starmin">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="KV-Server记录 RPC模块 项目使用到的RPC代码高度依赖于protobuf。RPC 是一种使得分布式系统中的不同模块之间能够透明地进行远程调用的技术，使得开发者可以更方便地构建分布式系统，而不用过多关注底层通信细节，调用另一台机器的方法会表现的像调用本地的方法一样。 那么无论对外表现如何，只要设计多个主机之间的通信，必不可少的就是网络通讯这一步 我们可以看看一次RPC请求到底干了什么？">
+<meta property="og:type" content="article">
+<meta property="og:title" content="KV-Server记录">
+<meta property="og:url" content="https://gstarmin.github.io/2024/04/28/KV-Server%E8%AE%B0%E5%BD%95/">
+<meta property="og:site_name" content="私人杂货铺">
+<meta property="og:description" content="KV-Server记录 RPC模块 项目使用到的RPC代码高度依赖于protobuf。RPC 是一种使得分布式系统中的不同模块之间能够透明地进行远程调用的技术，使得开发者可以更方便地构建分布式系统，而不用过多关注底层通信细节，调用另一台机器的方法会表现的像调用本地的方法一样。 那么无论对外表现如何，只要设计多个主机之间的通信，必不可少的就是网络通讯这一步 我们可以看看一次RPC请求到底干了什么？">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gstarmin.github.io/img/KV-Server%E8%AE%B0%E5%BD%95/rpc-routine.png">
+<meta property="article:published_time" content="2024-04-28T14:55:00.000Z">
+<meta property="article:modified_time" content="2024-04-28T14:55:00.000Z">
+<meta property="article:author" content="Starmin">
+<meta property="article:tag" content="项目">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://gstarmin.github.io/img/KV-Server%E8%AE%B0%E5%BD%95/rpc-routine.png">
+  
+  
+  
+  <title>KV-Server记录 - 私人杂货铺</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"gstarmin.github.io","root":"/","version":"1.9.3","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 5.4.2"><style>.mjpage .MJX-monospace {
+  font-family: monospace;
+}
+
+.mjpage .MJX-sans-serif {
+  font-family: sans-serif;
+}
+
+.mjpage {
+  display: inline;
+  font-style: normal;
+  font-weight: normal;
+  line-height: normal;
+  font-size: 100%;
+  font-size-adjust: none;
+  text-indent: 0;
+  text-align: left;
+  text-transform: none;
+  letter-spacing: normal;
+  word-spacing: normal;
+  word-wrap: normal;
+  white-space: nowrap;
+  float: none;
+  direction: ltr;
+  max-width: none;
+  max-height: none;
+  min-width: 0;
+  min-height: 0;
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+
+.mjpage * {
+  transition: none;
+  -webkit-transition: none;
+  -moz-transition: none;
+  -ms-transition: none;
+  -o-transition: none;
+}
+
+.mjx-svg-href {
+  fill: blue;
+  stroke: blue;
+}
+
+.MathJax_SVG_LineBox {
+  display: table !important;
+}
+
+.MathJax_SVG_LineBox span {
+  display: table-cell !important;
+  width: 10000em !important;
+  min-width: 0;
+  max-width: none;
+  padding: 0;
+  border: 0;
+  margin: 0;
+}
+
+.mjpage__block {
+  text-align: center;
+  margin: 1em 0em;
+  position: relative;
+  display: block !important;
+  text-indent: 0;
+  max-width: none;
+  max-height: none;
+  min-width: 0;
+  min-height: 0;
+  width: 100%;
+}
+</style></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Starmin</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="KV-Server记录"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-04-28 22:55" pubdate>
+          2024年4月28日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          41k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          409 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">KV-Server记录</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="kv-server记录">KV-Server记录</h1>
+<h2 id="rpc模块">RPC模块</h2>
+<p>项目使用到的RPC代码高度依赖于protobuf。RPC
+是一种使得分布式系统中的不同模块之间能够透明地进行远程调用的技术，使得开发者可以更方便地构建分布式系统，而不用过多关注底层通信细节，调用另一台机器的方法会表现的像调用本地的方法一样。</p>
+<p>那么无论对外表现如何，只要设计多个主机之间的通信，必不可少的就是网络通讯这一步</p>
+<p>我们可以看看一次RPC请求到底干了什么？</p>
+<figure>
+<img src="/img/KV-Server%E8%AE%B0%E5%BD%95/rpc-routine.png" srcset="/img/loading.gif" lazyload alt="img" />
+<figcaption aria-hidden="true">img</figcaption>
+</figure>
+<p>由于底层网络通信框架使用的是运输层协议，只能发送字节流，因此会涉及到对象的序列化/反序列化问题，即上图中所示的黄色部分，而常见的网络数据传输格式包括如下三种：</p>
+<ul>
+<li>XML：一种通用和轻量级的数据交换格式语言，是指可扩展标记语言以文本结构进行存储。</li>
+<li>JSON：一种通用和轻量级的数据交换格式，也是以文本的结构进行存储，是一种简单的消息格式。JSON
+作为数据包格式传输时具有更高的效率，这是因为 JSON 不像 XML
+那样需要有严格的闭合标签，这就让有效数据量与总数据包比有着显著的提升，从而减少同等数据流量的情况下网络的传输压力。</li>
+<li>Protobuf：是 Google
+开发的一种独立和轻量级的数据交换格式，以二进制结构进行存储，用于不同服务之间序列化数据。它是一种轻便高效的结构化数据存储格式，可以用于结构化数据串行化，或者序列化，可用于通讯协议、数据存储等领域的语言无关、平台无关、可扩展的序列化结构数据格式。</li>
+</ul>
+<p>而该项目便是使用 Protobuf
+来进行消息的序列化和反序列化，同时使用其来实现RPC框架，其底层的通信流程如下图所示：</p>
+<figure>
+<img
+src="/img/KV-Server%E8%AE%B0%E5%BD%95/FuwAuCYet70BQWSI1h9Z8NB5rpCH.png" srcset="/img/loading.gif" lazyload
+alt="img" />
+<figcaption aria-hidden="true">img</figcaption>
+</figure>
+<p><strong>打包流程</strong>：</p>
+<ol type="1">
+<li>序列化函数参数得到 argsStr，其长度为 argsSize；</li>
+<li>打包 service_name、method_name 和 argsSize 得到 rpcHeader；</li>
+<li>序列化 rpcHeader 得到 rpcHeaderStr，其长度为 headerSize；</li>
+<li>将 headerSize 存储到数据包的前 4 个字节，后面的依次是 rpcHeaderStr
+和 argsStr；</li>
+<li>通过网络发送数据包；</li>
+</ol>
+<p><strong>解包流程</strong>：</p>
+<ol type="1">
+<li>通过网络接收数据包；</li>
+<li>首先取出数据包的前 4 个字节，读取出 headerSize 的大小；</li>
+<li>从第 5 个字节开始，读取 headerSize 字节大小的数据，即为 rpcHeaderStr
+的内容；</li>
+<li>反序列化 rpcHeaderStr，得到 service_name、method_name 和
+argsSize；</li>
+<li>从 4+headerSize 字节开始，读取 argsSize 字节大小的数据，即为 argsStr
+的内容；</li>
+<li>反序列化 argsStr 得到函数参数 args；</li>
+</ol>
+<h2 id="消息内容">消息内容</h2>
+<p><strong>raft节点之间rpc通信函数:</strong></p>
+<figure class="highlight protobuf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs protobuf"><span class="hljs-comment">// 只有raft节点之间才会涉及rpc通信</span><br><span class="hljs-keyword">service </span><span class="hljs-title class_">raftRpc</span>  <br>&#123;<br>    <span class="hljs-function"><span class="hljs-keyword">rpc</span> AppendEntries(AppendEntriesArgs) <span class="hljs-keyword">returns</span>(AppendEntriesReply)</span>;<br>    <span class="hljs-function"><span class="hljs-keyword">rpc</span> InstallSnapshot (InstallSnapshotRequest) <span class="hljs-keyword">returns</span> (InstallSnapshotResponse)</span>;<br>    <span class="hljs-function"><span class="hljs-keyword">rpc</span> RequestVote (RequestVoteArgs) <span class="hljs-keyword">returns</span> (RequestVoteReply)</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p><strong>日志实体</strong>：</p>
+<figure class="highlight protobuf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs protobuf"><span class="hljs-comment">// 日志实体</span><br><span class="hljs-keyword">message </span><span class="hljs-title class_">LogEntry</span>&#123;<br>    <span class="hljs-type">bytes</span> Command  =<span class="hljs-number">1</span>;	<span class="hljs-comment">// 命令,猜测是增删改查的命令？</span><br>	<span class="hljs-type">int32</span> LogTerm   =<span class="hljs-number">2</span>;	<span class="hljs-comment">// 日志</span><br>	<span class="hljs-type">int32</span> LogIndex  = <span class="hljs-number">3</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p><strong>RpcArgs内容</strong>:</p>
+<figure class="highlight protobuf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs protobuf"><span class="hljs-comment">// AppendEntriesArgs 由leader复制log条目，也可以当做是心跳连接，注释中的rf为leader节点</span><br><span class="hljs-keyword">message </span><span class="hljs-title class_">AppendEntriesArgs</span>  &#123;<br>	<span class="hljs-comment">//	下面几个参数和论文中相同</span><br>	<span class="hljs-type">int32</span> Term        =<span class="hljs-number">1</span>;	<span class="hljs-comment">// 自己当前的任期号</span><br>	<span class="hljs-type">int32</span> LeaderId       =<span class="hljs-number">2</span>;	<span class="hljs-comment">// 领导人的id</span><br>	<span class="hljs-type">int32</span> PrevLogIndex =<span class="hljs-number">3</span>;		<span class="hljs-comment">// 前一个日志的日志号</span><br>	<span class="hljs-type">int32</span> PrevLogTerm  =<span class="hljs-number">4</span>;		<span class="hljs-comment">// 前一个日志的任期号</span><br>	<span class="hljs-keyword">repeated</span> LogEntry Entries  = <span class="hljs-number">5</span>;	<span class="hljs-comment">// 当前日志体</span><br>	<span class="hljs-type">int32</span> LeaderCommit  = <span class="hljs-number">6</span>;		<span class="hljs-comment">// 当前日志体</span><br>&#125;<br></code></pre></td></tr></table></figure>
+<p><strong>RpcReply内容</strong>:</p>
+<figure class="highlight protobuf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs protobuf"><span class="hljs-comment">// AppendEntriesReply 论文中没有提及返回要设置哪些状态</span><br><span class="hljs-keyword">message </span><span class="hljs-title class_">AppendEntriesReply</span> &#123;<br>	<span class="hljs-type">int32</span> Term =<span class="hljs-number">1</span>;             <span class="hljs-comment">// leader的term可能是与Follower不同的，</span><br>	<span class="hljs-type">bool</span> Success      =<span class="hljs-number">2</span>;<br>	<span class="hljs-type">int32</span> UpdateNextIndex = <span class="hljs-number">3</span>; <span class="hljs-comment">// 快速调整leader对应的nextIndex</span><br>	<span class="hljs-type">int32</span> AppState        =<span class="hljs-number">4</span>;  <span class="hljs-comment">// 用来标识节点（网络）状态</span><br>&#125;<br></code></pre></td></tr></table></figure>
+<p><strong>请求投票参数</strong>：</p>
+<figure class="highlight protobuf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs protobuf"><span class="hljs-keyword">message </span><span class="hljs-title class_">RequestVoteArgs</span>  &#123;<br>	<span class="hljs-type">int32</span> Term         =<span class="hljs-number">1</span>;<br>	<span class="hljs-type">int32</span> CandidateId  =<span class="hljs-number">2</span>;<br>	<span class="hljs-type">int32</span> LastLogIndex =<span class="hljs-number">3</span>;<br>	<span class="hljs-type">int32</span> LastLogTerm  =<span class="hljs-number">4</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p><strong>请求投票回复</strong>：</p>
+<figure class="highlight protobuf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs protobuf"><span class="hljs-comment">// RequestVoteReply</span><br><span class="hljs-comment">// example RequestVote RPC reply structure.</span><br><span class="hljs-comment">// field names must start with capital letters!</span><br><span class="hljs-keyword">message </span><span class="hljs-title class_">RequestVoteReply</span>  &#123;<br>	<span class="hljs-comment">// Your data here (2A).</span><br>	<span class="hljs-type">int32</span> Term        =<span class="hljs-number">1</span>;<br>	<span class="hljs-type">bool</span> VoteGranted  =<span class="hljs-number">2</span>;<br>	<span class="hljs-type">int32</span> VoteState   =<span class="hljs-number">3</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p><strong>发起快照请求</strong>:</p>
+<figure class="highlight protobuf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs protobuf"><span class="hljs-keyword">message </span><span class="hljs-title class_">InstallSnapshotRequest</span>  &#123;<br>	<span class="hljs-type">int32</span> LeaderId                 =<span class="hljs-number">1</span>;	<span class="hljs-comment">// 领导人的 ID，以便于跟随者重定向请求</span><br>	<span class="hljs-type">int32</span> Term                     =<span class="hljs-number">2</span>;	<span class="hljs-comment">// 领导人的任期号</span><br>	<span class="hljs-type">int32</span> LastSnapShotIncludeIndex =<span class="hljs-number">3</span>;	<span class="hljs-comment">//	快照中包含的最后日志条目的索引值</span><br>	<span class="hljs-type">int32</span> LastSnapShotIncludeTerm  =<span class="hljs-number">4</span>;	<span class="hljs-comment">//	快照中包含的最后日志条目的任期号</span><br>	<span class="hljs-type">bytes</span> Data                     =<span class="hljs-number">5</span>;<span class="hljs-comment">//快照信息，当然是用bytes来传递</span><br>&#125;<br></code></pre></td></tr></table></figure>
+<p><strong>发起快照回复</strong>：</p>
+<figure class="highlight protobuf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs protobuf"><span class="hljs-comment">// InstallSnapshotResponse 只用返回Term，因为对于快照只要Term是符合的就是无条件接受的</span><br><span class="hljs-keyword">message </span><span class="hljs-title class_">InstallSnapshotResponse</span>  &#123;<br>	<span class="hljs-type">int32</span> Term  = <span class="hljs-number">1</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<h2 id="raft类主要内容">Raft类主要内容</h2>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-keyword">class</span> <span class="hljs-title class_">Raft</span> :<br>&#123;<br><span class="hljs-keyword">private</span>:<br>    std::mutex m_mtx;<br>    std::vector&lt;std::shared_ptr&lt; RaftRpc &gt;&gt; m_peers; <span class="hljs-comment">//需要与其他raft节点通信，这里保存与其他结点通信的rpc入口</span><br>    std::shared_ptr&lt;Persister&gt; m_persister;   <span class="hljs-comment">//持久化层，负责raft数据的持久化</span><br>    <span class="hljs-type">int</span> m_me;             <span class="hljs-comment">//raft是以集群启动，这个用来标识自己的的编号</span><br>    <span class="hljs-type">int</span> m_currentTerm;    <span class="hljs-comment">//记录当前的term</span><br>    <span class="hljs-type">int</span> m_votedFor;       <span class="hljs-comment">//记录当前term给谁投票过</span><br>    std::vector&lt;mprrpc:: LogEntry&gt; m_logs; <span class="hljs-comment">//// 日志条目数组，包含了状态机要执行的指令集，以及收到领导时的任期号</span><br>    <span class="hljs-comment">// 这两个状态所有结点都在维护，易失</span><br>    <span class="hljs-type">int</span> m_commitIndex;<br>    <span class="hljs-type">int</span> m_lastApplied; <span class="hljs-comment">// 已经汇报给状态机（上层应用）的log 的index</span><br><br>    <span class="hljs-comment">// 这两个状态是由leader来维护，易失 ，这两个部分在内容补充的部分也会再讲解</span><br>    std::vector&lt;<span class="hljs-type">int</span>&gt; m_nextIndex; <span class="hljs-comment">// 这两个状态的下标1开始，因为通常commitIndex和lastApplied从0开始，应该是一个无效的index，因此下标从1开始</span><br>    std::vector&lt;<span class="hljs-type">int</span>&gt; m_matchIndex;<br>    <span class="hljs-keyword">enum</span> <span class="hljs-title class_">Status</span><br>    &#123;<br>        Follower,<br>        Candidate,<br>        Leader<br>    &#125;;<br>    <span class="hljs-comment">// 保存当前身份</span><br>    Status m_status;<br><br>    std::shared_ptr&lt;LockQueue&lt;ApplyMsg&gt;&gt; applyChan;     <span class="hljs-comment">// client从这里取日志，client与raft通信的接口</span><br>    <span class="hljs-comment">// ApplyMsgQueue chan ApplyMsg // raft内部使用的chan，applyChan是用于和服务层交互，最后好像没用上</span><br>	<br>    <span class="hljs-comment">// 选举超时</span><br>    std::chrono::_V2::system_clock::time_point m_lastResetElectionTime;<br>    <span class="hljs-comment">// 心跳超时，用于leader</span><br>    std::chrono::_V2::system_clock::time_point m_lastResetHearBeatTime;<br><br>    <span class="hljs-comment">// 用于传入快照点</span><br>    <span class="hljs-comment">// 储存了快照中的最后一个日志的Index和Term</span><br>    <span class="hljs-type">int</span> m_lastSnapshotIncludeIndex;<br>    <span class="hljs-type">int</span> m_lastSnapshotIncludeTerm;<br><br><span class="hljs-keyword">public</span>:<br>    <br>    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">AppendEntries1</span><span class="hljs-params">(<span class="hljs-type">const</span> mprrpc::AppendEntriesArgs *args, mprrpc::AppendEntriesReply *reply)</span></span>; <span class="hljs-comment">//日志同步 + 心跳 rpc ，重点关注</span><br>    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">applierTicker</span><span class="hljs-params">()</span></span>;     <span class="hljs-comment">//定期向状态机写入日志，非重点函数</span><br>    <br>    <span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">CondInstallSnapshot</span><span class="hljs-params">(<span class="hljs-type">int</span> lastIncludedTerm, <span class="hljs-type">int</span> lastIncludedIndex, std::string snapshot)</span></span>;    <span class="hljs-comment">//快照相关，非重点</span><br>    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">doElection</span><span class="hljs-params">()</span></span>;    <span class="hljs-comment">//发起选举</span><br>    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">doHeartBeat</span><span class="hljs-params">()</span></span>;    <span class="hljs-comment">//leader定时发起心跳</span><br>    <span class="hljs-comment">// 每隔一段时间检查睡眠时间内有没有重置定时器，没有则说明超时了</span><br><span class="hljs-comment">// 如果有则设置合适睡眠时间：睡眠到重置时间+超时时间</span><br>    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">electionTimeOutTicker</span><span class="hljs-params">()</span></span>;   <span class="hljs-comment">//监控是否该发起选举了</span><br>    <span class="hljs-function">std::vector&lt;ApplyMsg&gt; <span class="hljs-title">getApplyLogs</span><span class="hljs-params">()</span></span>;<br>    <span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">getNewCommandIndex</span><span class="hljs-params">()</span></span>;<br>    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">getPrevLogInfo</span><span class="hljs-params">(<span class="hljs-type">int</span> server, <span class="hljs-type">int</span> *preIndex, <span class="hljs-type">int</span> *preTerm)</span></span>;<br>    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">GetState</span><span class="hljs-params">(<span class="hljs-type">int</span> *term, <span class="hljs-type">bool</span> *isLeader)</span></span>;  <span class="hljs-comment">//看当前节点是否是leader</span><br>    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">InstallSnapshot</span><span class="hljs-params">( <span class="hljs-type">const</span> mprrpc::InstallSnapshotRequest *args, mprrpc::InstallSnapshotResponse *reply)</span></span>;  <br>    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">leaderHearBeatTicker</span><span class="hljs-params">()</span></span>; <span class="hljs-comment">//检查是否需要发起心跳（leader）</span><br>    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">leaderSendSnapShot</span><span class="hljs-params">(<span class="hljs-type">int</span> server)</span></span>;  <br>    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">leaderUpdateCommitIndex</span><span class="hljs-params">()</span></span>;  <span class="hljs-comment">//leader更新commitIndex</span><br>    <span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">matchLog</span><span class="hljs-params">(<span class="hljs-type">int</span> logIndex, <span class="hljs-type">int</span> logTerm)</span></span>;  <span class="hljs-comment">//对应Index的日志是否匹配，只需要Index和Term就可以知道是否匹配</span><br>    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">persist</span><span class="hljs-params">()</span></span>;   <span class="hljs-comment">//持久化</span><br>    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">RequestVote</span><span class="hljs-params">(<span class="hljs-type">const</span> mprrpc::RequestVoteArgs *args, mprrpc::RequestVoteReply *reply)</span></span>;    <span class="hljs-comment">//变成candidate之后需要让其他结点给自己投票</span><br>    <span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">UpToDate</span><span class="hljs-params">(<span class="hljs-type">int</span> index, <span class="hljs-type">int</span> term)</span></span>;   <span class="hljs-comment">//判断当前节点是否含有最新的日志</span><br>    <span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">getLastLogIndex</span><span class="hljs-params">()</span></span>;<br>    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">getLastLogIndexAndTerm</span><span class="hljs-params">(<span class="hljs-type">int</span> *lastLogIndex, <span class="hljs-type">int</span> *lastLogTerm)</span></span>;<br>    <span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">getLogTermFromLogIndex</span><span class="hljs-params">(<span class="hljs-type">int</span> logIndex)</span></span>;<br>    <span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">GetRaftStateSize</span><span class="hljs-params">()</span></span>;<br>    <span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">getSlicesIndexFromLogIndex</span><span class="hljs-params">(<span class="hljs-type">int</span> logIndex)</span></span>;   <span class="hljs-comment">//设计快照之后logIndex不能与在日志中的数组下标相等了，根据logIndex找到其在日志数组中的位置</span><br><br><br>    <span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">sendRequestVote</span><span class="hljs-params">(<span class="hljs-type">int</span> server , std::shared_ptr&lt;mprrpc::RequestVoteArgs&gt; args ,  std::shared_ptr&lt;mprrpc::RequestVoteReply&gt; reply,   std::shared_ptr&lt;<span class="hljs-type">int</span>&gt; votedNum)</span> </span>; <span class="hljs-comment">// 请求其他结点的投票</span><br>    <span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">sendAppendEntries</span><span class="hljs-params">(<span class="hljs-type">int</span> server ,std::shared_ptr&lt;mprrpc::AppendEntriesArgs&gt; args , std::shared_ptr&lt;mprrpc::AppendEntriesReply&gt; reply , std::shared_ptr&lt;<span class="hljs-type">int</span>&gt; appendNums )</span> </span>;  <span class="hljs-comment">//Leader发送心跳后，对心跳的回复进行对应的处理</span><br><br><br>    <span class="hljs-comment">//rf.applyChan &lt;- msg //不拿锁执行  可以单独创建一个线程执行，但是为了同意使用std:thread ，避免使用pthread_create，因此专门写一个函数来执行</span><br>    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">pushMsgToKvServer</span><span class="hljs-params">(ApplyMsg msg)</span></span>;  <span class="hljs-comment">//给上层的kvserver层发送消息</span><br>    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">readPersist</span><span class="hljs-params">(std::string data)</span></span>;    <br>    <span class="hljs-function">std::string <span class="hljs-title">persistData</span><span class="hljs-params">()</span></span>;<br>    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">Start</span><span class="hljs-params">(Op command,<span class="hljs-type">int</span>* newLogIndex,<span class="hljs-type">int</span>* newLogTerm,<span class="hljs-type">bool</span>* isLeader )</span> </span>;   <span class="hljs-comment">// 发布发来一个新日志</span><br><span class="hljs-comment">// 即kv-server主动发起，请求raft（持久层）保存snapshot里面的数据，index是用来表示snapshot快照执行到了哪条命令</span><br>    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">Snapshot</span><span class="hljs-params">(<span class="hljs-type">int</span> index , std::string snapshot )</span></span>;<br><br><span class="hljs-keyword">public</span>:<br>    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">init</span><span class="hljs-params">(std::vector&lt;std::shared_ptr&lt; RaftRpc &gt;&gt; peers,<span class="hljs-type">int</span> me,std::shared_ptr&lt;Persister&gt; persister,std::shared_ptr&lt;LockQueue&lt;ApplyMsg&gt;&gt; applyCh)</span></span>;		<span class="hljs-comment">//初始化</span><br></code></pre></td></tr></table></figure>
+<p>重点需要关注的：</p>
+<ol type="1">
+<li>Raft的主要流程：领导选举（<code>sendRequestVote RequestVote</code>
+） 日志同步、心跳（<code>sendAppendEntries</code>
+<code>AppendEntries</code> ）</li>
+<li>定时器的维护：主要包括raft向状态机定时写入（<code>applierTicker</code>
+）、心跳维护定时器（<code>leaderHearBeatTicker</code>
+）、选举超时定时器（<code>electionTimeOutTicker</code> ）。</li>
+<li>持久化相关：包括哪些内容需要持久化，什么时候需要持久化（persist）</li>
+<li><code>m_nextIndex</code>
+保存leader下一次应该从哪一个日志开始发送给follower；</li>
+<li><code>m_matchIndex</code>表示follower在哪一个日志是已经匹配了的（由于日志安全性，某一个日志匹配，那么这个日志及其之前的日志都是匹配的）</li>
+</ol>
+<h3 id="init-启动初始化">init() 启动初始化</h3>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">Raft::init</span><span class="hljs-params">(std::vector&lt;std::shared_ptr&lt;RaftRpc&gt;&gt; peers, <span class="hljs-type">int</span> me, std::shared_ptr&lt;Persister&gt; persister, std::shared_ptr&lt;LockQueue&lt;ApplyMsg&gt;&gt; applyCh)</span> </span>&#123;<br>    m_peers = peers;     <span class="hljs-comment">//与其他结点沟通的rpc类</span><br>    m_persister = persister;   <span class="hljs-comment">//持久化类</span><br>    m_me = me;    <span class="hljs-comment">//标记自己，毕竟不能给自己发送rpc吧</span><br><br>    m_mtx.<span class="hljs-built_in">lock</span>();<br><br>    <span class="hljs-comment">//applier</span><br>    <span class="hljs-keyword">this</span>-&gt;applyChan = applyCh;   <span class="hljs-comment">//与kv-server沟通</span><br><span class="hljs-comment">//    rf.ApplyMsgQueue = make(chan ApplyMsg)</span><br>    m_currentTerm = <span class="hljs-number">0</span>;   <span class="hljs-comment">//初始化term为0</span><br>    m_status = Follower;   <span class="hljs-comment">//初始化身份为follower</span><br>    m_commitIndex = <span class="hljs-number">0</span>;  <br>    m_lastApplied = <span class="hljs-number">0</span>;<br>    m_logs.<span class="hljs-built_in">clear</span>();<br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i =<span class="hljs-number">0</span>;i&lt;m_peers.<span class="hljs-built_in">size</span>();i++)&#123;<br>        m_matchIndex.<span class="hljs-built_in">push_back</span>(<span class="hljs-number">0</span>);<br>        m_nextIndex.<span class="hljs-built_in">push_back</span>(<span class="hljs-number">0</span>);<br>    &#125;<br>    m_votedFor = <span class="hljs-number">-1</span>;    <span class="hljs-comment">//当前term没有给其他人投过票就用-1表示</span><br><br>    m_lastSnapshotIncludeIndex = <span class="hljs-number">0</span>;<br>    m_lastSnapshotIncludeTerm = <span class="hljs-number">0</span>;<br>    m_lastResetElectionTime = <span class="hljs-built_in">now</span>();<br>    m_lastResetHearBeatTime = <span class="hljs-built_in">now</span>();<br><br>    <span class="hljs-comment">// initialize from state persisted before a crash</span><br>    <span class="hljs-built_in">readPersist</span>(m_persister-&gt;<span class="hljs-built_in">ReadRaftState</span>());<br>    <span class="hljs-keyword">if</span>(m_lastSnapshotIncludeIndex &gt; <span class="hljs-number">0</span>)&#123;<br>        m_lastApplied = m_lastSnapshotIncludeIndex;<br>        <span class="hljs-comment">//rf.commitIndex = rf.lastSnapshotIncludeIndex 崩溃恢复不能读取commitIndex</span><br>    &#125;<br><br>    m_mtx.<span class="hljs-built_in">unlock</span>();<br>    <span class="hljs-comment">// start ticker  开始三个定时器</span><br>    <span class="hljs-function">std::thread <span class="hljs-title">t</span><span class="hljs-params">(&amp;Raft::leaderHearBeatTicker, <span class="hljs-keyword">this</span>)</span></span>;<br>    t.<span class="hljs-built_in">detach</span>();<br><br>    <span class="hljs-function">std::thread <span class="hljs-title">t2</span><span class="hljs-params">(&amp;Raft::electionTimeOutTicker, <span class="hljs-keyword">this</span>)</span></span>;<br>    t2.<span class="hljs-built_in">detach</span>();<br><br>    <span class="hljs-function">std::thread <span class="hljs-title">t3</span><span class="hljs-params">(&amp;Raft::applierTicker, <span class="hljs-keyword">this</span>)</span></span>;<br>    t3.<span class="hljs-built_in">detach</span>();<br>&#125;<br><br></code></pre></td></tr></table></figure>
+<p>从上面可以看到一共产生了三个定时器，分别维护：选举、日志同步和心跳、raft节点与kv-server的联系。相互之间是比较隔离的。</p>
+<h2 id="leader选举">Leader选举</h2>
+<p>主要涉及函数及其流程：</p>
+<figure>
+<img
+src="/img/KV-Server%E8%AE%B0%E5%BD%95/FjzFfi6jY-SnRVKFrYXoDaKPSNry.png" srcset="/img/loading.gif" lazyload
+alt="img" />
+<figcaption aria-hidden="true">img</figcaption>
+</figure>
+<p><strong>electionTimeOutTicker</strong>：负责查看是否该发起选举，如果该发起选举就执行doElection发起选举。</p>
+<p><strong>doElection</strong>：实际发起选举，构造需要发送的rpc，并多线程调用sendRequestVote处理rpc及其相应。</p>
+<p><strong>sendRequestVote</strong>：负责发送选举中的RPC，在发送完rpc后还需要负责接收并处理对端发送回来的响应。</p>
+<p><strong>RequestVote</strong>：接收别人发来的选举请求，主要检验是否要给对方投票。</p>
+<h3
+id="electiontimeoutticker"><strong>electionTimeOutTicker</strong></h3>
+<p>选举超时由于<code>electionTimeOutTicker</code> 维护。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">Raft::electionTimeOutTicker</span><span class="hljs-params">()</span> </span>&#123;<br>    <span class="hljs-comment">// Check if a Leader election should be started.</span><br>    <span class="hljs-keyword">while</span> (<span class="hljs-literal">true</span>) &#123;<br>        m_mtx.<span class="hljs-built_in">lock</span>();<br>        <span class="hljs-keyword">auto</span> nowTime = <span class="hljs-built_in">now</span>(); <span class="hljs-comment">//睡眠前记录时间</span><br>        <span class="hljs-keyword">auto</span> suitableSleepTime = <span class="hljs-built_in">getRandomizedElectionTimeout</span>() + m_lastResetElectionTime - nowTime;<br>        m_mtx.<span class="hljs-built_in">unlock</span>();<br>        <span class="hljs-keyword">if</span> (suitableSleepTime.<span class="hljs-built_in">count</span>() &gt; <span class="hljs-number">1</span>) &#123;<br>            std::this_thread::<span class="hljs-built_in">sleep_for</span>(suitableSleepTime);<br>        &#125;<br><br>        <span class="hljs-keyword">if</span> ((m_lastResetElectionTime - nowTime).<span class="hljs-built_in">count</span>() &gt; <span class="hljs-number">0</span>) &#123;  <span class="hljs-comment">//说明睡眠的这段时间有重置定时器，那么就没有超时，再次睡眠</span><br>            <span class="hljs-keyword">continue</span>;<br>        &#125;<br>        <span class="hljs-built_in">doElection</span>();<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>在死循环中，首先计算距离下一次超时应该睡眠的时间suitableSleepTime，然后睡眠这段时间，醒来后查看睡眠的这段时间选举超时定时器是否被触发，如果没有触发就发起选举。</p>
+<blockquote>
+<p>“举超时定时器是否被触发”：选举定时器的触发条件：收到leader发来的appendEntryRPC
+、给其他的节点选举投票</p>
+</blockquote>
+<p>在死循环中，首先计算距离上次重置选举计时器的时间加上随机化的选举超时时间，然后线程根据这个时间决定是否睡眠。若超时时间未到，线程进入睡眠状态，若在此期间选举计时器被重置，则继续循环。若超时时间已到，调用<code>doElection()</code>
+函数启动领导者选举过程。</p>
+<h3 id="doelection函数"><strong>doElection</strong>()函数</h3>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">Raft::doElection</span><span class="hljs-params">()</span> </span>&#123;<br>    <span class="hljs-function">lock_guard&lt;mutex&gt; <span class="hljs-title">g</span><span class="hljs-params">(m_mtx)</span></span>; <span class="hljs-comment">//c11新特性，使用raii避免死锁</span><br><br><br>    <span class="hljs-keyword">if</span> (m_status != Leader) &#123;<br>        <span class="hljs-built_in">DPrintf</span>(<span class="hljs-string">&quot;[       ticker-func-rf(%d)              ]  选举定时器到期且不是leader，开始选举 \n&quot;</span>, m_me);<br>        <span class="hljs-comment">//当选举的时候定时器超时就必须重新选举，不然没有选票就会一直卡住</span><br>        m_status = Candidate;<br>        <span class="hljs-comment">///开始新一轮的选举</span><br>        m_currentTerm += <span class="hljs-number">1</span>;  <span class="hljs-comment">//无论是刚开始竞选，还是超时重新竞选，term都要增加</span><br>        m_votedFor = m_me; <span class="hljs-comment">//即是自己给自己投票，也避免candidate给同辈的candidate投</span><br>        <span class="hljs-built_in">persist</span>();   <br>        std::shared_ptr&lt;<span class="hljs-type">int</span>&gt; votedNum = std::<span class="hljs-built_in">make_shared</span>&lt;<span class="hljs-type">int</span>&gt;(<span class="hljs-number">1</span>); <span class="hljs-comment">// 使用 make_shared 函数初始化 !! 亮点</span><br>        <span class="hljs-comment">//	重新设置定时器</span><br>        m_lastResetElectionTime = <span class="hljs-built_in">now</span>();<br>        <span class="hljs-comment">//	发布RequestVote RPC</span><br>        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; m_peers.<span class="hljs-built_in">size</span>(); i++) &#123;<br>            <span class="hljs-keyword">if</span> (i == m_me) &#123;<br>                <span class="hljs-keyword">continue</span>;<br>            &#125;<br>            <span class="hljs-type">int</span> lastLogIndex = <span class="hljs-number">-1</span>, lastLogTerm = <span class="hljs-number">-1</span>;<br>            <span class="hljs-built_in">getLastLogIndexAndTerm</span>(&amp;lastLogIndex, &amp;lastLogTerm);<span class="hljs-comment">//获取最后一个log的term和下标，以添加到RPC的发送</span><br><br>            <span class="hljs-comment">//初始化发送参数</span><br>            std::shared_ptr&lt;mprrpc::RequestVoteArgs&gt; requestVoteArgs = std::<span class="hljs-built_in">make_shared</span>&lt;mprrpc::RequestVoteArgs&gt;();<br>            requestVoteArgs-&gt;<span class="hljs-built_in">set_term</span>(m_currentTerm);<br>            requestVoteArgs-&gt;<span class="hljs-built_in">set_candidateid</span>(m_me);<br>            requestVoteArgs-&gt;<span class="hljs-built_in">set_lastlogindex</span>(lastLogIndex);<br>            requestVoteArgs-&gt;<span class="hljs-built_in">set_lastlogterm</span>(lastLogTerm);<br>            std::shared_ptr&lt;mprrpc::RequestVoteReply&gt; requestVoteReply = std::<span class="hljs-built_in">make_shared</span>&lt;mprrpc::RequestVoteReply&gt;();<br><br>            <span class="hljs-comment">//使用匿名函数执行避免其拿到锁</span><br><br>            <span class="hljs-function">std::thread <span class="hljs-title">t</span><span class="hljs-params">(&amp;Raft::sendRequestVote, <span class="hljs-keyword">this</span>, i, requestVoteArgs, requestVoteReply, votedNum)</span></span>; <span class="hljs-comment">// 创建新线程并执行函数，并传递参数</span><br>            t.<span class="hljs-built_in">detach</span>();<br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<h3 id="raftappendentries1函数">Raft::AppendEntries1()函数</h3>
+<p>如果对方的任期号比自己当前任期号小，说明对方已经是过期领导人了，那么更新reply状态并直接return。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-keyword">if</span> (args-&gt;<span class="hljs-built_in">term</span>() &lt; m_currentTerm) &#123; 	<span class="hljs-comment">// 对方的任期号比自己当前任期号小</span><br>   reply-&gt;<span class="hljs-built_in">set_success</span>(<span class="hljs-literal">false</span>);<br>   reply-&gt;<span class="hljs-built_in">set_term</span>(m_currentTerm);<br>   reply-&gt;<span class="hljs-built_in">set_updatenextindex</span>(<span class="hljs-number">-100</span>);  <span class="hljs-comment">// 论文中：让领导人可以及时更新自己</span><br>   <span class="hljs-built_in">DPrintf</span>(<span class="hljs-string">&quot;[func-AppendEntries-rf&#123;%d&#125;] 拒绝了 因为Leader&#123;%d&#125;的term&#123;%v&#125;&lt; rf&#123;%d&#125;.term&#123;%d&#125;\n&quot;</span>, m_me, args-&gt;<span class="hljs-built_in">leaderid</span>(),<br>           args-&gt;<span class="hljs-built_in">term</span>(), m_me, m_currentTerm);<br>   <span class="hljs-keyword">return</span>;  <span class="hljs-comment">// 注意从过期的领导人收到消息不要重设定时器</span><br> &#125;<br></code></pre></td></tr></table></figure>
+<p>如果对方任期号比自己当前任期号大，那么就说明leader更新了，不管自己之前是不是leader，现在都要成为follwer。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-keyword">if</span> (args-&gt;<span class="hljs-built_in">term</span>() &gt; m_currentTerm) &#123; <span class="hljs-comment">// 对方任期号比自己当前任期号大</span><br>    <span class="hljs-comment">// 三变 ,防止遗漏，无论什么时候都是三变</span><br>    <span class="hljs-comment">// args.LeaderId, args.Term, rf.me, rf.currentTerm)</span><br>    m_status = Follower;<br>    m_currentTerm = args-&gt;<span class="hljs-built_in">term</span>();<br>    m_votedFor = <span class="hljs-number">-1</span>;  <span class="hljs-comment">// 这里设置成-1有意义，如果突然宕机然后上线理论上是可以投票的</span><br>    <span class="hljs-comment">// 这里可不返回，应该改成让改节点尝试接收日志</span><br>    <span class="hljs-comment">// 如果是领导人和candidate突然转到Follower好像也不用其他操作</span><br>    <span class="hljs-comment">// 如果本来就是Follower，那么其term变化，相当于“不言自明”的换了追随的对象，因为原来的leader的term更小，是不会再接收其消息了</span><br>  &#125;<br></code></pre></td></tr></table></figure>
+<p>如果上面两种情况都不满足，那么说明自己收到的就是当前leader发的包。因为只有leader会向follwer更新日志或者发心跳包。这里的args其实就是leader发送过来的参数。</p>
+<p>如果leader的prevlogindex(前一个日志的日志号)大于当前节点lastLogIndex（最新的日志号），那么说明leader发送的日志过于新了，当前节点要从lastLogIndex
++ 1一个一个更新。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">//	那么就比较日志，日志有3种情况</span><br>  <span class="hljs-keyword">if</span> (args-&gt;<span class="hljs-built_in">prevlogindex</span>() &gt; <span class="hljs-built_in">getLastLogIndex</span>()) &#123;<br>    reply-&gt;<span class="hljs-built_in">set_success</span>(<span class="hljs-literal">false</span>);<br>    reply-&gt;<span class="hljs-built_in">set_term</span>(m_currentTerm);<br>    reply-&gt;<span class="hljs-built_in">set_updatenextindex</span>(<span class="hljs-built_in">getLastLogIndex</span>() + <span class="hljs-number">1</span>);<br>    <span class="hljs-keyword">return</span>;<br>  &#125;<br></code></pre></td></tr></table></figure>
+<p>如果leader的prevlogindex比当前节点快照的最后一条日志号小的话，那么就说明leader共发送的日志比当前节点已经快照的最后一个日志号都要小。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (args-&gt;<span class="hljs-built_in">prevlogindex</span>() &lt; m_lastSnapshotIncludeIndex) &#123;<br>    <span class="hljs-comment">// 如果prevlogIndex还没有更上快照</span><br>    reply-&gt;<span class="hljs-built_in">set_success</span>(<span class="hljs-literal">false</span>);<br>    reply-&gt;<span class="hljs-built_in">set_term</span>(m_currentTerm);<br>    reply-&gt;<span class="hljs-built_in">set_updatenextindex</span>(<br>        m_lastSnapshotIncludeIndex +<br>        <span class="hljs-number">1</span>);  <span class="hljs-comment">// todo 如果想直接弄到最新好像不对，因为是从后慢慢往前匹配的，这里不匹配说明后面的都不匹配</span><br>&#125;<br></code></pre></td></tr></table></figure>
+<p>这里为什么？</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">// 错误写法like：  rf.shrinkLogsToIndex(args.PrevLogIndex)</span><br>    <span class="hljs-comment">// rf.logs = append(rf.logs, args.Entries...)</span><br>    <span class="hljs-comment">// 因为可能会收到过期的log！！！ 因此这里是大于等于</span><br>    <span class="hljs-built_in">myAssert</span>(<br>        <span class="hljs-built_in">getLastLogIndex</span>() &gt;= args-&gt;<span class="hljs-built_in">prevlogindex</span>() + args-&gt;<span class="hljs-built_in">entries_size</span>(),<br>        format(<span class="hljs-string">&quot;[func-AppendEntries1-rf&#123;%d&#125;]rf.getLastLogIndex()&#123;%d&#125; != args.PrevLogIndex&#123;%d&#125;+len(args.Entries)&#123;%d&#125;&quot;</span>,<br>               m_me, <span class="hljs-built_in">getLastLogIndex</span>(), args-&gt;<span class="hljs-built_in">prevlogindex</span>(), args-&gt;<span class="hljs-built_in">entries_size</span>()));<br></code></pre></td></tr></table></figure>
+<h3 id="raftsendappendentries函数">Raft::sendAppendEntries()函数</h3>
+<p><strong>函数原型</strong>：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">Raft::sendAppendEntries</span><span class="hljs-params">(<span class="hljs-type">int</span> server, std::shared_ptr&lt;raftRpcProctoc::AppendEntriesArgs&gt; args,</span></span><br><span class="hljs-params"><span class="hljs-function">                             std::shared_ptr&lt;raftRpcProctoc::AppendEntriesReply&gt; reply,</span></span><br><span class="hljs-params"><span class="hljs-function">                             std::shared_ptr&lt;<span class="hljs-type">int</span>&gt; appendNums)</span></span><br></code></pre></td></tr></table></figure>
+<p>args是要发送的AE
+rpc，reply是返回，m_peers是一个代理类的数组，直接调用m_peers[server]的AppendEntries函数，并得到返回值，如果ok为false直接报错并返回，否则对reply进行处理。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-type">bool</span> ok = m_peers[server]-&gt;<span class="hljs-built_in">AppendEntries</span>(args.<span class="hljs-built_in">get</span>(), reply.<span class="hljs-built_in">get</span>());<br></code></pre></td></tr></table></figure>
+<p>加锁，同时收到多个reply的并发处理。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-function">std::lock_guard&lt;std::mutex&gt; <span class="hljs-title">lg1</span><span class="hljs-params">(m_mtx)</span></span>;<br></code></pre></td></tr></table></figure>
+<p>如果reply-&gt;term() &gt;
+m_currentTerm,说明自己的任期号已经不是最新的了，将自己转为follower：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-keyword">if</span> (reply-&gt;<span class="hljs-built_in">term</span>() &gt; m_currentTerm) &#123;<br>    m_status = Follower;<br>    m_currentTerm = reply-&gt;<span class="hljs-built_in">term</span>();<br>    m_votedFor = <span class="hljs-number">-1</span>;<br>    <span class="hljs-keyword">return</span> ok;<br>  &#125;<br></code></pre></td></tr></table></figure>
+<p>如果reply-&gt;term() &lt;
+m_currentTerm，说明收到的是过期回复，直接返回即可。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (reply-&gt;<span class="hljs-built_in">term</span>() &lt; m_currentTerm) &#123;<br>    <span class="hljs-built_in">DPrintf</span>(<span class="hljs-string">&quot;[func -sendAppendEntries  rf&#123;%d&#125;]  节点：&#123;%d&#125;的term&#123;%d&#125;&lt;rf&#123;%d&#125;的term&#123;%d&#125;\n&quot;</span>, m_me, server, reply-&gt;<span class="hljs-built_in">term</span>(),<br>            m_me, m_currentTerm);<br>    <span class="hljs-keyword">return</span> ok;<br>  &#125;<br></code></pre></td></tr></table></figure>
+<p>如果reply-&gt;success()不为真：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-keyword">if</span> (!reply-&gt;<span class="hljs-built_in">success</span>()) &#123;<br>   <span class="hljs-comment">// 日志不匹配，正常来说就是index要往前-1，既然能到这里，第一个日志（idnex =</span><br>   <span class="hljs-comment">//  1）发送后肯定是匹配的，因此不用考虑变成负数 因为真正的环境不会知道是服务器宕机还是发生网络分区了</span><br>   <span class="hljs-keyword">if</span> (reply-&gt;<span class="hljs-built_in">updatenextindex</span>() != <span class="hljs-number">-100</span>) &#123;		<span class="hljs-comment">// -100说明对方的任期号比自己大，在前面已经处理过了（转为follower）</span><br>     <span class="hljs-comment">// todo:待总结，就算term匹配，失败的时候nextIndex也不是照单全收的，因为如果发生rpc延迟，leader的term可能从不符合term要求</span><br>     <span class="hljs-comment">// 变得符合term要求</span><br>     <span class="hljs-comment">// 但是不能直接赋值reply.UpdateNextIndex</span><br>     <span class="hljs-built_in">DPrintf</span>(<span class="hljs-string">&quot;[func -sendAppendEntries  rf&#123;%d&#125;]  返回的日志term相等，但是不匹配，回缩nextIndex[%d]：&#123;%d&#125;\n&quot;</span>, m_me,<br>             server, reply-&gt;<span class="hljs-built_in">updatenextindex</span>());<br>       <br>     <span class="hljs-comment">// 更新server下次要更新的index</span><br>     m_nextIndex[server] = reply-&gt;<span class="hljs-built_in">updatenextindex</span>();  <span class="hljs-comment">// 失败是不更新matchIndex的</span><br>   &#125;<br>   <span class="hljs-comment">//	怎么越写越感觉rf.nextIndex数组是冗余的呢，看下论文fig2，其实不是冗余的</span><br> &#125;<br></code></pre></td></tr></table></figure>
+<p>否则说明更新成功,同时更新server的m_matchIndex和m_nextIndex，并将appendNums所对应的值加一。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-keyword">else</span> &#123;<br>   *appendNums = *appendNums + <span class="hljs-number">1</span>;<br>   <span class="hljs-built_in">DPrintf</span>(<span class="hljs-string">&quot;---------------------------tmp------------------------- 節點&#123;%d&#125;返回true,當前*appendNums&#123;%d&#125;&quot;</span>, server,<br>           *appendNums);<br>   <span class="hljs-comment">// rf.matchIndex[server] = len(args.Entries) //只要返回一个响应就对其matchIndex应该对其做出反应，</span><br>   <span class="hljs-comment">// 但是这么修改是有问题的，如果对某个消息发送了多遍（心跳时就会再发送），那么一条消息会导致n次上涨</span><br>   m_matchIndex[server] = std::<span class="hljs-built_in">max</span>(m_matchIndex[server], args-&gt;<span class="hljs-built_in">prevlogindex</span>() + args-&gt;<span class="hljs-built_in">entries_size</span>());<br>   m_nextIndex[server] = m_matchIndex[server] + <span class="hljs-number">1</span>;<br>   <span class="hljs-type">int</span> lastLogIndex = <span class="hljs-built_in">getLastLogIndex</span>();<br><br>   <span class="hljs-built_in">myAssert</span>(m_nextIndex[server] &lt;= lastLogIndex + <span class="hljs-number">1</span>,<br>            format(<span class="hljs-string">&quot;error msg:rf.nextIndex[%d] &gt; lastLogIndex+1, len(rf.logs) = %d   lastLogIndex&#123;%d&#125; = %d&quot;</span>, server,<br>                   m_logs.<span class="hljs-built_in">size</span>(), server, lastLogIndex));<br>   <span class="hljs-keyword">if</span> (*appendNums &gt;= <span class="hljs-number">1</span> + m_peers.<span class="hljs-built_in">size</span>() / <span class="hljs-number">2</span>) &#123;<br>     <span class="hljs-comment">// 可以commit了</span><br>     <span class="hljs-comment">// 两种方法保证幂等性，1.赋值为0 	2.上面≥改为==</span><br><br>     *appendNums = <span class="hljs-number">0</span>;<br>     <span class="hljs-comment">// todo https://578223592-laughing-halibut-wxvpggvw69qh99q4.github.dev/ 不断遍历来统计rf.commitIndex</span><br>     <span class="hljs-comment">// 改了好久！！！！！</span><br>     <span class="hljs-comment">// leader只有在当前term有日志提交的时候才更新commitIndex，因为raft无法保证之前term的Index是否提交</span><br>     <span class="hljs-comment">// 只有当前term有日志提交，之前term的log才可以被提交，只有这样才能保证“领导人完备性&#123;当选领导人的节点拥有之前被提交的所有log，当然也可能有一些没有被提交的&#125;”</span><br>     <span class="hljs-comment">// rf.leaderUpdateCommitIndex()</span><br>     <span class="hljs-keyword">if</span> (args-&gt;<span class="hljs-built_in">entries_size</span>() &gt; <span class="hljs-number">0</span> &amp;&amp; args-&gt;<span class="hljs-built_in">entries</span>(args-&gt;<span class="hljs-built_in">entries_size</span>() - <span class="hljs-number">1</span>).<span class="hljs-built_in">logterm</span>() == m_currentTerm) &#123;<br>       <span class="hljs-built_in">DPrintf</span>(<br>           <span class="hljs-string">&quot;---------------------------tmp------------------------- 当前term有log成功提交，更新leader的m_commitIndex &quot;</span><br>           <span class="hljs-string">&quot;from&#123;%d&#125; to&#123;%d&#125;&quot;</span>,<br>           m_commitIndex, args-&gt;<span class="hljs-built_in">prevlogindex</span>() + args-&gt;<span class="hljs-built_in">entries_size</span>());<br><br>       m_commitIndex = std::<span class="hljs-built_in">max</span>(m_commitIndex, args-&gt;<span class="hljs-built_in">prevlogindex</span>() + args-&gt;<span class="hljs-built_in">entries_size</span>());<br>     &#125;<br>     <span class="hljs-built_in">myAssert</span>(m_commitIndex &lt;= lastLogIndex,<br>              format(<span class="hljs-string">&quot;[func-sendAppendEntries,rf&#123;%d&#125;] lastLogIndex:%d  rf.commitIndex:%d\n&quot;</span>, m_me, lastLogIndex,<br>                     m_commitIndex));<br>     <span class="hljs-comment">// fmt.Printf(&quot;[func-sendAppendEntries,rf&#123;%v&#125;] len(rf.logs):%v  rf.commitIndex:%v\n&quot;, rf.me, len(rf.logs),</span><br>     <span class="hljs-comment">// rf.commitIndex)</span><br>   &#125;<br></code></pre></td></tr></table></figure>
+<h3 id="raftsendrequestvote函数">Raft::sendRequestVote()函数</h3>
+<p>函数总览:</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">Raft::sendRequestVote</span><span class="hljs-params">(<span class="hljs-type">int</span> server, std::shared_ptr&lt;mprrpc::RequestVoteArgs&gt; args, std::shared_ptr&lt;mprrpc::RequestVoteReply&gt; reply,</span></span><br><span class="hljs-params"><span class="hljs-function">                           std::shared_ptr&lt;<span class="hljs-type">int</span>&gt; votedNum)</span> </span>&#123;<br><br><br>    <span class="hljs-type">bool</span> ok = m_peers[server]-&gt;<span class="hljs-built_in">RequestVote</span>(args.<span class="hljs-built_in">get</span>(),reply.<span class="hljs-built_in">get</span>());<br><br>    <span class="hljs-keyword">if</span> (!ok) &#123;<br>        <span class="hljs-keyword">return</span> ok;<span class="hljs-comment">//rpc通信失败就立即返回，避免资源消耗</span><br>    &#125;<br><br>    <span class="hljs-function">lock_guard&lt;mutex&gt; <span class="hljs-title">lg</span><span class="hljs-params">(m_mtx)</span></span>;<br>    <span class="hljs-keyword">if</span>(reply-&gt;<span class="hljs-built_in">term</span>() &gt; m_currentTerm)&#123;<br>        <span class="hljs-comment">//回复的term比自己大，说明自己落后了，那么就更新自己的状态并且退出</span><br>        m_status = Follower; <span class="hljs-comment">//三变：身份，term，和投票</span><br>        m_currentTerm = reply-&gt;<span class="hljs-built_in">term</span>();<br>        m_votedFor = <span class="hljs-number">-1</span>;  <span class="hljs-comment">//term更新了，那么这个term自己肯定没投过票，为-1</span><br>        <span class="hljs-built_in">persist</span>(); <span class="hljs-comment">//持久化</span><br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;<br>    &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> ( reply-&gt;<span class="hljs-built_in">term</span>()   &lt; m_currentTerm   ) &#123;<br>        <span class="hljs-comment">//回复的term比自己的term小，不应该出现这种情况</span><br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;<br>    &#125;<br><br>    <span class="hljs-keyword">if</span>(!reply-&gt;<span class="hljs-built_in">votegranted</span>())&#123;  <span class="hljs-comment">//这个节点因为某些原因没给自己投票，没啥好说的，结束本函数</span><br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;<br>    &#125;<br>  <span class="hljs-comment">//给自己投票了</span><br>    *votedNum = *votedNum + <span class="hljs-number">1</span>; <span class="hljs-comment">//voteNum多一个</span><br>    <span class="hljs-keyword">if</span> (*votedNum &gt;=  m_peers.<span class="hljs-built_in">size</span>()/<span class="hljs-number">2</span>+<span class="hljs-number">1</span>) &#123;<br>        <span class="hljs-comment">//变成leader</span><br>        *votedNum = <span class="hljs-number">0</span>;   <span class="hljs-comment">//重置voteDNum，如果不重置，那么就会变成leader很多次，是没有必要的，甚至是错误的！！！</span><br><br>        <span class="hljs-comment">//	第一次变成leader，初始化状态和nextIndex、matchIndex</span><br>        m_status = Leader;<br>        <span class="hljs-type">int</span> lastLogIndex =   <span class="hljs-built_in">getLastLogIndex</span>();<br>        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt;m_nextIndex.<span class="hljs-built_in">size</span>()  ; i++) &#123;<br>            m_nextIndex[i] = lastLogIndex + <span class="hljs-number">1</span> ;<span class="hljs-comment">//有效下标从1开始，因此要+1</span><br>            m_matchIndex[i] = <span class="hljs-number">0</span>;               <span class="hljs-comment">//每换一个领导都是从0开始，见论文的fig2</span><br>        &#125;<br>        <span class="hljs-function">std::thread <span class="hljs-title">t</span><span class="hljs-params">(&amp;Raft::doHeartBeat, <span class="hljs-keyword">this</span>)</span></span>; <span class="hljs-comment">//马上向其他节点宣告自己就是leader</span><br>        t.<span class="hljs-built_in">detach</span>();<br><br>        <span class="hljs-built_in">persist</span>();  <br>    &#125;<br>    <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>首先发送投票请求，如果失败直接返回：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><br><span class="hljs-type">bool</span> ok = m_peers[server]-&gt;<span class="hljs-built_in">RequestVote</span>(args.<span class="hljs-built_in">get</span>(), reply.<span class="hljs-built_in">get</span>());<br><br><br><span class="hljs-keyword">if</span> (!ok) &#123;<br>  <span class="hljs-keyword">return</span> ok; <br>&#125;<br></code></pre></td></tr></table></figure>
+<p>如果成功，加锁后对reply进行处理：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-function">std::lock_guard&lt;std::mutex&gt; <span class="hljs-title">lg</span><span class="hljs-params">(m_mtx)</span></span>;<br>  <span class="hljs-keyword">if</span> (reply-&gt;<span class="hljs-built_in">term</span>() &gt; m_currentTerm) &#123;	<span class="hljs-comment">// 对方任期号比自己大，说明自己应该转变为follower</span><br>    m_status = Follower;  <span class="hljs-comment">// 三变：身份，term，和投票</span><br>    m_currentTerm = reply-&gt;<span class="hljs-built_in">term</span>();<br>    m_votedFor = <span class="hljs-number">-1</span>;<br>    <span class="hljs-built_in">persist</span>();<br>    <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;<br>  &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (reply-&gt;<span class="hljs-built_in">term</span>() &lt; m_currentTerm) &#123;	<span class="hljs-comment">// 对方任期号比自己小，说明是过期的回复</span><br>    <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;<br>  &#125;<br></code></pre></td></tr></table></figure>
+<p>如果以上两种情况都不满足，那么就是合法的投票回复：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs cpp"> <span class="hljs-keyword">if</span> (!reply-&gt;<span class="hljs-built_in">votegranted</span>()) &#123;	<span class="hljs-comment">// 如果对方没有给自己投票，直接返回</span><br>    <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;<br>  &#125;<br><br>*votedNum = *votedNum + <span class="hljs-number">1</span>;		<span class="hljs-comment">// 投票数 + 1</span><br>  <span class="hljs-keyword">if</span> (*votedNum &gt;= m_peers.<span class="hljs-built_in">size</span>() / <span class="hljs-number">2</span> + <span class="hljs-number">1</span>) &#123;	<span class="hljs-comment">// 若得票已经大于一半，转变为leader</span><br>    <span class="hljs-comment">// 变成leader</span><br>    *votedNum = <span class="hljs-number">0</span>;<br>    <span class="hljs-keyword">if</span> (m_status == Leader) &#123;<br>      <span class="hljs-comment">// 如果已经是leader了，那么是就是了，不会进行下一步处理了k</span><br>      <span class="hljs-built_in">myAssert</span>(<span class="hljs-literal">false</span>,<br>               format(<span class="hljs-string">&quot;[func-sendRequestVote-rf&#123;%d&#125;]  term:&#123;%d&#125; 同一个term当两次领导，error&quot;</span>, m_me, m_currentTerm));<br>    &#125;<br>    <span class="hljs-comment">//	之前不是leader，现在需要变为leader</span><br>    m_status = Leader;<br><br><br>    <span class="hljs-type">int</span> lastLogIndex = <span class="hljs-built_in">getLastLogIndex</span>();<br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; m_nextIndex.<span class="hljs-built_in">size</span>(); i++) &#123;<br>      m_nextIndex[i] = lastLogIndex + <span class="hljs-number">1</span>;  <span class="hljs-comment">// 有效下标从1开始，因此要+1</span><br>      m_matchIndex[i] = <span class="hljs-number">0</span>;                <span class="hljs-comment">// 每换一个领导都是从0开始，见fig2</span><br>    &#125;<br>    <span class="hljs-function">std::thread <span class="hljs-title">t</span><span class="hljs-params">(&amp;Raft::doHeartBeat, <span class="hljs-keyword">this</span>)</span></span>;  <span class="hljs-comment">// 马上向其他节点宣告自己就是leader</span><br>    t.<span class="hljs-built_in">detach</span>();<br><br>    <span class="hljs-built_in">persist</span>();<br>  &#125;<br></code></pre></td></tr></table></figure>
+<h3 id="raftrequestvote函数">Raft::RequestVote()函数</h3>
+<p>函数总览：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">Raft::RequestVote</span><span class="hljs-params">( <span class="hljs-type">const</span> mprrpc::RequestVoteArgs *args, mprrpc::RequestVoteReply *reply)</span> </span>&#123;<br>    <span class="hljs-function">lock_guard&lt;mutex&gt; <span class="hljs-title">lg</span><span class="hljs-params">(m_mtx)</span></span>;<br><br>    <span class="hljs-function">Defer <span class="hljs-title">ec1</span><span class="hljs-params">([<span class="hljs-keyword">this</span>]() -&gt; <span class="hljs-type">void</span> &#123; <span class="hljs-comment">//应该先持久化，再撤销lock，因此这个写在lock后面</span></span></span><br><span class="hljs-params"><span class="hljs-function">        <span class="hljs-keyword">this</span>-&gt;persist();</span></span><br><span class="hljs-params"><span class="hljs-function">    &#125;)</span></span>;<br>    <span class="hljs-comment">// 对args的term的三种情况分别进行处理，大于小于等于自己的term都是不同的处理</span><br>    <span class="hljs-comment">// reason: 出现网络分区，该竞选者已经OutOfDate(过时）</span><br>    <span class="hljs-keyword">if</span> (args-&gt;<span class="hljs-built_in">term</span>() &lt; m_currentTerm) &#123;	 <span class="hljs-comment">// 为什么不是小于等于？</span><br>        reply-&gt;<span class="hljs-built_in">set_term</span>(m_currentTerm);<br>        reply-&gt;<span class="hljs-built_in">set_votestate</span>(Expire);<br>        reply-&gt;<span class="hljs-built_in">set_votegranted</span>(<span class="hljs-literal">false</span>);<br>        <span class="hljs-keyword">return</span>;<br>    &#125;<br>    <span class="hljs-comment">// 论文fig2:右下角，如果任何时候rpc请求或者响应的term大于自己的term，更新term，并变成follower</span><br>    <span class="hljs-keyword">if</span> (args-&gt;<span class="hljs-built_in">term</span>() &gt; m_currentTerm) &#123;<br><br>        m_status = Follower;<br>        m_currentTerm = args-&gt;<span class="hljs-built_in">term</span>();<br>        m_votedFor = <span class="hljs-number">-1</span>;<br><br>        <span class="hljs-comment">//	重置定时器：收到leader的ae，开始选举，透出票</span><br>        <span class="hljs-comment">//  这时候更新了term之后，votedFor也要置为-1</span><br>    &#125;<br><br>    <span class="hljs-comment">//	现在节点任期都是相同的(任期小的也已经更新到新的args的term了)</span><br>    <span class="hljs-comment">//	要检查log的term和index是不是匹配的了</span><br>    <span class="hljs-type">int</span> lastLogTerm = <span class="hljs-built_in">getLastLogIndex</span>();<br>    <span class="hljs-comment">//只有没投票，且candidate的日志的新的程度 ≥ 接受者的日志新的程度 才会授票</span><br>    <span class="hljs-keyword">if</span> (!<span class="hljs-built_in">UpToDate</span>(args-&gt;<span class="hljs-built_in">lastlogindex</span>(), args-&gt;<span class="hljs-built_in">lastlogterm</span>())) &#123;<br><br>        <span class="hljs-comment">//日志太旧了</span><br>        reply-&gt;<span class="hljs-built_in">set_term</span>(m_currentTerm);<br>        reply-&gt;<span class="hljs-built_in">set_votestate</span>(Voted);<br>        reply-&gt;<span class="hljs-built_in">set_votegranted</span>(<span class="hljs-literal">false</span>);<br>        <span class="hljs-keyword">return</span>;<br>    &#125;<br>   <br><span class="hljs-comment">//    当因为网络质量不好导致的请求丢失重发就有可能！！！！</span><br><span class="hljs-comment">//    因此需要避免重复投票</span><br>    <span class="hljs-keyword">if</span> (m_votedFor != <span class="hljs-number">-1</span> &amp;&amp; m_votedFor != args-&gt;<span class="hljs-built_in">candidateid</span>()) &#123;<br>        reply-&gt;<span class="hljs-built_in">set_term</span>(m_currentTerm);<br>        reply-&gt;<span class="hljs-built_in">set_votestate</span>(Voted);<br>        reply-&gt;<span class="hljs-built_in">set_votegranted</span>(<span class="hljs-literal">false</span>);<br>        <span class="hljs-keyword">return</span>;<br>    &#125; <span class="hljs-keyword">else</span> &#123;<br>        <span class="hljs-comment">//同意投票</span><br>        m_votedFor = args-&gt;<span class="hljs-built_in">candidateid</span>();<br>        m_lastResetElectionTime = <span class="hljs-built_in">now</span>();  <span class="hljs-comment">//认为必须要在投出票的时候才重置定时器，</span><br>        reply-&gt;<span class="hljs-built_in">set_term</span>(m_currentTerm);<br>        reply-&gt;<span class="hljs-built_in">set_votestate</span>(Normal);<br>        reply-&gt;<span class="hljs-built_in">set_votegranted</span>(<span class="hljs-literal">true</span>);<br>        <span class="hljs-keyword">return</span>;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<h2 id="日志复制心跳">日志复制/心跳</h2>
+<figure>
+<img
+src="/img/KV-Server%E8%AE%B0%E5%BD%95/Fqql9dbJTAJS5EA6pby_AIIw7mVo.png" srcset="/img/loading.gif" lazyload
+alt="img" />
+<figcaption aria-hidden="true">img</figcaption>
+</figure>
+<blockquote>
+<p>可以从流程图看到，函数实现上我尽量将心跳日志复制的流程统一，方便理解和后期统一修改理解AppendEntry
+相关内容，snapshot的逻辑是类似的。</p>
+</blockquote>
+<p><strong>leaderHearBeatTicker</strong>:负责查看是否该发送心跳了，如果该发起就执行doHeartBeat。</p>
+<p><strong>doHeartBeat</strong>:实际发送心跳，判断到底是构造需要发送的rpc，并多线程调用sendRequestVote处理rpc及其相应。</p>
+<p><strong>sendAppendEntries</strong>:负责发送日志的RPC，在发送完rpc后还需要负责接收并处理对端发送回来的响应。</p>
+<p><strong>leaderSendSnapShot</strong>:负责发送快照的RPC，在发送完rpc后还需要负责接收并处理对端发送回来的响应。</p>
+<p><strong>AppendEntries</strong>:接收leader发来的日志请求，主要检验用于检查当前日志是否匹配并同步leader的日志到本机。</p>
+<p><strong>InstallSnapshot</strong>:接收leader发来的快照请求，同步快照到本机。</p>
+<h3 id="leaderhearbeatticker">leaderHearBeatTicker</h3>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">// 负责查看是否该发送心跳了，如果该发起就执行doHeartBeat</span><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">Raft::leaderHearBeatTicker</span><span class="hljs-params">()</span> </span>&#123;<br>    <span class="hljs-keyword">while</span> (<span class="hljs-literal">true</span>) &#123;<br>        <span class="hljs-keyword">auto</span> nowTime = <span class="hljs-built_in">now</span>();<br>        m_mtx.<span class="hljs-built_in">lock</span>();<br>        <span class="hljs-keyword">auto</span> suitableSleepTime = std::chrono::<span class="hljs-built_in">milliseconds</span>(HeartBeatTimeout) + m_lastResetHearBeatTime - nowTime;<br>        m_mtx.<span class="hljs-built_in">unlock</span>();<br>        <span class="hljs-keyword">if</span> (suitableSleepTime.<span class="hljs-built_in">count</span>() &lt; <span class="hljs-number">1</span>) &#123;<br>            suitableSleepTime = std::chrono::<span class="hljs-built_in">milliseconds</span>(<span class="hljs-number">1</span>);<br>        &#125;<br>        std::this_thread::<span class="hljs-built_in">sleep_for</span>(suitableSleepTime);<br>        <span class="hljs-keyword">if</span> ((m_lastResetHearBeatTime - nowTime).<span class="hljs-built_in">count</span>() &gt; <span class="hljs-number">0</span>) &#123; <span class="hljs-comment">//说明睡眠的这段时间有重置定时器，那么就没有超时，再次睡眠</span><br>            <span class="hljs-keyword">continue</span>;<br>        &#125;<br>        <span class="hljs-built_in">doHeartBeat</span>();<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>其基本逻辑和选举定时器electionTimeOutTicker一模一样，不一样之处在于设置的休眠时间不同，这里是根据HeartBeatTimeout来设置，而<code>electionTimeOutTicker中是根据getRandomizedElectionTimeout()</code>
+设置。</p>
+<h3 id="doheartbeat"><strong>doHeartBeat</strong></h3>
+<blockquote>
+<p>这里目前逻辑写的不统一，发送快照leaderSendSnapShot和发送日志sendAppendEntries的rpc值的构造没有统一，且写在一坨。</p>
+<p>可以抽离出来。目前先将就，关注主要逻辑。</p>
+</blockquote>
+<p>带注释版:</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">// 发送心跳，判断到底是构造需要发送的rpc，并多线程调用sendRequestVote处理rpc及其相应</span><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">Raft::doHeartBeat</span><span class="hljs-params">()</span> </span>&#123;<br>    <span class="hljs-function">std::lock_guard&lt;mutex&gt; <span class="hljs-title">g</span><span class="hljs-params">(m_mtx)</span></span>;<br>    <span class="hljs-keyword">if</span> (m_status == Leader) &#123;<br>        <span class="hljs-keyword">auto</span> appendNums = std::<span class="hljs-built_in">make_shared</span>&lt;<span class="hljs-type">int</span>&gt;(<span class="hljs-number">1</span>); <span class="hljs-comment">//正确返回的节点的数量</span><br>        <span class="hljs-comment">//对Follower（除了自己外的所有节点发送AE）</span><br>        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; m_peers.<span class="hljs-built_in">size</span>(); i++) &#123;<br>            <span class="hljs-keyword">if</span>(i == m_me)&#123; <span class="hljs-comment">//不对自己发送AE</span><br>                <span class="hljs-keyword">continue</span>;<br>            &#125;<br>            <span class="hljs-comment">//日志压缩加入后要判断是发送快照还是发送AE</span><br>            <span class="hljs-keyword">if</span> (m_nextIndex[i] &lt;= m_lastSnapshotIncludeIndex) &#123;<br>				<span class="hljs-comment">// 要发送的日志已经被做成快照，必须发送快照了</span><br>                <span class="hljs-function">std::thread <span class="hljs-title">t</span><span class="hljs-params">(&amp;Raft::leaderSendSnapShot, <span class="hljs-keyword">this</span>, i)</span></span>; <br>                t.<span class="hljs-built_in">detach</span>();<br>                <span class="hljs-keyword">continue</span>;<br>            &#125;<br>            <span class="hljs-comment">// 发送心跳，构造发送值</span><br>            <span class="hljs-comment">// 下面都是m_nextIndex[i] &gt; m_lastSnapshotIncludeIndex了</span><br>            <span class="hljs-type">int</span> preLogIndex = <span class="hljs-number">-1</span>;<br>            <span class="hljs-type">int</span> PrevLogTerm = <span class="hljs-number">-1</span>;<br>            <span class="hljs-built_in">getPrevLogInfo</span>(i, &amp;preLogIndex, &amp;PrevLogTerm);  <span class="hljs-comment">//获取本次发送的一系列日志的上一条日志的信息，以判断是否匹配</span><br>            std::shared_ptr&lt;mprrpc::AppendEntriesArgs&gt; appendEntriesArgs = std::<span class="hljs-built_in">make_shared</span>&lt;mprrpc::AppendEntriesArgs&gt;();<br>            appendEntriesArgs-&gt;<span class="hljs-built_in">set_term</span>(m_currentTerm);<br>            appendEntriesArgs-&gt;<span class="hljs-built_in">set_leaderid</span>(m_me);<br>            appendEntriesArgs-&gt;<span class="hljs-built_in">set_prevlogindex</span>(preLogIndex);<br>            appendEntriesArgs-&gt;<span class="hljs-built_in">set_prevlogterm</span>(PrevLogTerm);<br>            appendEntriesArgs-&gt;<span class="hljs-built_in">clear_entries</span>();<br>            appendEntriesArgs-&gt;<span class="hljs-built_in">set_leadercommit</span>(m_commitIndex);<br>            <span class="hljs-comment">// 作用是携带上prelogIndex的下一条日志及其之后的所有日志</span><br>            <span class="hljs-comment">//leader对每个节点发送的日志长短不一，但是都保证从prevIndex发送直到最后</span><br>            <span class="hljs-comment">// 注意这个preLogIndex和PrevLogTerm是对应follower的index和term</span><br>            <span class="hljs-keyword">if</span> (preLogIndex != m_lastSnapshotIncludeIndex) &#123;	<span class="hljs-comment">// follower的preLogIndex &gt; leader快照的最后一条日志index,那么发送从preindex + 1一直到最后</span><br>                <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> j = <span class="hljs-built_in">getSlicesIndexFromLogIndex</span>(preLogIndex) + <span class="hljs-number">1</span>; j &lt; m_logs.<span class="hljs-built_in">size</span>(); ++j) &#123;<br>                    mprrpc::LogEntry *sendEntryPtr = appendEntriesArgs-&gt;<span class="hljs-built_in">add_entries</span>();<br>                    *sendEntryPtr = m_logs[j];  <br>                &#125;<br>            &#125; <span class="hljs-keyword">else</span> &#123;	<span class="hljs-comment">// follower的preLogIndex == leader快照的最后一条日志index，等于要把m_logs的日志全发过去</span><br>                <span class="hljs-keyword">for</span> (<span class="hljs-type">const</span> <span class="hljs-keyword">auto</span>&amp; item: m_logs) &#123;<br>                    mprrpc::LogEntry *sendEntryPtr = appendEntriesArgs-&gt;<span class="hljs-built_in">add_entries</span>();<br>                    *sendEntryPtr = item;  <br>                &#125;<br>            &#125;<br>            <span class="hljs-type">int</span> lastLogIndex = <span class="hljs-built_in">getLastLogIndex</span>();<br>            <span class="hljs-comment">//初始化返回值</span><br>            <span class="hljs-type">const</span> std::shared_ptr&lt;mprrpc::AppendEntriesReply&gt; appendEntriesReply = std::<span class="hljs-built_in">make_shared</span>&lt;mprrpc::AppendEntriesReply&gt;();<br><br>            <span class="hljs-function">std::thread <span class="hljs-title">t</span><span class="hljs-params">(&amp;Raft::sendAppendEntries, <span class="hljs-keyword">this</span>, i, appendEntriesArgs, appendEntriesReply,</span></span><br><span class="hljs-params"><span class="hljs-function">                          appendNums)</span></span>; <span class="hljs-comment">// 创建新线程并执行b函数，并传递参数</span><br>            t.<span class="hljs-built_in">detach</span>();<br>        &#125;<br>        m_lastResetHearBeatTime = <span class="hljs-built_in">now</span>(); <span class="hljs-comment">//leader发送心跳，重置心跳时间，</span><br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<h3 id="加速日志匹配">加速日志匹配</h3>
+<p>​ 这部分在<code>AppendEntries</code> 函数里，涉及代码：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">// 不匹配，不匹配不是一个一个往前，而是有优化加速</span><br><span class="hljs-comment">// PrevLogIndex 长度合适，但是不匹配，因此往前寻找 矛盾的term的第一个元素</span><br><span class="hljs-comment">// 为什么该term的日志都是矛盾的呢？也不一定都是矛盾的，只是这么优化减少rpc而已</span><br><span class="hljs-comment">// ？什么时候term会矛盾呢？很多情况，比如leader接收了日志之后马上就崩溃等等</span><br>reply-&gt;<span class="hljs-built_in">set_updatenextindex</span>(args-&gt;<span class="hljs-built_in">prevlogindex</span>());<br><br><span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> index = args-&gt;<span class="hljs-built_in">prevlogindex</span>(); index &gt;= m_lastSnapshotIncludeIndex; --index) &#123;<br>    <span class="hljs-keyword">if</span> (<span class="hljs-built_in">getLogTermFromLogIndex</span>(index) != <span class="hljs-built_in">getLogTermFromLogIndex</span>(args-&gt;<span class="hljs-built_in">prevlogindex</span>())) &#123;<br>        reply-&gt;<span class="hljs-built_in">set_updatenextindex</span>(index + <span class="hljs-number">1</span>);<br>        <span class="hljs-keyword">break</span>;<br>    &#125;<br>&#125;<br><br>reply-&gt;<span class="hljs-built_in">set_success</span>(<span class="hljs-literal">false</span>);<br>reply-&gt;<span class="hljs-built_in">set_term</span>(m_currentTerm);<br><br><span class="hljs-keyword">return</span>;<br></code></pre></td></tr></table></figure>
+<p>如果日志不匹配的话可以一个一个往前的倒退。但是这样的话可能会设计很多个rpc之后才能找到匹配的日志，那么就一次多倒退几个数。</p>
+<p>倒退几个呢？这里认为如果某一个日志不匹配，那么这<strong>一个日志所在的term的所有日志大概率都不匹配</strong>，那么就倒退到
+最后一个日志所在的term的最后那个命令。</p>
+<h2 id="持久化">持久化</h2>
+<p>持久化就是把不能丢失的数据保存到磁盘。</p>
+<p>持久化的内容为两部分：</p>
+<ol type="1">
+<li>raft节点的部分信息；
+<ol type="1">
+<li><code>m_currentTerm</code>
+：当前节点的Term，避免重复到一个Term，可能会遇到重复投票等问题。</li>
+<li><code>m_votedFor</code>
+：当前Term给谁投过票，避免故障后重复投票。</li>
+<li><code>m_logs</code> ：raft节点保存的全部的日志信息。</li>
+</ol></li>
+<li>kvDb的快照
+<ol type="1">
+<li><code>m_lastSnapshotIncludeIndex</code>
+：快照的信息，快照最新包含哪个日志Index</li>
+<li><code>m_lastSnapshotIncludeTerm</code>
+：快照的信息，快照最新包含哪个日志Term，与m_lastSnapshotIncludeIndex
+是对应的。</li>
+</ol></li>
+</ol>
+<p>不妨想一想，其他的信息为什么不用持久化，比如说：身份、commitIndex、applyIndex等等。</p>
+<blockquote>
+<p>applyIndex不持久化是经典raft的实现，在一些工业实现上可能会优化，从而持久化。</p>
+<p>即applyIndex不持久化不会影响“共识”。</p>
+</blockquote>
+<p>Snapshot是kvDb的快照，也可以看成是日志，因此:全部的日志 = m_logs +
+snapshot</p>
+<p>因为Snapshot是kvDB生成的，kvDB肯定不知道raft的存在，而什么term、什么日志Index都是raft才有的概念，因此snapshot中肯定没有term和index信息。</p>
+<p>所以需要raft自己来保存这些信息。</p>
+<p>故，快照与m_logs联合起来理解即可。</p>
+<h3
+id="为什么要持久化这些内容"><strong>为什么要持久化这些内容？</strong></h3>
+<p>两部分原因：共识安全、优化。</p>
+<p>除了snapshot相关的部分，其他部分都是为了共识安全。</p>
+<p>而snapshot是因为日志一个一个的叠加，会导致最后的存储非常大，因此使用snapshot来压缩日志。</p>
+<blockquote>
+<p>不严谨的一种理解方式：</p>
+<p>为什么snashot可以压缩日志？</p>
+<p>日志是追加写的，对于一个变量的重复修改可能会重复保存，理论上对一个变量的反复修改会导致日志不断增大。</p>
+<p>而snapshot是原地写，即只保存一个变量最后的值，自然所需要的空间就小了。</p>
+</blockquote>
+<h3 id="什么时候持久化">什么时候持久化</h3>
+<p>需要持久化的内容发送改变的时候就要注意持久化。</p>
+<p>比如<code>term</code> 增加，日志增加等等。</p>
+<p>具体的可以查看代码仓库中的<code>void Raft::persist()</code>
+相关内容。</p>
+<h3 id="谁来调用持久化">谁来调用持久化</h3>
+<p>谁来调用都可以，只要能保证需要持久化的内容能正确持久化。</p>
+<p>仓库代码中选择的是raft类自己来完成持久化。因为raft类最方便感知自己的term之类的信息有没有变化。</p>
+<p>注意，虽然持久化很耗时，但是持久化这些内容的时候不要放开锁，以防其他线程改变了这些值，导致其它异常。</p>
+<h3
+id="具体怎么实现持久化使用哪个函数持久化">具体怎么实现持久化|使用哪个函数持久化</h3>
+<p>其实持久化是一个非常难的事情，因为持久化需要考虑：速度、大小、二进制安全。</p>
+<p>因此仓库实现目前采用的是使用boost库中的持久化实现，将需要持久化的数据序列化转成<code>std::string</code>
+类型再写入磁盘。</p>
+<blockquote>
+<p>当然其他的序列化方式也少可行的。</p>
+<p>可以看到这一块还是有优化空间的，因此可以尝试对这里优化优化。</p>
+</blockquote>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-function">std::string <span class="hljs-title">Raft::persistData</span><span class="hljs-params">()</span> </span>&#123;<br>    BoostPersistRaftNode boostPersistRaftNode;<br>    boostPersistRaftNode.m_currentTerm = m_currentTerm;<br>    boostPersistRaftNode.m_votedFor = m_votedFor;<br>    boostPersistRaftNode.m_lastSnapshotIncludeIndex = m_lastSnapshotIncludeIndex;<br>    boostPersistRaftNode.m_lastSnapshotIncludeTerm = m_lastSnapshotIncludeTerm;<br>    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">auto</span> &amp;item: m_logs) &#123;<br>        boostPersistRaftNode.m_logs.<span class="hljs-built_in">push_back</span>(item.<span class="hljs-built_in">SerializeAsString</span>());<br>    &#125;<br><br>    std::stringstream ss;<br>    boost::<span class="hljs-function">archive::text_oarchive <span class="hljs-title">oa</span><span class="hljs-params">(ss)</span></span>;<br>    oa&lt;&lt;boostPersistRaftNode;<br>    <span class="hljs-keyword">return</span> ss.<span class="hljs-built_in">str</span>();<br>&#125;<br></code></pre></td></tr></table></figure>
+<h2 id="kvserver怎么处理外部请求">kvServer怎么处理外部请求</h2>
+<figure>
+<img
+src="/img/KV-Server%E8%AE%B0%E5%BD%95/FnyTjtal6byZPaG1eF69NKN57CbM.png" srcset="/img/loading.gif" lazyload
+alt="img" />
+<figcaption aria-hidden="true">img</figcaption>
+</figure>
+<p>图中是raftServer，这里叫成kvServer，是一样的。</p>
+<p>kvServer其实是个中间组件，负责沟通kvDB和raft节点。</p>
+<p>那么外部请求怎么打进来呢？</p>
+<p>哦吼，当然是Server来负责呀，加入后变成了：</p>
+<figure>
+<img
+src="/img/KV-Server%E8%AE%B0%E5%BD%95/Ft_negDcbLW-DMJbvTGxxGliTxCJ.png" srcset="/img/loading.gif" lazyload
+alt="img" />
+<figcaption aria-hidden="true">img</figcaption>
+</figure>
+<p><strong>kvServer怎么和上层kvDB沟通，怎么和下层raft节点沟通？</strong></p>
+<p>通过这两个成员变量实现：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs cpp">std::shared_ptr&lt;LockQueue&lt;ApplyMsg&gt; &gt; applyChan; <span class="hljs-comment">//kvServer和raft节点的通信管道</span><br>std::unordered_map&lt;std::string, std::string&gt; m_kvDB; <span class="hljs-comment">//kvDB，用unordered_map来替代</span><br></code></pre></td></tr></table></figure>
+<p>kvDB：使用的是unordered_map来代替上层的kvDB，因此没啥好说的.</p>
+<p>raft节点：其中<code>LockQueue</code>
+是一个并发安全的队列，这种方式其实是模仿的go中的channel机制。</p>
+<p>在raft类中<a
+target="_blank" rel="noopener" href="https://github.com/youngyangyang04/KVstorageBaseRaft-cpp/blob/e400068e64c3ee01f4e72039dfa9c0f198363441/src/raftCore/include/raft.h#L59C5-L59C56">这里</a>可以看到，raft类中也拥有一个applyChan，kvSever和raft类都持有同一个applyChan，来完成相互的通信。</p>
+<p>从上面的结构图中可以看到kvServer负责与外部clerk通信。</p>
+<p>那么一个外部请求的处理可以简单的看成两步：</p>
+<ol type="1">
+<li>接收外部请求。</li>
+<li>本机内部与raft和kvDB协商如何处理该请求。</li>
+<li>返回外部响应。</li>
+</ol>
+<h3 id="接收与响应外部请求"><strong>接收与响应外部请求</strong></h3>
+<p>对于1和3，请求和返回的操作我们可以通过http、自定义协议等等方式实现，但是既然我们已经写出了rpc通信的一个简单的实现（源代码可见：<a
+target="_blank" rel="noopener" href="https://github.com/youngyangyang04/KVstorageBaseRaft-cpp/tree/main/example/rpcExample">这里</a>），那就使用rpc来实现吧。</p>
+<p>而且rpc可以直接完成请求和响应这一步，后面就不用考虑外部通信的问题了，好好处理好本机的流程即可。</p>
+<p>相关函数是：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">PutAppend</span><span class="hljs-params">(google::protobuf::RpcController *controller,</span></span><br><span class="hljs-params"><span class="hljs-function">                   <span class="hljs-type">const</span> ::raftKVRpcProctoc::PutAppendArgs *request,</span></span><br><span class="hljs-params"><span class="hljs-function">                   ::raftKVRpcProctoc::PutAppendReply *response,</span></span><br><span class="hljs-params"><span class="hljs-function">                   ::google::protobuf::Closure *done)</span> <span class="hljs-keyword">override</span></span>;<br><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">Get</span><span class="hljs-params">(google::protobuf::RpcController *controller,</span></span><br><span class="hljs-params"><span class="hljs-function">             <span class="hljs-type">const</span> ::raftKVRpcProctoc::GetArgs *request,</span></span><br><span class="hljs-params"><span class="hljs-function">             ::raftKVRpcProctoc::GetReply *response,</span></span><br><span class="hljs-params"><span class="hljs-function">             ::google::protobuf::Closure *done)</span> <span class="hljs-keyword">override</span></span>;<br><br></code></pre></td></tr></table></figure>
+<p>见名知意，请求分成两种：get和put（也就是set）。</p>
+<p>如果是putAppend，clerk中就调用<code>PutAppend</code> 的rpc。</p>
+<p>如果是Get，clerk中就调用<code>Get</code> 的rpc。</p>
+<h3 id="与raft节点沟通">与raft节点沟通</h3>
+<p>在正式开始之前我们必须要先了解 <strong>线性一致性</strong>
+的相关概念。建议阅读<a
+target="_blank" rel="noopener" href="https://mit-public-courses-cn-translatio.gitbook.io/mit6-824/lecture-07-raft2/7.6-qiang-yi-zhi-linearizability">线性一致性</a>.</p>
+<p>这里讲一讲raft如何做的。</p>
+<p>每个 client
+都需要一个唯一的标识符，它的每个不同命令需要有一个顺序递增的
+commandId，clientId 和这个 commandId，clientId
+可以唯一确定一个不同的命令，从而使得各个 raft
+节点可以记录保存各命令是否已应用以及应用以后的结果。</p>
+<p>即对于每个clinet，都有一个唯一标识，对于每个client，只执行递增的命令。</p>
+<h4
+id="在保证线性一致性的情况下如何写kv">在保证线性一致性的情况下如何写kv</h4>
+<p>具体的思想在上面已经讲过，这里展示一下关键的代码实现：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">//  chForRaftIndex是一个有锁队列</span><br><span class="hljs-keyword">if</span> (!chForRaftIndex-&gt;<span class="hljs-built_in">timeOutPop</span>(CONSENSUS_TIMEOUT, &amp;raftCommitOp)) &#123;<span class="hljs-comment">//通过超时pop来限定命令执行时间，如果超过时间还没拿到消息说明命令执行超时了。</span><br><br>        <span class="hljs-keyword">if</span> (ifRequestDuplicate(op.ClientId, op.RequestId)) &#123;<br>            reply-&gt;<span class="hljs-built_in">set_err</span>(OK);<span class="hljs-comment">// 超时了,但因为是重复的请求，返回ok，实际上就算没有超时，在真正执行的时候也要判断是否重复</span><br>        &#125; <span class="hljs-keyword">else</span> &#123;<br>            reply-&gt;<span class="hljs-built_in">set_err</span>(ErrWrongLeader);   <span class="hljs-comment">///这里返回这个的目的让clerk重新尝试</span><br>        &#125;<br>    &#125; <span class="hljs-keyword">else</span> &#123;<br>        <span class="hljs-comment">//没超时，命令可能真正的在raft集群执行成功了。</span><br>        <span class="hljs-keyword">if</span> (raftCommitOp.ClientId == op.ClientId &amp;&amp;<br>            raftCommitOp.RequestId == op.RequestId) &#123;   <span class="hljs-comment">//可能发生leader的变更导致日志被覆盖，因此必须检查</span><br>            reply-&gt;<span class="hljs-built_in">set_err</span>(OK);<br>        &#125; <span class="hljs-keyword">else</span> &#123;<br>            reply-&gt;<span class="hljs-built_in">set_err</span>(ErrWrongLeader);<br>        &#125;<br>    &#125;<br></code></pre></td></tr></table></figure>
+<p>需要注意的是，这里的命令执行成功是指：本条命令在整个raft集群达到同步的状态，而不是一台机器上的raft保存了该命令。</p>
+<p>全部代码如下：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">// 处理来自clerk的Get RPC</span><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">KvServer::Get</span><span class="hljs-params">(<span class="hljs-type">const</span> raftKVRpcProctoc::GetArgs *args, raftKVRpcProctoc::GetReply *reply)</span> </span>&#123;<br>    Op op;<br>    op.Operation = <span class="hljs-string">&quot;Get&quot;</span>;<br>    op.Key = args-&gt;<span class="hljs-built_in">key</span>();<br>    op.Value = <span class="hljs-string">&quot;&quot;</span>;<br>    op.ClientId = args-&gt;<span class="hljs-built_in">clientid</span>();<br>    op.RequestId = args-&gt;<span class="hljs-built_in">requestid</span>();<br><br><br>    <span class="hljs-type">int</span> raftIndex = <span class="hljs-number">-1</span>;<br>    <span class="hljs-type">int</span> _ = <span class="hljs-number">-1</span>;<br>    <span class="hljs-type">bool</span> isLeader = <span class="hljs-literal">false</span>;<br>    m_raftNode-&gt;<span class="hljs-built_in">Start</span>(op, &amp;raftIndex, &amp;_, &amp;isLeader);<span class="hljs-comment">//raftIndex：raft预计的logIndex ，虽然是预计，但是正确情况下是准确的，op的具体内容对raft来说 是隔离的</span><br><br>    <span class="hljs-keyword">if</span> (!isLeader) &#123;<br>        reply-&gt;<span class="hljs-built_in">set_err</span>(ErrWrongLeader);<br>        <span class="hljs-keyword">return</span>;<br>    &#125;<br><br><br>    <span class="hljs-comment">// create waitForCh</span><br>    m_mtx.<span class="hljs-built_in">lock</span>();<br><br>    <span class="hljs-keyword">if</span> (waitApplyCh.<span class="hljs-built_in">find</span>(raftIndex) == waitApplyCh.<span class="hljs-built_in">end</span>()) &#123;<br>        waitApplyCh.<span class="hljs-built_in">insert</span>(std::<span class="hljs-built_in">make_pair</span>(raftIndex, <span class="hljs-keyword">new</span> <span class="hljs-built_in">LockQueue</span>&lt;Op&gt;()));<br>    &#125;<br>    <span class="hljs-keyword">auto</span> chForRaftIndex = waitApplyCh[raftIndex];<br><br>    m_mtx.<span class="hljs-built_in">unlock</span>(); <span class="hljs-comment">//直接解锁，等待任务执行完成，不能一直拿锁等待</span><br><br><br>    <span class="hljs-comment">// timeout</span><br>    Op raftCommitOp;<br><br>    <span class="hljs-keyword">if</span> (!chForRaftIndex-&gt;<span class="hljs-built_in">timeOutPop</span>(CONSENSUS_TIMEOUT, &amp;raftCommitOp)) &#123;<br>        <span class="hljs-type">int</span> _ = <span class="hljs-number">-1</span>;<br>        <span class="hljs-type">bool</span> isLeader = <span class="hljs-literal">false</span>;<br>        m_raftNode-&gt;<span class="hljs-built_in">GetState</span>(&amp;_, &amp;isLeader);<br><br>        <span class="hljs-keyword">if</span> (ifRequestDuplicate(op.ClientId, op.RequestId) &amp;&amp; isLeader) &#123;<br>            <span class="hljs-comment">//如果超时，代表raft集群不保证已经commitIndex该日志，但是如果是已经提交过的get请求，是可以再执行的。</span><br>            <span class="hljs-comment">// 不会违反线性一致性</span><br>            std::string value;<br>            <span class="hljs-type">bool</span> exist = <span class="hljs-literal">false</span>;<br>            <span class="hljs-built_in">ExecuteGetOpOnKVDB</span>(op, &amp;value, &amp;exist);<br>            <span class="hljs-keyword">if</span> (exist) &#123;<br>                reply-&gt;<span class="hljs-built_in">set_err</span>(OK);<br>                reply-&gt;<span class="hljs-built_in">set_value</span>(value);<br>            &#125; <span class="hljs-keyword">else</span> &#123;<br>                reply-&gt;<span class="hljs-built_in">set_err</span>(ErrNoKey);<br>                reply-&gt;<span class="hljs-built_in">set_value</span>(<span class="hljs-string">&quot;&quot;</span>);<br>            &#125;<br>        &#125; <span class="hljs-keyword">else</span> &#123;<br>            reply-&gt;<span class="hljs-built_in">set_err</span>(ErrWrongLeader);  <span class="hljs-comment">//返回这个，其实就是让clerk换一个节点重试</span><br>        &#125;<br>    &#125; <span class="hljs-keyword">else</span> &#123;<br>        <span class="hljs-comment">//raft已经提交了该command（op），可以正式开始执行了</span><br><span class="hljs-comment">//        DPrintf(&quot;[WaitChanGetRaftApplyMessage&lt;--]Server %d , get Command &lt;-- Index:%d , ClientId %d, RequestId %d, Opreation %v, Key :%v, Value :%v&quot;, kv.me, raftIndex, op.ClientId, op.RequestId, op.Operation, op.Key, op.Value)</span><br>        <span class="hljs-comment">//todo 这里还要再次检验的原因：感觉不用检验，因为leader只要正确的提交了，那么这些肯定是符合的</span><br>        <span class="hljs-keyword">if</span> (raftCommitOp.ClientId == op.ClientId &amp;&amp; raftCommitOp.RequestId == op.RequestId) &#123;<br>            std::string value;<br>            <span class="hljs-type">bool</span> exist = <span class="hljs-literal">false</span>;<br>            <span class="hljs-built_in">ExecuteGetOpOnKVDB</span>(op, &amp;value, &amp;exist);<br>            <span class="hljs-keyword">if</span> (exist) &#123;<br>                reply-&gt;<span class="hljs-built_in">set_err</span>(OK);<br>                reply-&gt;<span class="hljs-built_in">set_value</span>(value);<br>            &#125; <span class="hljs-keyword">else</span> &#123;<br>                reply-&gt;<span class="hljs-built_in">set_err</span>(ErrNoKey);<br>                reply-&gt;<span class="hljs-built_in">set_value</span>(<span class="hljs-string">&quot;&quot;</span>);<br>            &#125;<br>        &#125; <span class="hljs-keyword">else</span> &#123;<br>            reply-&gt;<span class="hljs-built_in">set_err</span>(ErrWrongLeader);<br>        &#125;<br>    &#125;<br>    m_mtx.<span class="hljs-built_in">lock</span>();   <span class="hljs-comment">//todo 這個可以先弄一個defer，因爲刪除優先級並不高，先把rpc發回去更加重要</span><br>    <span class="hljs-keyword">auto</span> tmp = waitApplyCh[raftIndex];<br>    waitApplyCh.<span class="hljs-built_in">erase</span>(raftIndex);<br>    <span class="hljs-keyword">delete</span> tmp;<br>    m_mtx.<span class="hljs-built_in">unlock</span>();<br>&#125;<br></code></pre></td></tr></table></figure>
+<h4
+id="在保证线性一致性的情况下如何读kv">在保证线性一致性的情况下如何读kv</h4>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">// 同样使用有锁队列判断超时</span><br><span class="hljs-keyword">if</span> (!chForRaftIndex-&gt;<span class="hljs-built_in">timeOutPop</span>(CONSENSUS_TIMEOUT, &amp;raftCommitOp)) &#123;<br>        <span class="hljs-type">int</span> _ = <span class="hljs-number">-1</span>;<br>        <span class="hljs-type">bool</span> isLeader = <span class="hljs-literal">false</span>;<br>        m_raftNode-&gt;<span class="hljs-built_in">GetState</span>(&amp;_, &amp;isLeader);<br><br>        <span class="hljs-keyword">if</span> (ifRequestDuplicate(op.ClientId, op.RequestId) &amp;&amp; isLeader) &#123;<br>            <span class="hljs-comment">//如果超时，代表raft集群不保证已经commitIndex该日志，但是如果是已经提交过的get请求，是可以再执行的。</span><br>            <span class="hljs-comment">// 不会违反线性一致性</span><br>            std::string value;<br>            <span class="hljs-type">bool</span> exist = <span class="hljs-literal">false</span>;<br>            <span class="hljs-built_in">ExecuteGetOpOnKVDB</span>(op, &amp;value, &amp;exist);<br>            <span class="hljs-keyword">if</span> (exist) &#123;<br>                reply-&gt;<span class="hljs-built_in">set_err</span>(OK);<br>                reply-&gt;<span class="hljs-built_in">set_value</span>(value);<br>            &#125; <span class="hljs-keyword">else</span> &#123;<br>                reply-&gt;<span class="hljs-built_in">set_err</span>(ErrNoKey);<br>                reply-&gt;<span class="hljs-built_in">set_value</span>(<span class="hljs-string">&quot;&quot;</span>);<br><br>            &#125;<br>        &#125; <span class="hljs-keyword">else</span> &#123;<br>            reply-&gt;<span class="hljs-built_in">set_err</span>(ErrWrongLeader);  <span class="hljs-comment">//返回这个，其实就是让clerk换一个节点重试</span><br>        &#125;<br>    &#125; <span class="hljs-keyword">else</span> &#123;<br>        <span class="hljs-comment">//raft已经提交了该command（op），可以正式开始执行了</span><br>        <span class="hljs-comment">//todo 这里感觉不用检验，因为leader只要正确的提交了，那么这些肯定是符合的</span><br>        <span class="hljs-keyword">if</span> (raftCommitOp.ClientId == op.ClientId &amp;&amp; raftCommitOp.RequestId == op.RequestId) &#123;<br>            std::string value;<br>            <span class="hljs-type">bool</span> exist = <span class="hljs-literal">false</span>;<br>            <span class="hljs-built_in">ExecuteGetOpOnKVDB</span>(op, &amp;value, &amp;exist);<br>            <span class="hljs-keyword">if</span> (exist) &#123;<br>                reply-&gt;<span class="hljs-built_in">set_err</span>(OK);<br>                reply-&gt;<span class="hljs-built_in">set_value</span>(value);<br>            &#125; <span class="hljs-keyword">else</span> &#123;<br>                reply-&gt;<span class="hljs-built_in">set_err</span>(ErrNoKey);<br>                reply-&gt;<span class="hljs-built_in">set_value</span>(<span class="hljs-string">&quot;&quot;</span>);<br>            &#125;<br>        &#125; <span class="hljs-keyword">else</span> &#123;<br><br>        &#125;<br>    <br></code></pre></td></tr></table></figure>
+<p>个人感觉读与写不同的是，读就算操作过也可以重复执行，不会违反线性一致性。</p>
+<p>因为毕竟不会改写数据库本身的内容。</p>
+<p><strong>以GET请求为例看一看流程</strong>：</p>
+<p>以一个读操作为例看一看流程：</p>
+<p>首先外部RPC调用GET，</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">KvServer::Get</span><span class="hljs-params">(google::protobuf::RpcController *controller, <span class="hljs-type">const</span> ::raftKVRpcProctoc::GetArgs *request,</span></span><br><span class="hljs-params"><span class="hljs-function">                   ::raftKVRpcProctoc::GetReply *response, ::google::protobuf::Closure *done)</span> </span>&#123;<br>    KvServer::<span class="hljs-built_in">Get</span>(request,response);<br>    done-&gt;<span class="hljs-built_in">Run</span>();<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>然后是根据请求参数生成Op，生成Op是因为raft和raftServer沟通用的是类似于go中的channel的机制，然后向下执行即可。</p>
+<p><strong>注意：在这个过程中需要判断当前节点是不是leader，如果不是leader的话就返回<code>ErrWrongLeader</code>
+，让其他clerk换一个节点尝试。</strong></p>
+<h2 id="rpc如何实现调用">RPC如何实现调用</h2>
+<p>这里以Raft类为例讲解下如何使用rpc远程调用的。</p>
+<ol type="1">
+<li><p>写protoc文件，并生成对应的文件，Raft类使用的protoc文件和生成的文件见：<a
+target="_blank" rel="noopener" href="https://github.com/youngyangyang04/KVstorageBaseRaft-cpp/tree/main/src/raftRpcPro">这里</a></p></li>
+<li><p>继承生成的文件的类
+<code>class Raft : public raftRpcProctoc::raftRpc</code></p></li>
+<li><p>重写rpc方法即可：</p></li>
+</ol>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">// 重写基类方法,因为rpc远程调用真正调用的是这个方法</span><br>    <span class="hljs-comment">//序列化，反序列化等操作rpc框架都已经做完了，因此这里只需要获取值然后真正调用本地方法即可。</span><br>    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">AppendEntries</span><span class="hljs-params">(google::protobuf::RpcController *controller,</span></span><br><span class="hljs-params"><span class="hljs-function">                       <span class="hljs-type">const</span> ::raftRpcProctoc::AppendEntriesArgs *request,</span></span><br><span class="hljs-params"><span class="hljs-function">                       ::raftRpcProctoc::AppendEntriesReply *response,</span></span><br><span class="hljs-params"><span class="hljs-function">                       ::google::protobuf::Closure *done)</span> <span class="hljs-keyword">override</span></span>;<br>    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">InstallSnapshot</span><span class="hljs-params">(google::protobuf::RpcController *controller,</span></span><br><span class="hljs-params"><span class="hljs-function">                         <span class="hljs-type">const</span> ::raftRpcProctoc::InstallSnapshotRequest *request,</span></span><br><span class="hljs-params"><span class="hljs-function">                         ::raftRpcProctoc::InstallSnapshotResponse *response,</span></span><br><span class="hljs-params"><span class="hljs-function">                         ::google::protobuf::Closure *done)</span> <span class="hljs-keyword">override</span></span>;<br>    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">RequestVote</span><span class="hljs-params">(google::protobuf::RpcController *controller,</span></span><br><span class="hljs-params"><span class="hljs-function">                     <span class="hljs-type">const</span> ::raftRpcProctoc::RequestVoteArgs *request,</span></span><br><span class="hljs-params"><span class="hljs-function">                     ::raftRpcProctoc::RequestVoteReply *response,</span></span><br><span class="hljs-params"><span class="hljs-function">                     ::google::protobuf::Closure *done)</span> <span class="hljs-keyword">override</span></span>;<br></code></pre></td></tr></table></figure>
+<h2 id="一些问题思考">一些问题思考</h2>
+<h3 id="m_nextindex和m_matchindex">m_nextIndex和m_matchIndex</h3>
+<p><code>m_nextIndex</code>
+保存leader下一次应该从哪一个日志开始发送给follower；<code>m_matchIndex</code>表示follower在哪一个日志是已经匹配了的（由于日志安全性，某一个日志匹配，那么这个日志及其之前的日志都是匹配的）。</p>
+<p><code>m_nextIndex</code> 与<code>m_matchIndex</code>
+是否有冗余，即使用一个<code>m_nextIndex</code> 可以吗？</p>
+<p>显然是不行的，<code>m_nextIndex</code>
+的作用是用来寻找<code>m_matchIndex</code>
+，不能直接取代。我们可以从这两个变量的变化看，在当选leader后，<code>m_nextIndex</code>
+初始化为最新日志index，<code>m_matchIndex</code>
+初始化为0，如果日志不匹配，那么<code>m_nextIndex</code>
+就会不断的缩减，直到遇到匹配的日志，这时候<code>m_nextIndex</code>
+应该一直为<code>m_matchIndex+1</code> 。</p>
+<p><strong>如果一直不发生故障，那么后期m_nextIndex就没有太大作用了，但是raft考虑需要考虑故障的情况，因此需要使用两个变量。</strong></p>
+<h3
+id="锁能否在其中的某个地方提前放锁或者使用多把锁来尝试提升性能">锁，能否在其中的某个地方提前放锁，或者使用多把锁来尝试提升性能？</h3>
+<h3
+id="多线程发送能不能直接在doheartbeat或者doelection函数里面直接一个一个发送消息呢">多线程发送，能不能直接在doHeartBeat或者doElection函数里面直接一个一个发送消息呢？</h3>
+<h3 id="可以有的优化空间">可以有的优化空间</h3>
+<ol type="1">
+<li>线程池，而不是每次rpc都不断地创建新线程</li>
+<li>日志</li>
+<li>从节点读取日志</li>
+</ol>
+<h2 id="面试问题">面试问题</h2>
+<h3 id="raft算法的基本原理"><strong>Raft算法的基本原理</strong></h3>
+<p><strong>回答要点</strong>：解释Raft算法的基本工作原理，包括领导者选举、日志复制和安全性保障。</p>
+<p><strong>示例回答</strong>：</p>
+<p>Raft算法是一种分布式算法，旨在解决分布式系统中的一致性问题，相对于Paxos算法而言更易于理解和实现。</p>
+<p>Raft算法将系统中的所有节点分为三类角色：领导者（<code>leader</code>）、跟随者（<code>follower</code>）和候选人（<code>candidate</code>）。其选举机制确保系统中的一个节点被选为领导者（<code>leader</code>），领导者负责处理客户端的请求，并将更新复制到其他节点。</p>
+<p>Raft算法的基本原理包括以下几个关键步骤：</p>
+<ol type="1">
+<li>领导者选举（Leader
+Election）：在系统启动时或者当前领导者失效时，节点会发起选举过程。节点会在一个随机的超时时间内等待收到来自其他节点的心跳消息。如果在超时时间内没有收到心跳消息，节点就会成为候选人并发起选举。候选人向其他节点发送投票请求，并在得到大多数节点的投票后成为新的领导者。</li>
+<li>日志复制（Log
+Replication）：一旦领导者选举完成，新的领导者就会接收客户端的请求，并将更新的日志条目复制到其他节点。当大多数节点都成功复制了这些日志条目时，更新被认为是提交的，并且可以应用到节点的状态机中。</li>
+<li>安全性（Safety）：Raft算法通过确保在选举中只有一个领导者（单一领导者）、大多数节点的一致性以及只有领导者可以处理客户端请求等方式保证分布式系统的安全性。</li>
+</ol>
+<p>通过以上机制，Raft算法确保了分布式系统中的一致性、可用性和分区容错性。</p>
+<p>注意：如果这么回答如果面试官懂一些分布式算法的话，那么后续可能会提问Raft与其他分布式算法的关系。</p>
+<h3 id="领导者选举">领导者选举</h3>
+<p><strong>回答要点</strong>：这里最好结合前面几个章节的流程图，结合自己理解回答。</p>
+<p><strong>示例回答</strong>：</p>
+<figure>
+<img
+src="/img/KV-Server%E8%AE%B0%E5%BD%95/FpAdl9k9XteDltQkNaxL2k_eU1UD.png" srcset="/img/loading.gif" lazyload
+alt="img" />
+<figcaption aria-hidden="true">img</figcaption>
+</figure>
+<p>Raft中的领导者选举过程如下：</p>
+<ol type="1">
+<li><strong>候选人状态（Candidate State）</strong>：</li>
+<li>节点在没有检测到领导者的情况下成为候选人，并将自己的任期编号（term）增加1。</li>
+<li>候选人向其他节点发送投票请求，并请求其他节点投票支持自己成为新的领导者。</li>
+<li>如果候选人在规定时间内收到了大多数节点的选票支持（即获得了大多数节点的投票），则成为新的领导者。</li>
+<li><strong>选举过程（Election Process）</strong>：</li>
+<li>在发起选举后，候选人会等待一定的随机时间（选举超时时间）来收集其他节点的投票。</li>
+<li>如果在这个超时时间内没有收到大多数节点的选票，候选人将会重新开始一个新的选举周期，<strong>增加自己的任期编号，并再次发起选举</strong>。</li>
+<li><strong>投票过程（Voting Process）</strong>：</li>
+<li>其他节点收到来自候选人的投票请求后，会检查自己的当前任期编号。如果候选人的任期编号比自己的大，则投票支持候选人，并更新自己的任期编号为候选人的任期编号。</li>
+<li>如果其他节点已经投票给了另一个候选人，或者已经投票给了当前领导者，它将拒绝投票。</li>
+<li><strong>领导者选举完成（Leader Election Complete）</strong>：</li>
+<li>如果候选人收到了大多数节点的投票支持，它就会成为新的领导者。</li>
+<li>新的领导者会开始发送心跳消息以维持其领导地位，并开始进行日志复制操作。</li>
+</ol>
+<h3
+id="在什么情况下会触发领导者选举">在什么情况下会触发领导者选举？</h3>
+<p><strong>回答要点</strong>：一个节点只要长时间没有收到符合条件的leader发送的心跳就会认为leader掉线，就会发起选举。</p>
+<p><strong>示例回答</strong>：</p>
+<p>在Raft算法中，领导者选举会在以下情况下触发：</p>
+<ol type="1">
+<li>当系统启动时，所有节点都处于初始状态，没有领导者。</li>
+<li>当领导者节点因网络分区、宕机或其他原因失效时，导致系统中没有活跃的领导者。</li>
+<li>当节点故障恢复或者被网络分区时，它可能会检测到当前没有领导者，因此会成为候选人并发起选举。</li>
+</ol>
+<h3 id="日志复制"><strong>日志复制</strong></h3>
+<p><strong>Raft是如何通过日志复制来保证数据一致性的？</strong></p>
+<p><strong>回答要点</strong>：主要是两个机制（特点）：</p>
+<p>1.Leader Append
+Entries：领导者追加日志条目，即只<strong>有leader可以接受外部请求并将请求打包成日志</strong>，并向follower同步自己的日志，这样保证提交过的日志不会被覆盖掉。</p>
+<p>2.commit机制，领导者发现<strong>大多数节点</strong>都已经成功复制了某个日志条目后，该日志条目被视为已经提交，从而保证了数据的一致性。</p>
+<p><strong>示例回答：</strong></p>
+<p>Raft算法通过日志复制来确保数据一致性。在Raft中，每个节点都维护一个日志（log）来记录状态机中的操作指令。领导者负责接收客户端的写请求，将操作指令追加到自己的日志中，并将这些操作指令发送给其他节点，要求它们复制这些日志条目。</p>
+<p>以下是Raft通过日志复制来保证数据一致性的基本流程：</p>
+<ol type="1">
+<li><strong>Leader Append Entries（领导者追加日志条目）</strong>：</li>
+<li>领导者接收到客户端的写请求后，将这些操作指令追加到自己的日志中。</li>
+<li>领导者将这些操作指令组织成一个日志条目（log
+entry），并向其他节点发送一个追加日志条目的请求（Append Entries
+RPC）。</li>
+<li><strong>Follower Log Replication（跟随者日志复制）</strong>：</li>
+<li>跟随者节点接收到领导者发送的追加日志条目的请求后，会按照领导者的日志条目顺序将这些日志条目追加到自己的日志中。</li>
+<li>如果跟随者节点成功复制了这些日志条目，则向领导者发送成功响应（Response）；如果由于某种原因（例如网络故障）导致复制失败，则向领导者发送失败响应。</li>
+<li><strong>Commit（提交）</strong>：</li>
+<li>当领导者发现大多数节点都已经成功复制了某个日志条目后，该日志条目被视为已经提交。</li>
+<li>领导者将提交的日志条目应用到自己的状态机中，以执行相应的操作指令。</li>
+</ol>
+<h3 id="安全性保障"><strong>安全性保障</strong></h3>
+<p><strong>Raft是如何确保安全性的？讨论一致性、可用性和分区容错性之间的权衡。</strong></p>
+<p><strong>回答要点</strong>
+：这里主要是想考察分布式CAP理论的一个关键：CAP中如果发生故障，只能CP和AP二选一，无法满足CAP的三角，而Raft选择的是CP，即满足一致性。</p>
+<p><strong>示例回答：</strong></p>
+<p>在权衡一致性、可用性和分区容错性时，Raft算法倾向于优先保证一致性和分区容错性。它通过保证大多数节点的确认和限制领导者选举条件来确保一致性，通过选举机制和日志复制来保证分区容错性。同时，Raft也兼顾了系统的可用性，确保在领导者失效后能够快速进行新的领导者选举，并继续提供服务。</p>
+<h4 id="选举超时"><strong>选举超时：</strong></h4>
+<h5
+id="什么是选举超时它的作用是什么">什么是选举超时？它的作用是什么？</h5>
+<p><strong>回答要点：</strong>
+follower和candidate都会有选举超时的机制。</p>
+<p>在follower时：选举超时的意义是发起选举，变成candidate；</p>
+<p>在candidate时：candidate会选举超时，如果选举成功就会变成leader；如果选举失败就会变成candidate（选举超时）或者follower（发现合适的leader）。那么选举超时的作用就很明显了，防止无止境的等待导致所有人都成不了leader。</p>
+<p>拓展：想一想为什么选举超时时间要每次随机设置而不设置成一个固定的值？？？</p>
+<p><strong>示例回答：</strong></p>
+<p>选举超时的作用包括：</p>
+<ol type="1">
+<li><strong>触发领导者选举</strong>：选举超时用于在当前没有活跃领导者或者领导者失效时触发新的领导者选举。当节点在选举超时时间内没有收到来自当前领导者的心跳消息时，会成为候选人并发起选举过程。</li>
+<li><strong>防止脑裂（Split-Brain）</strong>：选举超时帮助避免了系统中出现多个领导者的情况，从而避免了脑裂问题的发生。如果系统中的节点在选举超时时间内没有收到来自当前领导者的心跳消息，它们会同时成为候选人并发起选举，但只有一个候选人最终会获得大多数节点的选票，成为新的领导者。</li>
+<li><strong>确保领导者切换的及时性</strong>：选举超时可以确保在领导者失效后，系统能够及时地启动新的领导者选举过程，从而减少服务中断的时间，提高系统的可用性。</li>
+</ol>
+<h3 id="选举超时的时间是如何设置的">选举超时的时间是如何设置的？</h3>
+<p><strong>回答要点：</strong>回答要点在上个问题的拓展里面，大家可以先想想。答案是：一个一定范围内的随机值，其要根据心跳时间，rpc延迟，数据操作延迟综合考虑。</p>
+<p>范围：一般来说选举超时时间要大于一次完整心跳的日志同步处理时间。</p>
+<p>为何随机：选举超时的目的是防止无止境的等待导致所有人都成不了leader，如果超时时间又一样，那么大家又一起选举，又会不断循环，那么一个随机值可以让某些节点早点重新发起选举，防止大家一起选举导致死循环。</p>
+<p><strong>示例回答：</strong></p>
+<p>选举超时时间的设置通常包括以下考虑因素：</p>
+<ol type="1">
+<li><strong>网络延迟和稳定性</strong>：选举超时时间需要足够长以允许节点在正常情况下能够收到来自领导者的心跳消息。考虑到网络的延迟和不稳定性，超时时间应该设置得足够长，以避免因网络延迟而误判领导者失效。</li>
+<li><strong>系统负载和响应速度</strong>：选举超时时间也应考虑系统的负载情况和响应速度。如果系统负载较重或者节点的处理速度较慢，可能需要将选举超时时间设置得稍长一些，以允许节点有足够的时间处理收到的消息。</li>
+<li><strong>避免脑裂问题</strong>：为了避免系统中出现多个领导者导致的脑裂问题，选举超时时间应该设置得足够随机化，以确保不同节点不会在同一时间内触发选举。</li>
+</ol>
+<h3 id="日志条目的提交"><strong>日志条目的提交</strong></h3>
+<p><strong>Raft中的日志条目是如何提交的？</strong></p>
+<p><strong>回答要点：</strong>
+要半数以上的节点（包括leader）接收了这个日志，那么才能提交（commit），后续才能apply到状态机。</p>
+<p><strong>示例回答：</strong></p>
+<ol type="1">
+<li><strong>Leader接收客户端请求</strong>：
+<ul>
+<li>当客户端向Raft系统提交请求时，请求会首先发送到Raft集群中的Leader节点。</li>
+</ul></li>
+<li><strong>Leader将请求转换为日志条目</strong>：
+<ul>
+<li>Leader将接收到的客户端请求转换为一条日志条目，并附加到其本地日志中。</li>
+</ul></li>
+<li><strong>Leader广播日志条目</strong>：
+<ul>
+<li>Leader向其它节点发送包含新日志条目的心跳RPC请求（AppendEntries
+RPC）。</li>
+</ul></li>
+<li><strong>Follower节点接收并附加日志条目</strong>：
+<ul>
+<li>Follower节点接收到Leader的附加日志请求后，将新的日志条目附加到其本地日志中。</li>
+</ul></li>
+<li><strong>Follower节点响应Leader</strong>：
+<ul>
+<li>Follower节点在成功附加日志后，向Leader发送成功的响应。</li>
+</ul></li>
+<li><strong>Leader确认提交</strong>：
+<ul>
+<li>当Leader收到大多数节点的附加成功响应时，将日志条目视为已提交。</li>
+</ul></li>
+<li><strong>Leader提交到状态机</strong>：
+<ul>
+<li>Leader将已提交的日志条目应用到其状态机中，以执行相应的操作。</li>
+</ul></li>
+<li><strong>Leader通知Followers提交</strong>：Leader会通知其它节点已提交的日志索引，以便它们也可以将相应的日志条目提交到其状态机中。</li>
+<li><strong>Follower提交到状态机</strong>：Follower节点收到Leader的提交通知后，将对应的已提交日志条目应用到其状态机中。</li>
+</ol>
+<h3
+id="什么条件下才能够提交一个日志条目">什么条件下才能够提交一个日志条目？</h3>
+<p><strong>回答要点：</strong>
+一个很容易疏忽的是必须要本term有新的日志提交才能继续提交日志，这个在前面文章中也提醒过。</p>
+<p><strong>示例回答：</strong> 略。</p>
+<h3 id="raft如何处理集群拓扑的变更">Raft如何处理集群拓扑的变更？</h3>
+<p><strong>回答要点：</strong></p>
+<p><strong>示例回答：</strong></p>
+<ol type="1">
+<li><strong>生成配置变更请求</strong>：
+当需要改变集群的拓扑结构时，例如添加或移除节点，Leader节点会收到来自客户端的配置变更请求。</li>
+<li><strong>将配置变更请求转化为配置变更日志条目</strong>：
+Leader节点将配置变更请求转换为一条特殊的日志条目，即配置变更日志条目。该日志条目包含新的集群配置信息。</li>
+<li><strong>向集群中的节点分发配置变更日志条目</strong>：
+Leader节点通过Raft的日志复制机制将配置变更日志条目发送给所有的Follower节点。</li>
+<li><strong>Follower节点接收配置变更日志条目</strong>：
+Follower节点收到配置变更日志条目后，将其附加到本地日志中。</li>
+<li><strong>提交配置变更日志条目</strong>：
+当配置变更日志条目被大多数节点确认并附加到本地日志后，Leader节点将其提交到状态机，实际应用这个配置变更。</li>
+<li><strong>应用配置变更</strong>：
+Leader节点和所有的Follower节点根据新的配置信息更新其内部状态，以反映集群拓扑结构的变更。这可能涉及到更新节点的角色（Leader、Follower、Candidate）、维护新的节点列表等。</li>
+</ol>
+<h3 id="实际应用"><strong>实际应用</strong></h3>
+<p><strong>Raft算法在实际场景中的应用有哪些？</strong></p>
+<p><strong>回答要点：</strong>
+列举一些常见的使用Raft算法作为底层的即可。</p>
+<p><strong>示例回答：</strong></p>
+<ol type="1">
+<li>一些常见的配置中心，为了保证可用会采用Raft，比如zookeeper的底层实现了基于Raft修改的算法，ETCD等。</li>
+<li>一些分布式数据库，比如<a
+target="_blank" rel="noopener" href="https://docs.pingcap.com/zh/tidb/stable/tikv-overview">TIKV</a></li>
+</ol>
+<h3
+id="raft与其他分布式的比较"><strong>Raft与其他分布式的比较</strong></h3>
+<h4
+id="与paxos算法相比raft有哪些优势和不同之处">与Paxos算法相比，Raft有哪些优势和不同之处？</h4>
+<p><strong>回答要点：</strong>
+Raft相对于Paxos算法来说，更易理解、实现和维护，具有更直观的Leader机制和选举过程。（这个需要大家多了解一下其他分布式算法的设计思想了。）</p>
+<p><strong>示例回答：</strong></p>
+<ol type="1">
+<li><strong>Leader机制</strong>：<strong>Raft引入了Leader节点，而Paxos中没有Leader节点的概念。</strong>Leader节点负责协调和领导整个一致性过程，而Follower节点只需按照Leader的指示执行操作。</li>
+<li><strong>日志复制</strong>：在Raft中，所有的日志条目都通过Leader节点进行复制和提交，而Paxos中的日志复制是通过多个角色相互协作完成的。</li>
+<li><strong>角色切换</strong>：Raft中Leader节点失效后，集群可以快速选举新的Leader节点，而Paxos中角色的切换较为复杂，需要进行更多的投票和协调。</li>
+<li><strong>更强的可读性</strong>：Raft算法更加直观和易于理解，它的设计目标之一就是提供更好的可读性和可理解性，相比之下，Paxos算法相对更加抽象和复杂。</li>
+</ol>
+<h3 id="常见问题与挑战"><strong>常见问题与挑战：</strong></h3>
+<p><strong>回答要点：</strong>
+leader的瓶颈（使用多读来解决），节点故障等等</p>
+<p><strong>示例回答：</strong></p>
+<ol type="1">
+<li><strong>Leader瓶颈</strong>：Raft算法中的Leader节点负责所有的客户端请求的处理和日志复制，这可能会成为系统的瓶颈。如果Leader节点负载过重或者发生故障，会导致整个系统的性能下降。</li>
+<li><strong>网络分区</strong>：Raft算法需要保证在网络分区情况下的一致性，这可能会导致在网络分区恢复后需要进行数据的合并和冲突解决，增加了一致性维护的复杂性。</li>
+<li><strong>节点故障处理</strong>：当节点发生故障时，Raft需要进行Leader的重新选举，这可能导致一段时间内系统的不可用性和性能下降，尤其是在节点频繁发生故障时。</li>
+<li><strong>日志复制延迟</strong>：Raft算法要求日志复制必须在大多数节点上完成后才能提交，这可能导致日志复制的延迟，影响系统的实时性能。</li>
+<li><strong>节点动态变更</strong>：Raft算法在节点动态加入或退出时需要进行配置变更，这可能会导致系统的不稳定和数据的不一致，需要谨慎处理。</li>
+<li><strong>一致性保证</strong>：虽然Raft算法保证了强一致性，但在一些特殊情况下（如网络分区、节点故障等），可能会导致一致性级别的降低或者一致性协议的不满足，需要额外的机制来解决。</li>
+<li><strong>性能调优</strong>：在实际应用中，Raft算法需要根据具体的场景进行性能调优，包括调整心跳超时时间、选举超时时间、日志复制的策略等参数，以满足系统的性能需求。</li>
+</ol>
+<h3 id="如何处理网络分区的情况">如何处理网络分区的情况？</h3>
+<p><strong>回答要点：</strong>
+这个要结合多种情况分析，比如leader宕机、非leader宕机；少数节点分区、多数节点分区。然后这几种情况还可以相互组合，这个的话就要分类讨论了，面试估计是说不完的。</p>
+<p><strong>示例回答：</strong></p>
+<p>分情况讨论，略。</p>
+<h3 id="容错性"><strong>容错性</strong></h3>
+<p><strong>Raft算法如何处理节点故障？</strong></p>
+<p><strong>回答要点：</strong></p>
+<p>和网络分区是一样的，可以看成是网络分区的一种特殊情况，即一个节点自己是一个分区。</p>
+<p>此外再加上故障恢复后有哪些数据（日志，投票，term等）是需要持久化的，哪些是不需要的（commitIndex，applyIndex等）。</p>
+<p><strong>示例回答：</strong></p>
+<p>略。</p>
+<h3
+id="在集群中的多个节点同时故障时系统会有什么表现">在集群中的多个节点同时故障时，系统会有什么表现？</h3>
+<p><strong>回答要点：</strong>考虑故障节点的数量，抓住“半数”这个概念。
+其他同上面的“分区问题”和“故障问题”。</p>
+<p><strong>示例回答：</strong> 略。</p>
+<h3 id="rpc">RPC</h3>
+<p><strong>你的RPC如何设计的？</strong></p>
+<p><strong>回答要点：</strong>
+这里最好的回答是回答出现有的rpc框架的一些优秀的设计，因为我的rpc实现只是raft-kv的一个配件，所以还是
+同步阻塞
+的，这里推荐大家看看异步rpc如何实现，也欢迎来改进项目中的RPC实现参与开源：<a
+target="_blank" rel="noopener" href="https://github.com/youngyangyang04/KVstorageBaseRaft-cpp">项目地址</a></p>
+<p>列出可以考虑的优化点：异步；rpc长连接短连接的思考；<strong>负载均衡</strong>；服务治理、服务发现。</p>
+<p><strong>示例回答：</strong></p>
+<p>略</p>
+<h3
+id="负载均衡有没有做用的什么算法如何考虑的">负载均衡有没有做？用的什么算法如何考虑的？</h3>
+<p><strong>回答要点：</strong>
+1.常见的负载均衡算法及其对比；2.第四层和第七层不同层的负载均衡；3.瘦客户端和胖客户端的不同方式的负载均衡。</p>
+<p><strong>示例回答：</strong></p>
+<p>最开始实现rpc模块的时候实现过负载均衡算法，当然后面用于raft通信，因为raft通信是所有leader与所有节点都要建立连接，所以后面就没有再用负载均衡了，将这个功能关闭了。</p>
+<p>当时实现的负载均衡的算法有：</p>
+<ol type="1">
+<li><strong>轮询算法（Round Robin）</strong>：</li>
+<li>轮询算法是最简单的负载均衡算法之一，它按照请求的顺序依次将每个请求分配到不同的服务器上。当有新的请求到来时，负载均衡器会依次将请求发送到不同的服务器，直到所有的服务器都被轮询过一遍，然后再从头开始。</li>
+<li><strong>最小连接数算法（Least Connections）</strong>：</li>
+<li>最小连接数算法会将新的请求分配到当前连接数最少的服务器上，以确保各服务器的负载尽可能均衡。这种算法考虑了服务器的负载情况，优先将请求发送到负载较低的服务器上。</li>
+<li><strong>最少响应时间算法（Least Response Time）</strong>：</li>
+<li>最少响应时间算法会将请求发送到响应时间最短的服务器上，以保证响应时间的最小化。这种算法通常需要负载均衡器记录每个服务器的响应时间，并动态调整请求的分配策略。</li>
+<li><strong>哈希算法（Hashing）</strong>：</li>
+<li>哈希算法根据请求的某些属性（如客户端IP地址、URL等）计算哈希值，并将请求发送到对应哈希值的服务器上。这种算法能够确保相同请求始终被发送到同一台服务器上，适用于需要保持会话一致性的场景。</li>
+<li><strong>加权轮询算法（Weighted Round Robin）</strong>：</li>
+<li>加权轮询算法在轮询算法的基础上引入了权重的概念，不同的服务器具有不同的权重值。根据权重值的不同，负载均衡器会调整请求的分配比例，以实现负载均衡。</li>
+<li>拓展：hash环也是一种重要的负载均衡算法，也可以提及。</li>
+</ol>
+<h3
+id="服务治理和发现有没有做怎么做的">服务治理和发现有没有做？怎么做的？</h3>
+<p><strong>回答要点：</strong>
+一般是用第三方组件（比如zookeeper）来做，当然raft-kv本身就可以用来做服务治理和服务发现，所以rpc就没有单独做。</p>
+<p><strong>示例回答：</strong></p>
+<p>无</p>
+<h3
+id="你这个rpc框架的序列化和反序列化中protobuf细节有没有了解">你这个RPC框架的序列化和反序列化中protobuf细节有没有了解</h3>
+<p><strong>回答要点：</strong> 头部变长编码+自定义的压缩算法。</p>
+<p>这里就可以牵扯到rpc中的编码方法，目前是头部定长4字节，可以优化成一个标志位+变长编码的方式：<a
+target="_blank" rel="noopener" href="https://github.com/youngyangyang04/KVstorageBaseRaft-cpp/issues/19">参与issue链接</a></p>
+<p><strong>示例回答：</strong></p>
+<p>大概了解了一下，主要是其头部的变长编码+Google自己实现的一个高效的压缩算法。</p>
+<h3 id="测试">测试</h3>
+<h4
+id="在集群数量变多的时候raft性能可能会下降这方面有没有思考过">在集群数量变多的时候，Raft性能可能会下降，这方面有没有思考过？</h4>
+<p><strong>回答要点：</strong>
+允许从follower读；rpc合并等raft落地的框架的优化。</p>
+<p><strong>示例回答：</strong>无</p>
+<h4
+id="有没有对性能进行过测试用的什么工具怎么测试的">有没有对性能进行过测试？用的什么工具？怎么测试的？</h4>
+<p><strong>回答要点：</strong> perf火焰图。</p>
+<p><strong>示例回答：</strong></p>
+<p>这里回答一下火焰图的基本使用就差不多了，如果大家没有使用过的话推荐大家去看篇博文入门了解基本操作和原理，我这里给出一个初步的结果，<strong>如果只有一个客户端：并发几十，大部分的损耗在rpc这边。多个客户端的结果没有测试。</strong></p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E9%A1%B9%E7%9B%AE/">#项目</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>KV-Server记录</div>
+      <div>https://gstarmin.github.io/2024/04/28/KV-Server记录/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Starmin</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2024年4月28日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/04/22/raft%E7%AE%97%E6%B3%95/" title="raft算法">
+                        <span class="hidden-mobile">raft算法</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

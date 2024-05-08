@@ -25,6 +25,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://gstarmin.github.io/img/%E9%9D%A2%E8%AF%95%E9%97%AE%E9%A2%98/14100820337928.jpg">
 <meta property="og:image" content="https://gstarmin.github.io/img/%E9%9D%A2%E8%AF%95%E9%97%AE%E9%A2%98/14100820334293.jpg">
+<meta property="og:image" content="https://gstarmin.github.io/img/%E9%9D%A2%E8%AF%95%E9%97%AE%E9%A2%98/20210908213037.png">
 <meta property="og:image" content="https://gstarmin.github.io/img/%E9%9D%A2%E8%AF%95%E9%97%AE%E9%A2%98/webp.webp">
 <meta property="og:image" content="https://gstarmin.github.io/img/%E9%9D%A2%E8%AF%95%E9%97%AE%E9%A2%98/3.1.jpg">
 <meta property="og:image" content="https://gstarmin.github.io/img/%E9%9D%A2%E8%AF%95%E9%97%AE%E9%A2%98/3.2.jpg">
@@ -308,7 +309,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          93k 字
+          96k 字
         
       </span>
     
@@ -319,7 +320,7 @@
         
         
         
-          935 分钟
+          963 分钟
         
       </span>
     
@@ -1514,7 +1515,7 @@ Web 服务器的时候要多加一条信息 -- 从哪里开始。</p>
 <p>Quic 全称 quick udp internet connection [1]，“快速 UDP
 互联网连接”，（和英文 quick 谐音，简称“快”）是由 google 提出的使用 udp
 进行多路并发传输的协议。</p>
-<p>Quic 相比现在广泛应用的 http2+tcp+tls 协议有如下优势 [2]：</p>
+<p>Quic 相比现在广泛应用的 http2+tcp+tls 协议有如下优势：</p>
 <ol type="1">
 <li>减少了 TCP 三次握手及 TLS 握手时间。</li>
 <li>改进的拥塞控制。</li>
@@ -1662,6 +1663,16 @@ alt="img" />
 IP2，发送了 3 和 4 数据包，服务器根据数据包头部的 Connection ID
 字段可以判断这 4 个包是来自于同一个客户端。QUIC
 能实现连接迁移的根本原因是底层使用 UDP 协议就是面向无连接的。</p>
+<h3 id="socket服务端编程流程">socket服务端编程流程</h3>
+<ol type="1">
+<li>客户端调用connect()函数，此时客户端会向服务端发送SYN</li>
+<li>服务端收到SYN后，会从listen()函数返回SYN+ACK</li>
+<li>客户端收到connect()函数的返回，之后向服务端发送最后一个ACK</li>
+<li>服务端收到最后一个ACK以后，将该连接请求从未完成连接队列放入已完成连接队列中，等待accept()从该队列中取出</li>
+</ol>
+<h3 id="tcp连接复用">TCP连接复用</h3>
+<p>即多个客户端的HTTP请求复⽤到⼀个服务端的TCP连接上。具体做法如下：</p>
+<p>采用TCP连接复用技术后，客户端（如：ClientA）与负载均衡设备之间进行三次握手并发送HTTP请求。负载均衡设备收到请求后，会检测服务器是否存在空闲的长连接，如果不存在，服务器将建立一个新连接。当HTTP请求响应完成后，客户端则与负载均衡设备协商关闭连接，而负载均衡则保持与服务器之间的这个连接。当有其它客户端（如：ClientB）需要发送HTTP请求时，负载均衡设备会直接向与服务器之间保持的这个空闲连接发送HTTP请求，避免了由于新建TCP连接造成的延时和服务器资源耗费。</p>
 <h2 id="数据库">数据库</h2>
 <h3
 id="一条mysql语句的执行过程腾讯云">一条MySQL语句的执行过程(腾讯云)</h3>
@@ -1948,6 +1959,28 @@ View，然后整个事务期间都在用这个 Read View**。</li>
 <li>覆盖索引</li>
 <li>索引下推</li>
 </ul>
+<h3 id="索引下推的原理">索引下推的原理</h3>
+<p>我们先简单了解一下MySQL大概的架构：</p>
+<figure>
+<img src="/img/%E9%9D%A2%E8%AF%95%E9%97%AE%E9%A2%98/20210908213037.png" srcset="/img/loading.gif" lazyload
+alt="MySQL大概架构" />
+<figcaption aria-hidden="true">MySQL大概架构</figcaption>
+</figure>
+<p>MySQL服务层负责SQL语法解析、生成执行计划等，并调用存储引擎层去执行数据的存储和检索。</p>
+<p><code>索引下推</code>的<strong>下推</strong>其实就是指将部分上层（服务层）负责的事情，交给了下层（引擎层）去处理。</p>
+<p>我们来具体看一下，在没有使用ICP的情况下，MySQL的查询：</p>
+<ul>
+<li>存储引擎读取索引记录；</li>
+<li>根据索引中的主键值，定位并读取完整的行记录；</li>
+<li>存储引擎把记录交给<code>Server</code>层去检测该记录是否满足<code>WHERE</code>条件。</li>
+</ul>
+<p>使用ICP的情况下，查询过程：</p>
+<ul>
+<li>存储引擎读取索引记录（不是完整的行记录）；</li>
+<li>判断<code>WHERE</code>条件部分能否用索引中的列来做检查，条件不满足，则处理下一行索引记录；</li>
+<li>条件满足，使用索引中的主键去定位并读取完整的行记录（就是所谓的回表）；</li>
+<li>存储引擎把记录交给<code>Server</code>层，<code>Server</code>层检测该记录是否满足<code>WHERE</code>条件的其余部分。</li>
+</ul>
 <h3 id="mysql的null值是怎么存储的">MySQL的NULL值是怎么存储的</h3>
 <p>MySQL 的 Compact 行格式中会用「NULL值列表」来标记值为 NULL 的列，NULL
 值并不会存储在行格式中的真实数据部分。</p>
@@ -1990,7 +2023,7 @@ by优化比较麻烦，要增加索引，索引影响数据的修改效率，并
 </ol>
 <h3 id="数据库与缓存一致性问题">数据库与缓存一致性问题</h3>
 <p>见<a
-href="https://gstarmin.github.io/2023/12/25/Redis/#%E5%A6%82%E4%BD%95%E4%BF%9D%E8%AF%81%E7%BC%93%E5%AD%98%E4%B8%8E%E6%95%B0%E6%8D%AE%E5%BA%93%E5%8F%8C%E5%86%99%E6%97%B6%E7%9A%84%E6%95%B0%E6%8D%AE%E4%B8%80%E8%87%B4%E6%80%A7%E4%BA%94%E6%98%9F%E9%AB%98%E9%A2%91">如何保证缓存与数据库双写时的数据一致性</a>.</p>
+href="https://gstarmin.github.io/2023/12/25/%5B%5BRedis%5D%5D/#%E5%A6%82%E4%BD%95%E4%BF%9D%E8%AF%81%E7%BC%93%E5%AD%98%E4%B8%8E%E6%95%B0%E6%8D%AE%E5%BA%93%E5%8F%8C%E5%86%99%E6%97%B6%E7%9A%84%E6%95%B0%E6%8D%AE%E4%B8%80%E8%87%B4%E6%80%A7%E4%BA%94%E6%98%9F%E9%AB%98%E9%A2%91">如何保证缓存与数据库双写时的数据一致性</a>.</p>
 <h3
 id="为什么b数比红黑树更适合做索引数据结构">为什么B+数比红黑树更适合做索引数据结构</h3>
 <p>AVL
@@ -2116,6 +2149,20 @@ alt="image-20210625142110740" />
 <p>做了<strong>主从复制</strong>之后，我们就可以在<strong>写入时只写主库</strong>，在<strong>读数据时只读从库</strong>，这样即使写请求会锁表或者锁记录，也不会影响到读请求的执行。同时呢，在读流量比较大的情况下，我们可以部署多个从库共同承担读流量，这就是所说的
 <strong>一主多从</strong>
 部署方式，在你的垂直电商项目中就可以通过这种方式来抵御较高的并发读流量。另外，从库也可以当成一个备库来使用，以避免主库故障导致数据丢失。</p>
+<h3 id="数据库主从不一致解决方案">数据库主从不一致解决方案</h3>
+<p><strong>方案一：忽略。</strong></p>
+<p>任何脱离业务的架构设计都是耍流氓，绝大部分业务，例如：百度搜索，淘宝订单，QQ消息，58帖子都允许短时间不一致。</p>
+<p>画外音：如果业务能接受，最推崇此法。</p>
+<p>如果业务能够接受，别把系统架构搞得太复杂。</p>
+<p><strong>方案二：放弃主从架构，强制读主。</strong></p>
+<p>（1）不采用读写主从架构，只使用一个高可用主库提供数据库服务；</p>
+<p>（2）读和写都落到主库上；</p>
+<p>（3）采用缓存来提升系统读性能 存储；</p>
+<p>这是很常见的微服务架构，可以避免数据库主从一致性问题。</p>
+<p><strong>方案三：半同步复制</strong></p>
+<p>修改主库后至少同步修改完成一个从库，才返回请求，缓存每次都从那个同步更新的从库中读数据。</p>
+<p>方案优点：利用数据库原生功能，比较简单</p>
+<p>方案缺点：主库的写请求时延会增长，吞吐量会降低</p>
 <h4 id="k-v数据库">K-V数据库</h4>
 <p>典型的代表就是Redis，也是目前业内非常主流的Nosql数据库。</p>
 <p>之所以在IO性能方面比传统关系型数据库高，有两个点</p>
@@ -2143,6 +2190,72 @@ id="数据库插入大量数据怎么优化插入速度">数据库插入大量�
 <li>禁止自动提交：<code>SET AUTOCOMMIT=0;</code>插入之后再设置<code>SET AUTOCOMMIT=1;</code></li>
 <li>使用批量插入:<code>INSERT INTO items(name,city,price,number,picture) VALUES ('耐克运动鞋','广州',500,1000,'001.jpg'),('耐克运动鞋2','广州2',500,1000,'002.jpg');</code>，这样比一句一句执行insert少了与数据库之间的连接等操作</li>
 </ul>
+<h3 id="一条update语句的执行流程">一条update语句的执行流程</h3>
+<h4 id="select语句的执行流程">select语句的执行流程</h4>
+<figure>
+<img
+src="/img/%E9%9D%A2%E8%AF%95%E9%97%AE%E9%A2%98/image-20240428201517031.png" srcset="/img/loading.gif" lazyload
+alt="image-20240428201517031" />
+<figcaption aria-hidden="true">image-20240428201517031</figcaption>
+</figure>
+<ol type="1">
+<li>连接器：管理连接和权限验证</li>
+<li>查询缓存：执⾏查询语句前，先看下查询缓存中是否有结果</li>
+<li>解析器：解析SQL</li>
+<li>执⾏SQL：
+<ol type="1">
+<li>预处理：判断表和字段是否存在</li>
+<li>优化：比如有多个索引的时候决定使用哪个索引？</li>
+<li>执行</li>
+</ol></li>
+</ol>
+<h3 id="一条update语句的执行流程-1">一条update语句的执行流程</h3>
+<p>select语句的流程要先走一遍，即：</p>
+<ol type="1">
+<li>server层验证身份，然后到引擎层</li>
+<li>调用存储引擎接口后，会先从Buffer
+Pool获取数据页，如果没有就从磁盘中读入Buffer
+Pool，然后判断更新前后的记录是否一样</li>
+<li>开启事务，修改数据之前先记录undo log，写入Buffer Pool的undo
+page</li>
+<li>开始更新page
+data中的记录，被修改的数据页称为脏页，修改会被记录到内存中的 redo log
+buffer中，再刷盘到磁盘的redo log文件，此时事务是 perpare阶段</li>
+<li>这个时候更新就完成了，当时脏页不会立即写入磁盘，而是由后台线程完成，这里会用double
+write来保证脏页刷盘的可靠性</li>
+<li>还没结束呢，这时候可以通知Server层，可以正式提交数据了，
+执行器记录binlog
+cache，事务提交时才会将该事务中的binglog刷新到磁盘中</li>
+<li>这个时候Update语句完成了Buffer Pool中数据页的修改、undo日志、redo
+log缓存记录，以及记录binlog cache缓存</li>
+<li>commit阶段，这个阶段是将redo log中事务状态标记为commit</li>
+<li>此时binlog和redo
+log都已经写入磁盘，如果触发了刷新脏页的操作，先把脏页copy到double write
+buffer里，Double Write Buffer 的内存数据刷到磁盘中的共享表空间
+ibdata，再刷到数据磁盘上数据文件 ibd</li>
+<li>流程完结</li>
+</ol>
+<h3
+id="高并发下库存超卖怎么解决如何实现高并发">高并发下库存超卖怎么解决？如何实现高并发？</h3>
+<p><strong>综合使用数据库和Redis满足高并发扣减：</strong></p>
+<p>扣减库存其实包含两个过程：第一步是超卖校验，第二步是扣减数据的持久化；在传统数据库扣减中，两步是一起完成的。<strong>抗写的实现原理其实是巧妙的利用了分离的思想</strong>，分离开防超卖和数据持久化；首先防超卖是由Redis来完成的；通过Redis防超卖后，只要落库就可以；落库通过任务引擎，业务数据库使用商品分库分表，任务引擎任务通过单据号分库分表，热点商品的落库会被状态机分散开，消除热点。</p>
+<p>第一关解决超卖检验：我们可以把数据放入Redis中，每次扣减库存，都对Redis中的数据进行incryby
+扣减，如果返回的数量大于0，说明库存够，因为Redis是单线程，可以信任返回结果。第一关是Redis，可以抗高并发，性能Ok。超卖校验通过后，进入第二关。</p>
+<p>第二关解决库存扣减：经过第一关后，第二关不需要再判断数量是否足够，只需要傻瓜扣减库存就行，对数据库执行如下语句,当然还是需要处理防重幂等的，不需要判断数量是否大于0了，扣减SQL只要如下写就可以。</p>
+<p><strong>要点</strong>：最终还是要使用数据库，热点怎么解决的呢？任务库使用订单号进行分库分表，这样针对同一个商品的不同订单会散列在任务库的不同库存，虽然还是数据库抗量，但已经消除了数据库热点。</p>
+<h3 id="undo-logredo-logbinlog是哪个层实现的">Undo log、redo
+log、binlog是哪个层实现的？</h3>
+<ol type="1">
+<li><strong>Redo Log
+在引擎层实现</strong>，用来恢复数据的，保障已提交事务的持久化特性，记录的是物理级别的数据页(包括data
+page和undo page)做的修改</li>
+<li><strong>Undo Log
+在引擎层实现的逻辑日志</strong>，用于数据回滚到之前状态，对于每个UPDATE语句，对应一条相反的UPDATE的undo
+log</li>
+<li><strong>BinLog
+是Server实现的逻辑日志</strong>，用于复制和恢复数据，记录了所有的 DDL 和
+DML 语句（除了数据查询语句select、show等）</li>
+</ol>
 <h2 id="操作系统">操作系统</h2>
 <h3
 id="用户态和内核态的互换条件腾讯云">用户态和内核态的互换、条件（腾讯云）</h3>
@@ -3632,6 +3745,10 @@ rebase
 --continue)命令，一直到rebase完成；如果中途想放弃rebase操作，可以运行(git
 rebase --abort)命令回到rebase之前的状态。</li>
 </ol>
+<h3 id="cap理论">CAP理论</h3>
+<p>一个分布式系统最多只能同时满足<strong>一致性（Consistency）</strong>、<strong>可用性（Availability）</strong>和<strong>分区容错性（Partition
+tolerance）这</strong>三项中的两项。</p>
+<p>Raft专注于解决<strong>一致性</strong>和<strong>分区容错性</strong>问题，而将可用性问题留给其他机制处理。</p>
 
                 
               </div>
