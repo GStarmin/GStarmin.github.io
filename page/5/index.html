@@ -301,6 +301,146 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h1 class="index-header">
         
+        <a href="/2023/06/27/muduo%E5%BA%93-Threadlocal%E7%B1%BB/" target="_self">
+          muduo库-Threadlocal类
+        </a>
+      </h1>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2023/06/27/muduo%E5%BA%93-Threadlocal%E7%B1%BB/" target="_self">
+        <div>
+          muduo库-Threadlocal类 首先来看一个概念：线程特定数据 在单线程程序中，我们经常用全局变量共享数据。多线程环境下，全部变量被所有线程所共有。但有时应用程序设计中有必要提供线程私有的全局变量，仅在某个线程中有效。POSIX线程库通过维护一定的数据结构来解决这个问题，这些数据称之为线程特定数据(Thread-specific Data，或TSD)。对于POD类型，可以用__thread
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2023-06-27 22:23" pubdate>
+              2023-06-27
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/C/" class="category-chain-item">C++</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/C/muduo/" class="category-chain-item">muduo</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/C/">#C++</a>
+            
+              <a href="/tags/muduo/">#muduo</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2023/06/27/muduo%E5%BA%93-Singleton%E7%B1%BB/" target="_self">
+          muduo库-Singleton类
+        </a>
+      </h1>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2023/06/27/muduo%E5%BA%93-Singleton%E7%B1%BB/" target="_self">
+        <div>
+          muduo库-Singleton类 Singleton类的实现 常见的单例模式实现主要分为以下几种： 懒汉式 懒汉式要求先声明单例对象，然后在调用时才完成实例化操作。 123456789101112131415161718192021class Signleton &#123;public:  static Signleton* getInstance() &#123;    if (instan
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2023-06-27 21:53" pubdate>
+              2023-06-27
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/C/" class="category-chain-item">C++</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/C/muduo/" class="category-chain-item">muduo</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/C/">#C++</a>
+            
+              <a href="/tags/muduo/">#muduo</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
         <a href="/2023/06/26/muduo%E5%BA%93-BlockingQueue%E5%92%8CBounderBlockingQueue/" target="_self">
           muduo库-BlockingQueue和BounderBlockingQueue
         </a>
@@ -799,146 +939,6 @@
           <div class="post-meta mr-3">
             <i class="iconfont icon-date"></i>
             <time datetime="2023-06-21 22:05" pubdate>
-              2023-06-21
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3 d-flex align-items-center">
-            <i class="iconfont icon-category"></i>
-            
-
-<span class="category-chains">
-  
-  
-    
-      <span class="category-chain">
-        
-  <a href="/categories/C/" class="category-chain-item">C++</a>
-  
-  
-    <span>></span>
-    
-  <a href="/categories/C/muduo/" class="category-chain-item">muduo</a>
-  
-  
-
-  
-
-      </span>
-    
-  
-</span>
-
-          </div>
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/C/">#C++</a>
-            
-              <a href="/tags/muduo/">#muduo</a>
-            
-          </div>
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2023/06/21/muduo%E5%BA%93-%E5%8E%9F%E5%AD%90%E7%B1%BBAtomicIntegerT-T/" target="_self">
-          muduo库-原子类AtomicIntegerT&lt;T&gt;
-        </a>
-      </h1>
-
-      
-      <a class="index-excerpt index-excerpt__noimg" href="/2023/06/21/muduo%E5%BA%93-%E5%8E%9F%E5%AD%90%E7%B1%BBAtomicIntegerT-T/" target="_self">
-        <div>
-          muduo库-原子类AtomicIntegerT C++中的原子操作有两种实现方式：  C++11以后，提供st::atomic可以实现T类型数据的原子操作，主要包括：初始化、读取值、写值、自增自减（i.e. 前置或后置++）等。 C++11以前的版本，需要用GCC编译器提供的原子操作接口，实现原子操作。  AtomicIntegerT模板类 muduo产生与C++11流行之前，因此用了第二种方案
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2023-06-21 21:18" pubdate>
-              2023-06-21
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3 d-flex align-items-center">
-            <i class="iconfont icon-category"></i>
-            
-
-<span class="category-chains">
-  
-  
-    
-      <span class="category-chain">
-        
-  <a href="/categories/C/" class="category-chain-item">C++</a>
-  
-  
-    <span>></span>
-    
-  <a href="/categories/C/muduo/" class="category-chain-item">muduo</a>
-  
-  
-
-  
-
-      </span>
-    
-  
-</span>
-
-          </div>
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/C/">#C++</a>
-            
-              <a href="/tags/muduo/">#muduo</a>
-            
-          </div>
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2023/06/21/muduo%E5%BA%93-%E6%A0%87%E8%AE%B0%E7%B1%BBcopyable-noncopyable/" target="_self">
-          muduo库-标记类copyable noncopyable
-        </a>
-      </h1>
-
-      
-      <a class="index-excerpt index-excerpt__noimg" href="/2023/06/21/muduo%E5%BA%93-%E6%A0%87%E8%AE%B0%E7%B1%BBcopyable-noncopyable/" target="_self">
-        <div>
-          muduo库-标记类copyable noncopyable 值语义与引用语义 值语义指的是对象的拷贝与元对象无关，就像拷贝int一样。C++的内置类型（bool/int/double/char）都是值语义，标准库里的complex,pair,vector,map等等也都是值语义，拷贝之后就与原对象脱离关系。 与值语义对应的对象语义，或者叫做引用语义，对象语义指的是面向对象意义下的对象，对象拷贝是
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2023-06-21 20:58" pubdate>
               2023-06-21
             </time>
           </div>
