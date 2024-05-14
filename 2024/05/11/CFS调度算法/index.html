@@ -296,7 +296,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          2.1k 字
+          2.2k 字
         
       </span>
     
@@ -378,12 +378,13 @@ scheduler每次都挑选最左边的节点作为下一个要运行的任务，</
 <h3
 id="现在问题还剩下一个vruntime具体应该怎样计算呢"><strong>现在问题还剩下一个，vruntime具体应该怎样计算呢？</strong></h3>
 <ol type="1">
-<li>vruntime += 实际运行时间（time process run) * 1024 / 进程权重(load
-weight of this process)</li>
+<li>vruntime = <strong>实际运行时间 * （NICE_0_LOAD /
+权重)</strong></li>
 </ol>
+<p>其中，NICE_0_LOAD是nice为0时的权重，它的值是1024。这个公式的意思是，如果进程的权重等于NICE_0_LOAD，那么它的虚拟运行时间和实际运行时间相同。如果进程的权重大于NICE_0_LOAD，<strong>那么它的虚拟运行时间就小于实际运行时间，表示它被优先调度</strong>。如果进程的权重小于NICE_0_LOAD，<strong>那么它的虚拟运行时间就大于实际运行时间，表示它被延后调度。</strong></p>
 <p>实际运行时间很好计算，就是该程序已经运行了多久，那么进程权重应该怎样计算呢？</p>
-<p>答案是根据任务的nice值进行索引。nice值可以理解为是我们事先为任务分配的优先级，还记得我们上篇文章里提到的O(n)调度里的runqueue的权重priority怎么计算的吗？它采取了一个全局权重，范围是0~140。
-这里的任务权重nice值和这个priority性质是一样的，只是它通过索引，使得不同nice值的任务的权重差别变大了。</p>
+<p>答案是根据任务的nice值进行索引。nice值可以理解为是我们事先为任务分配的优先级。
+这里的任务权重nice范围从-20到19。对应德权重值如下所示：</p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">/*权重只和进程的nice值有关*/</span><br><span class="hljs-type">const</span> <span class="hljs-type">int</span> sched_prio_to_weight[<span class="hljs-number">40</span>] = &#123; <br> <span class="hljs-comment">/* -20 */</span>     <span class="hljs-number">88761</span>,     <span class="hljs-number">71755</span>,     <span class="hljs-number">56483</span>,     <span class="hljs-number">46273</span>,     <span class="hljs-number">36291</span>,<br> <span class="hljs-comment">/* -15 */</span>     <span class="hljs-number">29154</span>,     <span class="hljs-number">23254</span>,     <span class="hljs-number">18705</span>,     <span class="hljs-number">14949</span>,     <span class="hljs-number">11916</span>,<br> <span class="hljs-comment">/* -10 */</span>      <span class="hljs-number">9548</span>,      <span class="hljs-number">7620</span>,      <span class="hljs-number">6100</span>,      <span class="hljs-number">4904</span>,      <span class="hljs-number">3906</span>,<br> <span class="hljs-comment">/*  -5 */</span>      <span class="hljs-number">3121</span>,      <span class="hljs-number">2501</span>,      <span class="hljs-number">1991</span>,      <span class="hljs-number">1586</span>,      <span class="hljs-number">1277</span>,<br> <span class="hljs-comment">/*   0 */</span>      <span class="hljs-number">1024</span>,       <span class="hljs-number">820</span>,       <span class="hljs-number">655</span>,       <span class="hljs-number">526</span>,       <span class="hljs-number">423</span>,<br> <span class="hljs-comment">/*   5 */</span>       <span class="hljs-number">335</span>,       <span class="hljs-number">272</span>,       <span class="hljs-number">215</span>,       <span class="hljs-number">172</span>,       <span class="hljs-number">137</span>,<br> <span class="hljs-comment">/*  10 */</span>       <span class="hljs-number">110</span>,        <span class="hljs-number">87</span>,        <span class="hljs-number">70</span>,        <span class="hljs-number">56</span>,        <span class="hljs-number">45</span>,<br> <span class="hljs-comment">/*  15 */</span>        <span class="hljs-number">36</span>,        <span class="hljs-number">29</span>,        <span class="hljs-number">23</span>,        <span class="hljs-number">18</span>,        <span class="hljs-number">15</span>,<br>&#125;;<br></code></pre></td></tr></table></figure>
 <p>nice值和load weight of this process的对应关系，一一对应</p>
 <p>可能还是有点迷糊，这里举个例子就清楚了，现在我们有一个刚来的task，它的nice值是0，那么它的priority是多少呢？</p>
@@ -395,8 +396,8 @@ weight of this process)</li>
 <p><strong>对于新任务来说，vruntime = 0</strong></p>
 <p>这也是显而易见的，新来的任务运行时间是0嘛</p>
 <p>这个特性也是CFS算法唤醒抢占特性的由来：</p>
-<p><strong>CFS的唤醒抢占特性：</strong>
-休眠进程在唤醒时会获得vruntime的补偿，它在醒来的时候有能力抢占CPU是大概率事件，这也是CFS调度算法的本意，即保证交互式进程的响应速度，因为交互式进程等待用户输入会频繁休眠。</p>
+<p><strong>CFS的唤醒抢占特性：</strong></p>
+<p>休眠进程在唤醒时会获得vruntime的补偿，它在醒来的时候有能力抢占CPU是大概率事件，这也是CFS调度算法的本意，即保证交互式进程的响应速度，因为交互式进程等待用户输入会频繁休眠。</p>
 <p>想象一下当你执行每一个敲击键盘、移动鼠标等交互操作的时候，对于系统来说，这就是来了个新任务-&gt;运行时间为0-&gt;vruntime为0-&gt;被放到调度任务队列红黑树的最左节点-&gt;最左节点通过一个特殊的指针指向，且该指针已被缓存。</p>
 <p><strong>这就是CFS能很快对交互式进程做出反应的全过程。</strong></p>
 <h2 id="cfs流程">CFS流程</h2>
@@ -408,8 +409,8 @@ weight of this process)</li>
 = 0的任务，nice每小一级，CPU usage就会多10%，"10%
 effect"）虚拟时钟的滴答声更慢.</li>
 </ul>
-<p><strong>CFS的缺点：</strong>
-也和唤醒抢占特性有关。CFS不能区分交互式进程和主动休眠的进程，主动休眠的进程并不要求快速响应，但也会在唤醒时获得补偿，例如通过调用sleep()、nanosleep()的方式，定时醒来完成特定任务，这有可能会导致其它更重要的应用进程被抢占，有损整体性能。</p>
+<p><strong>CFS的缺点：</strong></p>
+<p>也和唤醒抢占特性有关。CFS不能区分交互式进程和主动休眠的进程，主动休眠的进程并不要求快速响应，但也会在唤醒时获得补偿，例如通过调用sleep()、nanosleep()的方式，定时醒来完成特定任务，这有可能会导致其它更重要的应用进程被抢占，有损整体性能。</p>
 
                 
               </div>

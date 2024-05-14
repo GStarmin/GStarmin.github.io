@@ -309,7 +309,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          97k 字
+          99k 字
         
       </span>
     
@@ -320,7 +320,7 @@
         
         
         
-          971 分钟
+          992 分钟
         
       </span>
     
@@ -861,6 +861,17 @@ id="weak_ptr指向的对象可能不存在怎么处理这种情况">weak_ptr指�
 <h3 id="虚函数表是在什么时候建立的">虚函数表是在什么时候建立的？</h3>
 <p>虚函数表是在编译的过程中创建。
 对于虚函数指针来说，由于虚函数指针是基于对象的，所以对象在实例化的<em>时候</em>，虚函数指针就会<em>创建</em>，所以是在运行时<em>创建</em>。</p>
+<h3 id="c-什么情况下会出现堆栈溢出的情况">C++
+什么情况下会出现堆栈溢出的情况？</h3>
+<ol type="1">
+<li>递归调用过深</li>
+<li>局部变量空间所需大小超过栈的大小</li>
+</ol>
+<h3 id="栈溢出问题怎么解决">栈溢出问题怎么解决</h3>
+<ol type="1">
+<li>使用迭代算法</li>
+<li>适用动态内存分配</li>
+</ol>
 <h2 id="linux">Linux</h2>
 <h2
 id="linux系统查看cpu占用的命令腾讯云">linux系统查看cpu占用的命令（腾讯云）</h2>
@@ -1102,6 +1113,16 @@ id="linux下rm正在写入的文件会发生什么">Linux下rm正在写入的文
 <li>建立终端 。</li>
 <li>用户登录系统。</li>
 </ul>
+<h3
+id="tcp一二三次握手报文丢失分别会发生什么">TCP一二三次握手报文丢失分别会发生什么？</h3>
+<h4 id="第一次握手丢失"><strong>第一次握手丢失</strong></h4>
+<p>客户端发送SYN请求连接报文，如果迟迟等不到服务器的请求确认报文段，那么就会进行超时重传，具体重传几次，要看tcp_syn_retries内核参数，一般默认是5次。要注意的是，重传的请求连接报文的seq序列号字段还是之前的seq，不会重新生成哦。</p>
+<h4 id="第二次握手丢失">第二次握手丢失</h4>
+<p>第二次握手丢失就有意思了，因为服务器发送的第二次握手是连接确认报文段，既包括对第一次握手的ACK确认，同时还有SYN字段表示要建立连接，所以第二次握手也可以成为SYN-ACK报文。所以当第二次握手丢失，客户端迟迟等不到第一次握手的确认，就会触发超时重传机制，进行超时重传；服务器等不到自己SYN连接的确认，也会进行超时重传。客户端和服务器具体的超时重传次数还是由内核参数决定。</p>
+<h4 id="第三次握手丢失">第三次握手丢失</h4>
+<p>第三次握手丢失，此时客户端已经处于established状态了，因为它通过两次握手已经验证了自己的发送和接收能力嘛。但是此时第三次握手丢失，服务器迟迟得不到ACK报文，但是ACK报文丢失，<strong>ACK
+报文是不会有重传的，当 ACK
+丢失了，就由对方重传对应的报文。</strong>所以当到达服务器的超时重传时间后，服务器会超时重传第二次报文，当达到最大超时重传次数还没得到ACK报文，服务器就会断开连接。</p>
 <h2 id="计算机网络"><strong>计算机网络</strong></h2>
 <h3 id="http协议里-301-304啥用处腾讯云">http协议里 301
 304啥用处（腾讯云）</h3>
@@ -1701,6 +1722,30 @@ key 就获得了，可以解密https流量。</p>
 <p><strong>Https安全注意事项</strong></p>
 <p>浏览器里的安全选项-SSL，只勾选TLS 1.2，其它统统不要。</p>
 <p>不随意安装根证书，遇到可疑证书删掉为好！</p>
+<h3 id="dns使用的是tcp还是udp协议">DNS使用的是TCP还是UDP协议？</h3>
+<p><strong>TCP和UDP。</strong>
+<strong>DNS在进行区域传输的时候使用TCP协议，其它时候则使用UDP协议</strong>.</p>
+<p>DNS的规范规定了2种类型的DNS服务器，一个叫主DNS服务器，一个叫辅助DNS服务器。
+在一个区中主DNS服务器从自己本机的数据文件中读取该区的DNS数据信息，而辅助DNS服务器则从区的主DNS服务器中读取该区的DNS数据信息。<strong>当一个辅助DNS服务器启动时，它需要与主DNS服务器通信，并加载数据信息，这就叫做区域传输（zone
+transfer）。</strong></p>
+<p><strong>为什么既使用TCP又使用UDP？</strong></p>
+<p>首先了解一下TCP与UDP传送字节的长度限制：
+UDP报文的最大长度为512字节，而TCP则允许报文长度超过512字节。当DNS查询超过512字节时，协议的TC标志出现删除标志，这时则使用TCP发送。通常传统的UDP报文一般不会大于512字节。
+区域传送时使用TCP，主要有一下两点考虑：</p>
+<ol type="1">
+<li>辅助域名服务器会定时（一般是3小时）向主域名服务器进行查询以便了解数据是否有变动。如有变动，则会执行一次区域传送，进行数据同步。区域传送将使用TCP而不是UDP，因为数据同步传送的数据量比一个请求和应答的数据量要多得多。</li>
+<li>TCP是一种可靠的连接，保证了数据的准确性。</li>
+</ol>
+<p><strong>域名解析时使用UDP协议</strong></p>
+<p>客户端向DNS服务器查询域名，一般返回的内容都不超过512字节，用UDP传输即可。不用经过TCP三次握手，这样DNS服务器负载更低，响应更快。
+虽然从理论上说，客户端也可以指定向DNS服务器查询的时候使用TCP，但事实上，很多DNS服务器进行配置的时候，仅支持UDP查询包。</p>
+<h3
+id="四次挥手的第二三次为什么不合并">四次挥手的第二三次为什么不合并</h3>
+<ol type="1">
+<li>服务器可能还有报文未发送</li>
+<li>ack和syn是不同时机触发的 ack是内核完成,会在收到fin的时候第一时间返回
+而fin则是应用程序代码块控制,在调用到socket的close方法才会触发fin</li>
+</ol>
 <h2 id="数据库">数据库</h2>
 <h3
 id="一条mysql语句的执行过程腾讯云">一条MySQL语句的执行过程(腾讯云)</h3>
@@ -2283,6 +2328,27 @@ log</li>
 <li><strong>BinLog
 是Server实现的逻辑日志</strong>，用于复制和恢复数据，记录了所有的 DDL 和
 DML 语句（除了数据查询语句select、show等）</li>
+</ol>
+<h3 id="如何排查慢查询">如何排查慢查询</h3>
+<p>查看数据库服务慢查询日志是否开启：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">show</span> variables <span class="hljs-keyword">like</span> ‘slow_query_log’;<br></code></pre></td></tr></table></figure>
+<p>开启慢查询:</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">set</span> <span class="hljs-keyword">global</span> slow_query_log<span class="hljs-operator">=</span><span class="hljs-keyword">on</span>;<br></code></pre></td></tr></table></figure>
+<p>查看并设置慢查询阈值（超过这个时间sql就会被记录在慢查询日志中）</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">show</span> variables <span class="hljs-keyword">like</span> ‘long_query_time’; # 查看慢查询阈值<br><span class="hljs-keyword">set</span> long_query_time<span class="hljs-operator">=</span><span class="hljs-number">5</span>; # 设置慢查询阈值为<span class="hljs-number">5</span>s，默认是<span class="hljs-number">10</span>s<br></code></pre></td></tr></table></figure>
+<h3
+id="有两个索引一个索引识别度高例如唯一索引另一个是普通索引但是查询语句可能会选择普通索引这是为什么">有两个索引，一个索引识别度高（例如唯一索引），另一个是普通索引，但是查询语句可能会选择普通索引，这是为什么？</h3>
+<ol type="1">
+<li><strong>统计信息</strong>：数据库优化器依赖于统计信息来决定使用哪个索引。如果普通索引的统计信息更加全面或更新，优化器可能会认为它更适合当前的查询。</li>
+<li><strong>索引覆盖</strong>：如果查询只需要索引中已有的列，优化器可能会选择那个能够“覆盖”查询的索引，即使它不是唯一索引。</li>
+<li><strong>查询条件</strong>：查询中使用的特定条件可能与普通索引更匹配，例如，如果查询涉及到索引的前缀或范围查询。</li>
+</ol>
+<h3 id="mysql索引选择的策略">Mysql索引选择的策略</h3>
+<ol type="1">
+<li><strong>选择唯一性高的字段作为索引</strong>：唯一性高的字段可以更好地帮助MySQL快速定位到符合条件的数据行，从而减少全表扫描的时间。</li>
+<li><strong>尽量选择字段长度较小的字段作为索引</strong>：长度较小的字段在索引和查询时占用的空间更小，能够提高索引的效率。</li>
+<li><strong>考虑使用复合索引</strong>：复合索引是指同时对多个字段创建索引，可以提高查询效率。但是需要注意不要创建过多的复合索引，以免影响数据库性能。</li>
+<li><strong>避免在列上进行函数操作</strong>：在查询条件中尽量不要对字段进行函数操作，否则无法使用索引，导致查询性能下降。</li>
 </ol>
 <h2 id="操作系统">操作系统</h2>
 <h3

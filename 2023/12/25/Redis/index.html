@@ -315,7 +315,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          31k 字
+          32k 字
         
       </span>
     
@@ -326,7 +326,7 @@
         
         
         
-          315 分钟
+          316 分钟
         
       </span>
     
@@ -612,10 +612,9 @@ time，就是过期时间，通过过期时间我们可以指定这个 key
 可以存活的时间，主要可采用<strong>定期删除和惰性删除</strong>两种方案。</p>
 <ul>
 <li><strong>定期删除</strong>：Redis默认是每隔 100ms
-就随机抽取一些设置了过期时间的key，检查其是否过期，如果过期就删
-除。注意这里是随机抽取的。为什么要随机呢？你想一想假如 Redis
-存了几十万个 key ，每隔100ms就遍历所有的设置过期时间的 key 的话，就会给
-CPU 带来很大的负载！</li>
+就随机抽取一些设置了过期时间的key，检查其是否过期，如果过期这里是随机抽取的。为什么要随机呢？你想一想假如
+Redis 存了几十万个 key ，每隔100ms就遍历所有的设置过期时间的 key
+的话，就会给 CPU 带来很大的负载！</li>
 <li><strong>惰性删除</strong> ：定期删除可能会导致很多过期 key
 到了时间并没有被删除掉。所以就有了惰性删除。它是指某个键值过期后,此键值不会马上被删除,而是等到下次被使用的时候,才会被检查到过期,此时才能得到删除,惰性删除的<strong>缺点很明显是浪费内存</strong>。
 除非你的系统去查一下那个
@@ -979,9 +978,12 @@ requirepass，那么 slave node 必须发送 masterauth
 的口令过去进行认证。master node
 <strong>第一次执行全量复制</strong>，将所有数据发给 slave
 node。而在后续，master node 持续将写命令，异步复制给 slave node。</p>
-<p><img src="/img/Redis/202208092302833.png" srcset="/img/loading.gif" lazyload
-alt="Redis-master-slave-replication-detail" /><br />
-</p>
+<figure>
+<img src="/img/Redis/202208092302833.png" srcset="/img/loading.gif" lazyload
+alt="Redis-master-slave-replication-detail" />
+<figcaption
+aria-hidden="true">Redis-master-slave-replication-detail</figcaption>
+</figure>
 <h3 id="全量复制">全量复制</h3>
 <ul>
 <li>master 执行 bgsave ，在本地生成一份 rdb 快照文件。</li>
