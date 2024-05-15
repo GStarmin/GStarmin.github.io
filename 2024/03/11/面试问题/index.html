@@ -309,7 +309,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          100k 字
+          101k 字
         
       </span>
     
@@ -320,7 +320,7 @@
         
         
         
-          996 分钟
+          1007 分钟
         
       </span>
     
@@ -872,6 +872,14 @@ id="weak_ptr指向的对象可能不存在怎么处理这种情况">weak_ptr指�
 <li>使用迭代算法</li>
 <li>适用动态内存分配</li>
 </ol>
+<h3 id="c-栈空间大小是多少">C++ 栈空间大小是多少？</h3>
+<p>Linux下默认是1MB，注意把C++栈空间大小和Linux线程栈大小区分开，Linux线程栈大小默认是8MB.</p>
+<h3 id="怎么获取虚函数表指针">怎么获取虚函数表指针</h3>
+<ol type="1">
+<li>同一个类的对象虚表的地址是一样的</li>
+<li><strong>对象地址的前八个字节（64位下，32位是4字节）存放虚表地址</strong></li>
+</ol>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-meta">#<span class="hljs-keyword">include</span><span class="hljs-string">&lt;iostream&gt;</span></span><br><span class="hljs-keyword">using</span> <span class="hljs-keyword">namespace</span> std;<br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Base</span> &#123;<br><span class="hljs-keyword">public</span>: <br>    <span class="hljs-function"><span class="hljs-keyword">virtual</span> <span class="hljs-type">void</span> <span class="hljs-title">showa</span><span class="hljs-params">(<span class="hljs-type">void</span>)</span> </span>&#123;cout &lt;&lt; <span class="hljs-string">&quot;Base::f&quot;</span> &lt;&lt; endl;&#125;<br>    <span class="hljs-function"><span class="hljs-keyword">virtual</span> <span class="hljs-type">void</span> <span class="hljs-title">showb</span><span class="hljs-params">(<span class="hljs-type">void</span>)</span> </span>&#123;cout &lt;&lt; <span class="hljs-string">&quot;Base::g&quot;</span> &lt;&lt; endl;&#125;<br>    <span class="hljs-function"><span class="hljs-keyword">virtual</span> <span class="hljs-type">void</span> <span class="hljs-title">showc</span><span class="hljs-params">(<span class="hljs-type">void</span>)</span> </span>&#123;cout &lt;&lt; <span class="hljs-string">&quot;Base::h&quot;</span> &lt;&lt; endl;&#125;<br>&#125;;<br><br><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span><br><span class="hljs-function"></span>&#123;<br>    	<span class="hljs-comment">//  注意这里是64位下，64位下指针大小是8个字节，如果是32位下要使用(int *)</span><br>        base b;<br>        cout&lt;&lt;&amp;b&lt;&lt;endl;    <span class="hljs-comment">//对象首地址</span><br>        cout&lt;&lt;(<span class="hljs-type">uint64_t</span>*)&amp;b&lt;&lt;endl;    <span class="hljs-comment">//指针首地址，(uint64_t*)强制类型转换是为了取八个字节的内容</span><br>        cout&lt;&lt;*(<span class="hljs-type">uint64_t</span>*)&amp;b&lt;&lt;endl;    <span class="hljs-comment">//指针的内容，即虚表的地址</span><br>        cout&lt;&lt;*((<span class="hljs-type">uint64_t</span>*)*(<span class="hljs-type">uint64_t</span>*)&amp;b)&lt;&lt;endl;    <span class="hljs-comment">//虚表第一个元素即虚函数showa()的地址</span><br>        cout&lt;&lt;*((<span class="hljs-type">uint64_t</span>*)(*(<span class="hljs-type">uint64_t</span>*)&amp;f)+<span class="hljs-number">1</span>)&lt;&lt;endl;    <span class="hljs-comment">//第二个元素即showb()的地址</span><br>        <span class="hljs-comment">/*</span><br><span class="hljs-comment">        *这里可能有人奇怪虚表的地址不就是第一个元素的地址，为什么这里要加(uint64_t*)？下面这个链接有解释</span><br><span class="hljs-comment">       https://blog.csdn.net/yangwenxiao123456/article/details/81910234</span><br><span class="hljs-comment">        */</span><br>        <span class="hljs-function"><span class="hljs-keyword">typedef</span> <span class="hljs-title">void</span><span class="hljs-params">(*Func)</span><span class="hljs-params">(<span class="hljs-type">void</span>)</span></span>;    <span class="hljs-comment">//重命名函数指针类型</span><br>        Func pfun;<br>        pfun=(Func)*(<span class="hljs-type">uint64_t</span>*)*(<span class="hljs-type">uint64_t</span>*)&amp;b;    <span class="hljs-comment">//强制类型转换为该函数指针类型</span><br>        b.<span class="hljs-built_in">showa</span>();<br>        <span class="hljs-built_in">pfun</span>();<br>        <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
 <h2 id="linux">Linux</h2>
 <h2
 id="linux系统查看cpu占用的命令腾讯云">linux系统查看cpu占用的命令（腾讯云）</h2>
