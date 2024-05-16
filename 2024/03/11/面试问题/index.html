@@ -320,7 +320,7 @@
         
         
         
-          1007 分钟
+          1013 分钟
         
       </span>
     
@@ -880,6 +880,29 @@ id="weak_ptr指向的对象可能不存在怎么处理这种情况">weak_ptr指�
 <li><strong>对象地址的前八个字节（64位下，32位是4字节）存放虚表地址</strong></li>
 </ol>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-meta">#<span class="hljs-keyword">include</span><span class="hljs-string">&lt;iostream&gt;</span></span><br><span class="hljs-keyword">using</span> <span class="hljs-keyword">namespace</span> std;<br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Base</span> &#123;<br><span class="hljs-keyword">public</span>: <br>    <span class="hljs-function"><span class="hljs-keyword">virtual</span> <span class="hljs-type">void</span> <span class="hljs-title">showa</span><span class="hljs-params">(<span class="hljs-type">void</span>)</span> </span>&#123;cout &lt;&lt; <span class="hljs-string">&quot;Base::f&quot;</span> &lt;&lt; endl;&#125;<br>    <span class="hljs-function"><span class="hljs-keyword">virtual</span> <span class="hljs-type">void</span> <span class="hljs-title">showb</span><span class="hljs-params">(<span class="hljs-type">void</span>)</span> </span>&#123;cout &lt;&lt; <span class="hljs-string">&quot;Base::g&quot;</span> &lt;&lt; endl;&#125;<br>    <span class="hljs-function"><span class="hljs-keyword">virtual</span> <span class="hljs-type">void</span> <span class="hljs-title">showc</span><span class="hljs-params">(<span class="hljs-type">void</span>)</span> </span>&#123;cout &lt;&lt; <span class="hljs-string">&quot;Base::h&quot;</span> &lt;&lt; endl;&#125;<br>&#125;;<br><br><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span><br><span class="hljs-function"></span>&#123;<br>    	<span class="hljs-comment">//  注意这里是64位下，64位下指针大小是8个字节，如果是32位下要使用(int *)</span><br>        base b;<br>        cout&lt;&lt;&amp;b&lt;&lt;endl;    <span class="hljs-comment">//对象首地址</span><br>        cout&lt;&lt;(<span class="hljs-type">uint64_t</span>*)&amp;b&lt;&lt;endl;    <span class="hljs-comment">//指针首地址，(uint64_t*)强制类型转换是为了取八个字节的内容</span><br>        cout&lt;&lt;*(<span class="hljs-type">uint64_t</span>*)&amp;b&lt;&lt;endl;    <span class="hljs-comment">//指针的内容，即虚表的地址</span><br>        cout&lt;&lt;*((<span class="hljs-type">uint64_t</span>*)*(<span class="hljs-type">uint64_t</span>*)&amp;b)&lt;&lt;endl;    <span class="hljs-comment">//虚表第一个元素即虚函数showa()的地址</span><br>        cout&lt;&lt;*((<span class="hljs-type">uint64_t</span>*)(*(<span class="hljs-type">uint64_t</span>*)&amp;f)+<span class="hljs-number">1</span>)&lt;&lt;endl;    <span class="hljs-comment">//第二个元素即showb()的地址</span><br>        <span class="hljs-comment">/*</span><br><span class="hljs-comment">        *这里可能有人奇怪虚表的地址不就是第一个元素的地址，为什么这里要加(uint64_t*)？下面这个链接有解释</span><br><span class="hljs-comment">       https://blog.csdn.net/yangwenxiao123456/article/details/81910234</span><br><span class="hljs-comment">        */</span><br>        <span class="hljs-function"><span class="hljs-keyword">typedef</span> <span class="hljs-title">void</span><span class="hljs-params">(*Func)</span><span class="hljs-params">(<span class="hljs-type">void</span>)</span></span>;    <span class="hljs-comment">//重命名函数指针类型</span><br>        Func pfun;<br>        pfun=(Func)*(<span class="hljs-type">uint64_t</span>*)*(<span class="hljs-type">uint64_t</span>*)&amp;b;    <span class="hljs-comment">//强制类型转换为该函数指针类型</span><br>        b.<span class="hljs-built_in">showa</span>();<br>        <span class="hljs-built_in">pfun</span>();<br>        <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<h3 id="静态多态和动态多态">静态多态和动态多态</h3>
+<p>多态其实一般就是指继承加虚函数实现的多态，对于重载来说，实际上基于的原理是，编译器为函数生成符号表时的不同规则，重载只是一种语⾔特性，与多态无关，与面向对象也无关，但这⼜是
+C++中增加的新规则，所以也算属于
+C++，所以如果⾮要说<strong>重载</strong>算是多态的一种，那就可以说：多态可以分为<strong>静态多态</strong>和<strong>动态多态</strong>。</p>
+<p><strong>静态多态其实就是重载</strong>，因为静态多态是指在编译时期就决定了调用哪个函数，根据参数列表来决定；</p>
+<p><strong>动态多态是指通过子类重写父类的虚函数来实现的</strong>，因为是在运行期间决定调用的函数，所以称为动态多态，一般情况下我们不区分这两个时所说的多态就是指动态多态。动态多态的实现与虚函数表，虚函数指针相关。</p>
+<p><strong>扩展</strong>：子类是否要重写父类的虚函数？子类继承父类时，父类的纯虚函数必须重写，否则子类也是一个虚类不可实例化。
+定义纯虚函数是为了实现一个接口，起到一个规范的作用，规范继承这个类的程序员必须实现这个函数。</p>
+<h3 id="c类成员变量的初始化顺序">C++类成员变量的初始化顺序</h3>
+<ol type="1">
+<li>成员变量在<strong>使用初始化列表</strong>初始化时，与构造函数中初始化成员列表的顺序无关，只与定义成员变量的顺序有关。</li>
+<li>如果<strong>不使用初始化列表</strong>初始化，在构造函数内初始化时，此时与成员变量在构造函数中的位置有关。</li>
+<li>类中 const 成员常量必须在构造函数初始化列表中初始化。</li>
+<li>类中 static
+成员变量，只能在类外初始化(同一类的所有实例共享静态成员变量)。</li>
+</ol>
+<p><strong>存在派生类时的初始化顺序</strong></p>
+<ol type="1">
+<li>基类的静态变量或全局变量</li>
+<li>派生类的静态变量或全局变量</li>
+<li>基类的成员变量</li>
+<li>派生类的成员变量</li>
+</ol>
 <h2 id="linux">Linux</h2>
 <h2
 id="linux系统查看cpu占用的命令腾讯云">linux系统查看cpu占用的命令（腾讯云）</h2>

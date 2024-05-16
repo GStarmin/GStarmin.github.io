@@ -1385,10 +1385,23 @@ id="volatilemutable和explicit关键字的用法">volatile、mutable和explicit�
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-type">const</span> <span class="hljs-type">char</span>* cpch;<span class="hljs-keyword">volatile</span> <span class="hljs-type">char</span>* vpch;<br></code></pre></td></tr></table></figure>
 <p>指针自身的值——一个代表地址的整数变量，是 const 或 volatile 的：</p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-type">char</span>* <span class="hljs-type">const</span> pchc;<span class="hljs-type">char</span>* <span class="hljs-keyword">volatile</span> pchv;<br></code></pre></td></tr></table></figure>
-<p>!!! attention - 可以把一个非volatile int赋给volatile
-int，但是不能把非volatile对象赋给一个volatile对象。 -
-除了基本类型外，对用户定义类型也可以用volatile类型进行修饰。 -
-C++中一个有volatile标识符的类只能访问它接口的子集，一个由类的实现者控制的子集,只能调用那些被类的实现者明确允许在<code>volatile</code>对象上调用的成员函数。用户只能用const_cast来获得对类型接口的完全访问。此外，volatile向const一样会从类传递到它的成员。</p>
+<div class="admonition attention">
+<p class="admonition-title">
+attention
+</p>
+<ul>
+<li>
+可以把一个非volatile int赋给volatile
+int，但是不能把非volatile对象赋给一个volatile对象。
+</li>
+<li>
+除了基本类型外，对用户定义类型也可以用volatile类型进行修饰。
+</li>
+<li>
+C++中一个有volatile标识符的类只能访问它接口的子集，一个由类的实现者控制的子集,只能调用那些被类的实现者明确允许在<code>volatile</code>对象上调用的成员函数。用户只能用const_cast来获得对类型接口的完全访问。此外，volatile向const一样会从类传递到它的成员。
+</li>
+</ul>
+</div>
 <p><strong>多线程下的volatile</strong>：有些变量是用volatile关键字声明的。当两个线程都要用到某一个变量且该变量的值会被改变时，应该用volatile声明，<strong>该关键字的作用是防止优化编译器把变量从内存装入CPU寄存器中。</strong></p>
 <h4 id="mutable">mutable</h4>
 <p>mutable的中文意思是“可变的，易变的”，跟constant（既C++中的const）是反义词。在C++中，mutable也是为了突破const的限制而设置的。被mutable修饰的变量，将永远处于可变的状态，即使在一个const函数中。我们知道，如果类的成员函数不会改变对象的状态，那么这个成员函数一般会声明成const的。但是，有些时候，我们需要<strong>在const函数里面修改一些跟类状态无关的数据成员，那么这个函数就应该被mutable来修饰，并且放在函数后后面关键字位置</strong>。</p>
