@@ -25,6 +25,16 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://gstarmin.github.io/img/%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/202206222244561.png">
 <meta property="og:image" content="https://gstarmin.github.io/img/%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/202206222244409.png">
+<meta property="og:image" content="https://gstarmin.github.io/img/%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/202206222245852.png">
+<meta property="og:image" content="https://gstarmin.github.io/img/%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/202206222245446.png">
+<meta property="og:image" content="https://gstarmin.github.io/img/%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/202206222245368.png">
+<meta property="og:image" content="https://gstarmin.github.io/img/%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/202206222245321.png">
+<meta property="og:image" content="https://gstarmin.github.io/img/%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/202206222245795.png">
+<meta property="og:image" content="https://gstarmin.github.io/img/%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/202206222245235.png">
+<meta property="og:image" content="https://gstarmin.github.io/img/%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/202206222245788.png">
+<meta property="og:image" content="https://gstarmin.github.io/img/%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/202206222245777.png">
+<meta property="og:image" content="https://gstarmin.github.io/img/%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/202206222245596.png">
+<meta property="og:image" content="https://gstarmin.github.io/img/%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/202206222245472.png">
 <meta property="article:published_time" content="2024-01-06T11:20:04.000Z">
 <meta property="article:modified_time" content="2024-01-10T12:50:04.000Z">
 <meta property="article:author" content="Starmin">
@@ -539,8 +549,8 @@ session 同步问题，状态缓存.缓存包括Session
 <ol type="1">
 <li>取得当前时间</li>
 <li>使用单节点获取锁的方式，依次获取 N 个节点的 Redis 锁。</li>
-<li>如果获取到的锁的数量大于 N/2+1<em>N</em>/2+1
-个，且获取的时间小于锁的有效时间(lock validity
+<li>如果获取到的锁的数量大于 N/2+1 个，且获取的时间小于锁的有效时间(lock
+validity
 time)就认为获取到了一个有效的锁，锁自动释放时间就是最初的锁释放时间减去之前获取锁所消耗的时间。</li>
 <li>如果获取锁的数量小于 N/2+1<em>N</em>/2+1 ，或者在锁的有效时间(lock
 validity
@@ -660,8 +670,7 @@ replication</p>
 </ul>
 <p>给出状态转移图能很直观的直到这三个状态的区别</p>
 <figure>
-<img
-src="../img/%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/202206222245852.png" srcset="/img/loading.gif" lazyload
+<img src="/img/%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/202206222245852.png" srcset="/img/loading.gif" lazyload
 alt="img" />
 <figcaption aria-hidden="true">img</figcaption>
 </figure>
@@ -680,8 +689,7 @@ candidate，重新选出 leader。</p>
 raft 协议中，也是这样的，对应的术语叫
 <strong><em>term</em></strong>。</p>
 <figure>
-<img
-src="../img/%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/202206222245446.png" srcset="/img/loading.gif" lazyload
+<img src="/img/%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/202206222245446.png" srcset="/img/loading.gif" lazyload
 alt="img" />
 <figcaption aria-hidden="true">img</figcaption>
 </figure>
@@ -724,8 +732,7 @@ leader，大家都在等；也许 leader 挂了；也许只是 leader 与该 fol
 follower。</p>
 <p>第三种情况，没有任何节点获得 majority 投票，比如下图这种情况：</p>
 <figure>
-<img
-src="../img/%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/202206222245368.png" srcset="/img/loading.gif" lazyload
+<img src="/img/%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/202206222245368.png" srcset="/img/loading.gif" lazyload
 alt="img" />
 <figcaption aria-hidden="true">img</figcaption>
 </figure>
@@ -758,8 +765,7 @@ machines），何为复制状态机：</p>
 command，则状态肯定是一致的。</p>
 <p>下图形象展示了这种 log-based replicated state machine：</p>
 <figure>
-<img
-src="../img/%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/202206222245321.png" srcset="/img/loading.gif" lazyload
+<img src="/img/%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/202206222245321.png" srcset="/img/loading.gif" lazyload
 alt="img" />
 <figcaption aria-hidden="true">img</figcaption>
 </figure>
@@ -773,8 +779,7 @@ RPC复制日志条目。当这条日志被复制到大多数服务器上，Leade
 只需要大多数（majority）节点的回复即可，这样只要超过一半节点处于工作状态则系统就是可用的。</p>
 <p>那么日志在每个节点上是什么样子的呢</p>
 <figure>
-<img
-src="../img/%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/202206222245795.png" srcset="/img/loading.gif" lazyload
+<img src="/img/%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/202206222245795.png" srcset="/img/loading.gif" lazyload
 alt="img" />
 <figcaption aria-hidden="true">img</figcaption>
 </figure>
@@ -803,8 +808,7 @@ command）在任何异常的情况下都不会发生回滚。这里有两个词�
 最终会让所有节点状态一致，这属于 liveness 属性。</p>
 <p>raft 协议会保证以下属性</p>
 <figure>
-<img
-src="../img/%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/202206222245235.png" srcset="/img/loading.gif" lazyload
+<img src="/img/%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/202206222245235.png" srcset="/img/loading.gif" lazyload
 alt="img" />
 <figcaption aria-hidden="true">img</figcaption>
 </figure>
@@ -836,8 +840,7 @@ entry 是 append-only。其次，consistency check。leader 在 AppendEntries
 <p>在没有异常的情况下，log matching 是很容易满足的，但如果出现了 node
 crash，情况就会变得负责。比如下图</p>
 <figure>
-<img
-src="../img/%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/202206222245788.png" srcset="/img/loading.gif" lazyload
+<img src="/img/%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/202206222245788.png" srcset="/img/loading.gif" lazyload
 alt="img" />
 <figcaption aria-hidden="true">img</figcaption>
 </figure>
@@ -900,8 +903,7 @@ leader，但在网络分割（network
 partition）的情况下，<strong>可能会出现两个 leader，但两个 leader
 所处的任期是不同的</strong>。</p>
 <figure>
-<img
-src="../img/%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/202206222245777.png" srcset="/img/loading.gif" lazyload
+<img src="/img/%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/202206222245777.png" srcset="/img/loading.gif" lazyload
 alt="img" />
 <figcaption aria-hidden="true">img</figcaption>
 </figure>
@@ -937,8 +939,7 @@ log entry for the same index.</p>
 in log
 entries）应该应用同样的日志。但是似乎有某些情况会违背这个原则：</p>
 <figure>
-<img
-src="../img/%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/202206222245596.png" srcset="/img/loading.gif" lazyload
+<img src="/img/%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/202206222245596.png" srcset="/img/loading.gif" lazyload
 alt="img" />
 <figcaption aria-hidden="true">img</figcaption>
 </figure>
@@ -979,8 +980,7 @@ term4 的日志顺便提交 term2 的日志。如果 term4 的日志提交成功
 target="_blank" rel="noopener" href="http://www.cnblogs.com/mindwind/p/5231986.html">这篇文章 (opens
 new window)</a>中，作者就给出了一个更新请求的流程图。</p>
 <figure>
-<img
-src="../img/%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/202206222245472.png" srcset="/img/loading.gif" lazyload
+<img src="/img/%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/202206222245472.png" srcset="/img/loading.gif" lazyload
 alt="img" />
 <figcaption aria-hidden="true">img</figcaption>
 </figure>

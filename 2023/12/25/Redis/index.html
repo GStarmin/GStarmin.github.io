@@ -315,7 +315,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          32k 字
+          31k 字
         
       </span>
     
@@ -326,7 +326,7 @@
         
         
         
-          316 分钟
+          315 分钟
         
       </span>
     
@@ -826,9 +826,9 @@ id="数据为什么会出现不一致的情况">数据为什么会出现不一�
 </figure>
 <ol type="1">
 <li>A请求发送一个写操作到服务端，第一步会淘汰cache，然后因为各种原因卡主了，不在执行后面业务(例：大量的业务操作、调用其他服务处理消耗了1s）。</li>
-<li>B请求发送一个读操作，读cache，因为cache淘汰，所以为空</li>
-<li>B请求继续读DB，读出一个脏数据，并写入cache</li>
-<li>A请求终于执行完全，在写入数据到DB</li>
+<li>B请求发送一个读操作，读cache，因为cache淘汰，所以为空。</li>
+<li>B请求继续读DB，读出一个脏数据，并写入cache。</li>
+<li>A请求终于执行完全，在写入数据到DB。</li>
 </ol>
 <p>总结：因最后才把写操作数据入DB，并没同步。cache里面一直保持脏数据</p>
 <p>脏数据是指源系统中的数据不在给定的范围内或对于实际业务毫无意义，或是数据格式非法，以及在源系统中存在不规范的编码和含糊的业务逻辑。</p>
@@ -878,7 +878,7 @@ id="主从同步读写分离的情况下读从库而产生脏数据"><strong>主
 <li>一个是全量(将全部数据一次写入到Redis)</li>
 <li>一个是增量（实时更新）</li>
 </ul>
-<p>这里说的是增量,指的是mysql的update、insert、delate变更数据。这样一旦MySQL中产生了新的写入、更新、删除等操作，就可以把binlog相关的消息推送至Redis，Redis再根据binlog中的记录，对Redis进行更新，就无需在从业务线去操作缓存内容。</p>
+<p>这里说的是增量,指的是mysql的update、insert、delete变更数据。这样一旦MySQL中产生了新的写入、更新、删除等操作，就可以把binlog相关的消息推送至Redis，Redis再根据binlog中的记录，对Redis进行更新，就无需在从业务线去操作缓存内容。</p>
 <h2 id="redis-的高并发和高可用是如何保证的">Redis
 的高并发和高可用是如何保证的？</h2>
 <p>这样的问题主要是在并发读写访问的时候，缓存和数据相互交叉执行。</p>
@@ -963,7 +963,7 @@ note
 <p>master 在内存中直接创建 <code>RDB</code> ，然后发送给
 slave，不会在自己本地落地磁盘了。只需要在配置文件中开启
 <code>repl-diskless-sync yes</code> 即可。</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs sh">repl-diskless-sync <span class="hljs-built_in">yes</span><br><br><span class="hljs-comment"># 等待 5s 后再开始复制，因为要等更多 slave 重新连接过来</span><br>repl-diskless-sync-delay 5Copy to clipboardErrorCopied<br></code></pre></td></tr></table></figure>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs sh">repl-diskless-sync <span class="hljs-built_in">yes</span><br><br><span class="hljs-comment"># 等待 5s 后再开始复制，因为要等更多 slave 重新连接过来</span><br>repl-diskless-sync-delay 5<br></code></pre></td></tr></table></figure>
 <h3 id="过期-key-处理">过期 key 处理</h3>
 <p>slave 没有过期 key，只会等待 master 过期 key。如果 master 过期了一个
 key，或者通过 LRU 淘汰了一个 key，那么会模拟一条 del 命令发送给
