@@ -301,6 +301,186 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h1 class="index-header">
         
+        <a href="/2023/07/01/Cmake%E7%9A%84%E4%BD%BF%E7%94%A8/" target="_self">
+          Cmake的使用
+        </a>
+      </h1>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2023/07/01/Cmake%E7%9A%84%E4%BD%BF%E7%94%A8/" target="_self">
+        <div>
+          Cmake的使用 CMake是一个跨平台的安装(编译)工具,可以用简单的语句来描述所有平台的安装(编译过程)。他能够输出各种各样的makefile或者project文件,能测试编译器所支持的C++特性,类似UNIX下的automake。 编译一个独立的cpp文件 文件结构如下： 123singleFile/| -- CMakeLists.txt| -- helloWorld.cpp CMakeLi
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2023-07-01 21:24" pubdate>
+              2023-07-01
+            </time>
+          </div>
+        
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/C/">#C++</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2023/06/29/muduo%E5%BA%93-%E6%97%A5%E5%BF%97%E7%B1%BB/" target="_self">
+          muduo库-日志类
+        </a>
+      </h1>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2023/06/29/muduo%E5%BA%93-%E6%97%A5%E5%BF%97%E7%B1%BB/" target="_self">
+        <div>
+          muduo库-日志类 muduo库中的日志为诊断日志，用于将代码运行时的重要信息进行保存，方便故障诊断和追踪。日志通常分为如下两种：  同步日志：当需要写出一条日志消息时，只有等到这条日志消息完全写出时才能执行后续的程序，其问题在于可能会阻塞在磁盘写操作上； 异步日志：当需要写日志消息时，只是将日志消息进行存储，当积累到一定量时或者达到时间间隔后，由后台线程自动将存储的所有日志进行数据；  综上所
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2023-06-29 22:25" pubdate>
+              2023-06-29
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/C/" class="category-chain-item">C++</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/C/muduo/" class="category-chain-item">muduo</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/C/">#C++</a>
+            
+              <a href="/tags/muduo/">#muduo</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2023/06/28/muduo%E5%BA%93-ThreadLocalSingleton%E7%B1%BB/" target="_self">
+          muduo库-ThreadLocalSingleton类
+        </a>
+      </h1>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2023/06/28/muduo%E5%BA%93-ThreadLocalSingleton%E7%B1%BB/" target="_self">
+        <div>
+          muduo库-ThreadLocalSingleton类 ThreadLocalSingleton类图如下：  ThreadLocalSingleton 类封装为了线程本地存储单例类。在 Signleton 中提到过，常见的单例模式设计分为四种：  懒汉式 双检锁 饿汉式 局部静态式  ThreadLocalSingleton 类则采用了懒汉式的构建方法，而且由于是线程本地存储，则无需互斥锁来保证
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2023-06-28 21:37" pubdate>
+              2023-06-28
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/C/" class="category-chain-item">C++</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/C/muduo/" class="category-chain-item">muduo</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/C/">#C++</a>
+            
+              <a href="/tags/muduo/">#muduo</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
         <a href="/2023/06/27/muduo%E5%BA%93-Threadlocal%E7%B1%BB/" target="_self">
           muduo库-Threadlocal类
         </a>
@@ -730,216 +910,6 @@
             <i class="iconfont icon-date"></i>
             <time datetime="2023-06-22 22:19" pubdate>
               2023-06-22
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3 d-flex align-items-center">
-            <i class="iconfont icon-category"></i>
-            
-
-<span class="category-chains">
-  
-  
-    
-      <span class="category-chain">
-        
-  <a href="/categories/C/" class="category-chain-item">C++</a>
-  
-  
-    <span>></span>
-    
-  <a href="/categories/C/muduo/" class="category-chain-item">muduo</a>
-  
-  
-
-  
-
-      </span>
-    
-  
-</span>
-
-          </div>
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/C/">#C++</a>
-            
-              <a href="/tags/muduo/">#muduo</a>
-            
-          </div>
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2023/06/22/muduo%E5%BA%93-%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E7%9B%B8%E5%85%B3%E7%B1%BBMutexLock-MutexLockGuard/" target="_self">
-          muduo库-线程安全相关类MutexLock MutexLockGuard
-        </a>
-      </h1>
-
-      
-      <a class="index-excerpt index-excerpt__noimg" href="/2023/06/22/muduo%E5%BA%93-%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E7%9B%B8%E5%85%B3%E7%B1%BBMutexLock-MutexLockGuard/" target="_self">
-        <div>
-          muduo库-线程安全相关类MutexLock MutexLockGuard 互斥锁mutex的选择 互斥锁mutex有2种方案：  C++11以后，使用std::mutex，当然，特殊应用场景下，也有另外三种：std::recursive_mutex（递归mutex类），std::timed_mutex（定时mutex类），recurisive_timed_mutex（定时递归mutex类）；
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2023-06-22 15:58" pubdate>
-              2023-06-22
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3 d-flex align-items-center">
-            <i class="iconfont icon-category"></i>
-            
-
-<span class="category-chains">
-  
-  
-    
-      <span class="category-chain">
-        
-  <a href="/categories/C/" class="category-chain-item">C++</a>
-  
-  
-    <span>></span>
-    
-  <a href="/categories/C/muduo/" class="category-chain-item">muduo</a>
-  
-  
-
-  
-
-      </span>
-    
-  
-</span>
-
-          </div>
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/C/">#C++</a>
-            
-              <a href="/tags/muduo/">#muduo</a>
-            
-          </div>
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2023/06/22/RAII%E5%8E%9F%E7%90%86/" target="_self">
-          RAII原理
-        </a>
-      </h1>
-
-      
-      <a class="index-excerpt index-excerpt__noimg" href="/2023/06/22/RAII%E5%8E%9F%E7%90%86/" target="_self">
-        <div>
-          RAII原理  RAII是什么? RAII（Resource Acquisition Is Initialization）是由C++之父Bjarne Stroustrup提出的，中文翻译为资源获取即初始化，即使用局部对象来管理资源的技术称为资源获取即初始化；   这里的资源主要是指操作系统中有限的东西如内存、网络套接字等等，局部对象是指存储在栈的对象，它的生命周期是由操作系统来管理的，无需人工介入
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2023-06-22 15:38" pubdate>
-              2023-06-22
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3 d-flex align-items-center">
-            <i class="iconfont icon-category"></i>
-            
-
-<span class="category-chains">
-  
-  
-    
-      <span class="category-chain">
-        
-  <a href="/categories/C/" class="category-chain-item">C++</a>
-  
-  
-    <span>></span>
-    
-  <a href="/categories/C/Effective-C/" class="category-chain-item">Effective C++</a>
-  
-  
-
-  
-
-      </span>
-    
-  
-</span>
-
-          </div>
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/C/">#C++</a>
-            
-              <a href="/tags/Effective-C/">#Effective C++</a>
-            
-          </div>
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2023/06/21/muduo%E5%BA%93-%E6%97%B6%E9%97%B4%E6%88%B3%E7%B1%BBTimestamp/" target="_self">
-          muduo库-时间戳类Timestamp
-        </a>
-      </h1>
-
-      
-      <a class="index-excerpt index-excerpt__noimg" href="/2023/06/21/muduo%E5%BA%93-%E6%97%B6%E9%97%B4%E6%88%B3%E7%B1%BBTimestamp/" target="_self">
-        <div>
-          muduo库-时间戳类Timestamp 如何度量程序在某一时刻的时间？ 通常，我们用时刻来表示，比如"2023-06-26 23:43:00.000000"，这种方式便于人查看，但不便于程序中的比较和计算。比如有2个时刻A和B，计算哪个时刻在前，哪个在后，或者要计算时刻A和B的时间差时，这种字符串表示方式就很麻烦。 我们想到将字符串形式的时刻，用自纪元时间（Epoch时间，1970-01-01
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2023-06-21 22:05" pubdate>
-              2023-06-21
             </time>
           </div>
         

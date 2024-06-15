@@ -1,0 +1,935 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Starmin">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="bluebell笔记 项目结构 1234567891011121314151617181920├── bin│   └── bluebell├── conf│   └── config.yaml├── static│   ├── css│   │   └── app.0afe9dae.css│   ├── favicon.ico│   ├── img│   │   ├── avatar.7b0a9">
+<meta property="og:type" content="article">
+<meta property="og:title" content="bluebell笔记">
+<meta property="og:url" content="https://gstarmin.github.io/2024/06/14/bluebell%E7%AC%94%E8%AE%B0/">
+<meta property="og:site_name" content="私人杂货铺">
+<meta property="og:description" content="bluebell笔记 项目结构 1234567891011121314151617181920├── bin│   └── bluebell├── conf│   └── config.yaml├── static│   ├── css│   │   └── app.0afe9dae.css│   ├── favicon.ico│   ├── img│   │   ├── avatar.7b0a9">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gstarmin.github.io/img/bluebell笔记/20210502181302-17183768829934.png">
+<meta property="og:image" content="https://gstarmin.github.io/img/bluebell笔记/20210502181858.png">
+<meta property="og:image" content="https://gstarmin.github.io/img/bluebell笔记/20210502181513.png">
+<meta property="article:published_time" content="2024-06-14T14:06:10.000Z">
+<meta property="article:modified_time" content="2024-06-14T14:06:10.000Z">
+<meta property="article:author" content="Starmin">
+<meta property="article:tag" content="面试">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://gstarmin.github.io/img/bluebell笔记/20210502181302-17183768829934.png">
+  
+  
+  
+  <title>bluebell笔记 - 私人杂货铺</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"gstarmin.github.io","root":"/","version":"1.9.3","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 5.4.2"><style>.mjpage .MJX-monospace {
+  font-family: monospace;
+}
+
+.mjpage .MJX-sans-serif {
+  font-family: sans-serif;
+}
+
+.mjpage {
+  display: inline;
+  font-style: normal;
+  font-weight: normal;
+  line-height: normal;
+  font-size: 100%;
+  font-size-adjust: none;
+  text-indent: 0;
+  text-align: left;
+  text-transform: none;
+  letter-spacing: normal;
+  word-spacing: normal;
+  word-wrap: normal;
+  white-space: nowrap;
+  float: none;
+  direction: ltr;
+  max-width: none;
+  max-height: none;
+  min-width: 0;
+  min-height: 0;
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+
+.mjpage * {
+  transition: none;
+  -webkit-transition: none;
+  -moz-transition: none;
+  -ms-transition: none;
+  -o-transition: none;
+}
+
+.mjx-svg-href {
+  fill: blue;
+  stroke: blue;
+}
+
+.MathJax_SVG_LineBox {
+  display: table !important;
+}
+
+.MathJax_SVG_LineBox span {
+  display: table-cell !important;
+  width: 10000em !important;
+  min-width: 0;
+  max-width: none;
+  padding: 0;
+  border: 0;
+  margin: 0;
+}
+
+.mjpage__block {
+  text-align: center;
+  margin: 1em 0em;
+  position: relative;
+  display: block !important;
+  text-indent: 0;
+  max-width: none;
+  max-height: none;
+  min-width: 0;
+  min-height: 0;
+  width: 100%;
+}
+</style></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Starmin</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="bluebell笔记"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-06-14 22:06" pubdate>
+          2024年6月14日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          5.5k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          56 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">bluebell笔记</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="bluebell笔记">bluebell笔记</h1>
+<h2 id="项目结构">项目结构</h2>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs stylus">├── bin<br>│   └── bluebell<br>├── conf<br>│   └── config<span class="hljs-selector-class">.yaml</span><br>├── static<br>│   ├── css<br>│   │   └── app.<span class="hljs-number">0</span>afe9dae<span class="hljs-selector-class">.css</span><br>│   ├── favicon<span class="hljs-selector-class">.ico</span><br>│   ├── <span class="hljs-selector-tag">img</span><br>│   │   ├── avatar.<span class="hljs-number">7</span>b0a9835<span class="hljs-selector-class">.png</span><br>│   │   ├── iconfont<span class="hljs-selector-class">.cdbe38a0</span><span class="hljs-selector-class">.svg</span><br>│   │   ├── logo<span class="hljs-selector-class">.da56125f</span><span class="hljs-selector-class">.png</span><br>│   │   └── search.<span class="hljs-number">8</span>e85063d<span class="hljs-selector-class">.png</span><br>│   └── js<br>│       ├── app.<span class="hljs-number">9</span>f3efa6d<span class="hljs-selector-class">.js</span><br>│       ├── app.<span class="hljs-number">9</span>f3efa6d<span class="hljs-selector-class">.js</span><span class="hljs-selector-class">.map</span><br>│       ├── chunk-vendors.<span class="hljs-number">57</span>f9e9d6<span class="hljs-selector-class">.js</span><br>│       └── chunk-vendors.<span class="hljs-number">57</span>f9e9d6<span class="hljs-selector-class">.js</span><span class="hljs-selector-class">.map</span><br>└── templates<br>    └── index.html<br></code></pre></td></tr></table></figure>
+<p>整个项目大体分为三层： -
+controller:服务的入口，负责处理路由、参数校验、请求转发 -
+logic/service:逻辑层，负责处理业务逻辑 -
+dao/reposity:负责数据与存储的相关 ## 使用validator做参数校验
+在平常开发中，特别是在web应用开发中，为了验证输入字段的合法性，都会做一些验证操作。比如对用户提交的表单字段进行验证，或者对请求的API接口字段进行验证，验证字段的合法性，保证输入字段值的安全，防止用户的恶意请求。</p>
+<p>一般的做法是用正则表达式，一个字段一个字段的进行验证。一个一个字段验证的话，写起来比较繁琐。那有没更好的方法，进行字段的合法性验证？有，
+这就是下面要介绍的 <a
+target="_blank" rel="noopener" href="https://github.com/go-playground/validator">validator</a>
+这个验证组件。</p>
+<p><strong>gin框架使用<a
+target="_blank" rel="noopener" href="https://github.com/go-playground/validator">github.com/go-playground/validator</a>进行参数校验</strong>，目前已经支持<code>github.com/go-playground/validator/v10</code>了，我们需要在定义结构体时使用 <code>binding</code> tag标识相关校验规则，可以查看<a
+target="_blank" rel="noopener" href="https://godoc.org/github.com/go-playground/validator#hdr-Baked_In_Validators_and_Tags">validator文档</a>查看支持的所有
+tag。 基本示例：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">package</span> main<br><br><span class="hljs-keyword">import</span> (<br>	<span class="hljs-string">&quot;net/http&quot;</span><br><br>	<span class="hljs-string">&quot;github.com/gin-gonic/gin&quot;</span><br>)<br><br><span class="hljs-keyword">type</span> SignUpParam <span class="hljs-keyword">struct</span> &#123;<br>	Age        <span class="hljs-type">uint8</span>  <span class="hljs-string">`json:&quot;age&quot; binding:&quot;gte=1,lte=130&quot;`</span><br>	Name       <span class="hljs-type">string</span> <span class="hljs-string">`json:&quot;name&quot; binding:&quot;required&quot;`</span><br>	Email      <span class="hljs-type">string</span> <span class="hljs-string">`json:&quot;email&quot; binding:&quot;required,email&quot;`</span><br>	Password   <span class="hljs-type">string</span> <span class="hljs-string">`json:&quot;password&quot; binding:&quot;required&quot;`</span><br>	RePassword <span class="hljs-type">string</span> <span class="hljs-string">`json:&quot;re_password&quot; binding:&quot;required,eqfield=Password&quot;`</span><br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;<br>	r := gin.Default()<br><br>	r.POST(<span class="hljs-string">&quot;/signup&quot;</span>, <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(c *gin.Context)</span></span> &#123;<br>		<span class="hljs-keyword">var</span> u SignUpParam<br>		<span class="hljs-keyword">if</span> err := c.ShouldBind(&amp;u); err != <span class="hljs-literal">nil</span> &#123;<br>			c.JSON(http.StatusOK, gin.H&#123;<br>				<span class="hljs-string">&quot;msg&quot;</span>: err.Error(),<br>			&#125;)<br>			<span class="hljs-keyword">return</span><br>		&#125;<br>		<span class="hljs-comment">// 保存入库等业务逻辑代码...</span><br><br>		c.JSON(http.StatusOK, <span class="hljs-string">&quot;success&quot;</span>)<br>	&#125;)<br><br>	_ = r.Run(<span class="hljs-string">&quot;:8999&quot;</span>)<br>&#125;<br></code></pre></td></tr></table></figure>
+<ul>
+<li>gte、lte:验证规则，限定了该变量的范围。</li>
+<li>required:
+验证规则，表示该字段是必填的。没有提供这个字段，或者提供的值是零值（如空字符串、零值的数字等），都会导致验证失败。</li>
+<li>email:验证规则，表示该字段的值必须符合电子邮件格式。如果提供的值不是一个有效的电子邮件地址，验证也会失败。</li>
+<li>eqfield:验证规则，用来比较结构体中两个字段的值是否相等。这里的<code>eqfield=Password</code>表示<code>RePassword</code>
+字段必须与 <code>Password</code>
+字段的值相同，以确保用户输入的确认密码与实际密码一致。</li>
+</ul>
+<h2 id="雪花算法">雪花算法</h2>
+<p><strong>为什么不使用其他算法？为什么选择雪花算法？</strong></p>
+<p>有时候在业务中，需要使用一些唯一的ID，来记录我们某个数据的标识。最常用的无非以下几种：UUID、数据库自增主键、Redis的Incr命令等方法来获取一个唯一的值。下面我们分别说一下它们的优劣，以便引出我们的分布式雪花算法。</p>
+<h3 id="uuid">UUID</h3>
+<p>首先是 UUID
+，它是由128位二进制组成，一般转换成十六进制，然后用String表示。为了保证
+UUID
+的唯一性，规范定义了包括网卡MAC地址、时间戳、名字空（Namespace）、随机或伪随机数、时序等元素，以及从这些元素生成
+UUID 的算法。</p>
+<p>UUID 有五个版本：</p>
+<ul>
+<li>版本1：基于时间戳和mac地址</li>
+<li>版本2：基于时间戳，mac地址和<code>POSIX UID/GID</code></li>
+<li>版本3：基于MD5哈希算法</li>
+<li>版本4：基于随机数</li>
+<li>版本5：基于SHA-1哈希算法</li>
+</ul>
+<p><strong>UUID 的优缺点:</strong></p>
+<ul>
+<li><strong>优点</strong>:代码简单，性能比较好。</li>
+<li>缺点:没有排序，无法保证按序递增；其次是太长了，存储数据库占用空间比较大，不利于检索和排序。</li>
+</ul>
+<h3 id="数据库自增主键">数据库自增主键</h3>
+<ul>
+<li><p><strong>优点</strong>：方便排序和索引</p></li>
+<li><p><strong>缺点</strong>：</p>
+<ul>
+<li>数据库是磁盘IO，速度比较慢，所以会导致性能瓶颈</li>
+<li>如果数据量太大的情况下需要分库分表，而多个库的情况下无法保证一个主键是全局唯一的</li>
+<li>过度依赖数据库，如果数据库宕机了，这个功能是无法使用的</li>
+</ul></li>
+</ul>
+<h3 id="redis">Redis</h3>
+<p>使用Redis 中的两个命令 Incr、IncrBy。</p>
+<ul>
+<li>优点：
+<ul>
+<li>redis是基于内存的，所以性能很高</li>
+<li>redis是单线程的，所以上面两个指令可以保证原子性，从而可以生成全局唯一的id，在分库分表的情况下相比较于数据库自增主键可以实现全局唯一id。</li>
+</ul></li>
+<li>缺点：
+<ul>
+<li>即使有AOF和RDB持久化，仍然会有数据丢失，这样可能会造成id重复</li>
+<li>依赖redis，如果redis服务不稳定,会影响id生成</li>
+</ul></li>
+</ul>
+<h3 id="snowflake">Snowflake</h3>
+<p>Snowflake最早是twitter内部使用的分布式环境下的唯一ID生成算法。</p>
+<p>它有以下几个<strong>特点</strong>：</p>
+<ol type="1">
+<li>能满足高并发分布式系统环境下ID不重复；</li>
+<li>基于时间戳，可以保证基本有序递增；</li>
+<li>不依赖于第三方的库或者中间件；</li>
+</ol>
+<h4 id="实现原理">实现原理</h4>
+<p>Snowflake 结构是一个 64bit 的 int64 类型的数据。如下：</p>
+<figure>
+<img src="/img/bluebell笔记/20210502181302-17183768829934.png" srcset="/img/loading.gif" lazyload
+alt="snowflake" />
+<figcaption aria-hidden="true">snowflake</figcaption>
+</figure>
+<p>从低位到高位的bits作用依次为：</p>
+<table>
+
+<thead>
+<tr class="header">
+<th style="text-align: left;">位置</th>
+<th style="text-align: left;">大小</th>
+<th style="text-align: left;">作用</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">0～11bit</td>
+<td style="text-align: left;">12bits</td>
+<td
+style="text-align: left;">序列号，用来对<strong>同一个毫秒之内产生不同的ID</strong>，可记录4095个</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">12～21bit</td>
+<td style="text-align: left;">10bits</td>
+<td
+style="text-align: left;">10bit用来记录<strong>机器ID</strong>，总共可以记录1024台机器</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">22～62bit</td>
+<td style="text-align: left;">41bits</td>
+<td style="text-align: left;">用来记录时间戳，这里可以记录69年</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">63bit</td>
+<td style="text-align: left;">1bit</td>
+<td style="text-align: left;">符号位，不做处理</td>
+</tr>
+</tbody>
+</table>
+<p>即，从低到高：</p>
+<ul>
+<li>12 bit序列号</li>
+<li>10 bit机器id，又分为datacenter（即机房号）和worker
+id（即主机的id），10位一共可以有1024个不同的机器</li>
+<li>41 bit时间戳</li>
+<li>1 bit 未使用，置0</li>
+</ul>
+<p>上面只是一个将 64bit
+划分的通用标准，一般的情况可以根据自己的业务情况进行调整。例如目前业务只有机器10台左右预计未来会增加到三位数，并且需要进行多机房部署，QPS
+几年之内会发展到百万。</p>
+<p><strong>那么对于百万 QPS 平分到 10
+台机器上就是每台机器承担十万的请求即可，12 bit
+的序列号完全够用。对于未来会增加到三位数机器，并且需要多机房部署的需求我们仅需要将
+10 bits 的 work id 进行拆分，分割 3 bits
+来代表机房数共代表可以部署8个机房，其他 7bits
+代表机器数代表每个机房可以部署128台机器。那么数据格式就会如下所示：</strong></p>
+<figure>
+<img src="/img/bluebell笔记/20210502181858.png" srcset="/img/loading.gif" lazyload alt="img" />
+<figcaption aria-hidden="true">img</figcaption>
+</figure>
+<h3 id="snowflake实现">Snowflake实现</h3>
+<p>其实看懂了上面的数据结构之后，需要自己实现一个雪花算法是非常简单，步骤大致如下：</p>
+<ol type="1">
+<li>获取当前的毫秒时间戳；</li>
+<li>用当前的毫秒时间戳和上次保存的时间戳进行比较；
+<ol type="1">
+<li>如果和上次保存的时间戳相等，那么对序列号 sequence 加一；</li>
+<li>如果不相等，那么直接设置 sequence 为 0 即可；</li>
+</ol></li>
+<li>然后通过<strong>或运算</strong>拼接雪花算法需要返回的 int64
+返回值。</li>
+</ol>
+<h4 id="代码实现">代码实现</h4>
+<p>首先我们需要定义一个 Snowflake 结构体：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">type</span> Snowflake <span class="hljs-keyword">struct</span> &#123;<br>    sync.Mutex                  <span class="hljs-comment">// 锁</span><br>    timestamp    <span class="hljs-type">int64</span>  		<span class="hljs-comment">// 时间戳 ，毫秒</span><br>    workerid     <span class="hljs-type">int64</span>  		<span class="hljs-comment">// 工作节点</span><br>    datacenterid <span class="hljs-type">int64</span>  		<span class="hljs-comment">// 数据中心机房id</span><br>    sequence     <span class="hljs-type">int64</span>  		<span class="hljs-comment">// 序列号</span><br>&#125;<br></code></pre></td></tr></table></figure>
+<p>然后我们需要定义一些常量，方便我们在使用雪花算法的时候进行位运算取值：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">const</span> (<br>  	epoch             = <span class="hljs-type">int64</span>(<span class="hljs-number">1577808000000</span>)                           <span class="hljs-comment">// 设置起始时间(时间戳/毫秒)：2020-01-01 00:00:00，有效期69年</span><br>    timestampBits     = <span class="hljs-type">uint</span>(<span class="hljs-number">41</span>)                                       <span class="hljs-comment">// 时间戳占用位数</span><br>    datacenteridBits  = <span class="hljs-type">uint</span>(<span class="hljs-number">2</span>)                                        <span class="hljs-comment">// 数据中心id所占位数</span><br>    workeridBits      = <span class="hljs-type">uint</span>(<span class="hljs-number">7</span>)                                        <span class="hljs-comment">// 机器id所占位数</span><br>    sequenceBits      = <span class="hljs-type">uint</span>(<span class="hljs-number">12</span>)                                       <span class="hljs-comment">// 序列所占的位数</span><br>    timestampMax      = <span class="hljs-type">int64</span>(<span class="hljs-number">-1</span> ^ (<span class="hljs-number">-1</span> &lt;&lt; timestampBits))              <span class="hljs-comment">// 时间戳最大值</span><br>    datacenteridMax   = <span class="hljs-type">int64</span>(<span class="hljs-number">-1</span> ^ (<span class="hljs-number">-1</span> &lt;&lt; datacenteridBits))           <span class="hljs-comment">// 支持的最大数据中心id数量</span><br>    workeridMax       = <span class="hljs-type">int64</span>(<span class="hljs-number">-1</span> ^ (<span class="hljs-number">-1</span> &lt;&lt; workeridBits))               <span class="hljs-comment">// 支持的最大机器id数量</span><br>    sequenceMask      = <span class="hljs-type">int64</span>(<span class="hljs-number">-1</span> ^ (<span class="hljs-number">-1</span> &lt;&lt; sequenceBits))               <span class="hljs-comment">// 支持的最大序列id数量</span><br>    workeridShift     = sequenceBits                                   <span class="hljs-comment">// 机器id左移位数</span><br>    datacenteridShift = sequenceBits + workeridBits                    <span class="hljs-comment">// 数据中心id左移位数</span><br>    timestampShift    = sequenceBits + workeridBits + datacenteridBits <span class="hljs-comment">// 时间戳左移位数</span><br>)<br></code></pre></td></tr></table></figure>
+<p><strong>Tips:timestampMax怎么获得？</strong></p>
+<p>-1 在二进制上表示是：</p>
+<figure class="highlight basic"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs basic"><span class="hljs-symbol">11111111 </span><span class="hljs-number">11111111</span> <span class="hljs-number">11111111</span> <span class="hljs-number">11111111</span> <span class="hljs-number">11111111</span> <span class="hljs-number">11111111</span> <span class="hljs-number">11111111</span> <span class="hljs-number">11111111</span><br></code></pre></td></tr></table></figure>
+<p>那么再和 -1 进行 ^异或运算：</p>
+<figure class="highlight basic"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs basic"><span class="hljs-symbol">00000000 </span><span class="hljs-number">00000000</span> <span class="hljs-number">00000001</span> <span class="hljs-number">11111111</span> <span class="hljs-number">11111111</span> <span class="hljs-number">11111111</span> <span class="hljs-number">11111111</span> <span class="hljs-number">11111111</span><br></code></pre></td></tr></table></figure>
+<p>这就可以表示 41bits 的 timestamp
+最大值。datacenteridMax、workeridMax也同理。</p>
+<h4 id="函数代码">函数代码</h4>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(s *Snowflake)</span></span> NextVal() <span class="hljs-type">int64</span> &#123;<br>    s.Lock()<br>    now := time.Now().UnixNano() / <span class="hljs-number">1000000</span> <span class="hljs-comment">// 转毫秒</span><br>    <span class="hljs-keyword">if</span> s.timestamp == now &#123;<br>        <span class="hljs-comment">// 当同一时间戳（精度：毫秒）下多次生成id会增加序列号</span><br>        s.sequence = (s.sequence + <span class="hljs-number">1</span>) &amp; sequenceMask<br>        <span class="hljs-keyword">if</span> s.sequence == <span class="hljs-number">0</span> &#123;<br>            <span class="hljs-comment">// 如果当前序列超出12bit长度，则需要等待下一毫秒</span><br>            <span class="hljs-comment">// 下一毫秒将使用sequence:0</span><br>            <span class="hljs-keyword">for</span> now &lt;= s.timestamp &#123;<br>                now = time.Now().UnixNano() / <span class="hljs-number">1000000</span><br>            &#125;<br>        &#125;<br>    &#125; <span class="hljs-keyword">else</span> &#123;<br>        <span class="hljs-comment">// 不同时间戳（精度：毫秒）下直接使用序列号：0</span><br>        s.sequence = <span class="hljs-number">0</span><br>    &#125;<br>    t := now - epoch<br>    <span class="hljs-keyword">if</span> t &gt; timestampMax &#123;<br>        s.Unlock()<br>        glog.Errorf(<span class="hljs-string">&quot;epoch must be between 0 and %d&quot;</span>, timestampMax<span class="hljs-number">-1</span>)<br>        <span class="hljs-keyword">return</span> <span class="hljs-number">0</span><br>    &#125;<br>    s.timestamp = now<br>    r := <span class="hljs-type">int64</span>((t)&lt;&lt;timestampShift | (s.datacenterid &lt;&lt; datacenteridShift) | (s.workerid &lt;&lt; workeridShift) | (s.sequence))<br>    s.Unlock()<br>    <span class="hljs-keyword">return</span> r<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>首先 t 表示的是现在距离 epoch 的时间差，我们 epoch
+在初始化的时候设置的是<code>2020-01-01 00:00:00</code>,那么对于 41bit 的
+timestamp 来说会在 69 年之后才溢出。对 t 进行向左位移之后，低于
+timestampShift 位置上全是0 ，由 datacenterid、workerid、sequence
+进行取或填充。</p>
+<p>得到时间戳和机器码之后，通过或运算来得到最终的id：</p>
+<ul>
+<li><strong>将时间戳左移41位</strong></li>
+<li><strong>将机器码左移12位</strong></li>
+<li><strong>将序列号和左移之后的时间戳和左移之后的机器码做或运算得到最终的id号</strong></li>
+</ul>
+<p>在当前的例子中，如果当前时间是<code>2021/01/01 00:00:00</code>,那么位运算结果如下图所示：</p>
+<figure>
+<img src="/img/bluebell笔记/20210502181513.png" srcset="/img/loading.gif" lazyload alt="img" />
+<figcaption aria-hidden="true">img</figcaption>
+</figure>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E9%9D%A2%E8%AF%95/">#面试</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>bluebell笔记</div>
+      <div>https://gstarmin.github.io/2024/06/14/bluebell笔记/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Starmin</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2024年6月14日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2024/06/15/%E5%9F%BA%E4%BA%8ECookie-Session%E5%92%8C%E5%9F%BA%E4%BA%8EToken%E7%9A%84%E8%AE%A4%E8%AF%81%E6%A8%A1%E5%BC%8F/" title="基于Cookie-Session和基于Token的认证模式">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">基于Cookie-Session和基于Token的认证模式</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/05/11/CFS%E8%B0%83%E5%BA%A6%E7%AE%97%E6%B3%95/" title="CFS调度算法">
+                        <span class="hidden-mobile">CFS调度算法</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
