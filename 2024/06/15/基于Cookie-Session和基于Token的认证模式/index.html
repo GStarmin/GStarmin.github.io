@@ -294,7 +294,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          3.3k 字
+          3.7k 字
         
       </span>
     
@@ -305,7 +305,7 @@
         
         
         
-          34 分钟
+          38 分钟
         
       </span>
     
@@ -406,8 +406,31 @@ token，因此无法在使用过程中废止某个 token，或者更改 token
 的权限。也就是说，<strong>一旦 token
 签发了，在到期之前就会始终有效，除非服务器部署额外的逻辑。</strong></p>
 <p><strong>如何解决这个问题？</strong></p>
-<p>可以给token的过期时间设置的短一点，然后引入一个refresh
-token，当token过期的时候，使用refresh token刷新token。</p>
+<p><strong>可以给token的过期时间设置的短一点，然后引入一个refresh
+token，当token过期的时候，使用refresh
+token刷新token。</strong>具体做法是：</p>
+<ol type="1">
+<li>客户端使⽤用⽤用户名密码进⾏行行认证</li>
+<li>服务端⽣生成有效时间较短的 Access Token（例例如 10
+分钟），和有效时间较⻓长的 Refresh Token（例如 7 天）</li>
+<li>客户端访问需要认证的接⼝口时，携带 Access Token</li>
+<li>如果 Access Token 没有过期，服务端鉴权后返回给客户端需要的数据</li>
+<li>如果携带 Access Token 访问需要认证的接⼝口时鉴权失败（例如返回 401
+错误），则客户端使用Refresh Token 向刷新接⼝口申请新的 Access
+Token(也可以同时返回新的refresh token和access token)</li>
+<li>如果 Refresh Token 没有过期，服务端向客户端下发新的 Access
+Token</li>
+<li>客户端使⽤用新的 Access Token 访问需要认证的接口</li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">
+note
+</p>
+<p>
+使用这种方法后端需要对外提供⼀一个刷新Token的接口，前端需要实现⼀一个当Access
+Token过期时⾃自动请求刷新Token接口获取新Access Token的拦截器器。
+</p>
+</div>
 <figure>
 <img
 src="/img/基于Cookie-Session和基于Token的认证模式/image-20240615102555596.png" srcset="/img/loading.gif" lazyload

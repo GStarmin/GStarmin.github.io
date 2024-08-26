@@ -1,0 +1,1278 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Starmin">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="GeeRPC笔记 RPC基础知识 为什么要使用RPC？RPC有什么优点？ 可以把不同功能的模块通过进程隔离开，那么就可以对这些模块进行不同的形式的变换，而且可以确保不同模块的安全和稳定。 RPC的类型 RPC根据运行模式分为静态模式和动态模式： 静态模式：预编译接口，生成存根代码stub，与应用代码编译。C++ JAVA OBJc   image-20240719213225997  动态模式：依">
+<meta property="og:type" content="article">
+<meta property="og:title" content="geerpc笔记">
+<meta property="og:url" content="https://gstarmin.github.io/2024/07/13/geerpc%E7%AC%94%E8%AE%B0/">
+<meta property="og:site_name" content="私人杂货铺">
+<meta property="og:description" content="GeeRPC笔记 RPC基础知识 为什么要使用RPC？RPC有什么优点？ 可以把不同功能的模块通过进程隔离开，那么就可以对这些模块进行不同的形式的变换，而且可以确保不同模块的安全和稳定。 RPC的类型 RPC根据运行模式分为静态模式和动态模式： 静态模式：预编译接口，生成存根代码stub，与应用代码编译。C++ JAVA OBJc   image-20240719213225997  动态模式：依">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gstarmin.github.io/img/geerpc笔记/image-20240719213225997.png">
+<meta property="og:image" content="https://gstarmin.github.io/img/geerpc笔记/image-20240719213616213.png">
+<meta property="og:image" content="https://gstarmin.github.io/img/geerpc笔记/registry-17226030677956.jpg">
+<meta property="og:image" content="https://gstarmin.github.io/img/geerpc笔记/registry-17226030677956.jpg">
+<meta property="article:published_time" content="2024-07-13T13:54:00.000Z">
+<meta property="article:modified_time" content="2024-07-13T13:54:00.000Z">
+<meta property="article:author" content="Starmin">
+<meta property="article:tag" content="面试">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://gstarmin.github.io/img/geerpc笔记/image-20240719213225997.png">
+  
+  
+  
+  <title>geerpc笔记 - 私人杂货铺</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"gstarmin.github.io","root":"/","version":"1.9.3","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 5.4.2"><style>.mjpage .MJX-monospace {
+  font-family: monospace;
+}
+
+.mjpage .MJX-sans-serif {
+  font-family: sans-serif;
+}
+
+.mjpage {
+  display: inline;
+  font-style: normal;
+  font-weight: normal;
+  line-height: normal;
+  font-size: 100%;
+  font-size-adjust: none;
+  text-indent: 0;
+  text-align: left;
+  text-transform: none;
+  letter-spacing: normal;
+  word-spacing: normal;
+  word-wrap: normal;
+  white-space: nowrap;
+  float: none;
+  direction: ltr;
+  max-width: none;
+  max-height: none;
+  min-width: 0;
+  min-height: 0;
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+
+.mjpage * {
+  transition: none;
+  -webkit-transition: none;
+  -moz-transition: none;
+  -ms-transition: none;
+  -o-transition: none;
+}
+
+.mjx-svg-href {
+  fill: blue;
+  stroke: blue;
+}
+
+.MathJax_SVG_LineBox {
+  display: table !important;
+}
+
+.MathJax_SVG_LineBox span {
+  display: table-cell !important;
+  width: 10000em !important;
+  min-width: 0;
+  max-width: none;
+  padding: 0;
+  border: 0;
+  margin: 0;
+}
+
+.mjpage__block {
+  text-align: center;
+  margin: 1em 0em;
+  position: relative;
+  display: block !important;
+  text-indent: 0;
+  max-width: none;
+  max-height: none;
+  min-width: 0;
+  min-height: 0;
+  width: 100%;
+}
+</style></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Starmin</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="geerpc笔记"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-07-13 21:54" pubdate>
+          2024年7月13日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          28k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          282 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">geerpc笔记</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="geerpc笔记">GeeRPC笔记</h1>
+<h2 id="rpc基础知识">RPC基础知识</h2>
+<h3
+id="为什么要使用rpcrpc有什么优点">为什么要使用RPC？RPC有什么优点？</h3>
+<p>可以把不同功能的模块通过进程隔离开，那么就可以对这些模块进行不同的形式的变换，而且可以确保不同模块的安全和稳定。</p>
+<h3 id="rpc的类型">RPC的类型</h3>
+<p>RPC根据运行模式分为静态模式和动态模式：</p>
+<p><strong>静态模式</strong>：预编译接口，生成存根代码stub，与应用代码编译。C++
+JAVA OBJc</p>
+<figure>
+<img src="/img/geerpc笔记/image-20240719213225997.png" srcset="/img/loading.gif" lazyload
+alt="image-20240719213225997" />
+<figcaption aria-hidden="true">image-20240719213225997</figcaption>
+</figure>
+<p><strong>动态模式</strong>：依赖语言特性实现动态调用（反射、内省）。
+python java php go</p>
+<p>没有静态模式中的IDL编译器编译为STUB的过程，程序代码就是IDL，所以IDL+User
+Code构成了<strong>动态模式</strong>的RPC程序。</p>
+<figure>
+<img src="/img/geerpc笔记/image-20240719213616213.png" srcset="/img/loading.gif" lazyload
+alt="image-20240719213616213" />
+<figcaption aria-hidden="true">image-20240719213616213</figcaption>
+</figure>
+<h3 id="同步调用和异步调用">同步调用和异步调用</h3>
+<p><strong>同步调用</strong>：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(client *Client)</span></span> Call(serviceMethod <span class="hljs-type">string</span>, args <span class="hljs-keyword">interface</span>&#123;&#125;, reply <span class="hljs-keyword">interface</span>&#123;&#125;) err<br></code></pre></td></tr></table></figure>
+<p><strong>异步调用</strong>：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(client *Client)</span></span> Go(serviceMethod <span class="hljs-type">string</span>, args <span class="hljs-keyword">interface</span>&#123;&#125;, reply <span class="hljs-keyword">interface</span>&#123;&#125;, done <span class="hljs-keyword">chan</span>*Call) *Call<br></code></pre></td></tr></table></figure>
+<h2 id="geerpc架构">Geerpc架构</h2>
+<p>这个项目的层次结构如下：</p>
+<ul>
+<li>codec：编解码器</li>
+<li>geerpc：RPC框架的核心实现</li>
+<li>registry：注册中心</li>
+<li>client：客户端</li>
+<li>server：服务端</li>
+<li>service：服务</li>
+<li>xclient：客户端的扩展</li>
+</ul>
+<p>重要结构定义如下：</p>
+<p><strong>header</strong>:</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">type</span> Header <span class="hljs-keyword">struct</span> &#123;<br>	ServiceMethod <span class="hljs-type">string</span> <span class="hljs-comment">// 格式 &quot;Service.Method&quot;</span><br>	Seq           <span class="hljs-type">uint64</span> <span class="hljs-comment">// 序列号</span><br>	Error         <span class="hljs-type">string</span> <br>&#125; <br><br><span class="hljs-comment">// 没有专门定义body结构体，body是一个interface&#123;&#125;类型</span><br></code></pre></td></tr></table></figure>
+<p><strong>client</strong>：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">type</span> Client <span class="hljs-keyword">struct</span> &#123;<br>	cc       codec.Codec<br>	opt      *Option<br>	sending  sync.Mutex 	<span class="hljs-comment">// 保证请求的有序发送</span><br>	header   codec.Header<br>	mu       sync.Mutex 	<span class="hljs-comment">// 操作 client.pending 的互斥锁</span><br>	seq      <span class="hljs-type">uint64</span><br>	pending  <span class="hljs-keyword">map</span>[<span class="hljs-type">uint64</span>]*Call <span class="hljs-comment">// 存储未处理完的请求</span><br>	closing  <span class="hljs-type">bool</span>             <span class="hljs-comment">// user has called Close</span><br>	shutdown <span class="hljs-type">bool</span>             <span class="hljs-comment">// server has told us to stop</span><br>&#125;<br></code></pre></td></tr></table></figure>
+<p><strong>server</strong>:</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">type</span> Server <span class="hljs-keyword">struct</span> &#123;<br>	serviceMap sync.Map<br>&#125;<br></code></pre></td></tr></table></figure>
+<p><strong>Service</strong>:</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">type</span> methodType <span class="hljs-keyword">struct</span> &#123;<br>	method    reflect.Method <span class="hljs-comment">// 方法</span><br>	ArgType   reflect.Type   <span class="hljs-comment">// 参数类型</span><br>	ReplyType reflect.Type   <span class="hljs-comment">// 返回值类型</span><br>	numCalls  <span class="hljs-type">uint64</span>         <span class="hljs-comment">// 调用次数</span><br>&#125;<br><br><span class="hljs-keyword">type</span> service <span class="hljs-keyword">struct</span> &#123;<br>	name   <span class="hljs-type">string</span>                 <span class="hljs-comment">// 服务名</span><br>	typ    reflect.Type           <span class="hljs-comment">// 服务类型</span><br>	rcvr   reflect.Value          <span class="hljs-comment">// 服务实例</span><br>	method <span class="hljs-keyword">map</span>[<span class="hljs-type">string</span>]*methodType <span class="hljs-comment">// 服务方法</span><br>&#125;<br></code></pre></td></tr></table></figure>
+<p><strong>Option</strong>:</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">type</span> Option <span class="hljs-keyword">struct</span> &#123;<br>	MagicNumber    <span class="hljs-type">int</span>           <span class="hljs-comment">// MagicNumber 标记表示这是一个geerpc request</span><br>	CodecType      codec.Type    <span class="hljs-comment">// client可以选择不同的Codec来encode body</span><br>	ConnectTimeout time.Duration <span class="hljs-comment">// 0 means no limit</span><br>	HandleTimeout  time.Duration<br>&#125;<br></code></pre></td></tr></table></figure>
+<p><strong>Codec</strong>:</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">type</span> Codec <span class="hljs-keyword">interface</span> &#123;<br>	io.Closer                         <span class="hljs-comment">// 关闭连接</span><br>	ReadHeader(*Header) <span class="hljs-type">error</span>         <span class="hljs-comment">// 读取请求头</span><br>	ReadBody(<span class="hljs-keyword">interface</span>&#123;&#125;) <span class="hljs-type">error</span>       <span class="hljs-comment">// 读取请求体</span><br>	Write(*Header, <span class="hljs-keyword">interface</span>&#123;&#125;) <span class="hljs-type">error</span> <span class="hljs-comment">// 写入请求</span><br>&#125;<br><br><span class="hljs-keyword">const</span> (<br>	GobType  Type = <span class="hljs-string">&quot;application/gob&quot;</span><br>	JsonType Type = <span class="hljs-string">&quot;application/json&quot;</span> <span class="hljs-comment">// not implemented</span><br>)<br><br><br><span class="hljs-keyword">type</span> GobCodec <span class="hljs-keyword">struct</span> &#123;<br>	conn io.ReadWriteCloser <span class="hljs-comment">// 连接实例</span><br>	buf  *bufio.Writer      <span class="hljs-comment">// 写入缓冲区</span><br>	dec  *gob.Decoder       <span class="hljs-comment">// 解码器</span><br>	enc  *gob.Encoder       <span class="hljs-comment">// 编码器</span><br>&#125;<br></code></pre></td></tr></table></figure>
+<p><strong>registry</strong>：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-comment">// GeeRegistry 是一个简单的注册中心，提供以下功能：</span><br><span class="hljs-comment">// - 添加服务实例并接收心跳以保持其存活。</span><br><span class="hljs-comment">// - 返回所有存活的服务实例，并同步删除死亡的服务实例。</span><br><span class="hljs-keyword">type</span> GeeRegistry <span class="hljs-keyword">struct</span> &#123;<br>	timeout time.Duration<br>	mu      sync.Mutex <span class="hljs-comment">// protect following</span><br>	servers <span class="hljs-keyword">map</span>[<span class="hljs-type">string</span>]*ServerItem<br>&#125;<br></code></pre></td></tr></table></figure>
+<p><strong>request</strong>:</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-comment">// request 存储了调用的所有信息</span><br><span class="hljs-keyword">type</span> request <span class="hljs-keyword">struct</span> &#123;<br>	h            *codec.Header <span class="hljs-comment">// header of request</span><br>	argv, replyv reflect.Value <span class="hljs-comment">// argv and replyv of request</span><br>	mtype        *service.MethodType<br>	svc          *service.Service<br>&#125;<br></code></pre></td></tr></table></figure>
+<h3 id="消息的序列化与反序列化">消息的序列化与反序列化</h3>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">type</span> Codec <span class="hljs-keyword">interface</span> &#123;<br>	io.Closer<br>	ReadHeader(*Header) <span class="hljs-type">error</span><br>	ReadBody(<span class="hljs-keyword">interface</span>&#123;&#125;) <span class="hljs-type">error</span><br>	Write(*Header, <span class="hljs-keyword">interface</span>&#123;&#125;) <span class="hljs-type">error</span><br>&#125;<br></code></pre></td></tr></table></figure>
+<p>紧接着，抽象出 Codec 的构造函数，客户端和服务端可以通过 Codec 的
+<code>Type</code> 得到构造函数，从而创建 Codec
+实例。这部分代码和工厂模式类似，与工厂模式不同的是，返回的是构造函数，而非实例。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">type</span> NewCodecFunc <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(io.ReadWriteCloser)</span></span> Codec<br><br><span class="hljs-keyword">type</span> Type <span class="hljs-type">string</span><br><br><span class="hljs-keyword">const</span> (<br>	GobType  Type = <span class="hljs-string">&quot;application/gob&quot;</span><br>	JsonType Type = <span class="hljs-string">&quot;application/json&quot;</span> <span class="hljs-comment">// not implemented</span><br>)<br><br><span class="hljs-keyword">var</span> NewCodecFuncMap <span class="hljs-keyword">map</span>[Type]NewCodecFunc<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">init</span><span class="hljs-params">()</span></span> &#123;<br>	NewCodecFuncMap = <span class="hljs-built_in">make</span>(<span class="hljs-keyword">map</span>[Type]NewCodecFunc)<br>	NewCodecFuncMap[GobType] = NewGobCodec<br>&#125;<br></code></pre></td></tr></table></figure>
+<h3 id="编码协议">编码协议</h3>
+<p>GeeRPC 客户端固定采用 JSON 编码 Option，后续的 header 和 body
+的编码方式由 Option 中的 CodeType 指定，服务端首先使用 JSON 解码
+Option，然后通过 Option 的 CodeType
+解码剩余的内容。即报文将以这样的形式发送：</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs markdown">| Option&#123;MagicNumber: xxx, CodecType: xxx&#125; | Header&#123;ServiceMethod ...&#125; | Body interface&#123;&#125; |<br>| &lt;------      固定 JSON 编码      ------&gt;  | &lt;-------   编码方式由 CodeType 决定   -------&gt;|<br></code></pre></td></tr></table></figure>
+<h3 id="客户端">客户端</h3>
+<p>在使用 Go 语言的 <code>net/rpc</code>
+包进行远程过程调用（RPC）时，一个函数需要满足以下五个条件才能被远程调用：</p>
+<ul>
+<li><strong>函数类型是导出的</strong>:函数必须是一个导出的函数，也就是说函数名的首字母必须大写。例如，<code>Func</code>
+是可以被导出的，而 <code>func</code> 则不行。</li>
+<li><strong>函数所属类型必须是导出的</strong>:函数必须属于一个导出的类型，即该类型的名字首字母也必须大写。例如，<code>type MyType struct &#123;&#125;</code>
+是可以被导出的，而 <code>type myType struct &#123;&#125;</code> 则不行。</li>
+<li><strong>函数必须有两个参数</strong>,而且这两个参数都必须是导出的类型或者内建类型的。第一个参数是输入参数，第二个参数是返回参数。举例来说，<code>func (t *MyType) MyMethod(arg1 ArgType1, arg2 *ArgType2) error</code>
+是一个符合条件的函数。</li>
+<li><strong>第二个参数必须是指针类型</strong>：函数的第二个参数必须是指向一个类型的指针，这个类型的首字母必须大写。例如，<code>func (t *MyType) MyMethod(arg1 ArgType1, arg2 *ArgType2) error</code>，其中
+<code>arg2</code> 是指向 <code>ArgType2</code> 的指针。</li>
+<li><strong>函数必须返回一个错误类型</strong>：函数的返回值必须是一个
+<code>error</code>
+类型，这样才能在调用过程中传递错误信息。例如，<code>func (t *MyType) MyMethod(arg1 ArgType1, arg2 *ArgType2) error</code>
+中，函数返回一个 <code>error</code> 类型的值。</li>
+</ul>
+<p>更直观一些：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(t *T)</span></span> MethodName(argType T1, replyType *T2) <span class="hljs-type">error</span><br></code></pre></td></tr></table></figure>
+<p>根据上述要求，首先我们封装了结构体 Call 来承载一次 RPC
+调用所需要的信息。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-comment">// Call 表示一个活跃的RPC</span><br><span class="hljs-keyword">type</span> Call <span class="hljs-keyword">struct</span> &#123;<br>	Seq           <span class="hljs-type">uint64</span><br>	ServiceMethod <span class="hljs-type">string</span>      <span class="hljs-comment">// format &quot;&lt;service&gt;.&lt;method&gt;&quot;</span><br>	Args          <span class="hljs-keyword">interface</span>&#123;&#125; <span class="hljs-comment">// arguments to the function</span><br>	Reply         <span class="hljs-keyword">interface</span>&#123;&#125; <span class="hljs-comment">// reply from the function</span><br>	Error         <span class="hljs-type">error</span>       <span class="hljs-comment">// if error occurs, it will be set</span><br>	Done          <span class="hljs-keyword">chan</span> *Call  <span class="hljs-comment">// Strobes when call is complete.</span><br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(call *Call)</span></span> done() &#123;<br>	call.Done &lt;- call<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>为了支持异步调用，Call 结构体中添加了一个字段 Done，Done 的类型是
+<code>chan *Call</code>，当调用结束时，会调用 <code>call.done()</code>
+通知调用方。</p>
+<p><strong>实现Client</strong>：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-comment">// Client 是一个 RPC 客户端，它可以有多个未处理完的 Call，且可以被多个 goroutine 同时使用</span><br><span class="hljs-comment">// Client 通过发送 Call 实例来调用远程服务</span><br><span class="hljs-comment">// Client 会将 Call 实例放入 client.pending 中，等待服务端处理</span><br><span class="hljs-comment">// Client 会通过 client.receive() 方法来接收服务端的响应</span><br><span class="hljs-comment">// Client 会通过 client.send() 方法来发送请求</span><br><span class="hljs-keyword">type</span> Client <span class="hljs-keyword">struct</span> &#123;<br>	cc         codec.Codec<br>	opt        *geerpc.Option<br>	sendingMtx sync.Mutex <span class="hljs-comment">// 保证请求的有序发送</span><br>	header     codec.Header<br>	mtx        sync.Mutex <span class="hljs-comment">// 操作 client.pending 的互斥锁</span><br>	seq        <span class="hljs-type">uint64</span><br>	pending    <span class="hljs-keyword">map</span>[<span class="hljs-type">uint64</span>]*Call <span class="hljs-comment">// 存储未处理完的请求</span><br>	closing    <span class="hljs-type">bool</span>             <span class="hljs-comment">// user has called Close</span><br>	shutdown   <span class="hljs-type">bool</span>             <span class="hljs-comment">// server has told us to stop</span><br>&#125;<br><br><span class="hljs-keyword">var</span> _ io.Closer = (*Client)(<span class="hljs-literal">nil</span>)<br><br><span class="hljs-keyword">var</span> ErrShutdown = errors.New(<span class="hljs-string">&quot;connection is shut down&quot;</span>)<br><br><span class="hljs-comment">// Close the connection</span><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(client *Client)</span></span> Close() <span class="hljs-type">error</span> &#123;<br>	client.mu.Lock()<br>	<span class="hljs-keyword">defer</span> client.mu.Unlock()<br>	<span class="hljs-keyword">if</span> client.closing &#123;<br>		<span class="hljs-keyword">return</span> ErrShutdown<br>	&#125;<br>	client.closing = <span class="hljs-literal">true</span><br>	<span class="hljs-keyword">return</span> client.cc.Close()<br>&#125;<br><br><span class="hljs-comment">// IsAvailable return true if the client does work</span><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(client *Client)</span></span> IsAvailable() <span class="hljs-type">bool</span> &#123;<br>	client.mu.Lock()<br>	<span class="hljs-keyword">defer</span> client.mu.Unlock()<br>	<span class="hljs-keyword">return</span> !client.shutdown &amp;&amp; !client.closing<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>Client 的字段比较复杂：</p>
+<ul>
+<li>cc
+是消息的编解码器，和服务端类似，用来序列化将要发送出去的请求，以及反序列化接收到的响应。</li>
+<li>sending
+是一个互斥锁，和服务端类似，为了保证请求的有序发送，即防止出现多个请求报文混淆。</li>
+<li>header 是每个请求的消息头，header
+只有在请求发送时才需要，而请求发送是互斥的，因此每个客户端只需要一个，声明在
+Client 结构体中可以复用。</li>
+<li>seq 用于给发送的请求编号，每个请求拥有唯一编号。</li>
+<li>pending 存储未处理完的请求，键是编号，值是 Call 实例。</li>
+<li>closing 和 shutdown 任意一个值置为 true，则表示 Client
+处于不可用的状态，但有些许的差别，closing 是用户主动关闭的，即调用
+<code>Close</code> 方法，而 shutdown 置为 true 一般是有错误发生。</li>
+</ul>
+<p>然后声明了三个函数：</p>
+<ul>
+<li>registerCall：将参数 call 添加到 client.pending 中，并更新
+client.seq。</li>
+<li>removeCall：根据 seq，从 client.pending 中移除对应的
+call，并返回。</li>
+<li>terminateCalls：服务端或客户端发生错误时调用，将 shutdown 设置为
+true，且将错误信息通知所有 pending 状态的 call。</li>
+</ul>
+<p>对一个客户端端来说，接收响应、发送请求是最重要的 2
+个功能。那么首先实现接收功能，接收到的响应有三种情况：</p>
+<ul>
+<li>call
+不存在，可能是请求没有发送完整，或者因为其他原因被取消，但是服务端仍旧处理了。</li>
+<li>call 存在，但服务端处理出错，即 h.Error 不为空。</li>
+<li>call 存在，服务端处理正常，那么需要从 body 中读取 Reply 的值。</li>
+</ul>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(client *Client)</span></span> receive() &#123;<br>	<span class="hljs-keyword">var</span> err <span class="hljs-type">error</span><br>	<span class="hljs-keyword">for</span> err == <span class="hljs-literal">nil</span> &#123;<br>		<span class="hljs-keyword">var</span> h codec.Header<br>		<span class="hljs-keyword">if</span> err = client.cc.ReadHeader(&amp;h); err != <span class="hljs-literal">nil</span> &#123;<br>			<span class="hljs-keyword">break</span><br>		&#125;<br>		call := client.removeCall(h.Seq)<br>		<span class="hljs-keyword">switch</span> &#123;<br>		<span class="hljs-keyword">case</span> call == <span class="hljs-literal">nil</span>:<br>			<span class="hljs-comment">// it usually means that Write partially failed</span><br>			<span class="hljs-comment">// and call was already removed.</span><br>			err = client.cc.ReadBody(<span class="hljs-literal">nil</span>)<br>		<span class="hljs-keyword">case</span> h.Error != <span class="hljs-string">&quot;&quot;</span>:<br>			call.Error = fmt.Errorf(h.Error)<br>			err = client.cc.ReadBody(<span class="hljs-literal">nil</span>)<br>			call.done()<br>		<span class="hljs-keyword">default</span>:<br>			err = client.cc.ReadBody(call.Reply)<br>			<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> &#123;<br>				call.Error = errors.New(<span class="hljs-string">&quot;reading body &quot;</span> + err.Error())<br>			&#125;<br>			call.done()<br>		&#125;<br>	&#125;<br>	<span class="hljs-comment">// error occurs, so terminateCalls pending calls</span><br>	client.terminateCalls(err)<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>创建 Client 实例时，首先需要完成一开始的协议交换，即发送
+<code>Option</code>
+信息给服务端。协商好消息的编解码方式之后，再创建一个子协程调用
+<code>receive()</code> 接收响应。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">NewClient</span><span class="hljs-params">(conn net.Conn, opt *Option)</span></span> (*Client, <span class="hljs-type">error</span>) &#123;<br>	f := codec.NewCodecFuncMap[opt.CodecType]<br>	<span class="hljs-keyword">if</span> f == <span class="hljs-literal">nil</span> &#123;<br>		err := fmt.Errorf(<span class="hljs-string">&quot;invalid codec type %s&quot;</span>, opt.CodecType)<br>		log.Println(<span class="hljs-string">&quot;rpc client: codec error:&quot;</span>, err)<br>		<span class="hljs-keyword">return</span> <span class="hljs-literal">nil</span>, err<br>	&#125;<br>	<span class="hljs-comment">// send options with server</span><br>	<span class="hljs-keyword">if</span> err := json.NewEncoder(conn).Encode(opt); err != <span class="hljs-literal">nil</span> &#123;<br>		log.Println(<span class="hljs-string">&quot;rpc client: options error: &quot;</span>, err)<br>		_ = conn.Close()<br>		<span class="hljs-keyword">return</span> <span class="hljs-literal">nil</span>, err<br>	&#125;<br>	<span class="hljs-keyword">return</span> newClientCodec(f(conn), opt), <span class="hljs-literal">nil</span><br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">newClientCodec</span><span class="hljs-params">(cc codec.Codec, opt *Option)</span></span> *Client &#123;<br>	client := &amp;Client&#123;<br>		seq:     <span class="hljs-number">1</span>, <span class="hljs-comment">// seq starts with 1, 0 means invalid call</span><br>		cc:      cc,<br>		opt:     opt,<br>		pending: <span class="hljs-built_in">make</span>(<span class="hljs-keyword">map</span>[<span class="hljs-type">uint64</span>]*Call),<br>	&#125;<br>	<span class="hljs-keyword">go</span> client.receive()<br>	<span class="hljs-keyword">return</span> client<br>&#125;      <br></code></pre></td></tr></table></figure>
+<p><strong>send函数</strong>：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(client *Client)</span></span> send(call *Call) &#123;<br>	<span class="hljs-comment">// make sure that the client will send a complete request</span><br>	client.sending.Lock()<br>	<span class="hljs-keyword">defer</span> client.sending.Unlock()<br><br>	<span class="hljs-comment">// register this call.</span><br>	seq, err := client.registerCall(call)<br>	<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> &#123;<br>		call.Error = err<br>		call.done()<br>		<span class="hljs-keyword">return</span><br>	&#125;<br><br>	<span class="hljs-comment">// prepare request header</span><br>	client.header.ServiceMethod = call.ServiceMethod<br>	client.header.Seq = seq<br>	client.header.Error = <span class="hljs-string">&quot;&quot;</span><br><br>	<span class="hljs-comment">// encode and send the request</span><br>	<span class="hljs-keyword">if</span> err := client.cc.Write(&amp;client.header, call.Args); err != <span class="hljs-literal">nil</span> &#123;<br>		call := client.removeCall(seq)<br>		<span class="hljs-comment">// call may be nil, it usually means that Write partially failed,</span><br>		<span class="hljs-comment">// client has received the response and handled</span><br>		<span class="hljs-keyword">if</span> call != <span class="hljs-literal">nil</span> &#123;<br>			call.Error = err<br>			call.done()<br>		&#125;<br>	&#125;<br>&#125;<br><br><span class="hljs-comment">// Go invokes the function asynchronously.</span><br><span class="hljs-comment">// It returns the Call structure representing the invocation.</span><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(client *Client)</span></span> Go(serviceMethod <span class="hljs-type">string</span>, args, reply <span class="hljs-keyword">interface</span>&#123;&#125;, done <span class="hljs-keyword">chan</span> *Call) *Call &#123;<br>	<span class="hljs-keyword">if</span> done == <span class="hljs-literal">nil</span> &#123;<br>		done = <span class="hljs-built_in">make</span>(<span class="hljs-keyword">chan</span> *Call, <span class="hljs-number">10</span>)<br>	&#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> <span class="hljs-built_in">cap</span>(done) == <span class="hljs-number">0</span> &#123;<br>		log.Panic(<span class="hljs-string">&quot;rpc client: done channel is unbuffered&quot;</span>)<br>	&#125;<br>	call := &amp;Call&#123;<br>		ServiceMethod: serviceMethod,<br>		Args:          args,<br>		Reply:         reply,<br>		Done:          done,<br>	&#125;<br>	client.send(call)<br>	<span class="hljs-keyword">return</span> call<br>&#125;<br><br><span class="hljs-comment">// Call invokes the named function, waits for it to complete,</span><br><span class="hljs-comment">// and returns its error status.</span><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(client *Client)</span></span> Call(serviceMethod <span class="hljs-type">string</span>, args, reply <span class="hljs-keyword">interface</span>&#123;&#125;) <span class="hljs-type">error</span> &#123;<br>	call := &lt;-client.Go(serviceMethod, args, reply, <span class="hljs-built_in">make</span>(<span class="hljs-keyword">chan</span> *Call, <span class="hljs-number">1</span>)).Done<br>	<span class="hljs-keyword">return</span> call.Error<br>&#125;<br></code></pre></td></tr></table></figure>
+<ul>
+<li><code>Go</code> 和 <code>Call</code> 是客户端暴露给用户的两个 RPC
+服务调用接口，<code>Go</code> 是一个异步接口，返回 call 实例。</li>
+<li><code>Call</code> 是对 <code>Go</code> 的封装，阻塞
+call.Done，等待响应返回，是一个同步接口。</li>
+</ul>
+<h3 id="服务器端">服务器端</h3>
+<ul>
+<li>首先定义了结构体 <code>Server</code>，没有任何的成员字段。</li>
+<li>实现了 <code>Accept</code> 方式，<code>net.Listener</code>
+作为参数，for 循环等待 socket 连接建立，并开启子协程处理，处理过程交给了
+<code>ServerConn</code> 方法。</li>
+<li>DefaultServer 是一个默认的 <code>Server</code>
+实例，主要为了用户使用方便。</li>
+</ul>
+<p><code>ServeConn</code>
+的实现就和之前讨论的通信过程紧密相关了，首先使用
+<code>json.NewDecoder</code> 反序列化得到 Option 实例，检查 MagicNumber
+和 CodeType 的值是否正确。然后根据 CodeType
+得到对应的消息编解码器，接下来的处理交给 <code>serverCodec</code>。</p>
+<p><code>serveCodec</code> 的过程非常简单。主要包含三个阶段</p>
+<ul>
+<li>读取请求 readRequest</li>
+<li>处理请求 handleRequest</li>
+<li>回复请求 sendResponse</li>
+</ul>
+<p>之前提到过，在一次连接中，允许接收多个请求，即多个 request header 和
+request body，因此这里使用了 for
+无限制地等待请求的到来，直到发生错误（例如连接被关闭，接收到的报文有问题等），这里需要注意的点有三个：</p>
+<ul>
+<li>handleRequest 使用了协程并发执行请求。</li>
+<li>处理请求是并发的，但是回复请求的报文必须是逐个发送的，并发容易导致多个回复报文交织在一起，客户端无法解析。在这里使用锁(sending)保证。</li>
+<li>尽力而为，只有在 header 解析失败时，才终止循环。</li>
+</ul>
+<h3 id="服务注册">服务注册</h3>
+<p>假设客户端发过来一个请求，包含 ServiceMethod 和 Argv。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs go">&#123;<br>    <span class="hljs-string">&quot;ServiceMethod&quot;</span>： <span class="hljs-string">&quot;T.MethodName&quot;</span><br>    <span class="hljs-string">&quot;Argv&quot;</span>：<span class="hljs-string">&quot;0101110101...&quot;</span> <span class="hljs-comment">// 序列化之后的字节流</span><br>&#125;<br></code></pre></td></tr></table></figure>
+<p>通过 “T.MethodName” 可以确定调用的是类型 T 的
+MethodName，如果硬编码实现这个功能，很可能是这样：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">switch</span> req.ServiceMethod &#123;<br>    <span class="hljs-keyword">case</span> <span class="hljs-string">&quot;T.MethodName&quot;</span>:<br>        t := <span class="hljs-built_in">new</span>(t)<br>        reply := <span class="hljs-built_in">new</span>(T2)<br>        <span class="hljs-keyword">var</span> argv T1<br>        gob.NewDecoder(conn).Decode(&amp;argv)<br>        err := t.MethodName(argv, reply)<br>        server.sendMessage(reply, err)<br>    <span class="hljs-keyword">case</span> <span class="hljs-string">&quot;Foo.Sum&quot;</span>:<br>        f := <span class="hljs-built_in">new</span>(Foo)<br>        ...<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>也就是说，如果使用硬编码的方式来实现结构体与服务的映射，那么每暴露一个方法，就需要编写等量的代码。那有没有什么方式，能够将这个映射过程自动化呢？可以借助反射。</p>
+<p>通过反射，我们能够非常容易地获取某个结构体的所有方法，并且能够通过方法，获取到该方法所有的参数类型与返回值。例如：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;<br>	<span class="hljs-keyword">var</span> wg sync.WaitGroup<br>	typ := reflect.TypeOf(&amp;wg)<br>	<span class="hljs-keyword">for</span> i := <span class="hljs-number">0</span>; i &lt; typ.NumMethod(); i++ &#123;<br>		method := typ.Method(i)<br>		argv := <span class="hljs-built_in">make</span>([]<span class="hljs-type">string</span>, <span class="hljs-number">0</span>, method.Type.NumIn())<br>		returns := <span class="hljs-built_in">make</span>([]<span class="hljs-type">string</span>, <span class="hljs-number">0</span>, method.Type.NumOut())<br>		<span class="hljs-comment">// j 从 1 开始，第 0 个入参是 wg 自己。</span><br>		<span class="hljs-keyword">for</span> j := <span class="hljs-number">1</span>; j &lt; method.Type.NumIn(); j++ &#123;<br>			argv = <span class="hljs-built_in">append</span>(argv, method.Type.In(j).Name())<br>		&#125;<br>		<span class="hljs-keyword">for</span> j := <span class="hljs-number">0</span>; j &lt; method.Type.NumOut(); j++ &#123;<br>			returns = <span class="hljs-built_in">append</span>(returns, method.Type.Out(j).Name())<br>		&#125;<br>		log.Printf(<span class="hljs-string">&quot;func (w *%s) %s(%s) %s&quot;</span>,<br>			typ.Elem().Name(),<br>			method.Name,<br>			strings.Join(argv, <span class="hljs-string">&quot;,&quot;</span>),<br>			strings.Join(returns, <span class="hljs-string">&quot;,&quot;</span>))<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>运行的结果是：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(w *WaitGroup)</span></span> Add(<span class="hljs-type">int</span>)<br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(w *WaitGroup)</span></span> Done()<br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(w *WaitGroup)</span></span> Wait()<br></code></pre></td></tr></table></figure>
+<p>这里通过反射实现了服务注册：</p>
+<p><strong>第一步</strong>，定义结构体 methodType：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">type</span> methodType <span class="hljs-keyword">struct</span> &#123;<br>	method    reflect.Method<br>	ArgType   reflect.Type<br>	ReplyType reflect.Type<br>	numCalls  <span class="hljs-type">uint64</span><br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(m *methodType)</span></span> NumCalls() <span class="hljs-type">uint64</span> &#123;<br>	<span class="hljs-keyword">return</span> atomic.LoadUint64(&amp;m.numCalls)<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(m *methodType)</span></span> newArgv() reflect.Value &#123;<br>	<span class="hljs-keyword">var</span> argv reflect.Value<br>	<span class="hljs-comment">// arg may be a pointer type, or a value type</span><br>	<span class="hljs-keyword">if</span> m.ArgType.Kind() == reflect.Ptr &#123;<br>		argv = reflect.New(m.ArgType.Elem())<br>	&#125; <span class="hljs-keyword">else</span> &#123;<br>		argv = reflect.New(m.ArgType).Elem()<br>	&#125;<br>	<span class="hljs-keyword">return</span> argv<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(m *methodType)</span></span> newReplyv() reflect.Value &#123;<br>	<span class="hljs-comment">// reply must be a pointer type</span><br>	replyv := reflect.New(m.ReplyType.Elem())<br>	<span class="hljs-keyword">switch</span> m.ReplyType.Elem().Kind() &#123;<br>	<span class="hljs-keyword">case</span> reflect.Map:<br>		replyv.Elem().Set(reflect.MakeMap(m.ReplyType.Elem()))<br>	<span class="hljs-keyword">case</span> reflect.Slice:<br>		replyv.Elem().Set(reflect.MakeSlice(m.ReplyType.Elem(), <span class="hljs-number">0</span>, <span class="hljs-number">0</span>))<br>	&#125;<br>	<span class="hljs-keyword">return</span> replyv<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>每一个 methodType 实例包含了一个方法的完整信息。包括</p>
+<ul>
+<li>method：方法本身</li>
+<li>ArgType：第一个参数的类型</li>
+<li>ReplyType：第二个参数的类型</li>
+<li>numCalls：后续统计方法调用次数时会用到</li>
+</ul>
+<p>另外，我们还实现了 2 个方法 <code>newArgv</code> 和
+<code>newReplyv</code>，用于创建对应类型的实例。<code>newArgv</code>
+方法有一个小细节，指针类型和值类型创建实例的方式有细微区别。</p>
+<p><strong>第二步</strong>，定义结构体 service：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">type</span> service <span class="hljs-keyword">struct</span> &#123;<br>	name   <span class="hljs-type">string</span><br>	typ    reflect.Type<br>	rcvr   reflect.Value<br>	method <span class="hljs-keyword">map</span>[<span class="hljs-type">string</span>]*methodType<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>service 的定义也是非常简洁的，name 即映射的结构体的名称，比如
+<code>T</code>，比如 <code>WaitGroup</code>；typ 是结构体的类型；rcvr
+即结构体的实例本身，保留 rcvr 是因为在调用时需要 rcvr 作为第 0
+个参数；method 是 map 类型，存储映射的结构体的所有符合条件的方法。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-comment">// newService 把 rcvr 对象转换为 service 实例</span><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">newService</span><span class="hljs-params">(rcvr <span class="hljs-keyword">interface</span>&#123;&#125;)</span></span> *service &#123;<br>	s := <span class="hljs-built_in">new</span>(service)<br>	s.rcvr = reflect.ValueOf(rcvr)<br>	s.name = reflect.Indirect(s.rcvr).Type().Name()<br>	s.typ = reflect.TypeOf(rcvr)<br>	<span class="hljs-keyword">if</span> !ast.IsExported(s.name) &#123;<br>		log.Fatalf(<span class="hljs-string">&quot;rpc server: %s is not a valid service name&quot;</span>, s.name)<br>	&#125;<br>	s.registerMethods()<br>	<span class="hljs-keyword">return</span> s<br>&#125;<br></code></pre></td></tr></table></figure>
+<h3 id="超时处理">超时处理</h3>
+<p>超时处理是 RPC
+框架一个比较基本的能力，如果缺少超时处理机制，无论是服务端还是客户端都容易因为网络或其他错误导致挂死，资源耗尽，这些问题的出现大大地降低了服务的可用性。因此，我们需要在
+RPC 框架中加入超时处理的能力。</p>
+<p>纵观整个远程调用的过程，需要客户端处理超时的地方有：</p>
+<ul>
+<li>与服务端建立连接，导致的超时</li>
+<li>发送请求到服务端，写报文导致的超时</li>
+<li>等待服务端处理时，等待处理导致的超时（比如服务端已挂死，迟迟不响应）</li>
+<li>从服务端接收响应时，读报文导致的超时</li>
+</ul>
+<p>需要服务端处理超时的地方有：</p>
+<ul>
+<li>读取客户端请求报文时，读报文导致的超时</li>
+<li>发送响应报文时，写报文导致的超时</li>
+<li>调用映射服务的方法时，处理报文导致的超时</li>
+</ul>
+<p>GeeRPC 在 3 个地方添加了超时处理机制。分别是：</p>
+<p>1）客户端创建连接时 2）客户端 <code>Client.Call()</code>
+整个过程导致的超时（包含发送报文，等待处理，接收报文所有阶段）
+3）服务端处理报文，即 <code>Server.handleRequest</code> 超时。</p>
+<p><strong>Q:为什么在其他地方不添加超时处理呢？有什么难度？</strong></p>
+<h3 id="创建连接超时">创建连接超时</h3>
+<p>为了实现上的简单，将超时设定放在了 Option 中。ConnectTimeout 默认值为
+10s，HandleTimeout 默认值为 0，即不设限。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">type</span> Option <span class="hljs-keyword">struct</span> &#123;<br>	MagicNumber    <span class="hljs-type">int</span>           <span class="hljs-comment">// MagicNumber marks this&#x27;s a geerpc request</span><br>	CodecType      codec.Type    <span class="hljs-comment">// client may choose different Codec to encode body</span><br>	ConnectTimeout time.Duration <span class="hljs-comment">// 0 means no limit</span><br>	HandleTimeout  time.Duration<br>&#125;<br><br><span class="hljs-keyword">var</span> DefaultOption = &amp;Option&#123;<br>	MagicNumber:    MagicNumber,<br>	CodecType:      codec.GobType,<br>	ConnectTimeout: time.Second * <span class="hljs-number">10</span>,<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>客户端连接超时，只需要为 Dial 添加一层超时处理的外壳即可。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">type</span> clientResult <span class="hljs-keyword">struct</span> &#123;<br>	client *Client<br>	err    <span class="hljs-type">error</span><br>&#125;<br><br><span class="hljs-keyword">type</span> newClientFunc <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(conn net.Conn, opt *Option)</span></span> (client *Client, err <span class="hljs-type">error</span>)<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">dialTimeout</span><span class="hljs-params">(f newClientFunc, network, address <span class="hljs-type">string</span>, opts ...*Option)</span></span> (client *Client, err <span class="hljs-type">error</span>) &#123;<br>	opt, err := parseOptions(opts...)<br>	<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> &#123;<br>		<span class="hljs-keyword">return</span> <span class="hljs-literal">nil</span>, err<br>	&#125;<br>	conn, err := net.DialTimeout(network, address, opt.ConnectTimeout)<br>	<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> &#123;<br>		<span class="hljs-keyword">return</span> <span class="hljs-literal">nil</span>, err<br>	&#125;<br>	<span class="hljs-comment">// close the connection if client is nil</span><br>	<span class="hljs-keyword">defer</span> <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">()</span></span> &#123;<br>		<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> &#123;<br>			_ = conn.Close()<br>		&#125;<br>	&#125;()<br>	ch := <span class="hljs-built_in">make</span>(<span class="hljs-keyword">chan</span> clientResult)<br>	<span class="hljs-keyword">go</span> <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">()</span></span> &#123;<br>		client, err := f(conn, opt)<br>		ch &lt;- clientResult&#123;client: client, err: err&#125;<br>	&#125;()<br>	<span class="hljs-keyword">if</span> opt.ConnectTimeout == <span class="hljs-number">0</span> &#123;<br>		result := &lt;-ch<br>		<span class="hljs-keyword">return</span> result.client, result.err<br>	&#125;<br>	<span class="hljs-keyword">select</span> &#123;<br>	<span class="hljs-keyword">case</span> &lt;-time.After(opt.ConnectTimeout):<br>		<span class="hljs-keyword">return</span> <span class="hljs-literal">nil</span>, fmt.Errorf(<span class="hljs-string">&quot;rpc client: connect timeout: expect within %s&quot;</span>, opt.ConnectTimeout)<br>	<span class="hljs-keyword">case</span> result := &lt;-ch:<br>		<span class="hljs-keyword">return</span> result.client, result.err<br>	&#125;<br>&#125;<br><br><span class="hljs-comment">// Dial connects to an RPC server at the specified network address</span><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">Dial</span><span class="hljs-params">(network, address <span class="hljs-type">string</span>, opts ...*Option)</span></span> (*Client, <span class="hljs-type">error</span>) &#123;<br>	<span class="hljs-keyword">return</span> dialTimeout(NewClient, network, address, opts...)<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>重点是使用select实现超时</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">select</span> &#123;<br>	<span class="hljs-keyword">case</span> &lt;-time.After(opt.ConnectTimeout):<br>		<span class="hljs-keyword">return</span> <span class="hljs-literal">nil</span>, fmt.Errorf(<span class="hljs-string">&quot;rpc client: connect timeout: expect within %s&quot;</span>, opt.ConnectTimeout)<br>	<span class="hljs-keyword">case</span> result := &lt;-ch:<br>		<span class="hljs-keyword">return</span> result.client, result.err<br>	&#125;<br></code></pre></td></tr></table></figure>
+<h3 id="支持http协议">支持http协议</h3>
+<p>Web 开发中，我们经常使用 HTTP 协议中的 HEAD、GET、POST
+等方式发送请求，等待响应。但 RPC 的消息格式与标准的 HTTP
+协议并不兼容，在这种情况下，就需要一个协议的转换过程。<strong>HTTP
+协议的 CONNECT 方法恰好提供了这个能力</strong>，CONNECT
+一般用于代理服务。</p>
+<p>假设浏览器与服务器之间的 HTTPS
+通信都是加密的，浏览器通过代理服务器发起 HTTPS
+请求时，由于请求的站点地址和端口号都是加密保存在 HTTPS
+请求报文头中的，代理服务器如何知道往哪里发送请求呢？为了解决这个问题，浏览器通过
+HTTP 明文形式向代理服务器发送一个 CONNECT
+请求告诉代理服务器目标地址和端口，代理服务器接收到这个请求后，会在对应端口与目标站点建立一个
+TCP 连接，连接建立成功后返回 HTTP 200
+状态码告诉浏览器与该站点的加密通道已经完成。接下来代理服务器仅需透传浏览器和服务器之间的加密数据包即可，代理服务器无需解析
+HTTPS 报文。</p>
+<p>举一个简单例子：</p>
+<ol type="1">
+<li>浏览器向代理服务器发送 CONNECT 请求。</li>
+</ol>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs http"><span class="hljs-keyword">CONNECT</span> <span class="hljs-string">geektutu.com:443</span> <span class="hljs-meta">HTTP/1.0</span><br></code></pre></td></tr></table></figure>
+<ol start="2" type="1">
+<li>代理服务器返回 HTTP 200 状态码表示连接已经建立。</li>
+</ol>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">HTTP</span>/<span class="hljs-number">1</span>.<span class="hljs-number">0</span> <span class="hljs-number">200</span> Connection Established<br></code></pre></td></tr></table></figure>
+<ol start="3" type="1">
+<li>之后浏览器和服务器开始 HTTPS
+握手并交换加密数据，代理服务器只负责传输彼此的数据包，并不能读取具体数据内容（代理服务器也可以选择安装可信根证书解密
+HTTPS 报文）。</li>
+</ol>
+<p>事实上，这个过程其实是通过代理服务器将 HTTP 协议转换为 HTTPS
+协议的过程。对 RPC 服务端来，需要做的是将 HTTP 协议转换为 RPC
+协议，对客户端来说，需要新增通过 HTTP CONNECT 请求创建连接的逻辑。</p>
+<p>那通信过程应该是这样的：</p>
+<ol type="1">
+<li>客户端向 RPC 服务器发送 CONNECT 请求</li>
+</ol>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs http"><span class="hljs-keyword">CONNECT</span> <span class="hljs-string">10.0.0.1:9999/_geerpc_</span> <span class="hljs-meta">HTTP/1.0</span><br></code></pre></td></tr></table></figure>
+<ol type="1">
+<li>RPC 服务器返回 HTTP 200 状态码表示连接建立。</li>
+</ol>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">HTTP</span>/<span class="hljs-number">1</span>.<span class="hljs-number">0</span> <span class="hljs-number">200</span> Connected to Gee RPC<br></code></pre></td></tr></table></figure>
+<ol type="1">
+<li>客户端使用创建好的连接发送 RPC 报文，先发送 Option，再发送 N
+个请求报文，服务端处理 RPC 请求并响应。</li>
+</ol>
+<p>在 <code>server.go</code> 中新增如下的方法：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">const</span> (<br>	connected        = <span class="hljs-string">&quot;200 Connected to Gee RPC&quot;</span><br>	defaultRPCPath   = <span class="hljs-string">&quot;/_geeprc_&quot;</span><br>	defaultDebugPath = <span class="hljs-string">&quot;/debug/geerpc\ y </span><br><span class="hljs-string">)</span><br><span class="hljs-string"></span><br><span class="hljs-string">// ServeHTTP implements an http.Handler that answers RPC requests.</span><br><span class="hljs-string">func (server *Server) ServeHTTP(w http.ResponseWriter, req *http.Request) &#123;</span><br><span class="hljs-string">	if req.Method != &quot;</span>CONNECT<span class="hljs-string">&quot; &#123;</span><br><span class="hljs-string">		w.Header().Set(&quot;</span>Content-Type<span class="hljs-string">&quot;, &quot;</span>text/plain; charset=utf<span class="hljs-number">-8</span><span class="hljs-string">&quot;)</span><br><span class="hljs-string">		w.WriteHeader(http.StatusMethodNotAllowed)</span><br><span class="hljs-string">		_, _ = io.WriteString(w, &quot;</span><span class="hljs-number">405</span> must CONNECT\n<span class="hljs-string">&quot;)</span><br><span class="hljs-string">		return</span><br><span class="hljs-string">	&#125;</span><br><span class="hljs-string">	conn, _, err := w.(http.Hijacker).Hijack() // 将w转换为http.Hijacker接口类型,然后调用Hijack方法返回底层的网络连接</span><br><span class="hljs-string">	if err != nil &#123;</span><br><span class="hljs-string">		log.Print(&quot;</span>rpc hijacking <span class="hljs-string">&quot;, req.RemoteAddr, &quot;</span>: <span class="hljs-string">&quot;, err.Error())</span><br><span class="hljs-string">		return</span><br><span class="hljs-string">	&#125;</span><br><span class="hljs-string">	_, _ = io.WriteString(conn, &quot;</span>HTTP/<span class="hljs-number">1.0</span> <span class="hljs-string">&quot;+connected+&quot;</span>\n\n<span class="hljs-string">&quot;)</span><br><span class="hljs-string">	server.ServeConn(conn)</span><br><span class="hljs-string">&#125;</span><br><span class="hljs-string"></span><br><span class="hljs-string">// HandleHTTP registers an HTTP handler for RPC messages on rpcPath.</span><br><span class="hljs-string">// It is still necessary to invoke http.Serve(), typically in a go statement.</span><br><span class="hljs-string">func (server *Server) HandleHTTP() &#123;</span><br><span class="hljs-string">	http.Handle(defaultRPCPath, server)</span><br><span class="hljs-string">&#125;</span><br><span class="hljs-string"></span><br><span class="hljs-string">// HandleHTTP is a convenient approach for default server to register HTTP handlers</span><br><span class="hljs-string">func HandleHTTP() &#123;</span><br><span class="hljs-string">	DefaultServer.HandleHTTP()</span><br><span class="hljs-string">&#125;</span><br></code></pre></td></tr></table></figure>
+<p>关键代码：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs go">conn, _, err := w.(http.Hijacker).Hijack() <span class="hljs-comment">// 将w转换为http.Hijacker接口类型,然后调用Hijack方法返回底层的网络连接</span><br></code></pre></td></tr></table></figure>
+<p>为了实现上的简单，GeeRegistry 采用 HTTP
+协议提供服务，且所有的有用信息都承载在 HTTP Header 中。</p>
+<ul>
+<li>Get：返回所有可用的服务列表，通过自定义字段 X-Geerpc-Servers
+承载。</li>
+<li>Post：添加服务实例或发送心跳，通过自定义字段 X-Geerpc-Server
+承载。</li>
+</ul>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-comment">// Runs at /_geerpc_/registry</span><br><span class="hljs-comment">// - params</span><br><span class="hljs-comment">//   - w http.ResponseWriter: write response</span><br><span class="hljs-comment">//   - req *http.Request: read request</span><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(r *GeeRegistry)</span></span> ServeHTTP(w http.ResponseWriter, req *http.Request) &#123;<br>    <span class="hljs-keyword">switch</span> req.Method &#123;<br>    <span class="hljs-keyword">case</span> <span class="hljs-string">&quot;GET&quot;</span>: <span class="hljs-comment">// 获取所有服务实例</span><br>       <span class="hljs-comment">// keep it simple, server is in req.Header</span><br>       w.Header().Set(<span class="hljs-string">&quot;X-Geerpc-Servers&quot;</span>, strings.Join(r.aliveServers(), <span class="hljs-string">&quot;,&quot;</span>))<br>    <span class="hljs-keyword">case</span> <span class="hljs-string">&quot;POST&quot;</span>: <span class="hljs-comment">// 添加服务实例或发送心跳</span><br>       <span class="hljs-comment">// keep it simple, server is in req.Header</span><br>       addr := req.Header.Get(<span class="hljs-string">&quot;X-Geerpc-Server&quot;</span>)<br>       <span class="hljs-keyword">if</span> addr == <span class="hljs-string">&quot;&quot;</span> &#123;<br>          w.WriteHeader(http.StatusInternalServerError)<br>          <span class="hljs-keyword">return</span><br>       &#125;<br>       r.putServer(addr) <span class="hljs-comment">// putServer 方法用于添加服务实例或发送心跳，如果已经添加的服务实例，更新其最后一次发送心跳的时间</span><br>    <span class="hljs-keyword">default</span>:<br>       w.WriteHeader(http.StatusMethodNotAllowed)<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<h3 id="负载均衡">负载均衡</h3>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">type</span> Discovery <span class="hljs-keyword">interface</span> &#123;<br>	Refresh() <span class="hljs-type">error</span> <span class="hljs-comment">// refresh from remote registry</span><br>	Update(servers []<span class="hljs-type">string</span>) <span class="hljs-type">error</span><br>	Get(mode SelectMode) (<span class="hljs-type">string</span>, <span class="hljs-type">error</span>)<br>	GetAll() ([]<span class="hljs-type">string</span>, <span class="hljs-type">error</span>)<br>&#125;<br><br><span class="hljs-keyword">type</span> XClient <span class="hljs-keyword">struct</span> &#123;<br>	d       Discovery<br>	mode    SelectMode<br>	opt     *Option<br>	mu      sync.Mutex <span class="hljs-comment">// protect following</span><br>	clients <span class="hljs-keyword">map</span>[<span class="hljs-type">string</span>]*Client<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>同时封装了一个XClient，使用clients的map来存储addr到client的映射，如何获取一个client，使用discovery.Get函数获取.</p>
+<p>我们将复用 Client 的能力封装在方法 <code>dial</code> 中，dial
+的处理逻辑如下：</p>
+<ol type="1">
+<li>检查 <code>xc.clients</code> 是否有缓存的
+Client，如果有，检查是否是可用状态，如果是则返回缓存的
+Client，如果不可用，则从缓存中删除。</li>
+<li>如果步骤 1) 没有返回缓存的 Client，则说明需要创建新的
+Client，缓存并返回。</li>
+</ol>
+<p>紧接着，我们实现一个不需要注册中心，服务列表由手工维护的服务发现的结构体：MultiServersDiscovery</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-comment">// MultiServersDiscovery 是一个不需要注册中心的多服务器发现器</span><br><span class="hljs-comment">// 用户需要显式地提供服务器地址</span><br><span class="hljs-keyword">type</span> MultiServersDiscovery <span class="hljs-keyword">struct</span> &#123;<br>	r       *rand.Rand   <span class="hljs-comment">// generate random number</span><br>	mu      sync.RWMutex <span class="hljs-comment">// protect following</span><br>	servers []<span class="hljs-type">string</span><br>	index   <span class="hljs-type">int</span> <span class="hljs-comment">// record the selected position for robin algorithm</span><br>&#125;<br><br><span class="hljs-comment">// NewMultiServerDiscovery 创建一个MultiServersDiscovery实例</span><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">NewMultiServerDiscovery</span><span class="hljs-params">(servers []<span class="hljs-type">string</span>)</span></span> *MultiServersDiscovery &#123;<br>	d := &amp;MultiServersDiscovery&#123;<br>		servers: servers,<br>		r:       rand.New(rand.NewSource(time.Now().UnixNano())),<br>	&#125;<br>	d.index = d.r.Intn(math.MaxInt32 - <span class="hljs-number">1</span>)<br>	<span class="hljs-keyword">return</span> d<br>&#125;<br></code></pre></td></tr></table></figure>
+<ul>
+<li>r
+是一个产生随机数的实例，初始化时使用时间戳设定随机数种子，避免每次产生相同的随机数序列。</li>
+<li>index 记录 Round Robin 算法已经轮询到的位置，为了避免每次从 0
+开始，初始化时随机设定一个值。</li>
+</ul>
+<p>首先实现一个最基础的服务发现模块
+Discovery。为了与通信部分解耦，这部分的代码统一放置在 xclient
+子目录下。</p>
+<p>定义 2 个类型：</p>
+<ul>
+<li>SelectMode 代表不同的负载均衡策略，简单起见，GeeRPC 仅实现 Random 和
+RoundRobin 两种策略。</li>
+<li>Discovery 是一个接口类型，包含了服务发现所需要的最基本的接口。
+<ul>
+<li>Refresh() 从注册中心更新服务列表</li>
+<li>Update(servers []string) 手动更新服务列表</li>
+<li>Get(mode SelectMode) 根据负载均衡策略，选择一个服务实例</li>
+<li>GetAll() 返回所有的服务实例</li>
+</ul></li>
+</ul>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">package</span> xclient<br><br><span class="hljs-keyword">import</span> (<br>	<span class="hljs-string">&quot;errors&quot;</span><br>	<span class="hljs-string">&quot;math&quot;</span><br>	<span class="hljs-string">&quot;math/rand&quot;</span><br>	<span class="hljs-string">&quot;sync&quot;</span><br>	<span class="hljs-string">&quot;time&quot;</span><br>)<br><br><span class="hljs-keyword">type</span> SelectMode <span class="hljs-type">int</span><br><br><span class="hljs-keyword">const</span> (<br>	RandomSelect     SelectMode = <span class="hljs-literal">iota</span> <span class="hljs-comment">// select randomly</span><br>	RoundRobinSelect                   <span class="hljs-comment">// select using Robbin algorithm</span><br>)<br><br><span class="hljs-keyword">type</span> Discovery <span class="hljs-keyword">interface</span> &#123;<br>	Refresh() <span class="hljs-type">error</span> <span class="hljs-comment">// refresh from remote registry</span><br>	Update(servers []<span class="hljs-type">string</span>) <span class="hljs-type">error</span><br>	Get(mode SelectMode) (<span class="hljs-type">string</span>, <span class="hljs-type">error</span>)<br>	GetAll() ([]<span class="hljs-type">string</span>, <span class="hljs-type">error</span>)<br>&#125;<br></code></pre></td></tr></table></figure>
+<h3 id="服务发现和注册中心">服务发现和注册中心</h3>
+<figure>
+<img src="/img/geerpc笔记/registry-17226030677956.jpg" srcset="/img/loading.gif" lazyload
+alt="geerpc registry" />
+<figcaption aria-hidden="true">geerpc registry</figcaption>
+</figure>
+<p>注册中心的位置如上图所示。注册中心的好处在于，客户端和服务端都只需要感知注册中心的存在，而无需感知对方的存在。更具体一些：</p>
+<ol type="1">
+<li>服务端启动后，向注册中心发送注册消息，注册中心得知该服务已经启动，处于可用状态。一般来说，服务端还需要定期向注册中心发送心跳，证明自己还活着。</li>
+<li>客户端向注册中心询问，当前哪天服务是可用的，注册中心将可用的服务列表返回客户端。</li>
+<li>客户端根据注册中心得到的服务列表，选择其中一个发起调用。</li>
+</ol>
+<p>如果没有注册中心，客户端需要硬编码服务端的地址，而且没有机制保证服务端是否处于可用状态。当然注册中心的功能还有很多，比如配置的动态同步、通知机制等。比较常用的注册中心有
+<a target="_blank" rel="noopener" href="https://github.com/etcd-io/etcd">etcd</a>、<a
+target="_blank" rel="noopener" href="https://github.com/apache/zookeeper">zookeeper</a>、<a
+target="_blank" rel="noopener" href="https://github.com/hashicorp/consul">consul</a>，一般比较出名的微服务或者
+RPC 框架，这些主流的注册中心都是支持的。</p>
+<p>主流的注册中心 etcd、zookeeper
+等功能强大，与这类注册中心的对接代码量是比较大的，需要实现的接口很多。GeeRPC
+选择自己实现一个简单的支持心跳保活的注册中心。</p>
+<p>GeeRegistry 的代码独立放置在子目录 registry 中。</p>
+<p>首先定义 GeeRegistry 结构体，默认超时时间设置为 5
+min，也就是说，任何注册的服务超过 5 min，即视为不可用状态。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-comment">// GeeRegistry is a simple register center, provide following functions.</span><br><span class="hljs-comment">// add a server and receive heartbeat to keep it alive.</span><br><span class="hljs-comment">// returns all alive servers and delete dead servers sync simultaneously.</span><br><span class="hljs-keyword">type</span> GeeRegistry <span class="hljs-keyword">struct</span> &#123;<br>	timeout time.Duration<br>	mu      sync.Mutex <span class="hljs-comment">// protect following</span><br>	servers <span class="hljs-keyword">map</span>[<span class="hljs-type">string</span>]*ServerItem<br>&#125;<br><br><span class="hljs-keyword">type</span> ServerItem <span class="hljs-keyword">struct</span> &#123;<br>	Addr  <span class="hljs-type">string</span><br>	start time.Time<br>&#125;<br><br><span class="hljs-keyword">const</span> (<br>	defaultPath    = <span class="hljs-string">&quot;/_geerpc_/registry&quot;</span><br>	defaultTimeout = time.Minute * <span class="hljs-number">5</span><br>)<br><br><span class="hljs-comment">// New create a registry instance with timeout setting</span><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">New</span><span class="hljs-params">(timeout time.Duration)</span></span> *GeeRegistry &#123;<br>	<span class="hljs-keyword">return</span> &amp;GeeRegistry&#123;<br>		servers: <span class="hljs-built_in">make</span>(<span class="hljs-keyword">map</span>[<span class="hljs-type">string</span>]*ServerItem),<br>		timeout: timeout,<br>	&#125;<br>&#125;<br><br><span class="hljs-keyword">var</span> DefaultGeeRegister = New(defaultTimeout)<br></code></pre></td></tr></table></figure>
+<p>为 GeeRegistry 实现添加服务实例和返回服务列表的方法。</p>
+<ul>
+<li>putServer：添加服务实例，如果服务已经存在，则更新 start。</li>
+<li>aliveServers：返回可用的服务列表，如果存在超时的服务，则删除。</li>
+</ul>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(r *GeeRegistry)</span></span> putServer(addr <span class="hljs-type">string</span>) &#123;<br>	r.mu.Lock()<br>	<span class="hljs-keyword">defer</span> r.mu.Unlock()<br>	s := r.servers[addr]<br>	<span class="hljs-keyword">if</span> s == <span class="hljs-literal">nil</span> &#123;<br>		r.servers[addr] = &amp;ServerItem&#123;Addr: addr, start: time.Now()&#125;<br>	&#125; <span class="hljs-keyword">else</span> &#123;<br>		s.start = time.Now() <span class="hljs-comment">// if exists, update start time to keep alive</span><br>	&#125;<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(r *GeeRegistry)</span></span> aliveServers() []<span class="hljs-type">string</span> &#123;<br>	r.mu.Lock()<br>	<span class="hljs-keyword">defer</span> r.mu.Unlock()<br>	<span class="hljs-keyword">var</span> alive []<span class="hljs-type">string</span><br>	<span class="hljs-keyword">for</span> addr, s := <span class="hljs-keyword">range</span> r.servers &#123;<br>		<span class="hljs-keyword">if</span> r.timeout == <span class="hljs-number">0</span> || s.start.Add(r.timeout).After(time.Now()) &#123;<br>			alive = <span class="hljs-built_in">append</span>(alive, addr)<br>		&#125; <span class="hljs-keyword">else</span> &#123;<br>			<span class="hljs-built_in">delete</span>(r.servers, addr)<br>		&#125;<br>	&#125;<br>	sort.Strings(alive)<br>	<span class="hljs-keyword">return</span> alive<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>为了实现上的简单，GeeRegistry 采用 HTTP
+协议提供服务，且所有的有用信息都承载在 HTTP Header 中。</p>
+<ul>
+<li>Get：返回所有可用的服务列表，通过自定义字段 X-Geerpc-Servers
+承载。</li>
+<li>Post：添加服务实例或发送心跳，通过自定义字段 X-Geerpc-Server
+承载。</li>
+</ul>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-comment">// Runs at /_geerpc_/registry</span><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(r *GeeRegistry)</span></span> ServeHTTP(w http.ResponseWriter, req *http.Request) &#123;<br>	<span class="hljs-keyword">switch</span> req.Method &#123;<br>	<span class="hljs-keyword">case</span> <span class="hljs-string">&quot;GET&quot;</span>:<br>		<span class="hljs-comment">// keep it simple, server is in req.Header</span><br>		w.Header().Set(<span class="hljs-string">&quot;X-Geerpc-Servers&quot;</span>, strings.Join(r.aliveServers(), <span class="hljs-string">&quot;,&quot;</span>))<br>	<span class="hljs-keyword">case</span> <span class="hljs-string">&quot;POST&quot;</span>:<br>		<span class="hljs-comment">// keep it simple, server is in req.Header</span><br>		addr := req.Header.Get(<span class="hljs-string">&quot;X-Geerpc-Server&quot;</span>)<br>		<span class="hljs-keyword">if</span> addr == <span class="hljs-string">&quot;&quot;</span> &#123;<br>			w.WriteHeader(http.StatusInternalServerError)<br>			<span class="hljs-keyword">return</span><br>		&#125;<br>		r.putServer(addr)<br>	<span class="hljs-keyword">default</span>:<br>		w.WriteHeader(http.StatusMethodNotAllowed)<br>	&#125;<br>&#125;<br><br><span class="hljs-comment">// HandleHTTP registers an HTTP handler for GeeRegistry messages on registryPath</span><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(r *GeeRegistry)</span></span> HandleHTTP(registryPath <span class="hljs-type">string</span>) &#123;<br>	http.Handle(registryPath, r)<br>	log.Println(<span class="hljs-string">&quot;rpc registry path:&quot;</span>, registryPath)<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">HandleHTTP</span><span class="hljs-params">()</span></span> &#123;<br>	DefaultGeeRegister.HandleHTTP(defaultPath)<br>&#125;<br></code></pre></td></tr></table></figure>
+<h2 id="有哪些问题待解决">有哪些问题待解决？</h2>
+<ul class="task-list">
+<li><input type="checkbox" disabled="" checked="" />调用超时问题</li>
+<li><input type="checkbox" disabled="" />单向调用</li>
+<li><input type="checkbox"
+disabled="" />幂等问题：client发送请求R1之后由于网络拥塞导致没有及时送达server，从而重传R2，但是在server端收到了同时收到了R1和R2，这样的幂等问题，即如何在serve端只处理一次请求？</li>
+<li><input type="checkbox"
+disabled="" />反向调用（NAT穿越）：如果一个机器在公网，另一个在内网，那么从内网调用公网是可以的，但是反过来是不行的，所以如何支持反向调用（Go语言的RPC框架就没有支持</li>
+<li><input type="checkbox" disabled="" />更多的协议支持</li>
+<li><input type="checkbox" disabled="" />MQ异步</li>
+</ul>
+<h2 id="面试问题">面试问题</h2>
+<h3 id="介绍一下你的项目">介绍一下你的项目</h3>
+<p>我做的这个Geerpc是一个从零实现 Go 语言官方的标准库
+<code>net/rpc</code>的项目，并在此基础上，新增了<strong>协议交换(protocol
+exchange)</strong>、<strong>注册中心(registry)</strong>、<strong>服务发现(service
+discovery)</strong>、<strong>负载均衡(load
+balance)</strong>、<strong>超时处理(timeout
+processing)</strong>等特性。</p>
+<p>项目的结构大致分为codec（编解码器）、client、server、registry、discovery。</p>
+<p>抽象出 Codec 的构造函数，客户端和服务端可以通过 Codec 的
+<code>Type</code> 得到构造函数，从而创建 Codec
+实例。这部分代码和工厂模式类似，与工厂模式不同的是，返回的是构造函数，而非实例。项目可以支持多种不同的codeC但是目前只支持了Gob。</p>
+<p>一般来说，涉及协议协商的这部分信息，需要设计固定的字节来传输的。但是为了实现上更简单，GeeRPC
+客户端固定采用 JSON 编码 Option，后续的 header 和 body 的编码方式由
+Option 中的 CodeType 指定，服务端首先使用 JSON 解码 Option，然后通过
+Option 的 CodeType 解码剩余的内容。即报文将以这样的形式发送：</p>
+<figure class="highlight coq"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs coq">| <span class="hljs-type">Option</span>&#123;MagicNumber: xxx, CodecType: xxx&#125; | <span class="hljs-type">Header</span>&#123;ServiceMethod ...&#125; | <span class="hljs-type">Body</span> interface&#123;&#125; |<br><span class="hljs-type">| &lt;------      固定 JSON</span> 编码      ------&gt;  | <span class="hljs-type">&lt;-------   编码方式由 CodeType</span> 决定   -------&gt;|<span class="hljs-type"></span><br></code></pre></td></tr></table></figure>
+<p>通过go语言的反射实现服务注册，<strong>首先定义了一个methodType类型</strong>，包括method：方法本身、ArgType：第一个参数的类型、ReplyType：第二个参数的类型、numCalls：方法调用次数。还实现了
+2 个方法 <code>newArgv</code> 和
+<code>newReplyv</code>，用于创建对应类型的实例。<code>newArgv</code>
+方法有一个小细节，指针类型和值类型创建实例的方式有细微区别。然后定义了<strong>service</strong>结构体，service
+的定义也是非常简洁的，name 即映射的结构体的名称，比如
+<code>T</code>，比如 <code>WaitGroup</code>；typ 是结构体的类型；rcvr
+即结构体的实例本身，保留 rcvr 是因为在调用时需要 rcvr 作为第 0
+个参数；method 是 map
+类型，存储映射的结构体的所有符合条件的方法。构造函数
+<code>newService</code>，入参是任意需要映射为服务的结构体实例。</p>
+<h3 id="如何实现的超时处理">如何实现的超时处理？</h3>
+<p>纵观整个远程调用的过程，需要客户端处理超时的地方有：</p>
+<ul>
+<li>与服务端建立连接，导致的超时</li>
+<li>发送请求到服务端，写报文导致的超时</li>
+<li>等待服务端处理时，等待处理导致的超时（比如服务端已挂死，迟迟不响应）</li>
+<li>从服务端接收响应时，读报文导致的超时</li>
+</ul>
+<p>需要服务端处理超时的地方有：</p>
+<ul>
+<li>读取客户端请求报文时，读报文导致的超时</li>
+<li>发送响应报文时，写报文导致的超时</li>
+<li>调用映射服务的方法时，处理报文导致的超时</li>
+</ul>
+<p>GeeRPC 在 3 个地方添加了超时处理机制。分别是：</p>
+<p>1）客户端创建连接时 2）客户端 <code>Client.Call()</code>
+整个过程导致的超时（包含发送报文，等待处理，接收报文所有阶段）
+3）服务端处理报文，即 <code>Server.handleRequest</code> 超时。</p>
+<p>为了实现上的简单，将超时设定放在了 Option 中。ConnectTimeout 默认值为
+10s，HandleTimeout 默认值为 0，即不设限。</p>
+<p><strong>创建连接</strong>：</p>
+<p>客户端连接超时，只需要为 Dial
+添加一层超时处理的外壳即可。在这里实现了一个超时处理的外壳
+<code>dialTimeout</code>，这个壳将 NewClient 作为入参，在 2
+个地方添加了超时处理的机制。</p>
+<ol type="1">
+<li>将 <code>net.Dial</code> 替换为
+<code>net.DialTimeout</code>，如果连接创建超时，将返回错误。</li>
+<li>使用子协程执行 NewClient，执行完成后则通过信道 ch 发送结果，如果
+<code>time.After()</code> 信道先接收到消息，则说明 NewClient
+执行超时，返回错误。怎么实现？（使用select语句）</li>
+</ol>
+<p>关键代码:</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">select</span> &#123;		<span class="hljs-comment">// 使用select判断先超时还是先收到消息</span><br>	<span class="hljs-keyword">case</span> &lt;-time.After(opt.ConnectTimeout):<br>		<span class="hljs-keyword">return</span> <span class="hljs-literal">nil</span>, fmt.Errorf(<span class="hljs-string">&quot;rpc client: connect timeout: expect within %s&quot;</span>, opt.ConnectTimeout)<br>	<span class="hljs-keyword">case</span> result := &lt;-ch:<br>		<span class="hljs-keyword">return</span> result.client, result.err<br>	&#125;<br></code></pre></td></tr></table></figure>
+<p><strong>Client.Call 超时</strong>:</p>
+<p><code>Client.Call</code> 的超时处理机制，使用 context
+包实现，控制权交给用户，控制更为灵活。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-comment">// Call 调用指定的函数，等待它完成，并返回其错误状态。</span><br><span class="hljs-comment">// 该函数会阻塞，直到调用完成。</span><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(client *Client)</span></span> Call(ctx context.Context, serviceMethod <span class="hljs-type">string</span>, args, reply <span class="hljs-keyword">interface</span>&#123;&#125;) <span class="hljs-type">error</span> &#123;<br>	call := client.Go(serviceMethod, args, reply, <span class="hljs-built_in">make</span>(<span class="hljs-keyword">chan</span> *Call, <span class="hljs-number">1</span>))<br>	<span class="hljs-keyword">select</span> &#123;<br>	<span class="hljs-keyword">case</span> &lt;-ctx.Done():<br>		client.removeCall(call.Seq)<br>		<span class="hljs-keyword">return</span> errors.New(<span class="hljs-string">&quot;rpc client: call failed: &quot;</span> + ctx.Err().Error())<br>	<span class="hljs-keyword">case</span> call := &lt;-call.Done:<br>		<span class="hljs-keyword">return</span> call.Error<br>	&#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>用户可以使用 <code>context.WithTimeout</code> 创建具备超时检测能力的
+context 对象来控制。例如：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs go">ctx, _ := context.WithTimeout(context.Background(), time.Second)<br><span class="hljs-keyword">var</span> reply <span class="hljs-type">int</span><br>err := client.Call(ctx, <span class="hljs-string">&quot;Foo.Sum&quot;</span>, &amp;Args&#123;<span class="hljs-number">1</span>, <span class="hljs-number">2</span>&#125;, &amp;reply)<br></code></pre></td></tr></table></figure>
+<p><strong>服务端处理超时</strong>:</p>
+<p>这一部分的实现与客户端很接近，使用 <code>time.After()</code> 结合
+<code>select+chan</code> 完成。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(server *Server)</span></span> handleRequest(cc codec.Codec, req *request, sending *sync.Mutex, wg *sync.WaitGroup, timeout time.Duration) &#123;<br>	<span class="hljs-keyword">defer</span> wg.Done()<br>	called := <span class="hljs-built_in">make</span>(<span class="hljs-keyword">chan</span> <span class="hljs-keyword">struct</span>&#123;&#125;)<br>	sent := <span class="hljs-built_in">make</span>(<span class="hljs-keyword">chan</span> <span class="hljs-keyword">struct</span>&#123;&#125;)<br>	<span class="hljs-keyword">go</span> <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">()</span></span> &#123;<br>		err := req.svc.call(req.mtype, req.argv, req.replyv)<br>		called &lt;- <span class="hljs-keyword">struct</span>&#123;&#125;&#123;&#125;<br>		<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> &#123;<br>			req.h.Error = err.Error()<br>			server.sendResponse(cc, req.h, invalidRequest, sending)<br>			sent &lt;- <span class="hljs-keyword">struct</span>&#123;&#125;&#123;&#125;<br>			<span class="hljs-keyword">return</span><br>		&#125;<br>		server.sendResponse(cc, req.h, req.replyv.Interface(), sending)<br>		sent &lt;- <span class="hljs-keyword">struct</span>&#123;&#125;&#123;&#125;<br>	&#125;()<br><br>	<span class="hljs-keyword">if</span> timeout == <span class="hljs-number">0</span> &#123;<br>		&lt;-called<br>		&lt;-sent<br>		<span class="hljs-keyword">return</span><br>	&#125;<br>	<span class="hljs-keyword">select</span> &#123;<br>	<span class="hljs-keyword">case</span> &lt;-time.After(timeout):<br>		req.h.Error = fmt.Sprintf(<span class="hljs-string">&quot;rpc server: request handle timeout: expect within %s&quot;</span>, timeout)<br>		server.sendResponse(cc, req.h, invalidRequest, sending)<br>	<span class="hljs-keyword">case</span> &lt;-called:<br>		&lt;-sent<br>	&#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>这里需要确保 <code>sendResponse</code>
+仅调用一次，因此将整个过程拆分为 <code>called</code> 和
+<code>sent</code> 两个阶段，在这段代码中只会发生如下两种情况：</p>
+<ol type="1">
+<li>called 信道接收到消息，代表处理没有超时，继续执行
+sendResponse。</li>
+<li><code>time.After()</code> 先于 called
+接收到消息，说明处理已经超时，called 和 sent 都将被阻塞。在
+<code>case &lt;-time.After(timeout)</code> 处调用
+<code>sendResponse</code>。</li>
+</ol>
+<h3 id="如何实现服务注册">如何实现服务注册？</h3>
+<p>因为是仿写的net/rpc,对 <code>net/rpc</code>
+而言，一个函数需要能够被远程调用，需要满足如下五个条件：</p>
+<ul>
+<li>the method’s type is exported. – 方法所属类型是导出的。</li>
+<li>the method is exported. – 方式是导出的。</li>
+<li>the method has two arguments, both exported (or builtin) types. –
+两个入参，均为导出或内置类型。</li>
+<li>the method’s second argument is a pointer. –
+第二个入参必须是一个指针。</li>
+<li>the method has return type error. – 返回值为 error 类型。</li>
+</ul>
+<p>更直观一些:</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(t *T)</span></span> MethodName(argType T1, replyType *T2) <span class="hljs-type">error</span><br></code></pre></td></tr></table></figure>
+<p>为了实现服务注册，首先定义了methodType :</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">type</span> methodType <span class="hljs-keyword">struct</span> &#123;<br>	method    reflect.Method<br>	ArgType   reflect.Type<br>	ReplyType reflect.Type<br>	numCalls  <span class="hljs-type">uint64</span><br>&#125;<br></code></pre></td></tr></table></figure>
+<ul>
+<li>method：方法本身</li>
+<li>ArgType：第一个参数的类型</li>
+<li>ReplyType：第二个参数的类型</li>
+<li>numCalls：后续统计方法调用次数时会用到</li>
+</ul>
+<p>然后定义结构体 service：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">type</span> service <span class="hljs-keyword">struct</span> &#123;<br>	name   <span class="hljs-type">string</span><br>	typ    reflect.Type<br>	rcvr   reflect.Value<br>	method <span class="hljs-keyword">map</span>[<span class="hljs-type">string</span>]*methodType<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>service 的定义也是非常简洁的，name 即映射的结构体的名称，比如
+<code>T</code>，比如 <code>WaitGroup</code>；typ 是结构体的类型；rcvr
+即结构体的实例本身，保留 rcvr 是因为在调用时需要 rcvr 作为第 0
+个参数；method 是 map 类型，存储映射的结构体的所有符合条件的方法。</p>
+<h3 id="如何支持http协议">如何支持HTTP协议？</h3>
+<p><strong>服务器端</strong>：</p>
+<p>那通信过程应该是这样的：</p>
+<ol type="1">
+<li>客户端向 RPC 服务器发送 CONNECT 请求</li>
+</ol>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs http"><span class="hljs-keyword">CONNECT</span> <span class="hljs-string">10.0.0.1:9999/_geerpc_</span> <span class="hljs-meta">HTTP/1.0</span><br></code></pre></td></tr></table></figure>
+<ol start="2" type="1">
+<li>RPC 服务器返回 HTTP 200 状态码表示连接建立。</li>
+</ol>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">HTTP</span>/<span class="hljs-number">1</span>.<span class="hljs-number">0</span> <span class="hljs-number">200</span> Connected to Gee RPC<br></code></pre></td></tr></table></figure>
+<ol start="3" type="1">
+<li>客户端使用创建好的连接发送 RPC 报文，先发送 Option，再发送 N
+个请求报文，服务端处理 RPC 请求并响应。</li>
+</ol>
+<p>server端使用hijack函数。</p>
+<p>客户端</p>
+<h3 id="如何实现服务注册-1">如何实现服务注册</h3>
+<p>反射</p>
+<h3 id="如何实现负载均衡">如何实现负载均衡</h3>
+<p>discovery，目前设置了随机和轮询算法。</p>
+<h3 id="服务发现和注册中心-1">服务发现和注册中心</h3>
+<h4 id="为什么要用注册中心">为什么要用注册中心？</h4>
+<figure>
+<img src="/img/geerpc笔记/registry-17226030677956.jpg" srcset="/img/loading.gif" lazyload
+alt="geerpc registry" />
+<figcaption aria-hidden="true">geerpc registry</figcaption>
+</figure>
+<p>注册中心的位置如上图所示。注册中心的好处在于，客户端和服务端都只需要感知注册中心的存在，而无需感知对方的存在。更具体一些：</p>
+<ol type="1">
+<li>服务端启动后，向注册中心发送注册消息，注册中心得知该服务已经启动，处于可用状态。一般来说，服务端还需要定期向注册中心发送心跳，证明自己还活着。</li>
+<li>客户端向注册中心询问，当前哪天服务是可用的，注册中心将可用的服务列表返回客户端。</li>
+<li>客户端根据注册中心得到的服务列表，选择其中一个发起调用。</li>
+</ol>
+<h4 id="注册中心实现">注册中心实现</h4>
+<p>为 GeeRegistry 实现添加服务实例和返回服务列表的方法。</p>
+<ul>
+<li>putServer：添加服务实例，如果服务已经存在，则更新 start。</li>
+<li>aliveServers：返回可用的服务列表，如果存在超时的服务，则删除。</li>
+</ul>
+<p>为了实现上的简单，GeeRegistry 采用 HTTP
+协议提供服务，且所有的有用信息都承载在 HTTP Header 中。</p>
+<ul>
+<li>Get：返回所有可用的服务列表，通过自定义字段 X-Geerpc-Servers
+承载。</li>
+<li>Post：添加服务实例或发送心跳，通过自定义字段 X-Geerpc-Server
+承载。</li>
+</ul>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E9%9D%A2%E8%AF%95/">#面试</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>geerpc笔记</div>
+      <div>https://gstarmin.github.io/2024/07/13/geerpc笔记/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Starmin</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2024年7月13日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/06/15/CSRF%E6%94%BB%E5%87%BB/" title="CSRF攻击">
+                        <span class="hidden-mobile">CSRF攻击</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

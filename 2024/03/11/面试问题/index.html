@@ -309,7 +309,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          101k 字
+          110k 字
         
       </span>
     
@@ -320,7 +320,7 @@
         
         
         
-          1013 分钟
+          1105 分钟
         
       </span>
     
@@ -903,6 +903,36 @@ C++，所以如果⾮要说<strong>重载</strong>算是多态的一种，那就
 <li>基类的成员变量</li>
 <li>派生类的成员变量</li>
 </ol>
+<h2 id="go">Go</h2>
+<h3 id="golang的gc">Golang的GC</h3>
+<ol type="1">
+<li><p>GoV1.3- 普通标记清除法，整体过程需要启动STW，效率极低。</p></li>
+<li><p>GoV1.5- 三色标记法，
+堆空间启动写屏障，栈空间不启动，全部扫描之后，需要重新扫描一次栈(需要STW)，效率普通</p></li>
+</ol>
+<p><strong>强三色不变式</strong>:不存在黑色对象引用到白色对象的指针。</p>
+<p><strong>弱三色不变式</strong>:所有被黑色对象引用的白色对象都处于灰色保护状态.</p>
+<p><strong>插入屏障</strong>：</p>
+<p>具体操作:
+在A对象引用B对象的时候，B对象被标记为灰色。(将B挂在A下游，B必须被标记为灰色)</p>
+<p>满足: <strong>强三色不变式</strong>.
+(不存在黑色对象引用白色对象的情况了， 因为白色会强制变成灰色)</p>
+<p><strong>删除屏障</strong>:</p>
+<p>具体操作:
+被删除的对象，如果自身为灰色或者白色，那么被标记为灰色。</p>
+<p>满足: <strong>弱三色不变式</strong>.
+(保护灰色对象到白色对象的路径不会断)</p>
+<ol start="3" type="1">
+<li>GoV1.8-三色标记法，混合写屏障机制，
+栈空间不启动，堆空间启动。整个过程几乎不需要STW，效率较高。</li>
+</ol>
+<p><strong>混合写屏障规则</strong>:</p>
+<p>具体操作:</p>
+<p>1、GC开始将栈上的对象全部扫描并标记为黑色(之后不再进行第二次重复扫描，无需STW)，</p>
+<p>2、GC期间，任何在栈上创建的新对象，均为黑色。</p>
+<p>3、被删除的对象标记为灰色。</p>
+<p>4、被添加的对象标记为灰色。</p>
+<p>满足: 变形的<strong>弱三色不变式</strong>.</p>
 <h2 id="linux">Linux</h2>
 <h2
 id="linux系统查看cpu占用的命令腾讯云">linux系统查看cpu占用的命令（腾讯云）</h2>
@@ -1108,7 +1138,7 @@ id="linux如何让程序后台运行又如何让后台的程序来到前台">lin
 <li><p><strong>使用 <code>&amp;</code> 符号</strong>：
 在运行程序的命令行末尾添加 <code>&amp;</code>
 符号可以将程序放入后台运行，例如：</p>
-<p><figure class="highlight 1c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs 1c">bashCopy code<br>./my_program <span class="hljs-meta">&amp;</span><br></code></pre></td></tr></table></figure></p></li>
+<p><figure class="highlight 1c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs 1c">./my_program <span class="hljs-meta">&amp;</span><br></code></pre></td></tr></table></figure></p></li>
 <li><p><strong>使用 <code>nohup</code> 命令</strong>： 使用
 <code>nohup</code>
 命令可以让程序在后台运行，并且在用户退出登录时仍然保持运行。示例：</p>
@@ -1122,11 +1152,11 @@ id="linux如何让程序后台运行又如何让后台的程序来到前台">lin
 <ol type="1">
 <li><p><strong>使用 <code>fg</code> 命令</strong>： <code>fg</code>
 命令用于将最近放入后台的作业切换到前台。示例：</p>
-<p><figure class="highlight armasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs armasm"><span class="hljs-symbol">bashCopy</span> <span class="hljs-meta">code</span><br><span class="hljs-symbol">fg</span><br></code></pre></td></tr></table></figure></p></li>
+<p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">fg</span><br></code></pre></td></tr></table></figure></p></li>
 <li><p><strong>使用 <code>jobs</code> 和 <code>fg</code> 命令</strong>：
 <code>jobs</code> 命令用于列出后台运行的作业，然后使用
 <code>fg %job_number</code> 将特定的作业切换到前台。示例：</p>
-<p><figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">bashCopy</span> codejobs<br><span class="hljs-attribute">fg</span> %<span class="hljs-number">1</span><br></code></pre></td></tr></table></figure></p></li>
+<p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">jobs</span><br><span class="hljs-built_in">fg</span> %1<br></code></pre></td></tr></table></figure></p></li>
 <li><p><strong>使用 <code>screen</code> 或 <code>tmux</code></strong>：
 如果使用了 <code>screen</code> 或
 <code>tmux</code>，可以重新连接到会话并恢复程序运行。使用
@@ -1166,7 +1196,15 @@ id="linux下rm正在写入的文件会发生什么">Linux下rm正在写入的文
 <h3
 id="tcp一二三次握手报文丢失分别会发生什么">TCP一二三次握手报文丢失分别会发生什么？</h3>
 <h4 id="第一次握手丢失"><strong>第一次握手丢失</strong></h4>
-<p>客户端发送SYN请求连接报文，如果迟迟等不到服务器的请求确认报文段，那么就会进行超时重传，具体重传几次，要看tcp_syn_retries内核参数，一般默认是5次。要注意的是，重传的请求连接报文的seq序列号字段还是之前的seq，不会重新生成哦。</p>
+<p>客户端发送SYN请求连接报文，如果迟迟等不到服务器的请求确认报文段，那么就会进行超时重传，具体重传几次，要看tcp_syn_retries内核参数，一般默认是5次。要注意的是，<strong>重传的请求连接报文的seq序列号字段还是之前的seq</strong>，不会重新生成哦。</p>
+<div class="admonition note">
+<p class="admonition-title">
+note
+</p>
+<p>
+如果seq一样，那么客户端如何区分服务器端的回复是已经过期的syn包的回复呢？TCP有一个时间戳选项，客户端可以根据时间戳来判断包是否过期，如果过期就回复rst重置连接，避免服务器资源浪费。
+</p>
+</div>
 <h4 id="第二次握手丢失">第二次握手丢失</h4>
 <p>第二次握手丢失就有意思了，因为服务器发送的第二次握手是连接确认报文段，既包括对第一次握手的ACK确认，同时还有SYN字段表示要建立连接，所以第二次握手也可以成为SYN-ACK报文。所以当第二次握手丢失，客户端迟迟等不到第一次握手的确认，就会触发超时重传机制，进行超时重传；服务器等不到自己SYN连接的确认，也会进行超时重传。客户端和服务器具体的超时重传次数还是由内核参数决定。</p>
 <h4 id="第三次握手丢失">第三次握手丢失</h4>
@@ -1776,6 +1814,19 @@ id="四次挥手的第二三次为什么不合并">四次挥手的第二三次�
 <li>服务器可能还有报文未发送</li>
 <li>ack和syn是不同时机触发的 ack是内核完成,会在收到fin的时候第一时间返回
 而fin则是应用程序代码块控制,在调用到socket的close方法才会触发fin</li>
+</ol>
+<h3 id="http想尽可能少的数据量发送">Http想尽可能少的数据量发送</h3>
+<ol type="1">
+<li><strong>使用压缩</strong>：通过使用
+<code>gzip</code>、<code>brotli</code>
+等压缩算法，服务器可以将响应体压缩后再发送给客户端。</li>
+<li><strong>使用 HTTP/2 或 HTTP/3</strong>：HTTP/2 和 HTTP/3
+通过头部压缩（HPACK/ QPACK）可以显著减少重复的 HTTP 头部大小。</li>
+<li><strong>使用合适的 HTTP
+方法</strong>：对于发送数据的场景，如果只需要传递少量数据或更新，可以选择
+<code>PATCH</code> 而非
+<code>PUT</code>，这样只需传输需要变更的部分数据，而不是整个资源。</li>
+<li><strong>利用缓存机制</strong></li>
 </ol>
 <h2 id="数据库">数据库</h2>
 <h3
@@ -2390,6 +2441,49 @@ id="有两个索引一个索引识别度高例如唯一索引另一个是普通�
 </ol>
 <h3 id="mysql事务回滚原理">mysql事务回滚原理</h3>
 <p>当一个事务被回滚时，MySQL会通过回滚日志中的记录来还原所有修改的数据，并删除日志文件中的相应记录。具体的原理是：MySQL会在undo表空间中创建一个临时表，用于存储需要回滚的数据，这些数据包括旧值、新值以及被修改的行的引用。然后，MySQL将在内存中读取回滚日志文件，以确定哪些操作需要回滚。一旦操作被确定，MySQL就会将这些操作的undo日志应用到undo表空间中的临时表中，并将被修改的行还原为之前的状态。</p>
+<h3
+id="如何用mysql实现分布式锁-用伪代码sql语句实现输入一个字符串返回是否修改成功还是失败">如何用mysql实现分布式锁
+用伪代码+sql语句实现，输入一个字符串返回是否修改成功还是失败</h3>
+<p>在表中增加一个字段，利用update的记录锁和事务实现，先开启个事务，update状态代表持有锁，然后执行，最后状态修改回去</p>
+<h3 id="binlog的三种格式">binlog的三种格式</h3>
+<p>MySQL 的 <code>binlog</code>（Binary Log）有三种常见的格式：</p>
+<ol type="1">
+<li><strong>STATEMENT（语句模式）</strong>
+<ul>
+<li><strong>特点</strong>：记录每一条会导致数据更改的 SQL 语句。</li>
+<li><strong>优点</strong>：生成的日志文件较小，不会有太多的 I/O
+开销。</li>
+<li><strong>缺点</strong>：某些复杂的 SQL
+语句（如包含非确定性函数的语句）可能无法被精确复制。</li>
+</ul></li>
+<li><strong>ROW（行模式）</strong>
+<ul>
+<li><strong>特点</strong>：记录每一行的数据更改，而不是具体的 SQL
+语句。</li>
+<li><strong>优点</strong>：能够精确地记录数据变化，尤其在复杂的 SQL
+操作下效果更好。</li>
+<li><strong>缺点</strong>：日志文件较大，因为需要记录每行数据的变动情况。</li>
+</ul></li>
+<li><strong>MIXED（混合模式）</strong>
+<ul>
+<li><strong>特点</strong>：这是 <code>STATEMENT</code> 和
+<code>ROW</code> 模式的混合体。MySQL 会根据执行的 SQL
+语句类型在两者之间切换。</li>
+<li><strong>优点</strong>：兼具 <code>STATEMENT</code>
+模式的节省日志大小的优点和 <code>ROW</code> 模式的精确性。</li>
+<li><strong>缺点</strong>：由于是混合模式，日志大小和性能可能会视具体使用场景有所不同。</li>
+</ul></li>
+</ol>
+<p>通过设置 <code>binlog_format</code>
+参数，可以在这三种模式之间进行切换。</p>
+<h3
+id="为什么mysql使用b树-跳表不行吗-不也可以一次加载大量磁盘数据进来吗">为什么mysql使用B+树？
+跳表不行吗？ 不也可以一次加载大量磁盘数据进来吗？</h3>
+<ol type="1">
+<li>跳表在内存中的结构可能导致较高的内存占用，因为它维护了多个层级的链表。</li>
+<li>跳表在磁盘上的表现可能不如 B+ 树。B+
+树的节点大小可以优化以适应磁盘块的大小，而跳表的结构可能导致更高的磁盘I/O，因为它需要在多个链表中查找。</li>
+</ol>
 <h2 id="操作系统">操作系统</h2>
 <h3
 id="用户态和内核态的互换条件腾讯云">用户态和内核态的互换、条件（腾讯云）</h3>
@@ -2784,6 +2878,70 @@ alt="img" />
 <p><strong>需要注意，在单核 CPU
 上，需要抢占式的调度器（即不断通过时钟中断一个线程，运行其他线程）。否则，自旋锁在单
 CPU 上无法使用，因为一个自旋的线程永远不会放弃 CPU。</strong></p>
+<h3
+id="操作系统读取文件的流程拷贝的次数">操作系统读取文件的流程，拷贝的次数</h3>
+<h4 id="步骤-1系统调用">步骤 1：系统调用</h4>
+<ul>
+<li><strong>用户进程调用系统调用</strong>：用户进程通过调用类似
+<code>read()</code> 或 <code>fread()</code>
+之类的系统调用来发起文件读取请求。</li>
+<li><strong>陷入内核</strong>：系统调用会触发上下文切换，用户态进入内核态。此时，操作系统将接管文件读取的工作。</li>
+</ul>
+<h4 id="步骤-2文件系统处理">步骤 2：文件系统处理</h4>
+<ul>
+<li><p>文件系统检查缓存</p>
+<p>：内核会首先检查文件系统缓存（如页面缓存或缓冲区缓存），查看请求的文件内容是否已经存在于缓存中。</p>
+<ul>
+<li>如果数据已经在缓存中（<strong>缓存命中</strong>），则直接从缓存中读取数据，跳过后续的磁盘读取。</li>
+<li>如果缓存中没有所需的数据（<strong>缓存未命中</strong>），则需要从磁盘读取文件。</li>
+</ul></li>
+</ul>
+<h4 id="步骤-3磁盘-io-操作">步骤 3：磁盘 I/O 操作</h4>
+<ul>
+<li><strong>块设备驱动程序与磁盘通信</strong>：操作系统通过块设备驱动程序向磁盘发送读取请求。磁盘控制器会访问物理存储设备（如
+HDD 或
+SSD），并将所请求的块数据从磁盘读取到内存中（具体来说，是内核态的缓冲区或页面缓存中）。</li>
+</ul>
+<h4 id="步骤-4内核处理数据">步骤 4：内核处理数据</h4>
+<ul>
+<li><strong>内核缓存数据</strong>：磁盘将数据读取到内核的缓冲区或页面缓存中。这些缓存数据暂存在内核空间中，供后续的文件读取使用。</li>
+</ul>
+<h4 id="步骤-5用户进程读取数据">步骤 5：用户进程读取数据</h4>
+<ul>
+<li><strong>从内核拷贝到用户空间</strong>：一旦数据在内核态准备就绪，操作系统会将数据从内核态的缓存（页面缓存或缓冲区）拷贝到用户进程的缓冲区（即用户态内存中）。用户进程最终通过系统调用获取这些数据。</li>
+</ul>
+<h4 id="拷贝次数">拷贝次数</h4>
+<p>如果缓存命中，只需要将数据从内核空间拷贝到用户空间。这是一个内核态到用户态的拷贝。所以只需要<strong>一次</strong>。</p>
+<p>如果缓存没有命中，要将磁盘拷贝到内核缓冲区，然后再从内核缓冲区拷贝到用户缓冲区。所以需要<strong>两次</strong>。</p>
+<h3
+id="进程fork读取的是一样的数据吗">进程fork读取的是一样的数据吗？</h3>
+<h4 id="内存数据">1. <strong>内存数据</strong></h4>
+<ul>
+<li><strong>复制-on-write（写时复制）</strong>：大多数现代操作系统使用
+<code>fork</code> 的“写时复制”机制来高效处理内存。在 <code>fork</code>
+时，父进程和子进程共享相同的物理内存页面，但这些页面在被写入时才会被复制。这样，只有当其中一个进程修改内存中的数据时，操作系统才会为该进程复制相应的内存页面。这种机制减少了不必要的数据复制，提高了性能。</li>
+<li><strong>数据一致性</strong>：在 <code>fork</code>
+之后，父进程和子进程拥有相同的初始内存数据。任何对内存数据的修改，只会影响到当前进程的内存副本，不会影响另一个进程。即使在
+<code>fork</code>
+后，两个进程都可以访问相同的数据，但它们的修改不会相互影响。</li>
+</ul>
+<h4 id="文件描述符">2. <strong>文件描述符</strong></h4>
+<ul>
+<li><strong>文件描述符的复制</strong>：在 <code>fork</code>
+时，父进程的所有文件描述符会被复制到子进程中。这意味着子进程和父进程可以共享打开的文件、管道、套接字等。它们共享相同的文件偏移量（如果是文件）和文件状态标志。因此，文件描述符的操作会对父进程和子进程产生影响，除非在
+<code>fork</code> 后显式地关闭或修改这些描述符。</li>
+</ul>
+<h4 id="资源">3. <strong>资源</strong></h4>
+<ul>
+<li><strong>进程资源</strong>：除了内存数据，<code>fork</code>
+还复制了其他资源，如进程的状态、优先级、信号处理器等。然而，进程间的资源（如
+CPU 时间）和调度是独立的，不会直接影响对方。</li>
+</ul>
+<h4 id="环境">4. <strong>环境</strong></h4>
+<ul>
+<li><strong>环境变量和程序计数器</strong>：<code>fork</code>
+创建的子进程继承了父进程的环境变量和程序计数器的状态。因此，子进程会从父进程的当前位置开始执行，并拥有相同的环境变量。</li>
+</ul>
 <h2 id="设计模式">设计模式</h2>
 <h3 id="面向对象设计的六大原则">面向对象设计的六大原则</h3>
 <ol type="1">
@@ -3001,7 +3159,194 @@ alt="img" />
 <h3
 id="什么情况使用mysql什么情况使用redis">什么情况使用MySQL，什么情况使用Redis</h3>
 <p>Redis适合处理高性能读写、缓存、实时通信等场景，而MySQL适合存储和处理结构化数据、支持复杂查询和事务处理的场景。</p>
+<h3
+id="redis的key会对应不同的数据结构怎么知道一个key对应的是什么数据结构怎么取对应的内存取值的呢">redis的key会对应不同的数据结构，怎么知道一个key对应的是什么数据结构，怎么取对应的内存取值的呢？</h3>
+<p>在 Redis 的实现中，每个 key 的值（value）都被存储在一个
+<code>RedisObject</code>
+结构体中，这个结构体包含了值的数据类型和实际的数据结构指针。</p>
+<p><code>RedisObject</code> 结构体的定义大致如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-keyword">typedef</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">redisObject</span> &#123;</span><br>    <span class="hljs-type">unsigned</span> type : <span class="hljs-number">4</span>;  <span class="hljs-comment">// 数据类型 (string, list, set, zset, hash)</span><br>    <span class="hljs-type">unsigned</span> encoding : <span class="hljs-number">4</span>;  <span class="hljs-comment">// 数据的编码方式（例如压缩、原始、链表等）</span><br>    <span class="hljs-type">void</span> *ptr;  <span class="hljs-comment">// 指向实际数据结构的指针</span><br>&#125; robj;<br><br></code></pre></td></tr></table></figure>
+<h3
+id="reids除了用setnx实现分布式锁还有其他方法吗">reids除了用setnx实现分布式锁还有其他方法吗？</h3>
+<h4 id="使用-zset">使用 zset</h4>
+<p>ZSET
+可以被用来实现分布式锁，特别适用于需要对锁进行排序或者有超时时间的场景。其基本原理是：</p>
+<ol type="1">
+<li>客户端尝试通过 <code>ZADD</code>
+命令将一个唯一标识插入到有序集合中，分值为当前时间加上锁的超时时间。</li>
+<li>当客户端获取锁时，首先检查集合中的最小值，如果当前时间还未超过这个分值，说明锁已经被其他客户端持有；如果已经超时，则可以获取锁。</li>
+<li>释放锁时，将该唯一标识从有序集合中删除。</li>
+</ol>
+<p>这种方式的优点是能够实现更细粒度的锁控制，例如锁的过期排序、延迟执行等。</p>
+<h4 id="使用-redis-bitmap-实现分布式锁">使用 Redis Bitmap
+实现分布式锁</h4>
+<p>Bitmap 是 Redis 的一种特殊数据类型，可以用来高效地表示二进制状态（0
+或 1），这种特性可以被用来实现锁。基本步骤是：</p>
+<ol type="1">
+<li>每个锁对应 Bitmap
+中的一个位，当一个客户端想要获取锁时，它会将对应位设置为 1。</li>
+<li>如果该位已经是 1，则表示锁已被持有；如果成功设置为
+1，则表示锁获取成功。</li>
+<li>释放锁时，将对应位设置为 0。</li>
+</ol>
+<p>这种方式适合在高密度锁竞争的场景中使用，可以高效地管理大量锁。</p>
+<h3 id="redis的渐进式哈希">redis的渐进式哈希？</h3>
+<p>Redis 的渐进式哈希（Progressive Rehashing 或者 Incremental
+Rehashing）是 <strong>Redis
+在进行哈希表扩容或缩容时</strong>采用的一种优化机制，用于避免在短时间内大量的数据迁移，导致的阻塞问题。</p>
+<p><strong>渐进式哈希的工作原理：</strong></p>
+<ol type="1">
+<li><strong>双哈希表</strong>：Redis 在进行 rehash
+操作时，暂时维护两个哈希表，一个是旧的哈希表，另一个是新的哈希表。</li>
+<li><strong>增量迁移</strong>：而不是一次性迁移所有数据，Redis
+通过在每次执行增量 rehash
+操作时，只将一小部分键值对从旧的哈希表迁移到新的哈希表中。</li>
+<li><strong>平滑过渡</strong>：每次用户对 Redis
+执行写操作（如插入、删除、更新等），Redis
+会顺便迁移一部分键值对到新的哈希表。这意味着 rehash
+操作是分步执行的，逐步完成，避免了大规模迁移带来的阻塞。</li>
+<li><strong>读写兼容</strong>：在 rehash 过程中，Redis
+需要检查两个哈希表（旧的和新的），以确保数据的读写操作能够正常进行。这种机制保证了在
+rehash 的过程中，用户的操作不会受到影响。</li>
+</ol>
 <h2 id="项目">项目</h2>
+<h3 id="rpc框架">RPC框架</h3>
+<h4 id="介绍项目">介绍项目</h4>
+<p>从零实现了 net/rpc
+框架，并在此基础上新增了协议交换、注册中心、服务发现、负载均衡、超时处理等功能，同时在Tcp基础之上实现了Http协议，使得框架可以同时处理传统rpc和http请求。</p>
+<h4 id="q协议交换是怎么实现的">Q：协议交换是怎么实现的？</h4>
+<p>定义了一个接口，不同的编码格式通过实现这个接口，来实现这样不同的编码格式，然后在client的结构中有一个codec类型的变量用来标识使用哪个编码协议。</p>
+<h4
+id="q为什么有了tcp还要实现httptcp效率不是更高吗">Q：为什么有了Tcp还要实现http？Tcp效率不是更高吗？</h4>
+<p>纯TCP协议的效率会高于HTTP协议。TCP是传输层协议，直接用于点对点的可靠数据传输，不涉及额外的开销。而HTTP则是应用层协议，基于TCP构建，但会增加额外的头部信息、状态管理等处理，这使得它在性能上稍微逊色一些。</p>
+<p>不过，HTTP的优势在于它的通用性和普遍支持，特别是可以方便地通过防火墙和代理服务器，适用于广泛的网络环境。而纯TCP更适合内网高效通信，特别是在低延迟和高吞吐量的场景中。</p>
+<h4 id="q怎么实现http协议的">Q：怎么实现http协议的？</h4>
+<p>Web 开发中，我们经常使用 HTTP 协议中的 HEAD、GET、POST
+等方式发送请求，等待响应。但 RPC 的消息格式与标准的 HTTP
+协议并不兼容，在这种情况下，就需要一个协议的转换过程。<strong>HTTP
+协议的 CONNECT 方法恰好提供了这个能力</strong>，CONNECT
+一般用于代理服务。</p>
+<p>假设浏览器与服务器之间的 HTTPS
+通信都是加密的，浏览器通过代理服务器发起 HTTPS
+请求时，由于请求的站点地址和端口号都是加密保存在 HTTPS
+请求报文头中的，代理服务器如何知道往哪里发送请求呢？为了解决这个问题，浏览器通过
+HTTP 明文形式向代理服务器发送一个 CONNECT
+请求告诉代理服务器目标地址和端口，代理服务器接收到这个请求后，会在对应端口与目标站点建立一个
+TCP 连接，连接建立成功后返回 HTTP 200
+状态码告诉浏览器与该站点的加密通道已经完成。接下来代理服务器仅需透传浏览器和服务器之间的加密数据包即可，代理服务器无需解析
+HTTPS 报文。</p>
+<p>举一个简单例子：</p>
+<ol type="1">
+<li>浏览器向代理服务器发送 CONNECT 请求。</li>
+</ol>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs http"><span class="hljs-keyword">CONNECT</span> <span class="hljs-string">geektutu.com:443</span> <span class="hljs-meta">HTTP/1.0</span><br></code></pre></td></tr></table></figure>
+<ol start="2" type="1">
+<li>代理服务器返回 HTTP 200 状态码表示连接已经建立。</li>
+</ol>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">HTTP</span>/<span class="hljs-number">1</span>.<span class="hljs-number">0</span> <span class="hljs-number">200</span> Connection Established<br></code></pre></td></tr></table></figure>
+<ol start="3" type="1">
+<li>之后浏览器和服务器开始 HTTPS
+握手并交换加密数据，代理服务器只负责传输彼此的数据包，并不能读取具体数据内容（代理服务器也可以选择安装可信根证书解密
+HTTPS 报文）。</li>
+</ol>
+<h4
+id="q超时处理是怎么实现的呢具体在哪实现了超时处理">Q：超时处理是怎么实现的呢？具体在哪实现了超时处理</h4>
+<p>超时处理是 RPC
+框架一个比较基本的能力，如果缺少超时处理机制，无论是服务端还是客户端都容易因为网络或其他错误导致挂死，资源耗尽，这些问题的出现大大地降低了服务的可用性。因此，我们需要在
+RPC 框架中加入超时处理的能力。</p>
+<p>纵观整个远程调用的过程，需要客户端处理超时的地方有：</p>
+<ul>
+<li>与服务端建立连接，导致的超时</li>
+<li>发送请求到服务端，写报文导致的超时</li>
+<li>等待服务端处理时，等待处理导致的超时（比如服务端已挂死，迟迟不响应）</li>
+<li>从服务端接收响应时，读报文导致的超时</li>
+</ul>
+<p>需要服务端处理超时的地方有：</p>
+<ul>
+<li>读取客户端请求报文时，读报文导致的超时</li>
+<li>发送响应报文时，写报文导致的超时</li>
+<li>调用映射服务的方法时，处理报文导致的超时</li>
+</ul>
+<p>GeeRPC 在 3 个地方添加了超时处理机制。分别是：</p>
+<p>1）客户端创建连接时 2）客户端 <code>Client.Call()</code>
+整个过程导致的超时（包含发送报文，等待处理，接收报文所有阶段）
+3）服务端处理报文，即 <code>Server.handleRequest</code> 超时。</p>
+<p><strong>创建连接超时</strong>：</p>
+<p>客户端连接超时，只需要为 Dial
+添加一层超时处理的外壳即可。在这里实现了一个超时处理的外壳
+<code>dialTimeout</code>，这个壳将 NewClient 作为入参，在 2
+个地方添加了超时处理的机制。</p>
+<ol type="1">
+<li>将 <code>net.Dial</code> 替换为
+<code>net.DialTimeout</code>，如果连接创建超时，将返回错误。</li>
+<li>使用子协程执行 NewClient，执行完成后则通过信道 ch 发送结果，如果
+<code>time.After()</code> 信道先接收到消息，则说明 NewClient
+执行超时，返回错误。怎么实现？（使用select语句）</li>
+</ol>
+<p>关键代码:</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">select</span> &#123;		<span class="hljs-comment">// 使用select判断先超时还是先收到消息</span><br>	<span class="hljs-keyword">case</span> &lt;-time.After(opt.ConnectTimeout):<br>		<span class="hljs-keyword">return</span> <span class="hljs-literal">nil</span>, fmt.Errorf(<span class="hljs-string">&quot;rpc client: connect timeout: expect within %s&quot;</span>, opt.ConnectTimeout)<br>	<span class="hljs-keyword">case</span> result := &lt;-ch:<br>		<span class="hljs-keyword">return</span> result.client, result.err<br>	&#125;<br></code></pre></td></tr></table></figure>
+<p><strong>Client.Call 超时</strong>:</p>
+<p><code>Client.Call</code> 的超时处理机制，使用 context
+包实现，控制权交给用户，控制更为灵活。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-comment">// Call 调用指定的函数，等待它完成，并返回其错误状态。</span><br><span class="hljs-comment">// 该函数会阻塞，直到调用完成。</span><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(client *Client)</span></span> Call(ctx context.Context, serviceMethod <span class="hljs-type">string</span>, args, reply <span class="hljs-keyword">interface</span>&#123;&#125;) <span class="hljs-type">error</span> &#123;<br>	call := client.Go(serviceMethod, args, reply, <span class="hljs-built_in">make</span>(<span class="hljs-keyword">chan</span> *Call, <span class="hljs-number">1</span>))<br>	<span class="hljs-keyword">select</span> &#123;<br>	<span class="hljs-keyword">case</span> &lt;-ctx.Done():<br>		client.removeCall(call.Seq)<br>		<span class="hljs-keyword">return</span> errors.New(<span class="hljs-string">&quot;rpc client: call failed: &quot;</span> + ctx.Err().Error())<br>	<span class="hljs-keyword">case</span> call := &lt;-call.Done:<br>		<span class="hljs-keyword">return</span> call.Error<br>	&#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>用户可以使用 <code>context.WithTimeout</code> 创建具备超时检测能力的
+context 对象来控制。例如：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs go">ctx, _ := context.WithTimeout(context.Background(), time.Second)<br><span class="hljs-keyword">var</span> reply <span class="hljs-type">int</span><br>err := client.Call(ctx, <span class="hljs-string">&quot;Foo.Sum&quot;</span>, &amp;Args&#123;<span class="hljs-number">1</span>, <span class="hljs-number">2</span>&#125;, &amp;reply)<br></code></pre></td></tr></table></figure>
+<p><strong>服务端处理超时</strong>:</p>
+<p>这一部分的实现与客户端很接近，使用 <code>time.After()</code> 结合
+<code>select+chan</code> 完成。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(server *Server)</span></span> handleRequest(cc codec.Codec, req *request, sending *sync.Mutex, wg *sync.WaitGroup, timeout time.Duration) &#123;<br>	<span class="hljs-keyword">defer</span> wg.Done()<br>	called := <span class="hljs-built_in">make</span>(<span class="hljs-keyword">chan</span> <span class="hljs-keyword">struct</span>&#123;&#125;)<br>	sent := <span class="hljs-built_in">make</span>(<span class="hljs-keyword">chan</span> <span class="hljs-keyword">struct</span>&#123;&#125;)<br>	<span class="hljs-keyword">go</span> <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">()</span></span> &#123;<br>		err := req.svc.call(req.mtype, req.argv, req.replyv)<br>		called &lt;- <span class="hljs-keyword">struct</span>&#123;&#125;&#123;&#125;<br>		<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> &#123;<br>			req.h.Error = err.Error()<br>			server.sendResponse(cc, req.h, invalidRequest, sending)<br>			sent &lt;- <span class="hljs-keyword">struct</span>&#123;&#125;&#123;&#125;<br>			<span class="hljs-keyword">return</span><br>		&#125;<br>		server.sendResponse(cc, req.h, req.replyv.Interface(), sending)<br>		sent &lt;- <span class="hljs-keyword">struct</span>&#123;&#125;&#123;&#125;<br>	&#125;()<br><br>	<span class="hljs-keyword">if</span> timeout == <span class="hljs-number">0</span> &#123;<br>		&lt;-called<br>		&lt;-sent<br>		<span class="hljs-keyword">return</span><br>	&#125;<br>	<span class="hljs-keyword">select</span> &#123;<br>	<span class="hljs-keyword">case</span> &lt;-time.After(timeout):<br>		req.h.Error = fmt.Sprintf(<span class="hljs-string">&quot;rpc server: request handle timeout: expect within %s&quot;</span>, timeout)<br>		server.sendResponse(cc, req.h, invalidRequest, sending)<br>	<span class="hljs-keyword">case</span> &lt;-called:<br>		&lt;-sent<br>	&#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>这里需要确保 <code>sendResponse</code>
+仅调用一次，因此将整个过程拆分为 <code>called</code> 和
+<code>sent</code> 两个阶段，在这段代码中只会发生如下两种情况：</p>
+<ol type="1">
+<li>called 信道接收到消息，代表处理没有超时，继续执行
+sendResponse。</li>
+<li><code>time.After()</code> 先于 called
+接收到消息，说明处理已经超时，called 和 sent 都将被阻塞。在
+<code>case &lt;-time.After(timeout)</code> 处调用
+<code>sendResponse</code>。</li>
+</ol>
+<h4
+id="q在实际应用中超时处理对于网络情况的波动十分关键怎么应对这种情况">Q：在实际应用中，超时处理对于网络情况的波动十分关键，怎么应对这种情况？</h4>
+<p>可以实现动态调整的机制，在系统中监控相关的响应时间和网络延迟等指标，然后根据监控的结果动态修改配置，比如如果超时频繁发生，可以考虑增加超时时间，或者考虑优化系统服务性能。</p>
+<h4 id="q实现了哪些负载均衡策略">Q：实现了哪些负载均衡策略</h4>
+<p>random和roundroubin，通过设置了selectMode和discovery两个结构来实现负载均衡，同时在client的基础之上又封装了xclient来实现。</p>
+<h4 id="q了解过其他现有的rpc框架吗">Q：了解过其他现有的rpc框架吗？</h4>
+<p>有了解过go标准库的rpc框架和grpc框架，grpc使用http2作为传输协议和双向流，序列化格式主要是protubuf，也可以使用其他格式。</p>
+<p><strong>协议</strong>：</p>
+<ul>
+<li><strong>gRPC</strong>：使用HTTP/2作为传输协议，支持流式传输和双向流。序列化格式主要是Protobuf，也可以使用其他格式如JSON。</li>
+<li><strong>Go标准库RPC</strong>：使用HTTP/1.1作为传输协议，序列化格式基于Go的内置编码机制（<code>encoding/gob</code>）。</li>
+</ul>
+<p><strong>性能</strong>：</p>
+<ul>
+<li><strong>gRPC</strong>：由于使用HTTP/2和Protobuf，gRPC在性能上通常优于Go标准库RPC。HTTP/2支持多路复用和压缩，Protobuf提供高效的序列化。</li>
+<li><strong>Go标准库RPC</strong>：性能较为基础，适合轻量级应用，但可能在高负载下不如gRPC高效。</li>
+</ul>
+<p><strong>功能</strong>：</p>
+<ul>
+<li><strong>gRPC</strong>：提供了丰富的功能，包括流式调用（单向、双向流）、超时处理、负载均衡、服务发现等。gRPC生态中也有很多工具支持，如负载均衡器和监控工具。</li>
+<li><strong>Go标准库RPC</strong>：功能较为基础，主要支持基本的远程过程调用。需要额外实现复杂的功能，如流式传输或高级的负载均衡。</li>
+</ul>
+<p><strong>跨语言支持</strong>：</p>
+<ul>
+<li><strong>gRPC</strong>：设计为支持多语言，gRPC的客户端和服务端可以用不同的编程语言实现，支持的语言包括Go、Java、Python、C++等。</li>
+<li><strong>Go标准库RPC</strong>：主要是Go语言内部使用，虽然可以在不同Go程序之间使用，但不具备跨语言的支持。</li>
+</ul>
+<p><strong>生态和社区支持</strong>：</p>
+<ul>
+<li><strong>gRPC</strong>：有广泛的社区支持和生态系统，包括多种客户端库、监控工具、服务发现组件等。</li>
+<li><strong>Go标准库RPC</strong>：社区支持相对较少，主要依赖于Go语言自带的工具和库。</li>
+</ul>
+<h4 id="q怎么设计超时重试机制">Q：怎么设计超时重试机制</h4>
+<h4 id="q怎么避免超时重试">Q：怎么避免超时重试</h4>
+<ol type="1">
+<li>请求id（唯一标识符）：客户端在每次请求时生成一个唯一的请求ID，确保每个请求都有一个独特的标识符。服务器在处理请求时，首先检查请求ID是否已经处理过。如果已经处理过，则直接返回之前的结果，而不重复执行请求。</li>
+<li><strong>幂等请求类型</strong>：对于某些类型的操作，可以明确设计为幂等的。例如，"写入相同的值"、"更新特定的状态"等请求，重复执行不会影响最终结果。</li>
+<li><strong>基于数据库的去重</strong>：在数据库操作中，可以利用数据库的唯一约束或乐观锁机制，防止重复的插入或更新。例如，通过请求ID设置数据库的唯一性约束，从而避免同一请求被重复处理。</li>
+<li><strong>请求结果缓存</strong>：服务器可以缓存最近处理过的请求ID及其对应的结果。如果再次收到相同请求，则直接返回缓存中的结果，而不重新处理。</li>
+</ol>
 <h3 id="muduo">muduo</h3>
 <p>服务器通信网络库重写并简化了muduo网络库，使用C++11去除了boost库的依赖，使用基于OOP思想，reactor模型。one
 loop per thread的模型，通过epoll +
@@ -3767,6 +4112,18 @@ id="有140g沙子现在有7g和2g的砝码各一个并有一个天平用最少�
 <li>用这25g沙子再称25g沙子得到50g</li>
 </ol>
 <p>一共4次。</p>
+<h3 id="什么是跨域怎么解决">什么是跨域，怎么解决？</h3>
+<p>跨域是指浏览器出于安全原因阻止从一个域的网页向另一个域的服务器发出请求的现象。这个限制称为同源策略，它要求在同一个域名、协议和端口号的情况下，才允许进行请求。</p>
+<p>常见的跨域解决方法有以下几种：</p>
+<ol type="1">
+<li><strong>CORS（跨域资源共享）</strong>：服务器在响应头中添加特定的CORS头部信息（如
+<code>Access-Control-Allow-Origin</code>），允许浏览器接受来自不同域的请求。</li>
+<li><strong>JSONP</strong>：通过使用 <code>&lt;script&gt;</code>
+标签进行跨域请求。因为 <code>&lt;script&gt;</code>
+标签不受同源策略限制，服务器会返回一段包含回调函数的JavaScript代码，前端接收到后会自动执行。</li>
+<li><strong>服务器代理</strong>：前端将请求发送到本域名的服务器，由服务器再去请求目标域，并返回结果给前端。</li>
+<li><strong>Nginx反向代理</strong>：在Nginx中配置代理，前端请求经过Nginx代理到目标服务器，避免跨域问题。</li>
+</ol>
 <h2 id="其他">其他</h2>
 <h3 id="你都知道哪些消息队列">你都知道哪些消息队列</h3>
 <ul>

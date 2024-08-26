@@ -27,6 +27,7 @@
 <meta property="og:image" content="https://gstarmin.github.io/img/bluebell笔记/20210502181858.png">
 <meta property="og:image" content="https://gstarmin.github.io/img/bluebell笔记/20210502181513.png">
 <meta property="og:image" content="https://gstarmin.github.io/img/bluebell笔记/image-20240615162236639.png">
+<meta property="og:image" content="https://gstarmin.github.io/img/bluebell笔记/image-20240626094052646.png">
 <meta property="article:published_time" content="2024-06-14T14:06:10.000Z">
 <meta property="article:modified_time" content="2024-06-14T14:06:10.000Z">
 <meta property="article:author" content="Starmin">
@@ -300,7 +301,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          5.8k 字
+          13k 字
         
       </span>
     
@@ -311,7 +312,7 @@
         
         
         
-          59 分钟
+          126 分钟
         
       </span>
     
@@ -380,7 +381,7 @@ tag。 基本示例：</p>
 字段必须与 <code>Password</code>
 字段的值相同，以确保用户输入的确认密码与实际密码一致。</li>
 </ul>
-<h2 id="雪花算法">雪花算法</h2>
+<h2 id="雪花算法作为数据库主键">雪花算法作为数据库主键</h2>
 <p><strong>为什么不使用其他算法？为什么选择雪花算法？</strong></p>
 <p>有时候在业务中，需要使用一些唯一的ID，来记录我们某个数据的标识。最常用的无非以下几种：UUID、数据库自增主键、Redis的Incr命令等方法来获取一个唯一的值。下面我们分别说一下它们的优劣，以便引出我们的分布式雪花算法。</p>
 <h3 id="uuid">UUID</h3>
@@ -517,7 +518,7 @@ id（即主机的id），10位一共可以有1024个不同的机器</li>
 <p><strong>Tips:timestampMax怎么获得？</strong></p>
 <p>-1 在二进制上表示是：</p>
 <figure class="highlight basic"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs basic"><span class="hljs-symbol">11111111 </span><span class="hljs-number">11111111</span> <span class="hljs-number">11111111</span> <span class="hljs-number">11111111</span> <span class="hljs-number">11111111</span> <span class="hljs-number">11111111</span> <span class="hljs-number">11111111</span> <span class="hljs-number">11111111</span><br></code></pre></td></tr></table></figure>
-<p>那么再和 -1 进行 ^异或运算：</p>
+<p>那么再和 -1 左移 41位 进行 ^异或运算：</p>
 <figure class="highlight basic"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs basic"><span class="hljs-symbol">00000000 </span><span class="hljs-number">00000000</span> <span class="hljs-number">00000001</span> <span class="hljs-number">11111111</span> <span class="hljs-number">11111111</span> <span class="hljs-number">11111111</span> <span class="hljs-number">11111111</span> <span class="hljs-number">11111111</span><br></code></pre></td></tr></table></figure>
 <p>这就可以表示 41bits 的 timestamp
 最大值。datacenteridMax、workeridMax也同理。</p>
@@ -539,6 +540,8 @@ timestampShift 位置上全是0 ，由 datacenterid、workerid、sequence
 <img src="/img/bluebell笔记/20210502181513.png" srcset="/img/loading.gif" lazyload alt="img" />
 <figcaption aria-hidden="true">img</figcaption>
 </figure>
+<h2 id="jwt验证">JWT验证</h2>
+<p>这里使用和JWT-go库来实现，生成JWT和JWT解析的功能。</p>
 <h2
 id="限制账号同一时间只能登录一个设备"><strong>限制账号同一时间只能登录一个设备</strong></h2>
 <p>思路是使用redis存储一个从user_id到token的映射，每次用户登录时，更新或替换这个
@@ -550,9 +553,159 @@ Token。每次请求时验证客户端 Token 是否与服务器端存储的 Toke
 alt="image-20240615162236639" />
 <figcaption aria-hidden="true">image-20240615162236639</figcaption>
 </figure>
+<h2 id="swag生成文档">swag生成文档</h2>
+<ol type="1">
+<li><p>写注释</p>
+<p>在main函数中添加注释：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">package</span> main<br><br><span class="hljs-comment">// @title 这里写标题</span><br><span class="hljs-comment">// @version 1.0</span><br><span class="hljs-comment">// @description 这里写描述信息</span><br><span class="hljs-comment">// @termsOfService http://swagger.io/terms/</span><br><br><span class="hljs-comment">// @contact.name 这里写联系人信息</span><br><span class="hljs-comment">// @contact.url http://www.swagger.io/support</span><br><span class="hljs-comment">// @contact.email support@swagger.io</span><br><br><span class="hljs-comment">// @license.name Apache 2.0</span><br><span class="hljs-comment">// @license.url http://www.apache.org/licenses/LICENSE-2.0.html</span><br><br><span class="hljs-comment">// @host 这里写接口服务的host</span><br><span class="hljs-comment">// @BasePath 这里写base path</span><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;<br>	r := gin.New()<br><br>	<span class="hljs-comment">// liwenzhou.com ...</span><br><br>	r.Run()<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>在controller中的函数添加注释：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-comment">// GetPostListHandler2 升级版帖子列表接口</span><br><span class="hljs-comment">// @Summary 升级版帖子列表接口</span><br><span class="hljs-comment">// @Description 可按社区按时间或分数排序查询帖子列表接口</span><br><span class="hljs-comment">// @Tags 帖子相关接口(api分组展示使用的)</span><br><span class="hljs-comment">// @Accept application/json</span><br><span class="hljs-comment">// @Produce application/json</span><br><span class="hljs-comment">// @Param Authorization header string true &quot;Bearer JWT&quot;</span><br><span class="hljs-comment">// @Param object query models.ParamPostList false &quot;查询参数&quot;</span><br><span class="hljs-comment">// @Security ApiKeyAuth</span><br><span class="hljs-comment">// @Success 200 &#123;object&#125; _ResponsePostList</span><br><span class="hljs-comment">// @Router /posts2 [get]</span><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">GetPostListHandler2</span><span class="hljs-params">(c *gin.Context)</span></span><br></code></pre></td></tr></table></figure>
+<p>上面注释中参数类型使用了<code>object</code>，<code>models.ParamPostList</code>具体定义如下：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-comment">// bluebell/models/params.go</span><br><br><span class="hljs-comment">// ParamPostList 获取帖子列表query string参数</span><br><span class="hljs-keyword">type</span> ParamPostList <span class="hljs-keyword">struct</span> &#123;<br>	CommunityID <span class="hljs-type">int64</span>  <span class="hljs-string">`json:&quot;community_id&quot; form:&quot;community_id&quot;`</span>   <span class="hljs-comment">// 可以为空</span><br>	Page        <span class="hljs-type">int64</span>  <span class="hljs-string">`json:&quot;page&quot; form:&quot;page&quot; example:&quot;1&quot;`</span>       <span class="hljs-comment">// 页码</span><br>	Size        <span class="hljs-type">int64</span>  <span class="hljs-string">`json:&quot;size&quot; form:&quot;size&quot; example:&quot;10&quot;`</span>      <span class="hljs-comment">// 每页数据量</span><br>	Order       <span class="hljs-type">string</span> <span class="hljs-string">`json:&quot;order&quot; form:&quot;order&quot; example:&quot;score&quot;`</span> <span class="hljs-comment">// 排序依据</span><br>&#125;<br></code></pre></td></tr></table></figure>
+<p>响应数据类型也使用的<code>object</code>，我个人习惯在controller层专门定义一个<code>docs_models.go</code>文件来存储文档中使用的响应数据model。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-comment">// bluebell/controller/docs_models.go</span><br><br><span class="hljs-comment">// _ResponsePostList 帖子列表接口响应数据</span><br><span class="hljs-keyword">type</span> _ResponsePostList <span class="hljs-keyword">struct</span> &#123;<br>	Code    ResCode                 <span class="hljs-string">`json:&quot;code&quot;`</span>    <span class="hljs-comment">// 业务响应状态码</span><br>	Message <span class="hljs-type">string</span>                  <span class="hljs-string">`json:&quot;message&quot;`</span> <span class="hljs-comment">// 提示信息</span><br>	Data    []*models.ApiPostDetail <span class="hljs-string">`json:&quot;data&quot;`</span>    <span class="hljs-comment">// 数据</span><br>&#125;<br></code></pre></td></tr></table></figure></li>
+<li><p>安装并初始化swag</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">go install github.com/swaggo/swag/cmd/swag@latest<br></code></pre></td></tr></table></figure>
+<p>在项目根目录执行以下命令，使用swag工具生成接口文档数据。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">swag init<br></code></pre></td></tr></table></figure>
+<p>执行完上述命令后，如果你写的注释格式没问题，此时你的项目根目录下会多出一个<code>docs</code>文件夹。</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs stylus">./docs<br>├── docs<span class="hljs-selector-class">.go</span><br>├── swagger<span class="hljs-selector-class">.json</span><br>└── swagger.yaml<br></code></pre></td></tr></table></figure></li>
+<li><p>引入gin-swagger渲染文档数据</p>
+<p>然后在项目代码中注册路由的地方按如下方式引入<code>gin-swagger</code>相关内容：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs go"><br><span class="hljs-keyword">import</span> (<br>	<span class="hljs-comment">// liwenzhou.com ...</span><br><br>	_ <span class="hljs-string">&quot;bluebell/docs&quot;</span>  <span class="hljs-comment">// 千万不要忘了导入把你上一步生成的docs</span><br><br>	gs <span class="hljs-string">&quot;github.com/swaggo/gin-swagger&quot;</span><br>	<span class="hljs-string">&quot;github.com/swaggo/gin-swagger/swaggerFiles&quot;</span><br><br>	<span class="hljs-string">&quot;github.com/gin-gonic/gin&quot;</span><br>)<br><br></code></pre></td></tr></table></figure>
+<p>注册swagger api相关路由</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs go">r.GET(<span class="hljs-string">&quot;/swagger/*any&quot;</span>, gs.WrapHandler(swaggerFiles.Handler))<br></code></pre></td></tr></table></figure>
+<p>把你的项目程序运行起来，打开浏览器访问http://localhost:8080/swagger/index.html就能看到Swagger
+2.0 Api文档了。</p></li>
+</ol>
+<h2 id="压测">压测</h2>
+<h3 id="ping">ping</h3>
+<p>在windows本地运行本地使用ab测试：</p>
+<p>1 thread： 3221.69</p>
+<p>2 thread: 4875</p>
+<p>4 threads: 5621</p>
+<p>再翻倍qps基本没有变化，甚至更低了</p>
+<p>阿里云：</p>
+<p>1 thread: 6800</p>
+<p>2 threads: 16369.96</p>
+<p>3 threads: 18000</p>
+<p>4 threads: 18000</p>
+<p>8threads: 18000</p>
+<p>从本地windows向阿里云服务器部署的项目压测：</p>
+<p>1 thread: 20</p>
+<p>2 thread2: 54</p>
+<p>4 theads: 52.79</p>
+<p>阿里云：</p>
+<p>get请求： ab -n 10000 -c 4 -t 10
+"http://127.0.0.1:8084/api/v1/posts?size=10"， qps 2050</p>
+<p>1 thread: 500</p>
+<p>2 threads: 800</p>
+<p>3 threads: 1000</p>
+<p>4 threads: 1000</p>
 <h2 id="qa">QA</h2>
+<h3 id="介绍一下你的项目">介绍一下你的项目</h3>
+<p>bluebell项目你就介绍一下用户注册和登录功能怎么实现的，帖子投票功能怎么实现的，排行榜怎么实现的。注册登录功能可以提一下雪花算法。</p>
 <h3 id="为什么要先实现登录注册">为什么要先实现登录注册？</h3>
 <p>我们因为业务需求需要把不同的请求需求分离开，比如有登录注册的路由，还有一些其他的路由，而一些功能是需要登录之后才可以使用的（比如视频网站的高清）。</p>
+<h3 id="使用jwt的方式怎么测试">使用JWT的方式怎么测试</h3>
+<p>客户端携带token有三种方式：</p>
+<ol type="1">
+<li>放在请求头</li>
+<li>放在请求体</li>
+<li>放在url里</li>
+</ol>
+<p>放在url里边肯定是不安全的，这里是<strong>放在请求头</strong>，在postman里边，authorization里面有一个Bearer
+Token.把之前登录/注册生成的token放进去就可以,如果需要与前端沟通的情况下，需要修改对token
+的处理，目前是对Bearer
+Token处理的方法，使用其他的token传递方式会出问题。</p>
+<p>实际发出去的请求头的数据如下所示:</p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs http"><span class="hljs-attribute">Bearer</span><span class="hljs-punctuation">: </span>xxxxxxxxxxxxxxxxxxxxx.xxxxxxxxxxxxxxxxxxx.xxxxxxxxxxxxxxxxxxx<br></code></pre></td></tr></table></figure>
+<p>为什么用<code>.</code>分为三段见前面的JWT。</p>
+<h3
+id="怎么按分数时间获取community下最高的10个帖子">怎么按分数/时间获取community下最高的10个帖子？</h3>
+<p>在redis中用一个set记录一个community下的所有帖子id，用一个zset记录所有帖子的评分，那么可以对二者做一个zinterstore得到一个新的zset，新的zset存储该community下的帖子分数排行，如下图所示：</p>
+<figure>
+<img src="/img/bluebell笔记/image-20240626094052646.png" srcset="/img/loading.gif" lazyload
+alt="image-20240626094052646" />
+<figcaption aria-hidden="true">image-20240626094052646</figcaption>
+</figure>
+<h3 id="有什么心得经验">有什么心得/经验？</h3>
+<h4
+id="返回错误的时候不要对外返回过多的信息">返回错误的时候不要对外返回过多的信息</h4>
+<p>比如CommunityHandler()中，查询到所有的社区（community_id,
+community_name)
+以列表的形式返回,当logic.GetCommunityList()返回的err不为空的时候，使用zap将错误原因记录在日志中，而不对前端和用户返回过多的信息，同意对外返回CodeServerBusy.</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">CommunityHandler</span><span class="hljs-params">(c *gin.Context)</span></span> &#123;<br>	<span class="hljs-comment">// 查询到所有的社区（community_id, community_name) 以列表的形式返回</span><br>	data, err := logic.GetCommunityList()<br>	<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> &#123;<br>		zap.L().Error(<span class="hljs-string">&quot;logic.GetCommunityList() failed&quot;</span>, zap.Error(err))<br>		ResponseError(c, CodeServerBusy) <span class="hljs-comment">// 不轻易把服务端报错暴露给外面,上面已经用zap记录了出错的原因，后端可以通过日志排查原因，没必要对前端或者对外暴露太多的信息,统一对外返回CodeServerBusy</span><br>		<span class="hljs-keyword">return</span><br>	&#125;<br>	ResponseSuccess(c, data)<br>&#125;<br></code></pre></td></tr></table></figure>
+<h4 id="关于错误返回">关于错误返回</h4>
+<p>众所周知，现在的项目一般都是分为三层：controller、logic、dao层，再加一个model层定义数据库对应的结构。那么controller、logic、dao这三层的函数应该按照什么规则返回呢？。。</p>
+<p>首先dao层是直接与数据库交互的，所以出错的时候可以根据查询结果返回err，而logic层是调用dao层的函数来与数据库交互，所以logic层一般不对这个错误进行处理，而是直接返回给上一层的controller，controller层是首先是对数据进行校验，然后调用下面的层处理业务。如果数据校验失败，会直接返回错误；如果在调用下面的层执行业务的之后出错，根据上面的<strong>返回错误的时候不要对外返回过多的信息</strong>原则，在日志中记录错误原因，然后对错误进行封装然后返回，避免返回给前端和用户过多的信息。</p>
+<h4 id="关于业务代码怎么写">关于业务代码怎么写</h4>
+<p>有时候可能拿到需求之后，知道怎么做，但是开始写的时候发现不知道从哪下手，可以考虑先把每一层做的东西明确，然后依次实现router、controller、logic、dao层；</p>
+<p>如何实现每一个层？比如logic层的业务逻辑很复杂，要做的东西很多，不知道怎么下手，可以先梳理一下该层要做的事情，然后用注释的方式将需要做的事情排序，然后用代码实现每一步的业务逻辑。</p>
+<h4 id="dao层注意事项">dao层注意事项</h4>
+<p>dao层免不了要和数据库交互，那么就需要sql语句，在使用sql语句的时候一定要注意，<strong>不要拼接sql语句的字符串,因为可能会被sql注入。</strong></p>
+<p><strong>Q：不使用字符串拼接的方法怎么在sql语句中添加代码中的变量？</strong></p>
+<p>A：可以使用<code>?</code>通配符来代替字符串拼接，从而防止sql注入</p>
+<p><strong>Q:
+为什么使用<code>?</code>的方式可以避免sql注入？</strong></p>
+<p>A：使用通配符<code>?</code>的方式，可以使sql与参数分离，，当sql语句被数据库接收的时候，数据库会先先对sql语句进行预编译，生成一个执行计划，此时SQL
+语句只包含占位符，不包含具体的参数值。在 SQL
+语句执行时，具体的参数值被绑定到预编译好的占位符上，这些参数被数据库驱动程序处理成字面量数据，而不是代码。</p>
+<h4 id="给前端传递数字的数字失真问题">给前端传递数字的数字失真问题</h4>
+<p>前端js传递过来的格式是json格式的，但是js在IEEE
+754中规定的双浮点范围是-(2^53) ~ 2^53 -
+1。而雪花算法产生的id是int64类型，范围是-(2^64) ~ 2^64 - 1</p>
+<p><strong>解决方案</strong>：</p>
+<p>传递uid的时候改为传string，后端传递给前端数据的时候将int64转为string然后返回，前端给后端返回数据的时候发送string，然后后端再处理转为int64.最简单的方式是在结构体声明的时候就声明为string类型，然后在序列化之后再将string转换为int64。但是Go语言提供了一个更好的方法，如下所示：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">type</span> MyData <span class="hljs-keyword">struct</span>&#123;<br>    ID <span class="hljs-type">int64</span> <span class="hljs-string">`json:&quot;id, string&quot;`</span>	<span class="hljs-comment">// 可以把json中string类型的id解析为结构体中int64类型的ID</span><br>    Name <span class="hljs-type">string</span>  <span class="hljs-string">`json: &quot;name&quot;`</span><br>&#125;<br></code></pre></td></tr></table></figure>
+<h4 id="redis命令使用pipline优化">redis命令使用pipline优化</h4>
+<p>在查找帖子的时候需要查找每个帖子的投票数据，然后计算每个帖子的分数，而每个帖子的投票数据是用一个zset来存储的，常规的做法是遍历每个帖子，然后计算这个帖子的赞成票数。</p>
+<p>一个更优的做法是使用pipline依次将对每个帖子赞成票数的查询命令打包成一个请求，然后发送，这样可以减少redis的网络延迟，如果依次执行每个命令的话，每个命令都有一个单独的网络往返延迟。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-comment">// 使用pipeline一次发送多条命令,减少RTT</span><br>pipeline := client.Pipeline()<br><span class="hljs-keyword">for</span> _, id := <span class="hljs-keyword">range</span> ids &#123;<br>	key := getRedisKey(KeyPostVotedZSetPF + id)<br>	pipeline.ZCount(key, <span class="hljs-string">&quot;1&quot;</span>, <span class="hljs-string">&quot;1&quot;</span>)<br>&#125;<br>cmders, err := pipeline.Exec()<br><span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> &#123;<br>	<span class="hljs-keyword">return</span> <span class="hljs-literal">nil</span>, err<br>&#125;<br>data = <span class="hljs-built_in">make</span>([]<span class="hljs-type">int64</span>, <span class="hljs-number">0</span>, <span class="hljs-built_in">len</span>(cmders))<br><span class="hljs-keyword">for</span> _, cmder := <span class="hljs-keyword">range</span> cmders &#123;<br>	v := cmder.(*redis.IntCmd).Val()<br>	data = <span class="hljs-built_in">append</span>(data, v)<br>&#125;<br></code></pre></td></tr></table></figure>
+<h3
+id="限定json数据中某个字段值的范围">限定json数据中某个字段值的范围</h3>
+<p>validator库中有一个one of字段,如下所示:</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-comment">// ParamVoteData 投票数据</span><br><span class="hljs-keyword">type</span> ParamVoteData <span class="hljs-keyword">struct</span> &#123;<br>	<span class="hljs-comment">// UserID 从请求中获取当前的用户</span><br>	PostID    <span class="hljs-type">string</span> <span class="hljs-string">`json:&quot;post_id&quot; binding:&quot;required&quot;`</span>               <span class="hljs-comment">// 贴子id</span><br>	Direction <span class="hljs-type">int8</span>   <span class="hljs-string">`json:&quot;direction,string&quot; binding:&quot;oneof=1 0 -1&quot; `</span> <span class="hljs-comment">// 赞成票(1)还是反对票(-1)取消投票(0)</span><br>&#125;<br></code></pre></td></tr></table></figure>
+<h3 id="sqlx库">sqlx库</h3>
+<p>有哪些改进地方？</p>
+<ol type="1">
+<li><strong>结构体映射：</strong> <code>sqlx</code>
+允许将数据库查询的结果映射到 Go 结构体中，简化了数据的处理和访问。</li>
+<li><strong>命名参数：</strong> 支持使用命名参数执行查询，使得 SQL
+语句更易读且更易维护。</li>
+<li><strong>Null 值支持：</strong> 对于可能为 NULL
+的字段，<code>sqlx</code> 提供了 <code>null</code>
+类型，以方便地处理这些情况。</li>
+<li><strong>更丰富的查询方法：</strong> <code>sqlx</code>
+提供了一些额外的查询方法，如
+<code>Get</code>、<code>Select</code>，使得执行查询更加方便。</li>
+<li><strong>数据库连接池：</strong>
+支持数据库连接池，提高了在并发环境中的性能。</li>
+<li><strong>支持多种数据库：</strong> <code>sqlx</code>
+可以与多种数据库一起使用，包括 PostgreSQL、MySQL、SQLite 等。</li>
+<li><strong>原生 SQL 支持：</strong> <code>sqlx</code> 支持使用原生的
+SQL 语句，同时也支持使用预处理语句。</li>
+<li><strong>扫描任意类型：</strong> <code>sqlx</code> 具有更灵活的
+<code>Scan</code> 方法，可以直接将查询结果映射到任意类型。</li>
+</ol>
+<h3 id="怎么使用go操作mysql和redis">怎么使用go操作mysql和redis？</h3>
+<h3 id="gin框架怎么使用">gin框架怎么使用</h3>
+<h3 id="还有哪些投票算法">还有哪些投票算法</h3>
+<p>Delicious、Hacker
+news、reddit、stackoverflow、牛顿冷却定律、威尔逊区间、贝叶斯平均。</p>
+<p>### 面试拓展：</p>
+<p>用redis实现百万用户游戏积分排行榜</p>
+<p>Redis是一个高性能的内存数据存储系统，对于游戏的积分排行榜来说非常适合。可以通过以下步骤来实现百万用户游戏积分排行榜：</p>
+<p>1使用Redis的Sorted
+Set数据结构存储用户积分：将用户ID作为成员，积分作为分数，每当用户得分变化时，通过ZADD命令更新积分。</p>
+<p>2使用ZREVRANGE命令获取排行榜：该命令可以根据分数的降序返回成员，从而实现排行榜。</p>
+<p>3使用Hash数据结构存储用户详细信息：将用户ID作为键，用户详细信息（例如用户名、头像等）作为值，可以通过HGET命令快速获取用户详细信息。</p>
+<p>这样，通过排序集合和哈希数据结构的结合，就可以实现高效、稳定的百万用户游戏积分排行榜。</p>
+<h2 id="可以改进的地方">可以改进的地方</h2>
+<ol type="1">
+<li>用户投票算法</li>
+<li>实现refresh token</li>
+</ol>
 
                 
               </div>
